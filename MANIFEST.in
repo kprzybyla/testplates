@@ -1,0 +1,9 @@
+include README.rst
+include setup.py
+
+graft src
+
+exclude tests/**/*
+exclude .gitignore
+
+recursive-exclude * *.pyc *.pyo
