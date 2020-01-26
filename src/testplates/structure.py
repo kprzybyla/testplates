@@ -30,7 +30,7 @@ T = TypeVar("T")
 Bases = Tuple[type, ...]
 
 
-class Field(Generic[T], AbstractField[Structure[T], T]):
+class Field(Generic[T], AbstractField[T]):
 
     __slots__ = ("_default", "_optional", "_name")
 

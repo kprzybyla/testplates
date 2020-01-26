@@ -7,11 +7,10 @@ from typing import TypeVar, Generic
 from .value import Maybe
 from .descriptor import Descriptor
 
-C = TypeVar("C")
 T = TypeVar("T")
 
 
-class Field(Generic[C, T], Descriptor[C, T], abc.ABC):
+class Field(Generic[T], Descriptor[T], abc.ABC):
 
     __slots__ = ()
 

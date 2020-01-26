@@ -11,7 +11,6 @@ from typing import TypeVar
 from . import abc
 from .abc import Maybe
 
-C = TypeVar("C")
 T = TypeVar("T")
 
 
@@ -33,7 +32,7 @@ class DanglingDescriptorError(TestplatesError):
         cause unexpected behaviour.
     """
 
-    def __init__(self, descriptor: abc.Descriptor[C, T]) -> None:
+    def __init__(self, descriptor: abc.Descriptor[T]) -> None:
         super().__init__(f"Descriptor {descriptor!r} is not attached to any class")
 
 
@@ -46,7 +45,7 @@ class MissingValueError(ValueError, TestplatesError):
         value for given field with actual value.
     """
 
-    def __init__(self, field: abc.Field[C, T]) -> None:
+    def __init__(self, field: abc.Field[T]) -> None:
         super().__init__(f"Missing value in required field {field.name!r} ({field!r})")
 
 
@@ -59,7 +58,7 @@ class ProhibitedValueError(ValueError, TestplatesError):
         is invalid for given field due to its nature.
     """
 
-    def __init__(self, field: abc.Field[C, T], value: Maybe[T]) -> None:
+    def __init__(self, field: abc.Field[T], value: Maybe[T]) -> None:
         super().__init__(f"Value {value} is prohibited for field {field.name!r} ({field!r}")
 
 
