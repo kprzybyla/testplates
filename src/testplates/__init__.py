@@ -7,6 +7,14 @@ __all__ = [
     "Mapping",
     "Required",
     "Optional",
+    "OneOf",
+    "Contains",
+    "Length",
+    "BetweenLength",
+    "BetweenValue",
+    "MatchesString",
+    "MatchesBytes",
+    "Permutation",
     "DanglingDescriptorError",
     "MissingValueError",
     "ProhibitedValueError",
@@ -18,6 +26,17 @@ from .structure import Field
 from .object import Object
 from .mapping import Mapping
 from .fields import Required, Optional
+
+from .constraints import (
+    OneOf,
+    Contains,
+    Length,
+    BetweenLength,
+    BetweenValue,
+    MatchesString,
+    MatchesBytes,
+    Permutation,
+)
 
 from .exceptions import (
     DanglingDescriptorError,
