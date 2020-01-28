@@ -20,13 +20,24 @@ class Field(Generic[T], Descriptor[T], abc.ABC):
     @property
     @abc.abstractmethod
     def default(self) -> Maybe[T]:
-        ...
+
+        """
+            ...
+        """
 
     @property
     @abc.abstractmethod
     def is_optional(self) -> bool:
-        ...
+
+        """
+            ...
+        """
 
     @abc.abstractmethod
     def validate(self, value: Maybe[T]) -> None:
-        ...
+
+        """
+            ...
+
+            :param value:
+        """
