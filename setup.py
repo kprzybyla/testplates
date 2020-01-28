@@ -29,7 +29,7 @@ def main():
             "black": ["black==19.3b0"],
             "lint": ["flake8>=3.5.0"],
             "mypy": ["mypy>=0.620"],
-            "test": ["pytest>=3.4.0", "pytest-cov>=2.5.1"],
+            "test": ["pytest>=3.4.0", "pytest-cov>=2.5.1", "hypothesis~=5.3.1"],
             "deploy": ["wheel", "twine"],
         },
         use_scm_version={"write_to": os.path.join("src/testplates/_version.py")},

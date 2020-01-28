@@ -21,7 +21,13 @@ from typing import (
 from dataclasses import dataclass, field as dataclass_field
 
 from .abc import Field as AbstractField, MissingType, Missing, Maybe, WILDCARD, ABSENT
-from .exceptions import DanglingDescriptorError, MissingValueError, ProhibitedValueError
+
+from .exceptions import (
+    DanglingDescriptorError,
+    MissingValueError,
+    UnexpectedValueError,
+    ProhibitedValueError,
+)
 
 from .utils import compare
 
@@ -132,10 +138,22 @@ class Structure(Generic[T], abc.ABC, metaclass=StructureMeta):
     _fields_: ClassVar[Dict[str, Field[T]]]
 
     def __init__(self, **values: Maybe[T]) -> None:
+        for key, value in values.items():
+            if key not in self._fields_.keys():
+                raise UnexpectedValueError(key, value)
+
         for key, field in self._fields_.items():
-            field.validate(values.get(key, Missing))
+            value = values.get(key, Missing)
+
+            if value is Missing:
+                values[key] = field.default
+
+            field.validate(value)
 
         self._values_ = values
+
+    def __repr__(self) -> str:
+        return f"{type(self)}[{self._values_}]"
 
     def __eq__(self, other: Any) -> bool:
         for key, field in self._fields_.items():

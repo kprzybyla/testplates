@@ -17,6 +17,7 @@ __all__ = [
     "Permutation",
     "DanglingDescriptorError",
     "MissingValueError",
+    "UnexpectedValueError",
     "ProhibitedValueError",
     "ExclusiveInclusiveValueError",
 ]
@@ -41,6 +42,7 @@ from .constraints import (
 from .exceptions import (
     DanglingDescriptorError,
     MissingValueError,
+    UnexpectedValueError,
     ProhibitedValueError,
     ExclusiveInclusiveValueError,
 )

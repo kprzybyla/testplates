@@ -16,10 +16,15 @@ class Mapping(Generic[T], Structure[T], TMapping[str, T]):
         return cls._fields_[item]
 
     def __getitem__(self, item: str) -> T:
-        value = self._values_[item]
+        value = self._values_.get(item, Missing)
 
         if isinstance(value, MissingType):
-            raise KeyError(item)
+            try:
+                default = self._fields_[item].default
+            except KeyError:
+                raise KeyError(item)
+            else:
+                return default
 
         return value
 

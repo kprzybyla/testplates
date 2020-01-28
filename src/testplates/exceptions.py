@@ -2,6 +2,7 @@ __all__ = [
     "TestplatesError",
     "DanglingDescriptorError",
     "MissingValueError",
+    "UnexpectedValueError",
     "ProhibitedValueError",
     "ExclusiveInclusiveValueError",
 ]
@@ -47,6 +48,19 @@ class MissingValueError(ValueError, TestplatesError):
 
     def __init__(self, field: abc.Field[T]) -> None:
         super().__init__(f"Missing value in required field {field.name!r} ({field!r})")
+
+
+class UnexpectedValueError(ValueError, TestplatesError):
+
+    """
+        Error indicating unexpected value.
+
+        Raised when user passed value which was
+        not defined inside the template class.
+    """
+
+    def __init__(self, key: str, value: Maybe[T]) -> None:
+        super().__init__(f"Unexpected key {key!r} with value {value!r}")
 
 
 class ProhibitedValueError(ValueError, TestplatesError):
