@@ -4,7 +4,7 @@ import typing
 
 from typing import Any, TypeVar, Generic, Iterator
 
-from .abc import Missing, Maybe
+from .abc import MISSING, Maybe
 from .structure import Structure
 
 T = TypeVar("T", covariant=True)
@@ -25,7 +25,7 @@ class Mapping(Generic[T], Structure[T], typing.Mapping[str, T]):
 
     @staticmethod
     def _get_value_(
-        self: typing.Mapping[str, T], key: str, *, default: Maybe[T] = Missing
+        self: typing.Mapping[str, T], key: str, *, default: Maybe[T] = MISSING
     ) -> Maybe[T]:
         return self.get(key, default)
 

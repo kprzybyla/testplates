@@ -4,7 +4,9 @@ __all__ = [
     "ABSENT",
     "Field",
     "Object",
+    "ObjectTemplate",
     "Mapping",
+    "MappingTemplate",
     "Required",
     "Optional",
     "OneOf",
@@ -24,8 +26,8 @@ __all__ = [
 
 from .abc import ANY, WILDCARD, ABSENT
 from .structure import Field
-from .object import Object
-from .mapping import Mapping
+from .object import Object, ObjectTemplate
+from .mapping import Mapping, MappingTemplate
 from .fields import Required, Optional
 
 from .constraints import (

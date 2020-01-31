@@ -2,7 +2,7 @@ __all__ = ["compare"]
 
 from typing import TypeVar
 
-from .abc import Missing, Value, Maybe, ANY, WILDCARD, ABSENT
+from .abc import ANY, WILDCARD, ABSENT, MISSING, Value, Maybe
 
 T = TypeVar("T")
 
@@ -23,10 +23,10 @@ def compare(self_value: Maybe[Value[T]], other_value: Maybe[Value[T]]) -> bool:
     if self_value is WILDCARD:
         return True
 
-    if self_value is ANY and other_value is not Missing:
+    if self_value is ANY and other_value is not MISSING:
         return True
 
-    if self_value is ABSENT and other_value is Missing:
+    if self_value is ABSENT and other_value is MISSING:
         return True
 
     return self_value == other_value
