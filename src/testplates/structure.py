@@ -12,15 +12,13 @@ from typing import (
     TypeVar,
     Generic,
     ClassVar,
-    Dict,
     Union,
     Tuple,
+    Dict,
     Optional,
 )
 
-from dataclasses import dataclass, field as dataclass_field
-
-from .abc import Field as AbstractField, MissingType, Missing, Maybe, WILDCARD, ABSENT
+from .abc import WILDCARD, ABSENT, MISSING, Field as AbstractField, Maybe
 
 from .exceptions import (
     DanglingDescriptorError,
@@ -29,18 +27,20 @@ from .exceptions import (
     ProhibitedValueError,
 )
 
-from .utils import compare
+from .utils import matches
 
-T = TypeVar("T")
+T = TypeVar("T", covariant=True)
 
 Bases = Tuple[type, ...]
+
+# TODO(kprzybyla): Remove noqa (F811) after github.com/PyCQA/pyflakes/issues/320 is delivered
 
 
 class Field(Generic[T], AbstractField[T]):
 
     __slots__ = ("_default", "_optional", "_name")
 
-    def __init__(self, *, default: Maybe[T] = Missing, optional: bool = False) -> None:
+    def __init__(self, *, default: Maybe[T] = MISSING, optional: bool = False) -> None:
         self._default = default
         self._optional = optional
 
@@ -54,21 +54,48 @@ class Field(Generic[T], AbstractField[T]):
 
     @overload
     def __get__(self, instance: None, owner: Type[Structure[T]]) -> Field[T]:
-        ...
 
-    @overload  # noqa: F811 (https://github.com/PyCQA/pyflakes/issues/320)
+        """
+            Returns field itself when field is accessed
+            via :class:`Structure` class object attribute.
+
+            :param instance: None
+            :param owner: :class:`Structure` class object to which field is attached
+        """
+
+    @overload  # noqa
     def __get__(self, instance: Structure[T], owner: Type[Structure[T]]) -> T:
-        ...
+
+        """
+            Returns field value when field is accessed
+            via :class:`Structure` class instance attribute.
+
+            :param instance: :class:`Structure` class instance to which field is attached
+            :param owner: :class:`Structure` class object to which field is attached
+        """
 
     def __get__(
-        self, instance: Union[None, Structure[T]], owner: Type[Structure[T]]
-    ) -> Union[Field[T], T]:  # noqa: F811
+        self, instance: Optional[Structure[T]], owner: Type[Structure[T]]
+    ) -> Union[Field[T], T]:  # noqa
+
+        """
+            Returns either field itself or field value.
+
+            Return value depends on the fact whether field was access
+            via :class:`Structure` class object or class instance attribute.
+
+            :param instance: :class:`Structure` class instance to which field is attached or None
+            :param owner: :class:`Structure` class object to which field is attached
+
+            :raises AttributeError: When field value is missing when trying to access it
+        """
+
         if instance is None:
             return self
 
-        value = instance._values_.get(self.name, Missing)
+        value: Maybe[T] = instance._values_.get(self.name, MISSING)
 
-        if isinstance(value, MissingType):
+        if value is MISSING:
             raise AttributeError(self._name)
 
         return value
@@ -89,7 +116,7 @@ class Field(Generic[T], AbstractField[T]):
         return self._optional
 
     def validate(self, value: Maybe[T]) -> None:
-        if value is Missing and self.default is Missing:
+        if value is MISSING and self.default is MISSING:
             raise MissingValueError(self)
 
         if (value is ABSENT or self.default is ABSENT) and not self.is_optional:
@@ -99,16 +126,29 @@ class Field(Generic[T], AbstractField[T]):
             raise ProhibitedValueError(self, value)
 
 
-@dataclass
 class StructureDict(Generic[T], Dict[str, Any]):
 
-    fields: Dict[str, Field[T]] = dataclass_field(default_factory=dict)
+    __slots__ = ("_fields_",)
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+
+        self._fields_: Dict[str, Field[T]] = {}
 
     def __setitem__(self, key: str, value: Any) -> None:
         if isinstance(value, Field):
             self.fields[key] = value
 
         super().__setitem__(key, value)
+
+    @property
+    def fields(self) -> Dict[str, Field[T]]:
+
+        """
+            Returns fields descriptors.
+        """
+
+        return self._fields_
 
 
 class StructureMeta(Generic[T], abc.ABCMeta):
@@ -137,41 +177,44 @@ class Structure(Generic[T], abc.ABC, metaclass=StructureMeta):
 
     _fields_: ClassVar[Dict[str, Field[T]]]
 
-    def __init__(self, **values: Maybe[T]) -> None:
+    def __init__(self, **values: T) -> None:
+        keys = self._fields_.keys()
+
         for key, value in values.items():
-            if key not in self._fields_.keys():
+            if key not in keys:
                 raise UnexpectedValueError(key, value)
 
         for key, field in self._fields_.items():
-            value = values.get(key, Missing)
+            field.validate(values.get(key, MISSING))
 
-            if value is Missing:
-                values[key] = field.default
-
-            field.validate(value)
+            if field.default is not MISSING:
+                values.setdefault(key, field.default)
 
         self._values_ = values
 
     def __repr__(self) -> str:
-        return f"{type(self)}[{self._values_}]"
+        return f"{type(self).__name__}[{self._values_}]"
 
     def __eq__(self, other: Any) -> bool:
         for key, field in self._fields_.items():
-            self_value = self._get_value_(self, key, default=field.default)
+            self_value = self._get_value_(self, key)
             other_value = self._get_value_(other, key)
 
-            if not compare(self_value, other_value):
+            if not matches(self_value, other_value):
                 return False
 
         return True
 
     @staticmethod
     @abc.abstractmethod
-    def _get_value_(self: Any, key: str, *, default: Maybe[T] = Missing) -> Maybe[T]:
-        raise NotImplementedError()
+    def _get_value_(self: Any, key: str, *, default: Maybe[T] = MISSING) -> Maybe[T]:
 
-    def modify(self, **values: Maybe[T]) -> Structure[T]:
-        modified_values = dict(self._values_)
-        modified_values.update(values)
+        """
+            Extracts value by given key using a specific protocol.
 
-        return type(self)(**modified_values)
+            If value is missing, returns default value.
+
+            :param self: object with a specific protocol
+            :param key: key used to access the value
+            :param default: default value in case value is missing
+        """
