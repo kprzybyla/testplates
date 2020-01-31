@@ -16,7 +16,7 @@ class Descriptor(Generic[T], abc.ABC):
     __slots__ = ()
 
     def __repr__(self) -> str:
-        return f"{type(self)}[{self.name!r}]"
+        return f"{type(self).__name__}[{self.name!r}]"
 
     def __set_name__(self, owner: Any, name: str) -> None:
 

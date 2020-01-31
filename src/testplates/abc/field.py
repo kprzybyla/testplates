@@ -15,14 +15,20 @@ class Field(Generic[T], Descriptor[T], abc.ABC):
     __slots__ = ()
 
     def __repr__(self) -> str:
-        return f"Field[{self.name!r}, default={self.default!r}, is_optional={self.is_optional!r}]"
+        return (
+            f"{type(self).__name__}"
+            f"[{self.name!r}, default={self.default!r}, is_optional={self.is_optional!r}]"
+        )
 
     @property
     @abc.abstractmethod
     def default(self) -> Maybe[T]:
 
         """
-            ...
+            Returns field default value.
+
+            If the field does not have a default value,
+            missing value indicator is returned instead.
         """
 
     @property
@@ -30,14 +36,14 @@ class Field(Generic[T], Descriptor[T], abc.ABC):
     def is_optional(self) -> bool:
 
         """
-            ...
+            Returns True if field is optional, otherwise False.
         """
 
     @abc.abstractmethod
     def validate(self, value: Maybe[T]) -> None:
 
         """
-            ...
+            Validates the given value against the field.
 
-            :param value:
+            :param value: value to be validated
         """
