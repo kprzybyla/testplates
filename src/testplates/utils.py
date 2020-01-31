@@ -1,4 +1,4 @@
-__all__ = ["compare"]
+__all__ = ["matches"]
 
 from typing import TypeVar
 
@@ -7,7 +7,7 @@ from .abc import ANY, WILDCARD, ABSENT, MISSING, Value, Maybe
 T = TypeVar("T")
 
 
-def compare(self_value: Maybe[Value[T]], other_value: Maybe[Value[T]]) -> bool:
+def matches(self_value: Maybe[Value[T]], other_value: Maybe[Value[T]]) -> bool:
 
     """
         Compares self value and other value and
