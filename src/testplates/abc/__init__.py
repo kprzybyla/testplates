@@ -2,9 +2,9 @@ __all__ = [
     "ANY",
     "WILDCARD",
     "ABSENT",
-    "MissingType",
+    "MISSING",
     "ValueType",
-    "Missing",
+    "MissingType",
     "Value",
     "Maybe",
     "Descriptor",
@@ -14,7 +14,7 @@ __all__ = [
     "SupportsBoundaries",
 ]
 
-from .value import ANY, WILDCARD, ABSENT, MissingType, ValueType, Missing, Value, Maybe
+from .value import ANY, WILDCARD, ABSENT, MISSING, ValueType, MissingType, Value, Maybe
 from .descriptor import Descriptor
 from .field import Field
 from .protocols import SupportsExclusiveBoundaries, SupportsInclusiveBoundaries, SupportsBoundaries
