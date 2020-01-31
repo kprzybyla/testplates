@@ -4,9 +4,11 @@ __all__ = ["Descriptor"]
 
 import abc
 
-from typing import overload, Any, TypeVar, Generic, Union
+from typing import overload, Any, TypeVar, Generic, Union, Optional
 
 T = TypeVar("T")
+
+# TODO(kprzybyla): Remove noqa (F811) after github.com/PyCQA/pyflakes/issues/320 is delivered
 
 
 class Descriptor(Generic[T], abc.ABC):
@@ -16,41 +18,44 @@ class Descriptor(Generic[T], abc.ABC):
     def __set_name__(self, owner: Any, name: str) -> None:
 
         """
-            ...
+            Sets descriptor name upon attachment to parent class.
 
-            :param owner:
-            :param name:
+            :param owner: parent class object
+            :param name: descriptor name
         """
 
     @overload
     def __get__(self, instance: None, owner: Any) -> Descriptor[T]:
 
         """
-            ...
+            Returns descriptor itself when descriptor is
+            accessed via attached class object attribute.
 
-            :param instance:
-            :param owner:
+            :param instance: None
+            :param owner: class object to which descriptor is attached
         """
 
-    @overload  # noqa: F811 (https://github.com/PyCQA/pyflakes/issues/320)
+    @overload  # noqa
     def __get__(self, instance: Any, owner: Any) -> T:
 
         """
-            ...
+            Returns descriptor value when descriptor is
+            accessed via attached class instance attribute.
 
-            :param instance:
-            :param owner:
+            :param instance: class instance to which descriptor is attached
+            :param owner: class object to which descriptor is attached
         """
 
-    def __get__(
-        self, instance: Union[None, Any], owner: Any
-    ) -> Union[Descriptor[T], T]:  # noqa: F811
+    def __get__(self, instance: Optional[Any], owner: Any) -> Union[Descriptor[T], T]:  # noqa
 
         """
-            ...
+            Returns either descriptor itself or descriptor value.
 
-            :param instance:
-            :param owner:
+            Return value depends on the fact whether descriptor
+            was access via class object or class instance attribute.
+
+            :param instance: class instance to which descriptor is attached or None
+            :param owner: class object to which descriptor is attached
         """
 
     @property
@@ -58,5 +63,5 @@ class Descriptor(Generic[T], abc.ABC):
     def name(self) -> str:
 
         """
-            ...
+            Returns descriptor name.
         """
