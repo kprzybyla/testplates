@@ -1,4 +1,4 @@
-__all__ = ["ANY", "WILDCARD", "ABSENT", "MissingType", "ValueType", "Missing", "Value", "Maybe"]
+__all__ = ["ANY", "WILDCARD", "ABSENT", "MISSING", "ValueType", "MissingType", "Value", "Maybe"]
 
 import enum
 
@@ -6,11 +6,6 @@ from typing import TypeVar, Union
 from typing_extensions import Literal
 
 T = TypeVar("T")
-
-
-class MissingType:
-    def __repr__(self) -> str:
-        return "Missing"
 
 
 class ValueType(enum.Enum):
@@ -37,11 +32,19 @@ class ValueType(enum.Enum):
     """
 
 
-Missing = MissingType()
+class MissingType(enum.Enum):
+
+    MISSING = enum.auto()
+
+    """
+        Indicator for missing value.
+    """
+
 
 Value = Union[T, ValueType]
-Maybe = Union[T, MissingType]
+Maybe = Union[T, Literal[MissingType.MISSING]]
 
 ANY: Literal[ValueType.ANY] = ValueType.ANY
 WILDCARD: Literal[ValueType.WILDCARD] = ValueType.WILDCARD
 ABSENT: Literal[ValueType.ABSENT] = ValueType.ABSENT
+MISSING: Literal[MissingType.MISSING] = MissingType.MISSING
