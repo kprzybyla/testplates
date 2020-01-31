@@ -45,3 +45,8 @@ def pytest_assertrepr_compare(op, left, right):
     lines.append(f"{indent}{CLOSE_SIGN}")
 
     return lines
+
+
+class Storage(dict):
+    def __getattr__(self, item):
+        return self[item]
