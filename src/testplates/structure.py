@@ -18,8 +18,9 @@ from typing import (
     Optional,
 )
 
+from .abc import Descriptor
 from .utils import matches
-from .value import WILDCARD, ABSENT, MISSING, Descriptor, Maybe
+from .value import WILDCARD, ABSENT, MISSING, Maybe
 
 from .exceptions import (
     DanglingDescriptorError,
