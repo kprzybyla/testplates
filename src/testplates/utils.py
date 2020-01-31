@@ -2,7 +2,7 @@ __all__ = ["matches"]
 
 from typing import TypeVar
 
-from .abc import ANY, WILDCARD, ABSENT, MISSING, Value, Maybe
+from .value import ANY, WILDCARD, ABSENT, MISSING, Value, Maybe
 
 T = TypeVar("T")
 

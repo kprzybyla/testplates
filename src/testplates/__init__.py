@@ -24,7 +24,7 @@ __all__ = [
     "ExclusiveInclusiveValueError",
 ]
 
-from .abc import ANY, WILDCARD, ABSENT
+from .value import ANY, WILDCARD, ABSENT
 from .structure import Field
 from .object import Object, ObjectTemplate
 from .mapping import Mapping, MappingTemplate

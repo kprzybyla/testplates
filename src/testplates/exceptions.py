@@ -10,7 +10,7 @@ __all__ = [
 from typing import TypeVar
 
 from . import abc
-from .abc import Maybe
+from .value import Maybe
 
 T = TypeVar("T")
 
@@ -46,7 +46,7 @@ class MissingValueError(ValueError, TestplatesError):
         value for given field with actual value.
     """
 
-    def __init__(self, field: abc.Field[T]) -> None:
+    def __init__(self, field: abc.Descriptor[T]) -> None:
         super().__init__(f"Missing value in required field {field.name!r} ({field!r})")
 
 
@@ -72,7 +72,7 @@ class ProhibitedValueError(ValueError, TestplatesError):
         is invalid for given field due to its nature.
     """
 
-    def __init__(self, field: abc.Field[T], value: Maybe[T]) -> None:
+    def __init__(self, field: abc.Descriptor[T], value: Maybe[T]) -> None:
         super().__init__(f"Value {value} is prohibited for field {field.name!r} ({field!r}")
 
 

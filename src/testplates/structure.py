@@ -18,7 +18,8 @@ from typing import (
     Optional,
 )
 
-from .abc import WILDCARD, ABSENT, MISSING, Field as AbstractField, Maybe
+from .utils import matches
+from .value import WILDCARD, ABSENT, MISSING, Descriptor, Maybe
 
 from .exceptions import (
     DanglingDescriptorError,
@@ -27,8 +28,6 @@ from .exceptions import (
     ProhibitedValueError,
 )
 
-from .utils import matches
-
 T = TypeVar("T", covariant=True)
 
 Bases = Tuple[type, ...]
@@ -36,7 +35,7 @@ Bases = Tuple[type, ...]
 # TODO(kprzybyla): Remove noqa (F811) after github.com/PyCQA/pyflakes/issues/320 is delivered
 
 
-class Field(Generic[T], AbstractField[T]):
+class Field(Generic[T], Descriptor[T]):
 
     __slots__ = ("_default", "_optional", "_name")
 
@@ -47,7 +46,10 @@ class Field(Generic[T], AbstractField[T]):
         self._name: Optional[str] = None
 
     def __repr__(self) -> str:
-        return f"Field[{self._name!r}, default={self._default!r}, is_optional={self._optional!r}]"
+        return (
+            f"{type(self).__name__}"
+            f"[{self.name!r}, default={self.default!r}, is_optional={self.is_optional!r}]"
+        )
 
     def __set_name__(self, owner: Type[Structure[T]], name: str) -> None:
         self._name = name
@@ -109,13 +111,33 @@ class Field(Generic[T], AbstractField[T]):
 
     @property
     def default(self) -> Maybe[T]:
+
+        """
+            Returns field default value.
+
+            If the field does not have a default value,
+            missing value indicator is returned instead.
+        """
+
         return self._default
 
     @property
     def is_optional(self) -> bool:
+
+        """
+            Returns True if field is optional, otherwise False.
+        """
+
         return self._optional
 
     def validate(self, value: Maybe[T]) -> None:
+
+        """
+            Validates the given value against the field.
+
+            :param value: value to be validated
+        """
+
         if value is MISSING and self.default is MISSING:
             raise MissingValueError(self)
 

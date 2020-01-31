@@ -2,7 +2,7 @@ __all__ = ["Object", "ObjectTemplate"]
 
 from typing import cast, Generic, Any, TypeVar
 
-from .abc import MISSING, Maybe
+from .value import MISSING, Maybe
 from .structure import Structure
 
 T = TypeVar("T", covariant=True)
