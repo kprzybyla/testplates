@@ -7,7 +7,7 @@ from testplates import (
     WILDCARD,
     ANY,
     ABSENT,
-    Mapping,
+    MappingTemplate,
     Field,
     Required,
     Optional,
@@ -16,25 +16,19 @@ from testplates import (
     ProhibitedValueError,
 )
 
-from dataclasses import dataclass
-
 
 @given(value=integers())
 def test_equality(value: int) -> None:
-    class Template(Mapping):
+    class Template(MappingTemplate):
 
         valid: Required[int] = Field()
-
-    # reveal_type(Mapping())
-    # reveal_type(Template.valid)
-    # reveal_type(Template().valid)
 
     assert Template(valid=value) == dict(valid=value)
 
 
 @given(value=integers())
 def test_inequality_due_to_different_key(value: int) -> None:
-    class Template(Mapping):
+    class Template(MappingTemplate):
 
         valid: Required[int] = Field()
 
@@ -45,7 +39,7 @@ def test_inequality_due_to_different_key(value: int) -> None:
 def test_inequality_due_to_different_value(value: int, other: int) -> None:
     assume(value != other)
 
-    class Template(Mapping):
+    class Template(MappingTemplate):
 
         valid: Required[int] = Field()
 
@@ -54,7 +48,7 @@ def test_inequality_due_to_different_value(value: int, other: int) -> None:
 
 @given(value=integers())
 def test_default_value(value: int) -> None:
-    class Template(Mapping):
+    class Template(MappingTemplate):
 
         valid: Required[int] = Field(default=value)
 
@@ -65,7 +59,7 @@ def test_default_value(value: int) -> None:
 def test_default_value_override(value: int, default: int) -> None:
     assume(value != default)
 
-    class Template(Mapping):
+    class Template(MappingTemplate):
 
         valid: Required[int] = Field(default=default)
 
@@ -74,7 +68,7 @@ def test_default_value_override(value: int, default: int) -> None:
 
 @given(value=integers())
 def test_any_value_matches_on_optional_field(value: int) -> None:
-    class Template(Mapping):
+    class Template(MappingTemplate):
 
         valid: Optional[int] = Field(optional=True)
 
@@ -83,7 +77,7 @@ def test_any_value_matches_on_optional_field(value: int) -> None:
 
 @given(value=integers())
 def test_wildcard_value_matches_on_optional_field(value: int) -> None:
-    class Template(Mapping):
+    class Template(MappingTemplate):
 
         valid: Optional[int] = Field(optional=True)
 
@@ -92,7 +86,7 @@ def test_wildcard_value_matches_on_optional_field(value: int) -> None:
 
 
 def test_wildcard_value_raises_value_error_on_required_field() -> None:
-    class Template(Mapping):
+    class Template(MappingTemplate):
 
         valid: Required[int] = Field()
 
@@ -104,7 +98,7 @@ def test_wildcard_value_raises_value_error_on_required_field() -> None:
 
 
 def test_absent_value_matches_on_optional_field() -> None:
-    class Template(Mapping):
+    class Template(MappingTemplate):
 
         valid: Optional[int] = Field(optional=True)
 
@@ -113,7 +107,7 @@ def test_absent_value_matches_on_optional_field() -> None:
 
 @given(value=integers())
 def test_absent_value_mismatches_on_optional_field(value: int) -> None:
-    class Template(Mapping):
+    class Template(MappingTemplate):
 
         valid: Optional[int] = Field(optional=True)
 
@@ -121,7 +115,7 @@ def test_absent_value_mismatches_on_optional_field(value: int) -> None:
 
 
 def test_absent_value_raises_value_error_on_required_field() -> None:
-    class Template(Mapping):
+    class Template(MappingTemplate):
 
         valid: Required[int] = Field()
 
@@ -133,7 +127,7 @@ def test_absent_value_raises_value_error_on_required_field() -> None:
 
 
 def test_missing_required_field_value_raises_missing_value_error() -> None:
-    class Template(Mapping):
+    class Template(MappingTemplate):
 
         valid: Required[int] = Field()
 
@@ -145,7 +139,7 @@ def test_missing_required_field_value_raises_missing_value_error() -> None:
 
 
 def test_missing_optional_field_value_raises_missing_value_error() -> None:
-    class Template(Mapping):
+    class Template(MappingTemplate):
 
         valid: Optional[int] = Field(optional=True)
 
@@ -158,7 +152,7 @@ def test_missing_optional_field_value_raises_missing_value_error() -> None:
 
 @given(value=integers())
 def test_required_field_with_default_value_does_not_raise_missing_value_error(value: int) -> None:
-    class Template(Mapping):
+    class Template(MappingTemplate):
 
         valid: Required[int] = Field(default=value)
 
@@ -167,7 +161,7 @@ def test_required_field_with_default_value_does_not_raise_missing_value_error(va
 
 @given(value=integers())
 def test_optional_field_with_default_value_does_not_raise_missing_value_error(value: int) -> None:
-    class Template(Mapping):
+    class Template(MappingTemplate):
 
         valid: Optional[int] = Field(default=value, optional=True)
 
@@ -176,7 +170,7 @@ def test_optional_field_with_default_value_does_not_raise_missing_value_error(va
 
 @given(value=integers())
 def test_extra_value_raises_value_error(value: int) -> None:
-    class Template(Mapping):
+    class Template(MappingTemplate):
         pass
 
     with pytest.raises(ValueError):
@@ -188,11 +182,11 @@ def test_extra_value_raises_value_error(value: int) -> None:
 
 @given(value=integers())
 def test_nested_templates(value: int) -> None:
-    class Inner(Mapping):
+    class Inner(MappingTemplate):
 
         valid: Required[int] = Field()
 
-    class Outer(Mapping):
+    class Outer(MappingTemplate):
 
         inner: Required[Inner] = Field()
 
@@ -201,7 +195,7 @@ def test_nested_templates(value: int) -> None:
 
 @given(value=integers(), default=integers())
 def test_access_and_properties(value: int, default: int) -> None:
-    class Template(Mapping):
+    class Template(MappingTemplate):
 
         valid: Optional[int] = Field(default=default, optional=True)
 
@@ -215,7 +209,7 @@ def test_access_and_properties(value: int, default: int) -> None:
 
 @given(default=integers())
 def test_access_1(default: int) -> None:
-    class Template(Mapping):
+    class Template(MappingTemplate):
 
         valid: Required[int] = Field(default=default)
 

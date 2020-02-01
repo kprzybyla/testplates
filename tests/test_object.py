@@ -1,14 +1,14 @@
 from hypothesis import given
 from hypothesis.strategies import integers
 
-from testplates import Object, Field, Required, Optional
+from testplates import ObjectTemplate, Field, Required, Optional
 
 from .conftest import Storage
 
 
 @given(value=integers())
 def test_equality(value: int) -> None:
-    class Template(Object):
+    class Template(ObjectTemplate):
 
         valid: Required[int] = Field()
 
@@ -17,7 +17,7 @@ def test_equality(value: int) -> None:
 
 @given(value=integers(), default=integers())
 def test_access_and_properties(value: int, default: int) -> None:
-    class Template(Object):
+    class Template(ObjectTemplate):
 
         valid: Optional[int] = Field(default=default, optional=True)
 
