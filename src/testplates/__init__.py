@@ -21,7 +21,7 @@ __all__ = [
     "MissingValueError",
     "UnexpectedValueError",
     "ProhibitedValueError",
-    "ExclusiveInclusiveValueError",
+    "MutuallyExclusiveBoundaryError",
 ]
 
 from .value import ANY, WILDCARD, ABSENT
@@ -46,5 +46,5 @@ from .exceptions import (
     MissingValueError,
     UnexpectedValueError,
     ProhibitedValueError,
-    ExclusiveInclusiveValueError,
+    MutuallyExclusiveBoundaryError,
 )

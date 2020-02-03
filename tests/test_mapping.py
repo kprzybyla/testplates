@@ -3,6 +3,8 @@ import pytest
 from hypothesis import given, assume
 from hypothesis.strategies import integers
 
+from testplates.value import MISSING
+
 from testplates import (
     WILDCARD,
     ANY,
@@ -11,6 +13,7 @@ from testplates import (
     Field,
     Required,
     Optional,
+    DanglingDescriptorError,
     MissingValueError,
     UnexpectedValueError,
     ProhibitedValueError,
@@ -218,3 +221,10 @@ def test_access_1(default: int) -> None:
     assert mapping["valid"] == default
     assert len(mapping) == 1
     assert list(iter(mapping)) == ["valid"]
+
+
+def test_dangling_descriptor_error():
+    valid = Field()
+
+    with pytest.raises(DanglingDescriptorError):
+        valid.name

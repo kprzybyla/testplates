@@ -27,6 +27,7 @@ from .exceptions import (
     MissingValueError,
     UnexpectedValueError,
     ProhibitedValueError,
+    MissingValueInternalError,
 )
 
 T = TypeVar("T", covariant=True)
@@ -49,7 +50,7 @@ class Field(Generic[T], Descriptor[T]):
     def __repr__(self) -> str:
         return (
             f"{type(self).__name__}"
-            f"[{self.name!r}, default={self.default!r}, is_optional={self.is_optional!r}]"
+            f"[{self._name!r}, default={self.default!r}, is_optional={self.is_optional!r}]"
         )
 
     def __set_name__(self, owner: Type[Structure[T]], name: str) -> None:
@@ -99,7 +100,7 @@ class Field(Generic[T], Descriptor[T]):
         value: Maybe[T] = instance._values_.get(self.name, MISSING)
 
         if value is MISSING:
-            raise AttributeError(self._name)
+            raise MissingValueInternalError(self)  # pragma: no cover
 
         return value
 

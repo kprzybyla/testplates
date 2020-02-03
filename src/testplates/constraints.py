@@ -15,7 +15,7 @@ import abc
 from typing import Any, AnyStr, TypeVar, Generic, Sized, Container, Iterable, Pattern, Optional
 
 from .abc import SupportsBoundaries
-from .exceptions import ExclusiveInclusiveValueError
+from .exceptions import MutuallyExclusiveBoundaryError
 
 T = TypeVar("T")
 Boundary = TypeVar("Boundary", bound=SupportsBoundaries)
@@ -110,10 +110,10 @@ class BetweenValue(Generic[Boundary]):
         self._inclusive_maximum = inclusive_maximum
 
         if self._exclusive_minimum is not None and self._inclusive_minimum is not None:
-            raise ExclusiveInclusiveValueError(self._exclusive_minimum, self._inclusive_minimum)
+            raise MutuallyExclusiveBoundaryError()
 
         if self._exclusive_maximum is not None and self._inclusive_maximum is not None:
-            raise ExclusiveInclusiveValueError(self._exclusive_maximum, self._inclusive_maximum)
+            raise MutuallyExclusiveBoundaryError()
 
     def __eq__(self, other: Any) -> bool:
         if not isinstance(other, SupportsBoundaries):

@@ -76,16 +76,40 @@ class ProhibitedValueError(ValueError, TestplatesError):
         super().__init__(f"Value {value} is prohibited for field {field.name!r} ({field!r}")
 
 
-class ExclusiveInclusiveValueError(ValueError, TestplatesError):
+class MutuallyExclusiveBoundaryError(ValueError, TestplatesError):
 
     """
-        Error indicating exclusive and inclusive value collision.
+        Error indicating exclusive and inclusive boundaries collision.
 
         Raised when user set both same exclusive
         and inclusive value for given constraint.
     """
 
-    def __init__(self, exclusive: T, inclusive: T) -> None:
-        super().__init__(
-            f"Cannot set both same exclusive ({exclusive}) and inclusive ({inclusive}) value"
-        )
+    def __init__(self) -> None:
+        super().__init__(f"Exclusive and inclusive boundaries are mutually exclusive")
+
+
+class InternalError(TestplatesError):
+
+    """
+        Error indicating internal error inside testplates library.
+
+        Raised when upon any kind of illegal
+        behaviour inside testplates library.
+    """
+
+    def __init__(self, message: str) -> None:
+        super().__init__(f"[InternalError] {message}")
+
+
+class MissingValueInternalError(InternalError):
+
+    """
+        Error indicating missing value internal error.
+
+        Raised when internally value is missing but
+        from logical point of view it should not.
+    """
+
+    def __init__(self, field: abc.Descriptor[T]):
+        super().__init__(f"Field {field.name!r} is internally missing value ({field!r})")
