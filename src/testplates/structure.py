@@ -58,25 +58,11 @@ class Field(Generic[_T], Descriptor[_T]):
 
     @overload
     def __get__(self, instance: None, owner: Type[Structure[_T]]) -> Field[_T]:
-
-        """
-            Returns field itself when field is accessed
-            via :class:`Structure` class object attribute.
-
-            :param instance: None
-            :param owner: :class:`Structure` class object to which field is attached
-        """
+        ...
 
     @overload  # noqa
     def __get__(self, instance: Structure[_T], owner: Type[Structure[_T]]) -> _T:
-
-        """
-            Returns field value when field is accessed
-            via :class:`Structure` class instance attribute.
-
-            :param instance: :class:`Structure` class instance to which field is attached
-            :param owner: :class:`Structure` class object to which field is attached
-        """
+        ...
 
     def __get__(
         self, instance: Optional[Structure[_T]], owner: Type[Structure[_T]]

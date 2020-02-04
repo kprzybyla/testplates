@@ -17,27 +17,41 @@ from typing import Any, AnyStr, TypeVar, Generic, Sized, Container, Iterable, Pa
 from .abc import SupportsBoundaries
 from .exceptions import MutuallyExclusiveBoundaryValueError
 
-T = TypeVar("T")
+_T = TypeVar("_T")
 
-Boundary = TypeVar("Boundary", bound=SupportsBoundaries)
+_Boundary = TypeVar("_Boundary", bound=SupportsBoundaries)
 
 
-class OneOf(Generic[T]):
+class Constraint(abc.ABC):
+
+    __slots__ = ()
+
+    @abc.abstractmethod
+    def __eq__(self, other: Any) -> bool:
+
+        """
+            ...
+
+            :param other:
+        """
+
+
+class OneOf(Generic[_T], Constraint):
 
     __slots__ = ("_values",)
 
-    def __init__(self, *values: T) -> None:
+    def __init__(self, *values: _T) -> None:
         self._values = values
 
     def __eq__(self, other: Any) -> bool:
         return other in self._values
 
 
-class Contains(Generic[T]):
+class Contains(Generic[_T], Constraint):
 
     __slots__ = ("_values",)
 
-    def __init__(self, *values: T) -> None:
+    def __init__(self, *values: _T) -> None:
         self._values = values
 
     def __eq__(self, other: Any) -> bool:
@@ -51,7 +65,7 @@ class Contains(Generic[T]):
         return True
 
 
-class Length:
+class Length(Constraint):
 
     __slots__ = ("_length",)
 
@@ -65,12 +79,12 @@ class Length:
         return len(other) == self._length
 
 
-class BetweenLength(Generic[Boundary]):
+class BetweenLength(Generic[_Boundary], Constraint):
 
     __slots__ = ("_minimum", "_maximum")
 
     def __init__(
-        self, *, minimum: Optional[Boundary] = None, maximum: Optional[Boundary] = None
+        self, *, minimum: Optional[_Boundary] = None, maximum: Optional[_Boundary] = None
     ) -> None:
         self._minimum = minimum
         self._maximum = maximum
@@ -88,7 +102,7 @@ class BetweenLength(Generic[Boundary]):
         return True
 
 
-class BetweenValue(Generic[Boundary]):
+class BetweenValue(Generic[_Boundary], Constraint):
 
     __slots__ = (
         "_exclusive_minimum",
@@ -100,10 +114,10 @@ class BetweenValue(Generic[Boundary]):
     def __init__(
         self,
         *,
-        exclusive_minimum: Optional[Boundary] = None,
-        exclusive_maximum: Optional[Boundary] = None,
-        inclusive_minimum: Optional[Boundary] = None,
-        inclusive_maximum: Optional[Boundary] = None,
+        exclusive_minimum: Optional[_Boundary] = None,
+        exclusive_maximum: Optional[_Boundary] = None,
+        inclusive_minimum: Optional[_Boundary] = None,
+        inclusive_maximum: Optional[_Boundary] = None,
     ) -> None:
         self._exclusive_minimum = exclusive_minimum
         self._exclusive_maximum = exclusive_maximum
@@ -135,16 +149,12 @@ class BetweenValue(Generic[Boundary]):
         return True
 
 
-class Matches(Generic[AnyStr], abc.ABC):
+class Matches(Generic[AnyStr], Constraint, abc.ABC):
 
     __slots__ = ("_pattern",)
 
     def __init__(self, value: AnyStr) -> None:
         self._pattern: Pattern[AnyStr] = re.compile(value)
-
-    @abc.abstractmethod
-    def __eq__(self, other: Any) -> bool:
-        ...
 
     def compare(self, other: AnyStr) -> bool:
         return bool(self._pattern.match(other))
@@ -172,11 +182,11 @@ class MatchesBytes(Matches[bytes]):
         return self.compare(other)
 
 
-class Permutation(Generic[T]):
+class Permutation(Generic[_T], Constraint):
 
     __slots__ = ("_values",)
 
-    def __init__(self, *values: T) -> None:
+    def __init__(self, *values: _T) -> None:
         self._values = values
 
     def __eq__(self, other: Any) -> bool:
