@@ -6,12 +6,16 @@ import abc
 
 from typing import overload, Any, TypeVar, Generic, Union, Optional
 
-T = TypeVar("T")
+_T = TypeVar("_T")
 
 # TODO(kprzybyla): Remove noqa (F811) after github.com/PyCQA/pyflakes/issues/320 is delivered
 
 
-class Descriptor(Generic[T], abc.ABC):
+class Descriptor(Generic[_T], abc.ABC):
+
+    """
+        Abstract non-data descriptor class.
+    """
 
     __slots__ = ()
 
@@ -28,7 +32,7 @@ class Descriptor(Generic[T], abc.ABC):
         """
 
     @overload
-    def __get__(self, instance: None, owner: Any) -> Descriptor[T]:
+    def __get__(self, instance: None, owner: Any) -> Descriptor[_T]:
 
         """
             Returns descriptor itself when descriptor is
@@ -39,7 +43,7 @@ class Descriptor(Generic[T], abc.ABC):
         """
 
     @overload  # noqa
-    def __get__(self, instance: Any, owner: Any) -> T:
+    def __get__(self, instance: Any, owner: Any) -> _T:
 
         """
             Returns descriptor value when descriptor is
@@ -49,7 +53,7 @@ class Descriptor(Generic[T], abc.ABC):
             :param owner: class object to which descriptor is attached
         """
 
-    def __get__(self, instance: Optional[Any], owner: Any) -> Union[Descriptor[T], T]:  # noqa
+    def __get__(self, instance: Optional[Any], owner: Any) -> Union[Descriptor[_T], _T]:  # noqa
 
         """
             Returns either descriptor itself or descriptor value.

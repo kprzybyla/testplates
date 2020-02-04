@@ -1,14 +1,29 @@
-__all__ = ["ANY", "WILDCARD", "ABSENT", "MISSING", "ValueType", "MissingType", "Value", "Maybe"]
+__all__ = [
+    "ANY",
+    "WILDCARD",
+    "ABSENT",
+    "MISSING",
+    "Value",
+    "Maybe",
+    "LiteralAny",
+    "LiteralWildcard",
+    "LiteralAbsent",
+    "LiteralMissing",
+]
 
 import enum
 
 from typing import TypeVar, Union
 from typing_extensions import Literal
 
-T = TypeVar("T")
+_T = TypeVar("_T")
 
 
-class ValueType(enum.Enum):
+class _SpecialValueType(enum.Enum):
+
+    """
+        Special value type class.
+    """
 
     ANY = enum.auto()
 
@@ -32,7 +47,11 @@ class ValueType(enum.Enum):
     """
 
 
-class MissingType(enum.Enum):
+class _MissingType(enum.Enum):
+
+    """
+        Missing value type class.
+    """
 
     MISSING = enum.auto()
 
@@ -41,10 +60,15 @@ class MissingType(enum.Enum):
     """
 
 
-Value = Union[T, ValueType]
-Maybe = Union[T, Literal[MissingType.MISSING]]
+LiteralAny = Literal[_SpecialValueType.ANY]
+LiteralWildcard = Literal[_SpecialValueType.WILDCARD]
+LiteralAbsent = Literal[_SpecialValueType.ABSENT]
+LiteralMissing = Literal[_MissingType.MISSING]
 
-ANY: Literal[ValueType.ANY] = ValueType.ANY
-WILDCARD: Literal[ValueType.WILDCARD] = ValueType.WILDCARD
-ABSENT: Literal[ValueType.ABSENT] = ValueType.ABSENT
-MISSING: Literal[MissingType.MISSING] = MissingType.MISSING
+Value = Union[_T, _SpecialValueType]
+Maybe = Union[_T, LiteralMissing]
+
+ANY: LiteralAny = _SpecialValueType.ANY
+WILDCARD: LiteralWildcard = _SpecialValueType.WILDCARD
+ABSENT: LiteralAbsent = _SpecialValueType.ABSENT
+MISSING: LiteralMissing = _MissingType.MISSING

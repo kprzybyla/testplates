@@ -7,6 +7,7 @@ __all__ = [
     "ObjectTemplate",
     "Mapping",
     "MappingTemplate",
+    "field",
     "Required",
     "Optional",
     "OneOf",
@@ -21,14 +22,14 @@ __all__ = [
     "MissingValueError",
     "UnexpectedValueError",
     "ProhibitedValueError",
-    "MutuallyExclusiveBoundaryError",
+    "MutuallyExclusiveBoundaryValueError",
 ]
 
 from .value import ANY, WILDCARD, ABSENT
 from .structure import Field
 from .object import Object, ObjectTemplate
 from .mapping import Mapping, MappingTemplate
-from .fields import Required, Optional
+from .fields import field, Required, Optional
 
 from .constraints import (
     OneOf,
@@ -46,5 +47,5 @@ from .exceptions import (
     MissingValueError,
     UnexpectedValueError,
     ProhibitedValueError,
-    MutuallyExclusiveBoundaryError,
+    MutuallyExclusiveBoundaryValueError,
 )

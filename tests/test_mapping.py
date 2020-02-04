@@ -3,14 +3,12 @@ import pytest
 from hypothesis import given, assume
 from hypothesis.strategies import integers
 
-from testplates.value import MISSING
-
 from testplates import (
     WILDCARD,
     ANY,
     ABSENT,
     MappingTemplate,
-    Field,
+    field,
     Required,
     Optional,
     DanglingDescriptorError,
@@ -24,7 +22,7 @@ from testplates import (
 def test_equality(value: int) -> None:
     class Template(MappingTemplate):
 
-        valid: Required[int] = Field()
+        valid: Required[int] = field()
 
     assert Template(valid=value) == dict(valid=value)
 
@@ -33,7 +31,7 @@ def test_equality(value: int) -> None:
 def test_inequality_due_to_different_key(value: int) -> None:
     class Template(MappingTemplate):
 
-        valid: Required[int] = Field()
+        valid: Required[int] = field()
 
     assert Template(valid=value) != dict(invalid=value)
 
@@ -44,7 +42,7 @@ def test_inequality_due_to_different_value(value: int, other: int) -> None:
 
     class Template(MappingTemplate):
 
-        valid: Required[int] = Field()
+        valid: Required[int] = field()
 
     assert Template(valid=value) != dict(valid=other)
 
@@ -53,7 +51,7 @@ def test_inequality_due_to_different_value(value: int, other: int) -> None:
 def test_default_value(value: int) -> None:
     class Template(MappingTemplate):
 
-        valid: Required[int] = Field(default=value)
+        valid: Required[int] = field(default=value)
 
     assert Template() == dict(valid=value)
 
@@ -64,7 +62,7 @@ def test_default_value_override(value: int, default: int) -> None:
 
     class Template(MappingTemplate):
 
-        valid: Required[int] = Field(default=default)
+        valid: Required[int] = field(default=default)
 
     assert Template(valid=value) == dict(valid=value)
 
@@ -73,7 +71,7 @@ def test_default_value_override(value: int, default: int) -> None:
 def test_any_value_matches_on_optional_field(value: int) -> None:
     class Template(MappingTemplate):
 
-        valid: Optional[int] = Field(optional=True)
+        valid: Optional[int] = field(optional=True)
 
     assert Template(valid=ANY) == dict(valid=value)
 
@@ -82,7 +80,7 @@ def test_any_value_matches_on_optional_field(value: int) -> None:
 def test_wildcard_value_matches_on_optional_field(value: int) -> None:
     class Template(MappingTemplate):
 
-        valid: Optional[int] = Field(optional=True)
+        valid: Optional[int] = field(optional=True)
 
     assert Template(valid=WILDCARD) == dict()
     assert Template(valid=WILDCARD) == dict(valid=value)
@@ -91,7 +89,7 @@ def test_wildcard_value_matches_on_optional_field(value: int) -> None:
 def test_wildcard_value_raises_value_error_on_required_field() -> None:
     class Template(MappingTemplate):
 
-        valid: Required[int] = Field()
+        valid: Required[int] = field()
 
     with pytest.raises(ValueError):
         Template(valid=WILDCARD)
@@ -103,7 +101,7 @@ def test_wildcard_value_raises_value_error_on_required_field() -> None:
 def test_absent_value_matches_on_optional_field() -> None:
     class Template(MappingTemplate):
 
-        valid: Optional[int] = Field(optional=True)
+        valid: Optional[int] = field(optional=True)
 
     assert Template(valid=ABSENT) == dict()
 
@@ -112,7 +110,7 @@ def test_absent_value_matches_on_optional_field() -> None:
 def test_absent_value_mismatches_on_optional_field(value: int) -> None:
     class Template(MappingTemplate):
 
-        valid: Optional[int] = Field(optional=True)
+        valid: Optional[int] = field(optional=True)
 
     assert Template(valid=ABSENT) != dict(valid=value)
 
@@ -120,7 +118,7 @@ def test_absent_value_mismatches_on_optional_field(value: int) -> None:
 def test_absent_value_raises_value_error_on_required_field() -> None:
     class Template(MappingTemplate):
 
-        valid: Required[int] = Field()
+        valid: Required[int] = field()
 
     with pytest.raises(ValueError):
         Template(valid=ABSENT)
@@ -132,7 +130,7 @@ def test_absent_value_raises_value_error_on_required_field() -> None:
 def test_missing_required_field_value_raises_missing_value_error() -> None:
     class Template(MappingTemplate):
 
-        valid: Required[int] = Field()
+        valid: Required[int] = field()
 
     with pytest.raises(ValueError):
         Template()
@@ -144,7 +142,7 @@ def test_missing_required_field_value_raises_missing_value_error() -> None:
 def test_missing_optional_field_value_raises_missing_value_error() -> None:
     class Template(MappingTemplate):
 
-        valid: Optional[int] = Field(optional=True)
+        valid: Optional[int] = field(optional=True)
 
     with pytest.raises(ValueError):
         Template()
@@ -157,7 +155,7 @@ def test_missing_optional_field_value_raises_missing_value_error() -> None:
 def test_required_field_with_default_value_does_not_raise_missing_value_error(value: int) -> None:
     class Template(MappingTemplate):
 
-        valid: Required[int] = Field(default=value)
+        valid: Required[int] = field(default=value)
 
     Template()
 
@@ -166,7 +164,7 @@ def test_required_field_with_default_value_does_not_raise_missing_value_error(va
 def test_optional_field_with_default_value_does_not_raise_missing_value_error(value: int) -> None:
     class Template(MappingTemplate):
 
-        valid: Optional[int] = Field(default=value, optional=True)
+        valid: Optional[int] = field(default=value, optional=True)
 
     Template()
 
@@ -187,11 +185,11 @@ def test_extra_value_raises_value_error(value: int) -> None:
 def test_nested_templates(value: int) -> None:
     class Inner(MappingTemplate):
 
-        valid: Required[int] = Field()
+        valid: Required[int] = field()
 
     class Outer(MappingTemplate):
 
-        inner: Required[Inner] = Field()
+        inner: Required[Inner] = field()
 
     assert Outer(inner=Inner(valid=value)) == dict(inner=dict(valid=value))
 
@@ -200,7 +198,7 @@ def test_nested_templates(value: int) -> None:
 def test_access_and_properties(value: int, default: int) -> None:
     class Template(MappingTemplate):
 
-        valid: Optional[int] = Field(default=default, optional=True)
+        valid: Optional[int] = field(default=default, optional=True)
 
     mapping = Template(valid=value)
 
@@ -214,7 +212,7 @@ def test_access_and_properties(value: int, default: int) -> None:
 def test_access_1(default: int) -> None:
     class Template(MappingTemplate):
 
-        valid: Required[int] = Field(default=default)
+        valid: Required[int] = field(default=default)
 
     mapping = Template()
 
@@ -223,8 +221,8 @@ def test_access_1(default: int) -> None:
     assert list(iter(mapping)) == ["valid"]
 
 
-def test_dangling_descriptor_error():
-    valid = Field()
+def test_dangling_descriptor_error() -> None:
+    valid: Required[int] = field()
 
     with pytest.raises(DanglingDescriptorError):
         valid.name

@@ -7,14 +7,14 @@ from typing import Any, TypeVar, Generic, Iterator
 from .value import MISSING, Maybe
 from .structure import Structure
 
-T = TypeVar("T", covariant=True)
+_T = TypeVar("_T", covariant=True)
 
 
-class Mapping(Generic[T], Structure[T], typing.Mapping[str, T]):
+class Mapping(Generic[_T], Structure[_T], typing.Mapping[str, _T]):
 
     __slots__ = ()
 
-    def __getitem__(self, item: str) -> T:
+    def __getitem__(self, item: str) -> _T:
         return self._values_[item]
 
     def __iter__(self) -> Iterator[str]:
@@ -25,8 +25,8 @@ class Mapping(Generic[T], Structure[T], typing.Mapping[str, T]):
 
     @staticmethod
     def _get_value_(
-        self: typing.Mapping[str, T], key: str, *, default: Maybe[T] = MISSING
-    ) -> Maybe[T]:
+        self: typing.Mapping[str, _T], key: str, *, default: Maybe[_T] = MISSING
+    ) -> Maybe[_T]:
         return self.get(key, default)
 
 

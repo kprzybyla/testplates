@@ -4,7 +4,9 @@ __all__ = [
     "MissingValueError",
     "UnexpectedValueError",
     "ProhibitedValueError",
-    "ExclusiveInclusiveValueError",
+    "MutuallyExclusiveBoundaryValueError",
+    "InternalError",
+    "MissingValueInternalError",
 ]
 
 from typing import TypeVar
@@ -12,13 +14,20 @@ from typing import TypeVar
 from . import abc
 from .value import Maybe
 
-T = TypeVar("T")
+_T = TypeVar("_T")
 
 
 class TestplatesError(Exception):
 
     """
         Base testplates error.
+    """
+
+
+class TestplatesValueError(ValueError, TestplatesError):
+
+    """
+        Error indicating any kind of value error.
     """
 
 
@@ -33,11 +42,11 @@ class DanglingDescriptorError(TestplatesError):
         cause unexpected behaviour.
     """
 
-    def __init__(self, descriptor: abc.Descriptor[T]) -> None:
+    def __init__(self, descriptor: abc.Descriptor[_T]) -> None:
         super().__init__(f"Descriptor {descriptor!r} is not attached to any class")
 
 
-class MissingValueError(ValueError, TestplatesError):
+class MissingValueError(TestplatesValueError):
 
     """
         Error indicating missing value.
@@ -46,11 +55,11 @@ class MissingValueError(ValueError, TestplatesError):
         value for given field with actual value.
     """
 
-    def __init__(self, field: abc.Descriptor[T]) -> None:
+    def __init__(self, field: abc.Descriptor[_T]) -> None:
         super().__init__(f"Missing value in required field {field.name!r} ({field!r})")
 
 
-class UnexpectedValueError(ValueError, TestplatesError):
+class UnexpectedValueError(TestplatesValueError):
 
     """
         Error indicating unexpected value.
@@ -59,11 +68,11 @@ class UnexpectedValueError(ValueError, TestplatesError):
         not defined inside the template class.
     """
 
-    def __init__(self, key: str, value: Maybe[T]) -> None:
+    def __init__(self, key: str, value: Maybe[_T]) -> None:
         super().__init__(f"Unexpected key {key!r} with value {value!r}")
 
 
-class ProhibitedValueError(ValueError, TestplatesError):
+class ProhibitedValueError(TestplatesValueError):
 
     """
         Error indicating prohibited value.
@@ -72,11 +81,11 @@ class ProhibitedValueError(ValueError, TestplatesError):
         is invalid for given field due to its nature.
     """
 
-    def __init__(self, field: abc.Descriptor[T], value: Maybe[T]) -> None:
+    def __init__(self, field: abc.Descriptor[_T], value: Maybe[_T]) -> None:
         super().__init__(f"Value {value} is prohibited for field {field.name!r} ({field!r}")
 
 
-class MutuallyExclusiveBoundaryError(ValueError, TestplatesError):
+class MutuallyExclusiveBoundaryValueError(TestplatesValueError):
 
     """
         Error indicating exclusive and inclusive boundaries collision.
@@ -111,5 +120,5 @@ class MissingValueInternalError(InternalError):
         from logical point of view it should not.
     """
 
-    def __init__(self, field: abc.Descriptor[T]):
+    def __init__(self, field: abc.Descriptor[_T]) -> None:
         super().__init__(f"Field {field.name!r} is internally missing value ({field!r})")

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-__all__ = ["Field", "Structure"]
+__all__ = ["Field", "StructureMeta", "Structure"]
 
 import abc
 
@@ -30,18 +30,18 @@ from .exceptions import (
     MissingValueInternalError,
 )
 
-T = TypeVar("T", covariant=True)
+_T = TypeVar("_T", covariant=True)
 
 Bases = Tuple[type, ...]
 
 # TODO(kprzybyla): Remove noqa (F811) after github.com/PyCQA/pyflakes/issues/320 is delivered
 
 
-class Field(Generic[T], Descriptor[T]):
+class Field(Generic[_T], Descriptor[_T]):
 
     __slots__ = ("_default", "_optional", "_name")
 
-    def __init__(self, *, default: Maybe[T] = MISSING, optional: bool = False) -> None:
+    def __init__(self, *, default: Maybe[_T] = MISSING, optional: bool = False) -> None:
         self._default = default
         self._optional = optional
 
@@ -53,11 +53,11 @@ class Field(Generic[T], Descriptor[T]):
             f"[{self._name!r}, default={self.default!r}, is_optional={self.is_optional!r}]"
         )
 
-    def __set_name__(self, owner: Type[Structure[T]], name: str) -> None:
+    def __set_name__(self, owner: Type[Structure[_T]], name: str) -> None:
         self._name = name
 
     @overload
-    def __get__(self, instance: None, owner: Type[Structure[T]]) -> Field[T]:
+    def __get__(self, instance: None, owner: Type[Structure[_T]]) -> Field[_T]:
 
         """
             Returns field itself when field is accessed
@@ -68,7 +68,7 @@ class Field(Generic[T], Descriptor[T]):
         """
 
     @overload  # noqa
-    def __get__(self, instance: Structure[T], owner: Type[Structure[T]]) -> T:
+    def __get__(self, instance: Structure[_T], owner: Type[Structure[_T]]) -> _T:
 
         """
             Returns field value when field is accessed
@@ -79,8 +79,8 @@ class Field(Generic[T], Descriptor[T]):
         """
 
     def __get__(
-        self, instance: Optional[Structure[T]], owner: Type[Structure[T]]
-    ) -> Union[Field[T], T]:  # noqa
+        self, instance: Optional[Structure[_T]], owner: Type[Structure[_T]]
+    ) -> Union[Field[_T], _T]:  # noqa
 
         """
             Returns either field itself or field value.
@@ -97,7 +97,7 @@ class Field(Generic[T], Descriptor[T]):
         if instance is None:
             return self
 
-        value: Maybe[T] = instance._values_.get(self.name, MISSING)
+        value: Maybe[_T] = instance._values_.get(self.name, MISSING)
 
         if value is MISSING:
             raise MissingValueInternalError(self)  # pragma: no cover
@@ -112,7 +112,7 @@ class Field(Generic[T], Descriptor[T]):
         return self._name
 
     @property
-    def default(self) -> Maybe[T]:
+    def default(self) -> Maybe[_T]:
 
         """
             Returns field default value.
@@ -132,7 +132,7 @@ class Field(Generic[T], Descriptor[T]):
 
         return self._optional
 
-    def validate(self, value: Maybe[T]) -> None:
+    def validate(self, value: Maybe[_T]) -> None:
 
         """
             Validates the given value against the field.
@@ -150,14 +150,14 @@ class Field(Generic[T], Descriptor[T]):
             raise ProhibitedValueError(self, value)
 
 
-class StructureDict(Generic[T], Dict[str, Any]):
+class _StructureDict(Generic[_T], Dict[str, Any]):
 
     __slots__ = ("_fields_",)
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
 
-        self._fields_: Dict[str, Field[T]] = {}
+        self._fields_: Dict[str, Field[_T]] = {}
 
     def __setitem__(self, key: str, value: Any) -> None:
         if isinstance(value, Field):
@@ -166,7 +166,7 @@ class StructureDict(Generic[T], Dict[str, Any]):
         super().__setitem__(key, value)
 
     @property
-    def fields(self) -> Dict[str, Field[T]]:
+    def fields(self) -> Dict[str, Field[_T]]:
 
         """
             Returns fields descriptors.
@@ -175,33 +175,33 @@ class StructureDict(Generic[T], Dict[str, Any]):
         return self._fields_
 
 
-class StructureMeta(Generic[T], abc.ABCMeta):
+class StructureMeta(Generic[_T], abc.ABCMeta):
 
     __slots__ = ()
 
-    _fields_: Dict[str, Field[T]]
+    _fields_: Dict[str, Field[_T]]
 
     @classmethod
-    def __prepare__(mcs, __name: str, __bases: Bases, **kwargs: Any) -> StructureDict[T]:
-        return StructureDict()
+    def __prepare__(mcs, __name: str, __bases: Bases, **kwargs: Any) -> _StructureDict[_T]:
+        return _StructureDict()
 
     def __repr__(self) -> str:
         return f"StructureMeta[{dict(self._fields_)}]"
 
-    def __new__(mcs, name: str, bases: Bases, namespace: StructureDict[T]) -> StructureMeta[T]:
-        instance = cast(StructureMeta[T], super().__new__(mcs, name, bases, namespace))
+    def __new__(mcs, name: str, bases: Bases, namespace: _StructureDict[_T]) -> StructureMeta[_T]:
+        instance = cast(StructureMeta[_T], super().__new__(mcs, name, bases, namespace))
         instance._fields_ = namespace.fields
 
         return instance
 
 
-class Structure(Generic[T], abc.ABC, metaclass=StructureMeta):
+class Structure(Generic[_T], abc.ABC, metaclass=StructureMeta):
 
     __slots__ = ("_values_",)
 
-    _fields_: ClassVar[Dict[str, Field[T]]]
+    _fields_: ClassVar[Dict[str, Field[_T]]]
 
-    def __init__(self, **values: T) -> None:
+    def __init__(self, **values: _T) -> None:
         keys = self._fields_.keys()
 
         for key, value in values.items():
@@ -231,7 +231,7 @@ class Structure(Generic[T], abc.ABC, metaclass=StructureMeta):
 
     @staticmethod
     @abc.abstractmethod
-    def _get_value_(self: Any, key: str, *, default: Maybe[T] = MISSING) -> Maybe[T]:
+    def _get_value_(self: Any, key: str, *, default: Maybe[_T] = MISSING) -> Maybe[_T]:
 
         """
             Extracts value by given key using a specific protocol.
