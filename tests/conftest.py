@@ -1,7 +1,7 @@
 import pytest
+import testplates
 
 from typing import Any
-
 from decimal import Decimal
 from numbers import Complex
 
@@ -14,8 +14,6 @@ from hypothesis.strategies import (
     SearchStrategy,
 )
 
-from testplates import ObjectTemplate, MappingTemplate
-
 from .assets import ObjectStorage, MappingStorage
 
 register_type_strategy(float, floats(allow_nan=False))
@@ -25,14 +23,17 @@ register_type_strategy(Complex, complex_numbers(allow_nan=False))
 
 template_parameters = pytest.mark.parametrize(
     "template_type",
-    [pytest.param(ObjectTemplate, id="object"), pytest.param(MappingTemplate, id="mapping")],
+    [
+        pytest.param(testplates.types.Object, id="object"),
+        pytest.param(testplates.types.Mapping, id="mapping"),
+    ],
 )
 
 template_and_storage_parameters = pytest.mark.parametrize(
     "template_type, storage_type",
     [
-        pytest.param(ObjectTemplate, ObjectStorage, id="object"),
-        pytest.param(MappingTemplate, MappingStorage, id="mapping"),
+        pytest.param(testplates.types.Object, ObjectStorage, id="object"),
+        pytest.param(testplates.types.Mapping, MappingStorage, id="mapping"),
     ],
 )
 

@@ -1,6 +1,6 @@
-__all__ = ["Object", "ObjectTemplate"]
+__all__ = ["Object"]
 
-from typing import cast, Generic, Any, TypeVar
+from typing import cast, Generic, TypeVar
 
 from .value import MISSING, Maybe
 from .structure import Structure
@@ -15,6 +15,3 @@ class Object(Generic[_T], Structure[_T]):
     @staticmethod
     def _get_value_(self: object, key: str, *, default: Maybe[_T] = MISSING) -> Maybe[_T]:
         return cast(Maybe[_T], getattr(self, key, default))
-
-
-ObjectTemplate = Object[Any]

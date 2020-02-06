@@ -14,8 +14,8 @@ from testplates import (
     ProhibitedValueError,
 )
 
-from .conftest import anything, template_parameters, template_and_storage_parameters
 from .assets import TemplateType, StorageType
+from .conftest import anything, template_parameters, template_and_storage_parameters
 
 
 @given(value=anything())

@@ -2,14 +2,13 @@ __all__ = [
     "ANY",
     "WILDCARD",
     "ABSENT",
+    "types",
+    "field",
     "Field",
     "Structure",
     "StructureTemplate",
     "Object",
-    "ObjectTemplate",
     "Mapping",
-    "MappingTemplate",
-    "field",
     "Required",
     "Optional",
     "OneOf",
@@ -27,10 +26,11 @@ __all__ = [
     "MutuallyExclusiveBoundaryValueError",
 ]
 
+from . import types
 from .value import ANY, WILDCARD, ABSENT
 from .structure import Field, Structure, StructureTemplate
-from .object import Object, ObjectTemplate
-from .mapping import Mapping, MappingTemplate
+from .object import Object
+from .mapping import Mapping
 from .fields import field, Required, Optional
 
 from .constraints import (

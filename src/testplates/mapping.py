@@ -1,8 +1,8 @@
-__all__ = ["Mapping", "MappingTemplate"]
+__all__ = ["Mapping"]
 
 import typing
 
-from typing import Any, TypeVar, Generic, Iterator
+from typing import TypeVar, Generic, Iterator
 
 from .value import MISSING, Maybe
 from .structure import Structure
@@ -28,6 +28,3 @@ class Mapping(Generic[_T], Structure[_T], typing.Mapping[str, _T]):
         self: typing.Mapping[str, _T], key: str, *, default: Maybe[_T] = MISSING
     ) -> Maybe[_T]:
         return self.get(key, default)
-
-
-MappingTemplate = Mapping[Any]
