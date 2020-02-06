@@ -3,6 +3,8 @@ from typing import Any, Type, TypeVar, Generic, Union, Tuple, Pattern, Optional
 
 _E = TypeVar("_E", bound=BaseException)
 
+from . import mark
+
 
 class ExceptionInfo(Generic[_E]):
     ...

@@ -3,7 +3,7 @@ from hypothesis.strategies import integers
 
 from testplates import ObjectTemplate, Field, Required, Optional
 
-from .conftest import Storage
+from .assets import Storage
 
 
 @given(value=integers())
