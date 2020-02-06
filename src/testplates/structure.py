@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-__all__ = ["Field", "StructureMeta", "Structure"]
+__all__ = ["Field", "StructureMeta", "Structure", "StructureTemplate"]
 
 import abc
 
@@ -228,3 +228,6 @@ class Structure(Generic[_T], abc.ABC, metaclass=StructureMeta):
             :param key: key used to access the value
             :param default: default value in case value is missing
         """
+
+
+StructureTemplate = Structure[Any]

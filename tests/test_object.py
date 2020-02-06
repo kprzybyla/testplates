@@ -1,18 +1,7 @@
 from hypothesis import given
 from hypothesis.strategies import integers
 
-from testplates import ObjectTemplate, Field, Required, Optional
-
-from .assets import Storage
-
-
-@given(value=integers())
-def test_equality(value: int) -> None:
-    class Template(ObjectTemplate):
-
-        valid: Required[int] = Field()
-
-    assert Template(valid=value) == Storage(valid=value)
+from testplates import ObjectTemplate, Field, Optional
 
 
 @given(value=integers(), default=integers())

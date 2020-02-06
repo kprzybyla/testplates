@@ -3,6 +3,8 @@ __all__ = [
     "WILDCARD",
     "ABSENT",
     "Field",
+    "Structure",
+    "StructureTemplate",
     "Object",
     "ObjectTemplate",
     "Mapping",
@@ -26,7 +28,7 @@ __all__ = [
 ]
 
 from .value import ANY, WILDCARD, ABSENT
-from .structure import Field
+from .structure import Field, Structure, StructureTemplate
 from .object import Object, ObjectTemplate
 from .mapping import Mapping, MappingTemplate
 from .fields import field, Required, Optional
