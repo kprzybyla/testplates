@@ -24,16 +24,16 @@ register_type_strategy(Complex, complex_numbers(allow_nan=False))
 template_parameters = pytest.mark.parametrize(
     "template_type",
     [
-        pytest.param(testplates.types.Object, id="object"),
-        pytest.param(testplates.types.Mapping, id="mapping"),
+        pytest.param(testplates.Object, id="object", marks=pytest.mark.object),
+        pytest.param(testplates.Mapping, id="mapping", marks=pytest.mark.mapping),
     ],
 )
 
 template_and_storage_parameters = pytest.mark.parametrize(
     "template_type, storage_type",
     [
-        pytest.param(testplates.types.Object, ObjectStorage, id="object"),
-        pytest.param(testplates.types.Mapping, MappingStorage, id="mapping"),
+        pytest.param(testplates.Object, ObjectStorage, id="object", marks=pytest.mark.object),
+        pytest.param(testplates.Mapping, MappingStorage, id="mapping", marks=pytest.mark.mapping),
     ],
 )
 

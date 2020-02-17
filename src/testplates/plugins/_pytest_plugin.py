@@ -77,7 +77,7 @@ def missing_value(key: str, self_value: Any, *, level: int = 0) -> Iterable[str]
     yield ")"
 
 
-def assertrepr_compare_object(self: Object[_T], other: Any) -> Iterable[str]:
+def assertrepr_compare_object(self: Object, other: Any) -> Iterable[str]:
     yield str(self)
     yield "vs"
     yield str(other)
@@ -103,7 +103,7 @@ def assertrepr_compare_object(self: Object[_T], other: Any) -> Iterable[str]:
     yield "}"
 
 
-def assertrepr_compare_mapping(self_value: Mapping[_T], other_value: Any) -> Iterable[str]:
+def assertrepr_compare_mapping(self_value: Mapping, other_value: Any) -> Iterable[str]:
     yield "TODO"
 
 
@@ -118,7 +118,7 @@ def pytest_assertrepr_compare(op: str, left: Any, right: Any) -> Optional[Iterab
         return "".join(assertrepr_compare_object(right, left)).split(NEWLINE)
 
     if isinstance(left, Mapping):
-        return list(assertrepr_compare_mapping(left, right))
+        return "".join((assertrepr_compare_mapping(left, right))).split(NEWLINE)
 
     if isinstance(right, Mapping):
         return list(assertrepr_compare_mapping(right, left))

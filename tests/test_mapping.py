@@ -1,16 +1,16 @@
 from hypothesis import given
 from hypothesis.strategies import integers
 
-from testplates import MappingTemplate, field, Required, Optional
+from testplates import Mapping, field, Required, Optional
 
 
 @given(value=integers())
 def test_nested_templates(value: int) -> None:
-    class Inner(MappingTemplate):
+    class Inner(Mapping):
 
         valid: Required[int] = field()
 
-    class Outer(MappingTemplate):
+    class Outer(Mapping):
 
         inner: Required[Inner] = field()
 
@@ -19,7 +19,7 @@ def test_nested_templates(value: int) -> None:
 
 @given(value=integers(), default=integers())
 def test_access_and_properties(value: int, default: int) -> None:
-    class Template(MappingTemplate):
+    class Template(Mapping):
 
         valid: Optional[int] = field(default=default, optional=True)
 
@@ -33,7 +33,7 @@ def test_access_and_properties(value: int, default: int) -> None:
 
 @given(default=integers())
 def test_access_1(default: int) -> None:
-    class Template(MappingTemplate):
+    class Template(Mapping):
 
         valid: Required[int] = field(default=default)
 

@@ -1,8 +1,8 @@
 __all__ = ["ObjectStorage", "MappingStorage", "StorageType", "TemplateType"]
 
-import testplates
-
 from typing import Any, Type, TypeVar, Union, Dict
+
+from testplates import Object, Mapping
 
 _T = TypeVar("_T", covariant=True)
 
@@ -18,4 +18,4 @@ class ObjectStorage(Dict[str, _T]):
 
 
 StorageType = Type[Union[ObjectStorage[Any], Dict[str, Any]]]
-TemplateType = Type[Union[testplates.types.Object, testplates.types.Mapping]]
+TemplateType = Type[Union[Object, Mapping]]

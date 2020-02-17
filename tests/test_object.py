@@ -1,12 +1,12 @@
 from hypothesis import given
 from hypothesis.strategies import integers
 
-from testplates import ObjectTemplate, Field, Optional
+from testplates import Object, Field, Optional
 
 
 @given(value=integers(), default=integers())
 def test_access_and_properties(value: int, default: int) -> None:
-    class Template(ObjectTemplate):
+    class Template(Object):
 
         valid: Optional[int] = Field(default=default, optional=True)
 

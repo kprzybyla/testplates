@@ -2,7 +2,7 @@ __all__ = ["Mapping"]
 
 import typing
 
-from typing import TypeVar, Generic, Iterator
+from typing import Any, TypeVar, Generic, Iterator
 
 from .value import MISSING, Maybe
 from .structure import Structure
@@ -10,7 +10,7 @@ from .structure import Structure
 _T = TypeVar("_T", covariant=True)
 
 
-class Mapping(Generic[_T], Structure[_T], typing.Mapping[str, _T]):
+class _Mapping(Generic[_T], Structure[_T], typing.Mapping[str, _T]):
 
     __slots__ = ()
 
@@ -28,3 +28,6 @@ class Mapping(Generic[_T], Structure[_T], typing.Mapping[str, _T]):
         self: typing.Mapping[str, _T], key: str, *, default: Maybe[_T] = MISSING
     ) -> Maybe[_T]:
         return self.get(key, default)
+
+
+Mapping = _Mapping[Any]

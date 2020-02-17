@@ -32,7 +32,7 @@ def main():
             "test": ["pytest>=3.4.0", "pytest-cov>=2.5.1", "hypothesis~=5.3.1"],
             "deploy": ["wheel", "twine"],
         },
-        entry_points={"pytest11": ["testplates = testplates.plugins._pytest_plugin"]},
+        # entry_points={"pytest11": ["testplates = testplates.plugins._pytest_plugin"]},
         use_scm_version={"write_to": os.path.join("src/testplates/_version.py")},
         platforms=["linux"],
         setup_requires=["setuptools_scm"],
