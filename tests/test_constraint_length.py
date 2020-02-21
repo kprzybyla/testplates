@@ -27,22 +27,22 @@ class NotSized:
 
 
 @st.composite
-def st_length(draw: Draw[int]) -> int:
+def st_length(draw: Draw) -> int:
     return draw(st.integers(min_value=0, max_value=sys.maxsize))
 
 
 @st.composite
-def st_inclusive_minimum(draw: Draw[int], length: int) -> int:
+def st_inclusive_minimum(draw: Draw, length: int) -> int:
     return draw(st.integers(min_value=0, max_value=length))
 
 
 @st.composite
-def st_inclusive_maximum(draw: Draw[int], length: int) -> int:
+def st_inclusive_maximum(draw: Draw, length: int) -> int:
     return draw(st.integers(min_value=length, max_value=sys.maxsize))
 
 
 @st.composite
-def st_exclusive_minimum(draw: Draw[int], length: int) -> int:
+def st_exclusive_minimum(draw: Draw, length: int) -> int:
     minimum = draw(st_inclusive_minimum(length))
     assume(minimum < length)
 
@@ -50,7 +50,7 @@ def st_exclusive_minimum(draw: Draw[int], length: int) -> int:
 
 
 @st.composite
-def st_exclusive_maximum(draw: Draw[int], length: int) -> int:
+def st_exclusive_maximum(draw: Draw, length: int) -> int:
     maximum = draw(st_inclusive_maximum(length))
     assume(length < maximum)
 
@@ -58,22 +58,22 @@ def st_exclusive_maximum(draw: Draw[int], length: int) -> int:
 
 
 @st.composite
-def st_inverse_inclusive_minimum(draw: Draw[int], length: int) -> int:
+def st_inverse_inclusive_minimum(draw: Draw, length: int) -> int:
     return draw(st_exclusive_maximum(length))
 
 
 @st.composite
-def st_inverse_inclusive_maximum(draw: Draw[int], length: int) -> int:
+def st_inverse_inclusive_maximum(draw: Draw, length: int) -> int:
     return draw(st_exclusive_minimum(length))
 
 
 @st.composite
-def st_inverse_exclusive_minimum(draw: Draw[int], length: int) -> int:
+def st_inverse_exclusive_minimum(draw: Draw, length: int) -> int:
     return draw(st_inclusive_maximum(length))
 
 
 @st.composite
-def st_inverse_exclusive_maximum(draw: Draw[int], length: int) -> int:
+def st_inverse_exclusive_maximum(draw: Draw, length: int) -> int:
     return draw(st_inclusive_minimum(length))
 
 

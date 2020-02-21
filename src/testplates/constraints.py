@@ -14,6 +14,7 @@ from typing import (
     overload,
     Any,
     AnyStr,
+    Type,
     TypeVar,
     Generic,
     Union,
@@ -197,36 +198,40 @@ class AnyPattern(Generic[AnyStr], Constraint, abc.ABC):
     def __init__(self, value: AnyStr) -> None:
         self._pattern: Pattern[AnyStr] = re.compile(value)
 
-    @abc.abstractmethod
-    def has_correct_type(self, other: AnyStr) -> bool:
+    def __repr__(self) -> str:
+        return f"{type(self).__name__}[{self._pattern.pattern}]"
 
-        """
-            ...
-
-            :param other:
-        """
-
-    def compare(self, other: AnyStr) -> bool:
-        if not self.has_correct_type(other):
+    def __eq__(self, other: AnyStr) -> bool:
+        if not isinstance(other, self.pattern_type):
             return False
 
         return bool(self._pattern.match(other))
+
+    @property
+    @abc.abstractmethod
+    def pattern_type(self) -> Type[AnyStr]:
+
+        """
+            Returns pattern type class.
+        """
 
 
 class StringPattern(AnyPattern[str]):
 
     __slots__ = ()
 
-    def has_correct_type(self, other: AnyStr) -> bool:
-        return isinstance(other, str)
+    @property
+    def pattern_type(self) -> Type[str]:
+        return str
 
 
 class BytesPattern(AnyPattern[bytes]):
 
     __slots__ = ()
 
-    def has_correct_type(self, other: AnyStr) -> bool:
-        return isinstance(other, bytes)
+    @property
+    def pattern_type(self) -> Type[bytes]:
+        return bytes
 
 
 class Permutation(Generic[_T], Constraint):
@@ -301,7 +306,7 @@ def has_length(
             inclusive_maximum=inclusive_maximum,
         )
 
-    raise TypeError("Function has_length() takes at least one parameter")
+    raise TypeError("has_length() takes at least 1 positional argument or 4 keyword arguments")
 
 
 def is_value_between(
@@ -326,7 +331,7 @@ def matches(pattern: AnyStr) -> AnyPattern[AnyStr]:
     if isinstance(pattern, bytes):
         return BytesPattern(pattern)
 
-    raise TypeError(pattern)
+    raise TypeError("matches() takes str or bytes as 1st argument")
 
 
 def is_permutation_of(*values: _T) -> Permutation[_T]:

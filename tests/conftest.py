@@ -41,5 +41,9 @@ def st_anything() -> st.SearchStrategy[_T]:
     return st.from_type(type).flatmap(st.from_type).filter(lambda x: x == x)
 
 
+def st_anything_except(*types: type) -> st.SearchStrategy[_T]:
+    return st.from_type(type).flatmap(st.from_type).filter(lambda x: not isinstance(x, types))
+
+
 def samples(values: List[_T]) -> List[_T]:
     return random.sample(values, k=random.randint(0, len(values)))

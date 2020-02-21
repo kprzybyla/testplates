@@ -28,12 +28,12 @@ class NotContainer:
 
 
 @st.composite
-def st_values(draw: Draw[_T]) -> List[_T]:
+def st_values(draw: Draw) -> List[_T]:
     return draw(st.lists(st_anything(), min_size=1))
 
 
 @st.composite
-def st_values_without(draw: Draw[_T], value: _T) -> List[_T]:
+def st_values_without(draw: Draw, value: _T) -> List[_T]:
     values = draw(st.lists(st_anything()))
     assume(value not in values)
 
