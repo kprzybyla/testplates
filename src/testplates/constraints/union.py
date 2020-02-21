@@ -26,5 +26,5 @@ class UnionTemplate(Generic[_T], Constraint):
         return other in self._values
 
 
-def is_one_of(*values: _T) -> UnionTemplate[_T]:
+def is_one_of(*values: Any) -> UnionTemplate[Any]:
     return UnionTemplate(*values)

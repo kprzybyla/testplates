@@ -33,5 +33,5 @@ class ContainerTemplate(Generic[_T], Constraint):
         return True
 
 
-def contains(*values: _T) -> ContainerTemplate[_T]:
+def contains(*values: Any) -> ContainerTemplate[Any]:
     return ContainerTemplate(*values)

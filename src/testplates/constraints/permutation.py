@@ -31,5 +31,5 @@ class PermutationTemplate(Generic[_T], Constraint):
         return len(values) == 0
 
 
-def is_permutation_of(*values: _T) -> PermutationTemplate[_T]:
+def is_permutation_of(*values: Any) -> PermutationTemplate[Any]:
     return PermutationTemplate(*values)

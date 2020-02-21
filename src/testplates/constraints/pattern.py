@@ -3,7 +3,7 @@ __all__ = ["matches"]
 import re
 import abc
 
-from typing import AnyStr, Type, Generic, Pattern
+from typing import Any, AnyStr, Type, Generic, Pattern
 
 from .constraint import Constraint
 
@@ -16,9 +16,9 @@ class AnyPatternTemplate(Generic[AnyStr], Constraint, abc.ABC):
         self._pattern: Pattern[AnyStr] = re.compile(value)
 
     def __repr__(self) -> str:
-        return f"{type(self).__name__}[{self._pattern.pattern}]"
+        return f"{type(self).__name__}[{self._pattern.pattern!r}]"
 
-    def __eq__(self, other: AnyStr) -> bool:
+    def __eq__(self, other: Any) -> bool:
         if not isinstance(other, self.pattern_type):
             return False
 
