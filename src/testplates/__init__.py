@@ -5,9 +5,9 @@ __all__ = [
     "field",
     "matches",
     "contains",
+    "ranges",
     "has_length",
     "is_one_of",
-    "is_value_between",
     "is_permutation_of",
     "Object",
     "Mapping",
@@ -24,14 +24,7 @@ __all__ = [
 from .value import ANY, WILDCARD, ABSENT
 
 from .fields import field
-from .constraints import (
-    matches,
-    contains,
-    has_length,
-    is_one_of,
-    is_value_between,
-    is_permutation_of,
-)
+from .constraints import matches, contains, ranges, has_length, is_one_of, is_permutation_of
 
 from .object import Object
 from .mapping import Mapping
