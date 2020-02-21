@@ -5,6 +5,7 @@ __all__ = [
     "UnexpectedValueError",
     "ProhibitedValueError",
     "MutuallyExclusiveBoundaryValueError",
+    "NotEnoughValuesError",
     "InternalError",
     "MissingValueInternalError",
 ]
@@ -96,6 +97,19 @@ class MutuallyExclusiveBoundaryValueError(TestplatesValueError):
 
     def __init__(self) -> None:
         super().__init__(f"Exclusive and inclusive boundaries are mutually exclusive")
+
+
+class NotEnoughValuesError(TestplatesValueError):
+
+    """
+        Error indicating that not enough values were provided.
+
+        Raised when user passes zero values for template
+        that requires at least one value to be provided.
+    """
+
+    def __init__(self) -> None:
+        super().__init__(f"Template requires at least one value to be provided")
 
 
 class InternalError(TestplatesError):

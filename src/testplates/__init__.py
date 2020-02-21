@@ -3,44 +3,39 @@ __all__ = [
     "WILDCARD",
     "ABSENT",
     "field",
-    "Field",
-    "Structure",
-    "StructureTemplate",
+    "matches",
+    "contains",
+    "has_length",
+    "is_one_of",
+    "is_value_between",
+    "is_permutation_of",
     "Object",
     "Mapping",
     "Required",
     "Optional",
-    "OneOf",
-    "Contains",
-    "Length",
-    "BetweenLength",
-    "BetweenValue",
-    "MatchesString",
-    "MatchesBytes",
-    "Permutation",
     "DanglingDescriptorError",
     "MissingValueError",
     "UnexpectedValueError",
     "ProhibitedValueError",
     "MutuallyExclusiveBoundaryValueError",
+    "NotEnoughValuesError",
 ]
 
 from .value import ANY, WILDCARD, ABSENT
-from .structure import Field, Structure, StructureTemplate
+
+from .fields import field
+from .constraints import (
+    matches,
+    contains,
+    has_length,
+    is_one_of,
+    is_value_between,
+    is_permutation_of,
+)
+
 from .object import Object
 from .mapping import Mapping
-from .fields import field, Required, Optional
-
-from .constraints import (
-    OneOf,
-    Contains,
-    Length,
-    BetweenLength,
-    BetweenValue,
-    MatchesString,
-    MatchesBytes,
-    Permutation,
-)
+from .fields import Required, Optional
 
 from .exceptions import (
     DanglingDescriptorError,
@@ -48,4 +43,5 @@ from .exceptions import (
     UnexpectedValueError,
     ProhibitedValueError,
     MutuallyExclusiveBoundaryValueError,
+    NotEnoughValuesError,
 )

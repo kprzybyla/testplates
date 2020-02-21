@@ -1,21 +1,31 @@
 __all__ = [
-    "OneOf",
-    "Contains",
-    "Length",
-    "BetweenLength",
-    "BetweenValue",
-    "MatchesString",
-    "MatchesBytes",
-    "Permutation",
+    "matches",
+    "contains",
+    "has_length",
+    "is_one_of",
+    "is_value_between",
+    "is_permutation_of",
 ]
 
 import re
 import abc
 
-from typing import Any, AnyStr, TypeVar, Generic, Sized, Container, Iterable, Pattern, Optional
+from typing import (
+    overload,
+    Any,
+    AnyStr,
+    TypeVar,
+    Generic,
+    Union,
+    Sized,
+    Container,
+    Iterable,
+    Pattern,
+    Optional,
+)
 
 from .abc import SupportsBoundaries
-from .exceptions import MutuallyExclusiveBoundaryValueError
+from .exceptions import MutuallyExclusiveBoundaryValueError, NotEnoughValuesError
 
 _T = TypeVar("_T")
 
@@ -41,6 +51,9 @@ class OneOf(Generic[_T], Constraint):
     __slots__ = ("_values",)
 
     def __init__(self, *values: _T) -> None:
+        if len(values) == 0:
+            raise NotEnoughValuesError()
+
         self._values = values
 
     def __eq__(self, other: Any) -> bool:
@@ -52,9 +65,13 @@ class Contains(Generic[_T], Constraint):
     __slots__ = ("_values",)
 
     def __init__(self, *values: _T) -> None:
+        if len(values) == 0:
+            raise NotEnoughValuesError()
+
         self._values = values
 
     def __eq__(self, other: Any) -> bool:
+        # TODO(kprzybyla): Consider throwing an exception here instead of returning False
         if not isinstance(other, Container):
             return False
 
@@ -79,24 +96,48 @@ class Length(Constraint):
         return len(other) == self._length
 
 
-class BetweenLength(Generic[_Boundary], Constraint):
+class LengthRange(Constraint):
 
-    __slots__ = ("_minimum", "_maximum")
+    __slots__ = (
+        "_exclusive_minimum",
+        "_exclusive_maximum",
+        "_inclusive_minimum",
+        "_inclusive_maximum",
+    )
 
     def __init__(
-        self, *, minimum: Optional[_Boundary] = None, maximum: Optional[_Boundary] = None
+        self,
+        *,
+        exclusive_minimum: Optional[int] = None,
+        exclusive_maximum: Optional[int] = None,
+        inclusive_minimum: Optional[int] = None,
+        inclusive_maximum: Optional[int] = None,
     ) -> None:
-        self._minimum = minimum
-        self._maximum = maximum
+        self._exclusive_minimum = exclusive_minimum
+        self._exclusive_maximum = exclusive_maximum
+        self._inclusive_minimum = inclusive_minimum
+        self._inclusive_maximum = inclusive_maximum
+
+        if self._exclusive_minimum is not None and self._inclusive_minimum is not None:
+            raise MutuallyExclusiveBoundaryValueError()
+
+        if self._exclusive_maximum is not None and self._inclusive_maximum is not None:
+            raise MutuallyExclusiveBoundaryValueError()
 
     def __eq__(self, other: Any) -> bool:
         if not isinstance(other, Sized):
             return False
 
-        if self._minimum is not None and len(other) < self._minimum:
+        if self._exclusive_minimum is not None and len(other) <= self._exclusive_minimum:
             return False
 
-        if self._maximum is not None and len(other) > self._maximum:
+        if self._exclusive_maximum is not None and len(other) >= self._exclusive_maximum:
+            return False
+
+        if self._inclusive_minimum is not None and len(other) < self._inclusive_minimum:
+            return False
+
+        if self._inclusive_maximum is not None and len(other) > self._inclusive_maximum:
             return False
 
         return True
@@ -149,37 +190,43 @@ class BetweenValue(Generic[_Boundary], Constraint):
         return True
 
 
-class Matches(Generic[AnyStr], Constraint, abc.ABC):
+class AnyPattern(Generic[AnyStr], Constraint, abc.ABC):
 
     __slots__ = ("_pattern",)
 
     def __init__(self, value: AnyStr) -> None:
         self._pattern: Pattern[AnyStr] = re.compile(value)
 
+    @abc.abstractmethod
+    def has_correct_type(self, other: AnyStr) -> bool:
+
+        """
+            ...
+
+            :param other:
+        """
+
     def compare(self, other: AnyStr) -> bool:
+        if not self.has_correct_type(other):
+            return False
+
         return bool(self._pattern.match(other))
 
 
-class MatchesString(Matches[str]):
+class StringPattern(AnyPattern[str]):
 
     __slots__ = ()
 
-    def __eq__(self, other: Any) -> bool:
-        if not isinstance(other, str):
-            return False
-
-        return self.compare(other)
+    def has_correct_type(self, other: AnyStr) -> bool:
+        return isinstance(other, str)
 
 
-class MatchesBytes(Matches[bytes]):
+class BytesPattern(AnyPattern[bytes]):
 
     __slots__ = ()
 
-    def __eq__(self, other: Any) -> bool:
-        if not isinstance(other, bytes):
-            return False
-
-        return self.compare(other)
+    def has_correct_type(self, other: AnyStr) -> bool:
+        return isinstance(other, bytes)
 
 
 class Permutation(Generic[_T], Constraint):
@@ -204,3 +251,83 @@ class Permutation(Generic[_T], Constraint):
                 values.pop(found)
 
         return len(values) == 0
+
+
+def is_one_of(*values: _T) -> OneOf[_T]:
+    return OneOf(*values)
+
+
+def contains(*values: _T) -> Contains[_T]:
+    return Contains(*values)
+
+
+@overload
+def has_length(length: int) -> Length:
+    ...
+
+
+@overload
+def has_length(
+    *,
+    exclusive_minimum: Optional[int] = None,
+    exclusive_maximum: Optional[int] = None,
+    inclusive_minimum: Optional[int] = None,
+    inclusive_maximum: Optional[int] = None,
+) -> LengthRange:
+    ...
+
+
+def has_length(
+    length: Optional[int] = None,
+    *,
+    exclusive_minimum: Optional[int] = None,
+    exclusive_maximum: Optional[int] = None,
+    inclusive_minimum: Optional[int] = None,
+    inclusive_maximum: Optional[int] = None,
+) -> Union[Length, LengthRange]:
+    if length is not None:
+        return Length(length)
+
+    if (
+        exclusive_minimum is not None
+        or exclusive_maximum is not None
+        or inclusive_minimum is not None
+        or inclusive_maximum is not None
+    ):
+        return LengthRange(
+            exclusive_minimum=exclusive_minimum,
+            exclusive_maximum=exclusive_maximum,
+            inclusive_minimum=inclusive_minimum,
+            inclusive_maximum=inclusive_maximum,
+        )
+
+    raise TypeError("Function has_length() takes at least one parameter")
+
+
+def is_value_between(
+    *,
+    exclusive_minimum: Optional[_Boundary] = None,
+    exclusive_maximum: Optional[_Boundary] = None,
+    inclusive_minimum: Optional[_Boundary] = None,
+    inclusive_maximum: Optional[_Boundary] = None,
+) -> BetweenValue[_Boundary]:
+    return BetweenValue(
+        exclusive_minimum=exclusive_minimum,
+        exclusive_maximum=exclusive_maximum,
+        inclusive_minimum=inclusive_minimum,
+        inclusive_maximum=inclusive_maximum,
+    )
+
+
+def matches(pattern: AnyStr) -> AnyPattern[AnyStr]:
+    if isinstance(pattern, str):
+        return StringPattern(pattern)
+
+    if isinstance(pattern, bytes):
+        return BytesPattern(pattern)
+
+    raise TypeError(pattern)
+
+
+def is_permutation_of(*values: _T) -> Permutation[_T]:
+    return Permutation(*values)

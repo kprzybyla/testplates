@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-__all__ = ["Field", "StructureMeta", "Structure", "StructureTemplate"]
+__all__ = ["Field", "StructureMeta", "Structure"]
 
 import abc
 
@@ -34,7 +34,7 @@ _T = TypeVar("_T", covariant=True)
 
 Bases = Tuple[type, ...]
 
-# TODO(kprzybyla): Remove noqa (F811) after github.com/PyCQA/pyflakes/issues/320 is delivered
+# TODO(kprzybyla): Remove noqa (F811) after github.com/PyCQA/pyflakes/issues/320 is released
 
 
 class Field(Generic[_T], Descriptor[_T]):
@@ -228,6 +228,3 @@ class Structure(Generic[_T], abc.ABC, metaclass=StructureMeta):
             :param key: key used to access the value
             :param default: default value in case value is missing
         """
-
-
-StructureTemplate = Structure[Any]

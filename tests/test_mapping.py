@@ -1,44 +1,68 @@
+from typing import TypeVar
+from typing_extensions import Final
+
 from hypothesis import given
-from hypothesis.strategies import integers
 
 from testplates import Mapping, field, Required, Optional
 
+from .conftest import anything
 
-@given(value=integers())
-def test_nested_templates(value: int) -> None:
-    class Inner(Mapping):
+_T = TypeVar("_T")
 
-        valid: Required[int] = field()
-
-    class Outer(Mapping):
-
-        inner: Required[Inner] = field()
-
-    assert Outer(inner=Inner(valid=value)) == dict(inner=dict(valid=value))
+KEY: Final[str] = "key"
 
 
-@given(value=integers(), default=integers())
-def test_access_and_properties(value: int, default: int) -> None:
+@given(value=anything())
+def test_value_access_in_required_field(value: _T) -> None:
     class Template(Mapping):
 
-        valid: Optional[int] = field(default=default, optional=True)
+        key: Required[_T] = field()
 
-    mapping = Template(valid=value)
-
-    assert mapping["valid"] == value
-    assert Template.valid.name == "valid"
-    assert Template.valid.default == default
-    assert Template.valid.is_optional
+    assert Template(key=value)[KEY] == value
 
 
-@given(default=integers())
-def test_access_1(default: int) -> None:
+@given(value=anything(), default=anything())
+def test_value_access_in_required_field_with_default_value(value: _T, default: _T) -> None:
     class Template(Mapping):
 
-        valid: Required[int] = field(default=default)
+        key: Required[_T] = field(default=default)
 
-    mapping = Template()
+    assert Template()[KEY] == default
+    assert Template(key=value)[KEY] == value
 
-    assert mapping["valid"] == default
-    assert len(mapping) == 1
-    assert list(iter(mapping)) == ["valid"]
+
+@given(value=anything())
+def test_value_access_in_optional_field(value: _T) -> None:
+    class Template(Mapping):
+
+        key: Optional[_T] = field(optional=True)
+
+    assert Template(key=value)[KEY] == value
+
+
+@given(value=anything(), default=anything())
+def test_value_access_in_optional_field_with_default_value(value: _T, default: _T) -> None:
+    class Template(Mapping):
+
+        key: Optional[_T] = field(default=default, optional=True)
+
+    assert Template()[KEY] == default
+    assert Template(key=value)[KEY] == value
+
+
+@given(value=anything())
+def test_len(value: _T) -> None:
+    class Template(Mapping):
+
+        key: Required[_T] = field()
+
+    assert len(Template(key=value)) == 1
+
+
+@given(value=anything())
+def test_iter(value: _T) -> None:
+    class Template(Mapping):
+
+        key: Required[_T] = field()
+
+    assert list(iter(Template(key=value))) == [KEY]

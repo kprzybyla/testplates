@@ -8,7 +8,7 @@ from typing import overload, Any, TypeVar, Generic, Union, Optional
 
 _T = TypeVar("_T")
 
-# TODO(kprzybyla): Remove noqa (F811) after github.com/PyCQA/pyflakes/issues/320 is delivered
+# TODO(kprzybyla): Remove noqa (F811) after github.com/PyCQA/pyflakes/issues/320 is released
 
 
 class Descriptor(Generic[_T], abc.ABC):
