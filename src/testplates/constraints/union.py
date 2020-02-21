@@ -9,7 +9,7 @@ from .constraint import Constraint
 _T = TypeVar("_T", covariant=True)
 
 
-class OneOfTemplate(Generic[_T], Constraint):
+class UnionTemplate(Generic[_T], Constraint):
 
     __slots__ = ("_values",)
 
@@ -26,5 +26,5 @@ class OneOfTemplate(Generic[_T], Constraint):
         return other in self._values
 
 
-def is_one_of(*values: _T) -> OneOfTemplate[_T]:
-    return OneOfTemplate(*values)
+def is_one_of(*values: _T) -> UnionTemplate[_T]:
+    return UnionTemplate(*values)
