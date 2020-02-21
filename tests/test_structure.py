@@ -17,14 +17,14 @@ from testplates import (
 )
 
 from .assets import TemplateType, StorageType
-from .conftest import anything, template_parameters, template_and_storage_parameters
+from .conftest import st_anything, template_parameters, template_and_storage_parameters
 
 _T = TypeVar("_T")
 
 KEY: Final[str] = "key"
 
 
-@given(value=anything())
+@given(value=st_anything())
 @template_and_storage_parameters
 def test_equality(value: _T, template_type: TemplateType, storage_type: StorageType) -> None:
     class Template(template_type):  # type: ignore
@@ -34,7 +34,7 @@ def test_equality(value: _T, template_type: TemplateType, storage_type: StorageT
     assert Template(key=value) == storage_type(key=value)
 
 
-@given(value=anything())
+@given(value=st_anything())
 @template_and_storage_parameters
 def test_inequality_due_to_unequal_key(
     value: _T, template_type: TemplateType, storage_type: StorageType
@@ -46,7 +46,7 @@ def test_inequality_due_to_unequal_key(
     assert Template(key=value) != storage_type(other=value)
 
 
-@given(value=anything(), other=anything())
+@given(value=st_anything(), other=st_anything())
 @template_and_storage_parameters
 def test_inequality_due_to_unequal_value(
     value: _T, other: _T, template_type: TemplateType, storage_type: StorageType
@@ -60,7 +60,7 @@ def test_inequality_due_to_unequal_value(
     assert Template(key=value) != storage_type(key=other)
 
 
-@given(value=anything())
+@given(value=st_anything())
 @template_and_storage_parameters
 def test_default_value(value: _T, template_type: TemplateType, storage_type: StorageType) -> None:
     class Template(template_type):  # type: ignore
@@ -70,7 +70,7 @@ def test_default_value(value: _T, template_type: TemplateType, storage_type: Sto
     assert Template() == storage_type(key=value)
 
 
-@given(value=anything(), default=anything())
+@given(value=st_anything(), default=st_anything())
 @template_and_storage_parameters
 def test_default_value_override(
     value: _T, default: _T, template_type: TemplateType, storage_type: StorageType
@@ -84,7 +84,7 @@ def test_default_value_override(
     assert Template(key=value) == storage_type(key=value)
 
 
-@given(value=anything())
+@given(value=st_anything())
 @template_and_storage_parameters
 def test_any_value_matches_anything_in_required_field(
     value: _T, template_type: TemplateType, storage_type: StorageType
@@ -96,7 +96,7 @@ def test_any_value_matches_anything_in_required_field(
     assert Template(key=ANY) == storage_type(key=value)
 
 
-@given(value=anything())
+@given(value=st_anything())
 @template_and_storage_parameters
 def test_any_value_matches_anything_in_optional_field(
     value: _T, template_type: TemplateType, storage_type: StorageType
@@ -108,7 +108,7 @@ def test_any_value_matches_anything_in_optional_field(
     assert Template(key=ANY) == storage_type(key=value)
 
 
-@given(value=anything())
+@given(value=st_anything())
 @template_and_storage_parameters
 def test_wildcard_value_matches_anything_in_optional_field(
     value: _T, template_type: TemplateType, storage_type: StorageType
@@ -145,7 +145,7 @@ def test_absent_value_matches_anything_in_optional_field(
     assert Template(key=ABSENT) == storage_type()
 
 
-@given(value=anything())
+@given(value=st_anything())
 @template_and_storage_parameters
 def test_absent_value_mismatches_any_value_in_optional_field(
     value: _T, template_type: TemplateType, storage_type: StorageType
@@ -170,7 +170,7 @@ def test_absent_value_raises_value_error_in_required_field(template_type: Templa
         Template(key=ABSENT)
 
 
-@given(value=anything())
+@given(value=st_anything())
 @template_parameters
 def test_unexpected_value_raises_value_error(value: _T, template_type: TemplateType) -> None:
     class Template(template_type):  # type: ignore
@@ -209,7 +209,7 @@ def test_missing_value_in_optional_field_raises_value_error(template_type: Templ
         Template()
 
 
-@given(default=anything())
+@given(default=st_anything())
 @template_parameters
 def test_default_value_prevents_value_error_in_required_field_on_missing_value(
     default: _T, template_type: TemplateType
@@ -221,7 +221,7 @@ def test_default_value_prevents_value_error_in_required_field_on_missing_value(
     Template()
 
 
-@given(default=anything())
+@given(default=st_anything())
 @template_parameters
 def test_default_value_prevents_value_error_in_optional_field_on_missing_value(
     default: _T, template_type: TemplateType
@@ -233,7 +233,7 @@ def test_default_value_prevents_value_error_in_optional_field_on_missing_value(
     Template()
 
 
-@given(default=anything())
+@given(default=st_anything())
 @template_parameters
 def test_required_field_properties_access(default: _T, template_type: TemplateType) -> None:
     class Template(template_type):  # type: ignore
@@ -245,7 +245,7 @@ def test_required_field_properties_access(default: _T, template_type: TemplateTy
     assert Template.key.is_optional is False
 
 
-@given(default=anything())
+@given(default=st_anything())
 @template_parameters
 def test_optional_field_properties_access(default: _T, template_type: TemplateType) -> None:
     class Template(template_type):  # type: ignore

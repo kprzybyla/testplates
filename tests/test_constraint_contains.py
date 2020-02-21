@@ -8,7 +8,7 @@ from hypothesis import strategies as st
 
 from testplates import contains, NotEnoughValuesError
 
-from .conftest import anything, samples, Draw
+from .conftest import st_anything, samples, Draw
 
 _T = TypeVar("_T")
 
@@ -29,12 +29,12 @@ class NotContainer:
 
 @st.composite
 def st_values(draw: Draw[_T]) -> List[_T]:
-    return draw(st.lists(anything(), min_size=1))
+    return draw(st.lists(st_anything(), min_size=1))
 
 
 @st.composite
 def st_values_without(draw: Draw[_T], value: _T) -> List[_T]:
-    values = draw(st.lists(anything()))
+    values = draw(st.lists(st_anything()))
     assume(value not in values)
 
     return values
@@ -45,7 +45,7 @@ def test_contains_returns_true(values: List[_T]) -> None:
     assert contains(*values) == Container(values)
 
 
-@given(data=st.data(), value=anything())
+@given(data=st.data(), value=st_anything())
 def test_contains_returns_false(data: st.DataObject, value: _T) -> None:
     values = data.draw(st_values_without(value))
 

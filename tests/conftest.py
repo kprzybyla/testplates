@@ -37,7 +37,7 @@ template_and_storage_parameters = pytest.mark.parametrize(
 )
 
 
-def anything() -> st.SearchStrategy[_T]:
+def st_anything() -> st.SearchStrategy[_T]:
     return st.from_type(type).flatmap(st.from_type).filter(lambda x: x == x)
 
 

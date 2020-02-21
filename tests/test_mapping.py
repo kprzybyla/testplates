@@ -5,14 +5,14 @@ from hypothesis import given
 
 from testplates import Mapping, field, Required, Optional
 
-from .conftest import anything
+from .conftest import st_anything
 
 _T = TypeVar("_T")
 
 KEY: Final[str] = "key"
 
 
-@given(value=anything())
+@given(value=st_anything())
 def test_value_access_in_required_field(value: _T) -> None:
     class Template(Mapping):
 
@@ -21,7 +21,7 @@ def test_value_access_in_required_field(value: _T) -> None:
     assert Template(key=value)[KEY] == value
 
 
-@given(value=anything(), default=anything())
+@given(value=st_anything(), default=st_anything())
 def test_value_access_in_required_field_with_default_value(value: _T, default: _T) -> None:
     class Template(Mapping):
 
@@ -31,7 +31,7 @@ def test_value_access_in_required_field_with_default_value(value: _T, default: _
     assert Template(key=value)[KEY] == value
 
 
-@given(value=anything())
+@given(value=st_anything())
 def test_value_access_in_optional_field(value: _T) -> None:
     class Template(Mapping):
 
@@ -40,7 +40,7 @@ def test_value_access_in_optional_field(value: _T) -> None:
     assert Template(key=value)[KEY] == value
 
 
-@given(value=anything(), default=anything())
+@given(value=st_anything(), default=st_anything())
 def test_value_access_in_optional_field_with_default_value(value: _T, default: _T) -> None:
     class Template(Mapping):
 
@@ -50,7 +50,7 @@ def test_value_access_in_optional_field_with_default_value(value: _T, default: _
     assert Template(key=value)[KEY] == value
 
 
-@given(value=anything())
+@given(value=st_anything())
 def test_len(value: _T) -> None:
     class Template(Mapping):
 
@@ -59,7 +59,7 @@ def test_len(value: _T) -> None:
     assert len(Template(key=value)) == 1
 
 
-@given(value=anything())
+@given(value=st_anything())
 def test_iter(value: _T) -> None:
     class Template(Mapping):
 
