@@ -9,7 +9,7 @@ from hypothesis import strategies as st
 
 from testplates import is_one_of, NotEnoughValuesError
 
-from .conftest import st_anything, Draw
+from ..conftest import st_anything, Draw
 
 _T = TypeVar("_T")
 

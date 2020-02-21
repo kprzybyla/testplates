@@ -9,7 +9,7 @@ from hypothesis import strategies as st
 
 from testplates import has_length, MutuallyExclusiveBoundaryValueError
 
-from .conftest import Draw
+from ..conftest import Draw
 
 
 @dataclass

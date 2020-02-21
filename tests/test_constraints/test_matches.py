@@ -9,7 +9,7 @@ from hypothesis import strategies as st
 
 from testplates import matches
 
-from .conftest import st_anything_except, Draw
+from ..conftest import st_anything_except, Draw
 
 
 @pytest.fixture(params=[r"\d+"])

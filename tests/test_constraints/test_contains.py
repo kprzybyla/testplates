@@ -8,7 +8,7 @@ from hypothesis import strategies as st
 
 from testplates import contains, NotEnoughValuesError
 
-from .conftest import st_anything, samples, Draw
+from ..conftest import st_anything, samples, Draw
 
 _T = TypeVar("_T")
 
