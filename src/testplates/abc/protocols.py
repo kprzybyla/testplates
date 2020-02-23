@@ -1,7 +1,47 @@
-__all__ = ["SupportsExclusiveBoundaries", "SupportsInclusiveBoundaries", "SupportsBoundaries"]
+__all__ = [
+    "SupportsAddition",
+    "SupportsSubtraction",
+    "SupportsExclusiveBoundaries",
+    "SupportsInclusiveBoundaries",
+    "SupportsBoundaries",
+]
 
-from typing import Any
+from typing import Any, TypeVar
 from typing_extensions import runtime_checkable, Protocol
+
+_T = TypeVar("_T")
+
+
+@runtime_checkable
+class SupportsAddition(Protocol):
+
+    """
+        Protocol for object with addition capabilities.
+    """
+
+    def __add__(self, other: _T) -> _T:
+
+        """
+            Addition of self and other value.
+
+            :param other: any other object
+        """
+
+
+@runtime_checkable
+class SupportsSubtraction(Protocol):
+
+    """
+        Protocol for object with subtraction capabilities.
+    """
+
+    def __sub__(self, other: _T) -> _T:
+
+        """
+            Subtraction of self and other value.
+
+            :param other: any other object
+        """
 
 
 @runtime_checkable
