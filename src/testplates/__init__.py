@@ -5,7 +5,7 @@ __all__ = [
     "field",
     "matches",
     "contains",
-    "ranges",
+    "ranges_between",
     "has_length",
     "is_one_of",
     "is_permutation_of",
@@ -17,14 +17,24 @@ __all__ = [
     "MissingValueError",
     "UnexpectedValueError",
     "ProhibitedValueError",
+    "MissingBoundaryValueError",
     "MutuallyExclusiveBoundaryValueError",
+    "OverlappingBoundariesValueError",
     "NotEnoughValuesError",
 ]
 
 from .value import ANY, WILDCARD, ABSENT
 
 from .fields import field
-from .constraints import matches, contains, ranges, has_length, is_one_of, is_permutation_of
+
+from .constraints import (
+    matches,
+    contains,
+    ranges_between,
+    has_length,
+    is_one_of,
+    is_permutation_of,
+)
 
 from .object import Object
 from .mapping import Mapping
@@ -35,6 +45,8 @@ from .exceptions import (
     MissingValueError,
     UnexpectedValueError,
     ProhibitedValueError,
+    MissingBoundaryValueError,
     MutuallyExclusiveBoundaryValueError,
+    OverlappingBoundariesValueError,
     NotEnoughValuesError,
 )

@@ -4,7 +4,9 @@ __all__ = [
     "MissingValueError",
     "UnexpectedValueError",
     "ProhibitedValueError",
+    "MissingBoundaryValueError",
     "MutuallyExclusiveBoundaryValueError",
+    "OverlappingBoundariesValueError",
     "NotEnoughValuesError",
     "InternalError",
     "MissingValueInternalError",
@@ -86,6 +88,10 @@ class ProhibitedValueError(TestplatesValueError):
         super().__init__(f"Value {value} is prohibited for field {field.name!r} ({field!r}")
 
 
+class MissingBoundaryValueError(TestplatesValueError):
+    ...
+
+
 class MutuallyExclusiveBoundaryValueError(TestplatesValueError):
 
     """
@@ -95,8 +101,12 @@ class MutuallyExclusiveBoundaryValueError(TestplatesValueError):
         and inclusive value for given constraint.
     """
 
-    def __init__(self) -> None:
-        super().__init__(f"Exclusive and inclusive boundaries are mutually exclusive")
+    def __init__(self, name: str) -> None:
+        super().__init__(f"Exclusive and inclusive {name} boundaries are mutually exclusive")
+
+
+class OverlappingBoundariesValueError(TestplatesValueError):
+    ...
 
 
 class NotEnoughValuesError(TestplatesValueError):

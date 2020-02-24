@@ -12,10 +12,14 @@ _T = TypeVar("_T", SupportsAddition, SupportsSubtraction)
 
 class Boundary(Generic[_T], abc.ABC):
 
-    __slots__ = ("_value",)
+    __slots__ = ("_name", "_value")
 
-    def __init__(self, value: _T) -> None:
+    def __init__(self, name: str, value: _T) -> None:
+        self._name = name
         self._value = value
+
+    def __repr__(self) -> str:
+        return f"{self.type}_{self.name}({self.value})"
 
     def __bool__(self) -> bool:
         return self._value is not None
@@ -28,6 +32,15 @@ class Boundary(Generic[_T], abc.ABC):
         """
 
         return self._value
+
+    @property
+    def name(self) -> str:
+
+        """
+            Returns boundary name.
+        """
+
+        return self._name
 
     @property
     @abc.abstractmethod
