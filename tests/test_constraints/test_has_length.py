@@ -1,5 +1,7 @@
 import sys
 
+from typing import Optional
+from functools import partial
 from dataclasses import dataclass
 
 import pytest
@@ -7,7 +9,12 @@ import pytest
 from hypothesis import assume, given
 from hypothesis import strategies as st
 
-from testplates import has_length, MutuallyExclusiveBoundaryValueError
+from testplates import (
+    has_length,
+    MissingBoundaryValueError,
+    OverlappingBoundariesValueError,
+    IdenticalBoundariesValueError,
+)
 
 from ..conftest import Draw
 
@@ -32,128 +39,66 @@ def st_length(draw: Draw) -> int:
 
 
 @st.composite
-def st_inclusive_minimum(draw: Draw, length: int) -> int:
+def st_minimum(draw: Draw, length: int) -> int:
     return draw(st.integers(min_value=0, max_value=length))
 
 
 @st.composite
-def st_inclusive_maximum(draw: Draw, length: int) -> int:
-    return draw(st.integers(min_value=length, max_value=sys.maxsize))
+def st_maximum(draw: Draw, length: int, minimum: Optional[int] = None) -> int:
+    maximum = draw(st.integers(min_value=length, max_value=sys.maxsize))
+
+    if minimum is not None:
+        assume(minimum != maximum)
+
+    return maximum
 
 
 @st.composite
-def st_exclusive_minimum(draw: Draw, length: int) -> int:
-    minimum = draw(st_inclusive_minimum(length))
+def st_inverse_upper_minimum(draw: Draw, length: int) -> int:
+    minimum = draw(st.integers(min_value=length, max_value=sys.maxsize))
+    assume(minimum > length)
+
+    return minimum
+
+
+@st.composite
+def st_inverse_upper_maximum(draw: Draw, minimum: int) -> int:
+    maximum = draw(st.integers(min_value=minimum, max_value=sys.maxsize))
+    assume(minimum != maximum)
+
+    return maximum
+
+
+@st.composite
+def st_inverse_lower_minimum(draw: Draw, length: int) -> int:
+    minimum = draw(st.integers(min_value=0, max_value=length))
     assume(minimum < length)
 
     return minimum
 
 
 @st.composite
-def st_exclusive_maximum(draw: Draw, length: int) -> int:
-    maximum = draw(st_inclusive_maximum(length))
-    assume(length < maximum)
+def st_inverse_lower_maximum(draw: Draw, length: int, minimum: int) -> int:
+    maximum = draw(st.integers(min_value=minimum, max_value=length))
+    assume(maximum < length)
+    assume(minimum != maximum)
 
     return maximum
 
 
-@st.composite
-def st_inverse_inclusive_minimum(draw: Draw, length: int) -> int:
-    return draw(st_exclusive_maximum(length))
-
-
-@st.composite
-def st_inverse_inclusive_maximum(draw: Draw, length: int) -> int:
-    return draw(st_exclusive_minimum(length))
-
-
-@st.composite
-def st_inverse_exclusive_minimum(draw: Draw, length: int) -> int:
-    return draw(st_inclusive_maximum(length))
-
-
-@st.composite
-def st_inverse_exclusive_maximum(draw: Draw, length: int) -> int:
-    return draw(st_inclusive_minimum(length))
-
-
 @given(length=st_length())
 def test_has_length_returns_true(length: int) -> None:
-    assert has_length(length) == Sized(length)
-
-
-@given(data=st.data(), length=st_length())
-def test_has_length_returns_true_with_exclusive_minimum(data: st.DataObject, length: int) -> None:
-    template = has_length(exclusive_minimum=data.draw(st_exclusive_minimum(length)))
+    template = has_length(length)
 
     assert template == Sized(length)
 
 
 @given(data=st.data(), length=st_length())
-def test_has_length_returns_true_with_exclusive_maximum(data: st.DataObject, length: int) -> None:
-    template = has_length(exclusive_maximum=data.draw(st_exclusive_maximum(length)))
+def test_has_length_with_range_returns_true(data: st.DataObject, length: int) -> None:
+    minimum = data.draw(st_minimum(length))
+    maximum = data.draw(st_maximum(length, minimum))
 
-    assert template == Sized(length)
-
-
-@given(data=st.data(), length=st_length())
-def test_has_length_returns_true_with_exclusive_minimum_and_maximum(
-    data: st.DataObject, length: int
-) -> None:
-    template = has_length(
-        exclusive_minimum=data.draw(st_exclusive_minimum(length)),
-        exclusive_maximum=data.draw(st_exclusive_maximum(length)),
-    )
-
-    assert template == Sized(length)
-
-
-@given(data=st.data(), length=st_length())
-def test_has_length_returns_true_with_inclusive_minimum(data: st.DataObject, length: int) -> None:
-    template = has_length(inclusive_minimum=data.draw(st_inclusive_minimum(length)))
-
-    assert template == Sized(length)
-
-
-@given(data=st.data(), length=st_length())
-def test_has_length_returns_true_with_inclusive_maximum(data: st.DataObject, length: int) -> None:
-    template = has_length(inclusive_maximum=data.draw(st_inclusive_maximum(length)))
-
-    assert template == Sized(length)
-
-
-@given(data=st.data(), length=st_length())
-def test_has_length_returns_true_with_inclusive_minimum_and_maximum(
-    data: st.DataObject, length: int
-) -> None:
-    template = has_length(
-        inclusive_minimum=data.draw(st_inclusive_minimum(length)),
-        inclusive_maximum=data.draw(st_inclusive_maximum(length)),
-    )
-
-    assert template == Sized(length)
-
-
-@given(data=st.data(), length=st_length())
-def test_has_length_returns_true_with_exclusive_minimum_and_inclusive_maximum(
-    data: st.DataObject, length: int
-) -> None:
-    template = has_length(
-        inclusive_minimum=data.draw(st_exclusive_minimum(length)),
-        inclusive_maximum=data.draw(st_inclusive_maximum(length)),
-    )
-
-    assert template == Sized(length)
-
-
-@given(data=st.data(), length=st_length())
-def test_has_length_returns_true_with_inclusive_minimum_and_exclusive_maximum(
-    data: st.DataObject, length: int
-) -> None:
-    template = has_length(
-        inclusive_minimum=data.draw(st_inclusive_minimum(length)),
-        inclusive_maximum=data.draw(st_exclusive_maximum(length)),
-    )
+    template = has_length(minimum=minimum, maximum=maximum)
 
     assert template == Sized(length)
 
@@ -162,118 +107,111 @@ def test_has_length_returns_true_with_inclusive_minimum_and_exclusive_maximum(
 def test_has_length_returns_false(length: int, other: int) -> None:
     assume(length != other)
 
-    assert has_length(length) != Sized(other)
+    template = has_length(length)
+
+    assert template != Sized(other)
 
 
 @given(data=st.data(), length=st_length())
-def test_has_length_returns_false_with_exclusive_minimum(data: st.DataObject, length: int) -> None:
-    template = has_length(exclusive_minimum=data.draw(st_inverse_exclusive_minimum(length)))
-
-    assert template != Sized(length)
-
-
-@given(data=st.data(), length=st_length())
-def test_has_length_returns_false_with_exclusive_maximum(data: st.DataObject, length: int) -> None:
-    template = has_length(exclusive_maximum=data.draw(st_inverse_exclusive_maximum(length)))
-
-    assert template != Sized(length)
-
-
-@given(data=st.data(), length=st_length())
-def test_has_length_returns_false_with_exclusive_minimum_and_maximum(
+def test_has_length_with_range_returns_false_on_length_under_range(
     data: st.DataObject, length: int
 ) -> None:
-    template = has_length(
-        exclusive_minimum=data.draw(st_inverse_exclusive_minimum(length)),
-        exclusive_maximum=data.draw(st_inverse_exclusive_maximum(length)),
-    )
+    minimum = data.draw(st_inverse_upper_minimum(length))
+    maximum = data.draw(st_inverse_upper_maximum(minimum))
+
+    template = has_length(minimum=minimum, maximum=maximum)
 
     assert template != Sized(length)
 
 
 @given(data=st.data(), length=st_length())
-def test_has_length_returns_false_with_inclusive_minimum(data: st.DataObject, length: int) -> None:
-    template = has_length(inclusive_minimum=data.draw(st_inverse_inclusive_minimum(length)))
-
-    assert template != Sized(length)
-
-
-@given(data=st.data(), length=st_length())
-def test_has_length_returns_false_with_inclusive_maximum(data: st.DataObject, length: int) -> None:
-    template = has_length(inclusive_maximum=data.draw(st_inverse_inclusive_maximum(length)))
-
-    assert template != Sized(length)
-
-
-@given(data=st.data(), length=st_length())
-def test_has_length_returns_false_with_inclusive_minimum_and_maximum(
+def test_has_length_with_range_returns_false_on_length_above_range(
     data: st.DataObject, length: int
 ) -> None:
-    template = has_length(
-        inclusive_minimum=data.draw(st_inverse_inclusive_minimum(length)),
-        inclusive_maximum=data.draw(st_inverse_inclusive_maximum(length)),
-    )
+    minimum = data.draw(st_inverse_lower_minimum(length))
+    maximum = data.draw(st_inverse_lower_maximum(length, minimum))
+
+    template = has_length(minimum=minimum, maximum=maximum)
 
     assert template != Sized(length)
 
 
-@given(data=st.data(), length=st_length())
-def test_has_length_returns_false_with_exclusive_minimum_and_inclusive_maximum(
-    data: st.DataObject, length: int
-) -> None:
-    template = has_length(
-        inclusive_minimum=data.draw(st_inverse_exclusive_minimum(length)),
-        inclusive_maximum=data.draw(st_inverse_inclusive_maximum(length)),
-    )
-
-    assert template != Sized(length)
-
-
-@given(data=st.data(), length=st_length())
-def test_has_length_returns_false_with_inclusive_minimum_and_exclusive_maximum(
-    data: st.DataObject, length: int
-) -> None:
-    template = has_length(
-        inclusive_minimum=data.draw(st_inverse_inclusive_minimum(length)),
-        inclusive_maximum=data.draw(st_inverse_exclusive_maximum(length)),
-    )
-
-    assert template != Sized(length)
-
-
-@given(length=st.integers())
+@given(length=st_length())
 def test_has_length_always_returns_false_when_value_is_not_sized(length: int) -> None:
-    assert has_length(length) != NotSized()
+    template = has_length(length)
 
-    assert has_length(exclusive_minimum=length) != NotSized()
-    assert has_length(exclusive_maximum=length) != NotSized()
-
-    assert has_length(inclusive_minimum=length) != NotSized()
-    assert has_length(inclusive_maximum=length) != NotSized()
+    assert template != NotSized()
 
 
-@given(length=st_length())
-def test_has_length_raises_value_error_on_mutually_exclusive_minimum_boundaries(
-    length: int
+@given(data=st.data(), length=st_length())
+def test_has_length_with_range_always_returns_false_when_value_is_not_sized(
+    data: st.DataObject, length: int
 ) -> None:
-    with pytest.raises(ValueError):
-        has_length(inclusive_minimum=length, exclusive_minimum=length)
+    minimum = data.draw(st_minimum(length))
+    maximum = data.draw(st_maximum(length, minimum))
 
-    with pytest.raises(MutuallyExclusiveBoundaryValueError):
-        has_length(inclusive_minimum=length, exclusive_minimum=length)
+    template = has_length(minimum=minimum, maximum=maximum)
 
-
-@given(length=st_length())
-def test_has_length_raises_value_error_on_mutually_exclusive_maximum_boundaries(
-    length: int
-) -> None:
-    with pytest.raises(ValueError):
-        has_length(inclusive_maximum=length, exclusive_maximum=length)
-
-    with pytest.raises(MutuallyExclusiveBoundaryValueError):
-        has_length(inclusive_maximum=length, exclusive_maximum=length)
+    assert template != NotSized()
 
 
 def test_has_length_raises_type_error_on_no_parameters() -> None:
     with pytest.raises(TypeError):
         has_length()
+
+
+@given(data=st.data(), length=st_length())
+def test_has_length_raises_value_error_on_missing_minimum_boundary(
+    data: st.DataObject, length: int
+) -> None:
+    maximum = data.draw(st_maximum(length))
+
+    has_length_partial = partial(has_length, maximum=maximum)
+
+    with pytest.raises(ValueError):
+        has_length_partial()
+
+    with pytest.raises(MissingBoundaryValueError):
+        has_length_partial()
+
+
+@given(data=st.data(), length=st_length())
+def test_has_length_raises_value_error_on_missing_maximum_boundary(
+    data: st.DataObject, length: int
+) -> None:
+    minimum = data.draw(st_minimum(length))
+
+    has_length_partial = partial(has_length, minimum=minimum)
+
+    with pytest.raises(ValueError):
+        has_length_partial()
+
+    with pytest.raises(MissingBoundaryValueError):
+        has_length_partial()
+
+
+@given(data=st.data())
+def test_has_length_raises_value_error_on_boundaries_overlapping(data: st.DataObject) -> None:
+    minimum = data.draw(st_minimum(sys.maxsize))
+    maximum = data.draw(st_minimum(minimum))
+
+    assume(minimum != maximum)
+
+    has_length_partial = partial(has_length, minimum=minimum, maximum=maximum)
+
+    with pytest.raises(ValueError):
+        has_length_partial()
+
+    with pytest.raises(OverlappingBoundariesValueError):
+        has_length_partial()
+
+
+@given(length=st_length())
+def test_has_length_raises_value_error_when_minimum_equals_to_maximum(length: int) -> None:
+    has_length_partial = partial(has_length, minimum=length, maximum=length)
+
+    with pytest.raises(ValueError):
+        has_length_partial()
+
+    with pytest.raises(IdenticalBoundariesValueError):
+        has_length_partial()

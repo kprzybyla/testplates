@@ -8,6 +8,7 @@ from testplates.exceptions import (
     MissingBoundaryValueError,
     MutuallyExclusiveBoundaryValueError,
     OverlappingBoundariesValueError,
+    IdenticalBoundariesValueError,
 )
 
 _T = TypeVar("_T")
@@ -84,3 +85,6 @@ def validate_boundaries(
 
     if minimum.value + minimum.alignment > maximum.value - maximum.alignment:
         raise OverlappingBoundariesValueError(minimum, maximum)
+
+    if minimum.value + minimum.alignment == maximum.value - maximum.alignment:
+        raise IdenticalBoundariesValueError(minimum, maximum)

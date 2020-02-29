@@ -105,16 +105,16 @@ def ranges_between(
     inclusive_maximum: Optional[_Boundary] = None,
 ) -> RangeTemplate[_Boundary]:
     if (
-        exclusive_minimum is None
-        and exclusive_maximum is None
-        and inclusive_minimum is None
-        and inclusive_maximum is None
+        exclusive_minimum is not None
+        or exclusive_maximum is not None
+        or inclusive_minimum is not None
+        or inclusive_maximum is not None
     ):
-        raise TypeError("ranges_between() missing 2 required keyword-only arguments")
+        return RangeTemplate(
+            exclusive_minimum=exclusive_minimum,
+            exclusive_maximum=exclusive_maximum,
+            inclusive_minimum=inclusive_minimum,
+            inclusive_maximum=inclusive_maximum,
+        )
 
-    return RangeTemplate(
-        exclusive_minimum=exclusive_minimum,
-        exclusive_maximum=exclusive_maximum,
-        inclusive_minimum=inclusive_minimum,
-        inclusive_maximum=inclusive_maximum,
-    )
+    raise TypeError("ranges_between() missing 2 required keyword-only arguments")

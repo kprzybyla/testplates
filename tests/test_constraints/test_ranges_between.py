@@ -93,6 +93,10 @@ def test_ranges_between_returns_true_with_inclusive_minimum_and_exclusive_maximu
     assert template == value
 
 
+def test_ranges_between_returns_false():
+    raise NotImplementedError()
+
+
 def test_ranges_between_raises_type_error_on_missing_boundaries() -> None:
     ranges_between_partial = partial(ranges_between)
 
@@ -162,10 +166,6 @@ def test_ranges_between_raises_value_error_on_mutually_exclusive_minimum_boundar
             ranges_between_partial()
 
 
-def test_ranges_between_raises_value_error_on_boundaries_overlapping():
-    raise NotImplementedError()
-
-
 @given(data=st.data(), value=st_value())
 def test_ranges_between_raises_value_error_on_mutually_exclusive_maximum_boundaries(
     data: st.DataObject, value: int
@@ -188,3 +188,7 @@ def test_ranges_between_raises_value_error_on_mutually_exclusive_maximum_boundar
 
         with pytest.raises(MutuallyExclusiveBoundaryValueError):
             ranges_between_partial()
+
+
+def test_ranges_between_raises_value_error_on_boundaries_overlapping():
+    raise NotImplementedError()
