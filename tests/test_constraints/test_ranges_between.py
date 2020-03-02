@@ -5,11 +5,7 @@ import pytest
 from hypothesis import assume, given
 from hypothesis import strategies as st
 
-from testplates import (
-    ranges_between,
-    MissingBoundaryValueError,
-    MutuallyExclusiveBoundaryValueError,
-)
+from testplates import ranges_between, MissingBoundaryError, MutuallyExclusiveBoundariesError
 
 from ..conftest import Draw
 
@@ -126,7 +122,7 @@ def test_constraint_raises_value_error_on_missing_minimum_boundary(
         with pytest.raises(ValueError):
             template_partial()
 
-        with pytest.raises(MissingBoundaryValueError):
+        with pytest.raises(MissingBoundaryError):
             template_partial()
 
 
@@ -143,7 +139,7 @@ def test_constraint_raises_value_error_on_missing_maximum_boundary(
         with pytest.raises(ValueError):
             template_partial()
 
-        with pytest.raises(MissingBoundaryValueError):
+        with pytest.raises(MissingBoundaryError):
             template_partial()
 
 
@@ -168,7 +164,7 @@ def test_constraint_raises_value_error_on_mutually_exclusive_minimum_boundaries(
         with pytest.raises(ValueError):
             template_partial()
 
-        with pytest.raises(MutuallyExclusiveBoundaryValueError):
+        with pytest.raises(MutuallyExclusiveBoundariesError):
             template_partial()
 
 
@@ -193,7 +189,7 @@ def test_constraint_raises_value_error_on_mutually_exclusive_maximum_boundaries(
         with pytest.raises(ValueError):
             template_partial()
 
-        with pytest.raises(MutuallyExclusiveBoundaryValueError):
+        with pytest.raises(MutuallyExclusiveBoundariesError):
             template_partial()
 
 

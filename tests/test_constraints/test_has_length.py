@@ -10,9 +10,9 @@ from hypothesis import strategies as st
 
 from testplates import (
     has_length,
-    MissingBoundaryValueError,
-    OverlappingBoundariesValueError,
-    SingleMatchBoundariesValueError,
+    MissingBoundaryError,
+    OverlappingBoundariesError,
+    SingleMatchBoundariesError,
 )
 
 from ..conftest import Draw
@@ -173,7 +173,7 @@ def test_constraint_raises_value_error_on_missing_minimum_boundary(
     with pytest.raises(ValueError):
         template_partial()
 
-    with pytest.raises(MissingBoundaryValueError):
+    with pytest.raises(MissingBoundaryError):
         template_partial()
 
 
@@ -188,7 +188,7 @@ def test_constraint_raises_value_error_on_missing_maximum_boundary(
     with pytest.raises(ValueError):
         template_partial()
 
-    with pytest.raises(MissingBoundaryValueError):
+    with pytest.raises(MissingBoundaryError):
         template_partial()
 
 
@@ -205,7 +205,7 @@ def test_constraint_raises_value_error_on_boundaries_overlapping(data: st.DataOb
     with pytest.raises(ValueError):
         template_partial()
 
-    with pytest.raises(OverlappingBoundariesValueError):
+    with pytest.raises(OverlappingBoundariesError):
         template_partial()
 
 
@@ -216,5 +216,5 @@ def test_constraint_raises_value_error_on_single_match_boundaries(length: int) -
     with pytest.raises(ValueError):
         template_partial()
 
-    with pytest.raises(SingleMatchBoundariesValueError):
+    with pytest.raises(SingleMatchBoundariesError):
         template_partial()

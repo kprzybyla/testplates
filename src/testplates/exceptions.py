@@ -4,11 +4,11 @@ __all__ = [
     "MissingValueError",
     "UnexpectedValueError",
     "ProhibitedValueError",
-    "MissingBoundaryValueError",
-    "MutuallyExclusiveBoundaryValueError",
-    "OverlappingBoundariesValueError",
-    "SingleMatchBoundariesValueError",
-    "NotEnoughValuesError",
+    "MissingBoundaryError",
+    "MutuallyExclusiveBoundariesError",
+    "OverlappingBoundariesError",
+    "SingleMatchBoundariesError",
+    "NoValuesError",
     "InternalError",
     "MissingValueInternalError",
 ]
@@ -89,11 +89,11 @@ class ProhibitedValueError(TestplatesValueError):
         super().__init__(f"Value {value} is prohibited for field {field.name!r} ({field!r}")
 
 
-class MissingBoundaryValueError(TestplatesValueError):
+class MissingBoundaryError(TestplatesValueError):
     ...
 
 
-class MutuallyExclusiveBoundaryValueError(TestplatesValueError):
+class MutuallyExclusiveBoundariesError(TestplatesValueError):
 
     """
         Error indicating exclusive and inclusive boundaries collision.
@@ -106,15 +106,15 @@ class MutuallyExclusiveBoundaryValueError(TestplatesValueError):
         super().__init__(f"Exclusive and inclusive {name} boundaries are mutually exclusive")
 
 
-class OverlappingBoundariesValueError(TestplatesValueError):
+class OverlappingBoundariesError(TestplatesValueError):
     ...
 
 
-class SingleMatchBoundariesValueError(TestplatesValueError):
+class SingleMatchBoundariesError(TestplatesValueError):
     ...
 
 
-class NotEnoughValuesError(TestplatesValueError):
+class NoValuesError(TestplatesValueError):
 
     """
         Error indicating that not enough values were provided.

@@ -4,7 +4,7 @@ from typing import Any, TypeVar, Generic, Container
 
 from testplates import __module__
 from testplates.abc import Constraint
-from testplates.exceptions import NotEnoughValuesError
+from testplates.exceptions import NoValuesError
 
 _T = TypeVar("_T", covariant=True)
 
@@ -15,7 +15,7 @@ class Contains(Generic[_T], Constraint):
 
     def __init__(self, *values: _T) -> None:
         if len(values) == 0:
-            raise NotEnoughValuesError()
+            raise NoValuesError()
 
         self._values = values
 

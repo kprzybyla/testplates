@@ -7,7 +7,7 @@ import pytest
 from hypothesis import assume, given
 from hypothesis import strategies as st
 
-from testplates import contains, NotEnoughValuesError
+from testplates import contains, NoValuesError
 
 from ..conftest import st_anything, samples, Draw
 
@@ -70,5 +70,5 @@ def test_constraint_raises_value_error_when_no_values_were_provided() -> None:
     with pytest.raises(ValueError):
         template_partial()
 
-    with pytest.raises(NotEnoughValuesError):
+    with pytest.raises(NoValuesError):
         template_partial()

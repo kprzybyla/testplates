@@ -17,11 +17,11 @@ __all__ = [
     "MissingValueError",
     "UnexpectedValueError",
     "ProhibitedValueError",
-    "MissingBoundaryValueError",
-    "MutuallyExclusiveBoundaryValueError",
-    "OverlappingBoundariesValueError",
-    "SingleMatchBoundariesValueError",
-    "NotEnoughValuesError",
+    "MissingBoundaryError",
+    "MutuallyExclusiveBoundariesError",
+    "OverlappingBoundariesError",
+    "SingleMatchBoundariesError",
+    "NoValuesError",
 ]
 
 __module__ = __name__
@@ -48,9 +48,9 @@ from .exceptions import (
     MissingValueError,
     UnexpectedValueError,
     ProhibitedValueError,
-    MissingBoundaryValueError,
-    MutuallyExclusiveBoundaryValueError,
-    OverlappingBoundariesValueError,
-    SingleMatchBoundariesValueError,
-    NotEnoughValuesError,
+    MissingBoundaryError,
+    MutuallyExclusiveBoundariesError,
+    OverlappingBoundariesError,
+    SingleMatchBoundariesError,
+    NoValuesError,
 )

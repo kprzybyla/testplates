@@ -5,10 +5,10 @@ from typing_extensions import Final
 
 from testplates.abc import Boundary
 from testplates.exceptions import (
-    MissingBoundaryValueError,
-    MutuallyExclusiveBoundaryValueError,
-    OverlappingBoundariesValueError,
-    SingleMatchBoundariesValueError,
+    MissingBoundaryError,
+    MutuallyExclusiveBoundariesError,
+    OverlappingBoundariesError,
+    SingleMatchBoundariesError,
 )
 
 _T = TypeVar("_T")
@@ -68,19 +68,19 @@ def validate_boundaries(
     maximum = get_maximum(inclusive=inclusive_maximum, exclusive=exclusive_maximum)
 
     if minimum.value + minimum.alignment > maximum.value - maximum.alignment:
-        raise OverlappingBoundariesValueError(minimum, maximum)
+        raise OverlappingBoundariesError(minimum, maximum)
 
     if minimum.value + minimum.alignment == maximum.value - maximum.alignment:
-        raise SingleMatchBoundariesValueError(minimum, maximum)
+        raise SingleMatchBoundariesError(minimum, maximum)
 
 
 def _get_boundary(
     name: str, *, inclusive: Optional[_T] = None, exclusive: Optional[_T] = None
 ) -> Boundary[_T]:
     if inclusive is None and exclusive is None:
-        raise MissingBoundaryValueError(name)
+        raise MissingBoundaryError(name)
 
     if inclusive is not None and exclusive is not None:
-        raise MutuallyExclusiveBoundaryValueError(name)
+        raise MutuallyExclusiveBoundariesError(name)
 
     return Inclusive(name, inclusive) or Exclusive(name, exclusive)
