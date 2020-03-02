@@ -1,6 +1,5 @@
 import sys
 
-from typing import Optional
 from functools import partial
 from dataclasses import dataclass
 
@@ -13,7 +12,7 @@ from testplates import (
     has_length,
     MissingBoundaryValueError,
     OverlappingBoundariesValueError,
-    IdenticalBoundariesValueError,
+    SingleMatchBoundariesValueError,
 )
 
 from ..conftest import Draw
@@ -44,11 +43,8 @@ def st_minimum(draw: Draw, length: int) -> int:
 
 
 @st.composite
-def st_maximum(draw: Draw, length: int, minimum: Optional[int] = None) -> int:
+def st_maximum(draw: Draw, length: int) -> int:
     maximum = draw(st.integers(min_value=length, max_value=sys.maxsize))
-
-    if minimum is not None:
-        assume(minimum != maximum)
 
     return maximum
 
@@ -96,7 +92,9 @@ def test_has_length_returns_true(length: int) -> None:
 @given(data=st.data(), length=st_length())
 def test_has_length_with_range_returns_true(data: st.DataObject, length: int) -> None:
     minimum = data.draw(st_minimum(length))
-    maximum = data.draw(st_maximum(length, minimum))
+    maximum = data.draw(st_maximum(length))
+
+    assume(minimum != maximum)
 
     template = has_length(minimum=minimum, maximum=maximum)
 
@@ -148,7 +146,9 @@ def test_has_length_with_range_always_returns_false_when_value_is_not_sized(
     data: st.DataObject, length: int
 ) -> None:
     minimum = data.draw(st_minimum(length))
-    maximum = data.draw(st_maximum(length, minimum))
+    maximum = data.draw(st_maximum(length))
+
+    assume(minimum != maximum)
 
     template = has_length(minimum=minimum, maximum=maximum)
 
@@ -213,5 +213,5 @@ def test_has_length_raises_value_error_when_minimum_equals_to_maximum(length: in
     with pytest.raises(ValueError):
         has_length_partial()
 
-    with pytest.raises(IdenticalBoundariesValueError):
+    with pytest.raises(SingleMatchBoundariesValueError):
         has_length_partial()

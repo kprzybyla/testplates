@@ -20,7 +20,7 @@ __all__ = [
     "MissingBoundaryValueError",
     "MutuallyExclusiveBoundaryValueError",
     "OverlappingBoundariesValueError",
-    "IdenticalBoundariesValueError",
+    "SingleMatchBoundariesValueError",
     "NotEnoughValuesError",
 ]
 
@@ -49,6 +49,6 @@ from .exceptions import (
     MissingBoundaryValueError,
     MutuallyExclusiveBoundaryValueError,
     OverlappingBoundariesValueError,
-    IdenticalBoundariesValueError,
+    SingleMatchBoundariesValueError,
     NotEnoughValuesError,
 )

@@ -7,7 +7,7 @@ __all__ = [
     "MissingBoundaryValueError",
     "MutuallyExclusiveBoundaryValueError",
     "OverlappingBoundariesValueError",
-    "IdenticalBoundariesValueError",
+    "SingleMatchBoundariesValueError",
     "NotEnoughValuesError",
     "InternalError",
     "MissingValueInternalError",
@@ -110,7 +110,7 @@ class OverlappingBoundariesValueError(TestplatesValueError):
     ...
 
 
-class IdenticalBoundariesValueError(TestplatesValueError):
+class SingleMatchBoundariesValueError(TestplatesValueError):
     ...
 
 

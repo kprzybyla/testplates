@@ -49,10 +49,12 @@ def st_exclusive_maximum(draw: Draw, value: int) -> int:
 def test_ranges_between_returns_true_with_exclusive_minimum_and_maximum(
     data: st.DataObject, value: int
 ):
-    template = ranges_between(
-        exclusive_minimum=data.draw(st_exclusive_minimum(value)),
-        exclusive_maximum=data.draw(st_exclusive_maximum(value)),
-    )
+    minimum = data.draw(st_exclusive_minimum(value))
+    maximum = data.draw(st_exclusive_maximum(value))
+
+    assume(minimum + 1 < maximum - 1)
+
+    template = ranges_between(exclusive_minimum=minimum, exclusive_maximum=maximum)
 
     assert template == value
 
@@ -61,10 +63,12 @@ def test_ranges_between_returns_true_with_exclusive_minimum_and_maximum(
 def test_ranges_between_returns_true_with_inclusive_minimum_and_maximum(
     data: st.DataObject, value: int
 ):
-    template = ranges_between(
-        inclusive_minimum=data.draw(st_inclusive_minimum(value)),
-        inclusive_maximum=data.draw(st_inclusive_maximum(value)),
-    )
+    minimum = data.draw(st_inclusive_minimum(value))
+    maximum = data.draw(st_inclusive_maximum(value))
+
+    assume(minimum != maximum)
+
+    template = ranges_between(inclusive_minimum=minimum, inclusive_maximum=maximum)
 
     assert template == value
 
@@ -73,10 +77,12 @@ def test_ranges_between_returns_true_with_inclusive_minimum_and_maximum(
 def test_ranges_between_returns_true_with_exclusive_minimum_and_inclusive_maximum(
     data: st.DataObject, value: int
 ):
-    template = ranges_between(
-        exclusive_minimum=data.draw(st_exclusive_minimum(value)),
-        inclusive_maximum=data.draw(st_inclusive_maximum(value)),
-    )
+    minimum = data.draw(st_exclusive_minimum(value))
+    maximum = data.draw(st_inclusive_maximum(value))
+
+    assume(minimum + 1 < maximum)
+
+    template = ranges_between(exclusive_minimum=minimum, inclusive_maximum=maximum)
 
     assert template == value
 
@@ -85,10 +91,12 @@ def test_ranges_between_returns_true_with_exclusive_minimum_and_inclusive_maximu
 def test_ranges_between_returns_true_with_inclusive_minimum_and_exclusive_maximum(
     data: st.DataObject, value: int
 ):
-    template = ranges_between(
-        inclusive_minimum=data.draw(st_inclusive_minimum(value)),
-        exclusive_maximum=data.draw(st_exclusive_maximum(value)),
-    )
+    minimum = data.draw(st_inclusive_minimum(value))
+    maximum = data.draw(st_exclusive_maximum(value))
+
+    assume(minimum < maximum - 1)
+
+    template = ranges_between(inclusive_minimum=minimum, exclusive_maximum=maximum)
 
     assert template == value
 
