@@ -1,6 +1,7 @@
 import random
 
 from typing import TypeVar, List
+from functools import partial
 
 import pytest
 
@@ -31,19 +32,25 @@ def st_values_without(draw: Draw, value: _T) -> List[_T]:
 def test_is_one_of_returns_true(values: List[_T]) -> None:
     value = random.choice(values)
 
-    assert is_one_of(*values) == value
+    template = is_one_of(*values)
+
+    assert template == value
 
 
 @given(data=st.data(), value=st_anything())
 def test_is_one_of_returns_false(data: st.DataObject, value: _T) -> None:
     values = data.draw(st_values_without(value))
 
-    assert is_one_of(*values) != value
+    template = is_one_of(*values)
+
+    assert template != value
 
 
 def test_is_one_of_raises_value_error_when_no_values_were_provided() -> None:
+    template_partial = partial(is_one_of)
+
     with pytest.raises(ValueError):
-        is_one_of()
+        template_partial()
 
     with pytest.raises(NotEnoughValuesError):
-        is_one_of()
+        template_partial()

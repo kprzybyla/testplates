@@ -156,8 +156,10 @@ def test_has_length_with_range_always_returns_false_when_value_is_not_sized(
 
 
 def test_has_length_raises_type_error_on_no_parameters() -> None:
+    template_partial = partial(has_length)
+
     with pytest.raises(TypeError):
-        has_length()
+        template_partial()
 
 
 @given(data=st.data(), length=st_length())
@@ -166,13 +168,13 @@ def test_has_length_raises_value_error_on_missing_minimum_boundary(
 ) -> None:
     maximum = data.draw(st_maximum(length))
 
-    has_length_partial = partial(has_length, maximum=maximum)
+    template_partial = partial(has_length, maximum=maximum)
 
     with pytest.raises(ValueError):
-        has_length_partial()
+        template_partial()
 
     with pytest.raises(MissingBoundaryValueError):
-        has_length_partial()
+        template_partial()
 
 
 @given(data=st.data(), length=st_length())
@@ -181,37 +183,38 @@ def test_has_length_raises_value_error_on_missing_maximum_boundary(
 ) -> None:
     minimum = data.draw(st_minimum(length))
 
-    has_length_partial = partial(has_length, minimum=minimum)
+    template_partial = partial(has_length, minimum=minimum)
 
     with pytest.raises(ValueError):
-        has_length_partial()
+        template_partial()
 
     with pytest.raises(MissingBoundaryValueError):
-        has_length_partial()
+        template_partial()
 
 
 @given(data=st.data())
 def test_has_length_raises_value_error_on_boundaries_overlapping(data: st.DataObject) -> None:
+    # TODO(kprzybyla): FIXME
     minimum = data.draw(st_minimum(sys.maxsize))
     maximum = data.draw(st_minimum(minimum))
 
     assume(minimum != maximum)
 
-    has_length_partial = partial(has_length, minimum=minimum, maximum=maximum)
+    template_partial = partial(has_length, minimum=minimum, maximum=maximum)
 
     with pytest.raises(ValueError):
-        has_length_partial()
+        template_partial()
 
     with pytest.raises(OverlappingBoundariesValueError):
-        has_length_partial()
+        template_partial()
 
 
 @given(length=st_length())
-def test_has_length_raises_value_error_when_minimum_equals_to_maximum(length: int) -> None:
-    has_length_partial = partial(has_length, minimum=length, maximum=length)
+def test_has_length_raises_value_error_on_single_match_boundaries(length: int) -> None:
+    template_partial = partial(has_length, minimum=length, maximum=length)
 
     with pytest.raises(ValueError):
-        has_length_partial()
+        template_partial()
 
     with pytest.raises(SingleMatchBoundariesValueError):
-        has_length_partial()
+        template_partial()

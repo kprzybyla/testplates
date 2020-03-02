@@ -2,6 +2,7 @@ __all__ = ["is_one_of"]
 
 from typing import Any, TypeVar, Generic
 
+from testplates import __module__
 from testplates.exceptions import NotEnoughValuesError
 
 from .constraint import Constraint
@@ -9,7 +10,7 @@ from .constraint import Constraint
 _T = TypeVar("_T", covariant=True)
 
 
-class UnionTemplate(Generic[_T], Constraint):
+class IsOneOf(Generic[_T], Constraint):
 
     __slots__ = ("_values",)
 
@@ -20,11 +21,11 @@ class UnionTemplate(Generic[_T], Constraint):
         self._values = values
 
     def __repr__(self) -> str:
-        return f"{type(self).__name__}[{self._values!r}]"
+        return f"{__module__}.{type(self).__name__}{list(self._values)!r}"
 
     def __eq__(self, other: Any) -> bool:
         return other in self._values
 
 
-def is_one_of(*values: Any) -> UnionTemplate[Any]:
-    return UnionTemplate(*values)
+def is_one_of(*values: Any) -> IsOneOf[Any]:
+    return IsOneOf(*values)

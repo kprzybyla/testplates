@@ -1,61 +1,38 @@
-__all__ = ["matches"]
+__all__ = ["matches_pattern"]
 
 import re
 import abc
 
 from typing import Any, AnyStr, Type, Generic, Pattern
 
+from testplates import __module__
+
 from .constraint import Constraint
 
 
-class AnyPatternTemplate(Generic[AnyStr], Constraint, abc.ABC):
+class MatchesPattern(Generic[AnyStr], Constraint, abc.ABC):
 
-    __slots__ = ("_pattern",)
+    __slots__ = ("_pattern", "_pattern_type")
 
-    def __init__(self, value: AnyStr) -> None:
+    def __init__(self, value: AnyStr, pattern_type: Type[AnyStr]) -> None:
         self._pattern: Pattern[AnyStr] = re.compile(value)
+        self._pattern_type = pattern_type
 
     def __repr__(self) -> str:
-        return f"{type(self).__name__}[{self._pattern.pattern!r}]"
+        return f"{__module__}.{type(self).__name__}[{self._pattern.pattern!r}]"
 
     def __eq__(self, other: Any) -> bool:
-        if not isinstance(other, self.pattern_type):
+        if not isinstance(other, self._pattern_type):
             return False
 
         return bool(self._pattern.match(other))
 
-    @property
-    @abc.abstractmethod
-    def pattern_type(self) -> Type[AnyStr]:
 
-        """
-            Returns pattern type class.
-        """
-
-
-class StringPatternTemplate(AnyPatternTemplate[str]):
-
-    __slots__ = ()
-
-    @property
-    def pattern_type(self) -> Type[str]:
-        return str
-
-
-class BytesPatternTemplate(AnyPatternTemplate[bytes]):
-
-    __slots__ = ()
-
-    @property
-    def pattern_type(self) -> Type[bytes]:
-        return bytes
-
-
-def matches(pattern: AnyStr) -> AnyPatternTemplate[AnyStr]:
+def matches_pattern(pattern: AnyStr) -> MatchesPattern[AnyStr]:
     if isinstance(pattern, str):
-        return StringPatternTemplate(pattern)
+        return MatchesPattern(pattern, str)
 
     if isinstance(pattern, bytes):
-        return BytesPatternTemplate(pattern)
+        return MatchesPattern(pattern, bytes)
 
-    raise TypeError("matches() takes str or bytes as 1st argument")
+    raise TypeError("matches() requires str or bytes as 1st argument")

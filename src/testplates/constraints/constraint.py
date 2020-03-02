@@ -9,14 +9,18 @@ class Constraint(abc.ABC):
 
     __slots__ = ()
 
+    @abc.abstractmethod
     def __repr__(self) -> str:
-        return f"{type(self).__name__}[]"
+
+        """
+            Constraint representation.
+        """
 
     @abc.abstractmethod
     def __eq__(self, other: Any) -> bool:
 
         """
-            ...
+            Constraint equality conditions and requirements.
 
-            :param other:
+            :param other: any other object
         """

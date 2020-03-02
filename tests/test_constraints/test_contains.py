@@ -1,4 +1,5 @@
 from typing import TypeVar, Generic, List
+from functools import partial
 from dataclasses import dataclass
 
 import pytest
@@ -42,24 +43,32 @@ def st_values_without(draw: Draw, value: _T) -> List[_T]:
 
 @given(values=st_values())
 def test_contains_returns_true(values: List[_T]) -> None:
-    assert contains(*values) == Container(values)
+    template = contains(*values)
+
+    assert template == Container(values)
 
 
 @given(data=st.data(), value=st_anything())
 def test_contains_returns_false(data: st.DataObject, value: _T) -> None:
     values = data.draw(st_values_without(value))
 
-    assert contains(value, *samples(values)) != Container(values)
+    template = contains(value, *samples(values))
+
+    assert template != Container(values)
 
 
 @given(values=st_values())
 def test_contains_always_returns_false_when_value_is_not_a_container(values: List[_T]) -> None:
-    assert contains(*values) != NotContainer()
+    template = contains(*values)
+
+    assert template != NotContainer()
 
 
 def test_contains_raises_value_error_when_no_values_were_provided() -> None:
+    template_partial = partial(contains)
+
     with pytest.raises(ValueError):
-        contains()
+        template_partial()
 
     with pytest.raises(NotEnoughValuesError):
-        contains()
+        template_partial()

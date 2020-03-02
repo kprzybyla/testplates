@@ -2,6 +2,7 @@ __all__ = ["contains"]
 
 from typing import Any, TypeVar, Generic, Container
 
+from testplates import __module__
 from testplates.exceptions import NotEnoughValuesError
 
 from .constraint import Constraint
@@ -9,7 +10,7 @@ from .constraint import Constraint
 _T = TypeVar("_T", covariant=True)
 
 
-class ContainerTemplate(Generic[_T], Constraint):
+class Contains(Generic[_T], Constraint):
 
     __slots__ = ("_values",)
 
@@ -20,7 +21,7 @@ class ContainerTemplate(Generic[_T], Constraint):
         self._values = values
 
     def __repr__(self) -> str:
-        return f"{type(self).__name__}[{self._values!r}]"
+        return f"{__module__}.{type(self).__name__}{list(self._values)!r}"
 
     def __eq__(self, other: Any) -> bool:
         if not isinstance(other, Container):
@@ -33,5 +34,5 @@ class ContainerTemplate(Generic[_T], Constraint):
         return True
 
 
-def contains(*values: Any) -> ContainerTemplate[Any]:
-    return ContainerTemplate(*values)
+def contains(*values: Any) -> Contains[Any]:
+    return Contains(*values)

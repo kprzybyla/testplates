@@ -2,6 +2,7 @@ __all__ = ["ranges_between"]
 
 from typing import overload, Any, TypeVar, Generic, Optional
 
+from testplates import __module__
 from testplates.abc import SupportsBoundaries
 
 from .constraint import Constraint
@@ -10,7 +11,7 @@ from .boundaries import get_minimum, get_maximum, validate_boundaries
 _Boundary = TypeVar("_Boundary", bound=SupportsBoundaries)
 
 
-class RangeTemplate(Generic[_Boundary], Constraint):
+class RangesBetween(Generic[_Boundary], Constraint):
 
     __slots__ = (
         "_inclusive_minimum",
@@ -48,7 +49,7 @@ class RangeTemplate(Generic[_Boundary], Constraint):
             f"{maximum.type}_{maximum.name}={maximum.value}",
         ]
 
-        return f"{type(self).__name__}[{', '.join(parameters)}]"
+        return f"{__module__}.{type(self).__name__}[{', '.join(parameters)}]"
 
     def __eq__(self, other: Any) -> bool:
         if not isinstance(other, SupportsBoundaries):
@@ -72,28 +73,28 @@ class RangeTemplate(Generic[_Boundary], Constraint):
 @overload
 def ranges_between(
     *, minimum: Optional[_Boundary], maximum: Optional[_Boundary]
-) -> RangeTemplate[_Boundary]:
+) -> RangesBetween[_Boundary]:
     ...
 
 
 @overload
 def ranges_between(
     *, minimum: Optional[_Boundary], exclusive_maximum: Optional[_Boundary]
-) -> RangeTemplate[_Boundary]:
+) -> RangesBetween[_Boundary]:
     ...
 
 
 @overload
 def ranges_between(
     *, exclusive_minimum: Optional[_Boundary], maximum: Optional[_Boundary]
-) -> RangeTemplate[_Boundary]:
+) -> RangesBetween[_Boundary]:
     ...
 
 
 @overload
 def ranges_between(
     *, exclusive_minimum: Optional[_Boundary], exclusive_maximum: Optional[_Boundary]
-) -> RangeTemplate[_Boundary]:
+) -> RangesBetween[_Boundary]:
     ...
 
 
@@ -103,14 +104,14 @@ def ranges_between(
     maximum: Optional[_Boundary] = None,
     exclusive_minimum: Optional[_Boundary] = None,
     exclusive_maximum: Optional[_Boundary] = None,
-) -> RangeTemplate[_Boundary]:
+) -> RangesBetween[_Boundary]:
     if (
         minimum is not None
         or maximum is not None
         or exclusive_minimum is not None
         or exclusive_maximum is not None
     ):
-        return RangeTemplate(
+        return RangesBetween(
             inclusive_minimum=minimum,
             inclusive_maximum=maximum,
             exclusive_minimum=exclusive_minimum,

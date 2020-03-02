@@ -1,4 +1,4 @@
-__all__ = ["get_boundary", "get_minimum", "get_maximum", "validate_boundaries"]
+__all__ = ["get_minimum", "get_maximum", "validate_boundaries"]
 
 from typing import TypeVar, Optional
 from typing_extensions import Final
@@ -49,24 +49,12 @@ class Exclusive(Boundary[_T]):
         return EXCLUSIVE_ALIGNMENT
 
 
-def get_boundary(
-    name: str, *, inclusive: Optional[_T] = None, exclusive: Optional[_T] = None
-) -> Boundary[_T]:
-    if inclusive is None and exclusive is None:
-        raise MissingBoundaryValueError(name)
-
-    if inclusive is not None and exclusive is not None:
-        raise MutuallyExclusiveBoundaryValueError(name)
-
-    return Inclusive(name, inclusive) or Exclusive(name, exclusive)
-
-
 def get_minimum(*, inclusive: Optional[_T] = None, exclusive: Optional[_T] = None) -> Boundary[_T]:
-    return get_boundary(MINIMUM_NAME, inclusive=inclusive, exclusive=exclusive)
+    return _get_boundary(MINIMUM_NAME, inclusive=inclusive, exclusive=exclusive)
 
 
 def get_maximum(*, inclusive: Optional[_T] = None, exclusive: Optional[_T] = None) -> Boundary[_T]:
-    return get_boundary(MAXIMUM_NAME, inclusive=inclusive, exclusive=exclusive)
+    return _get_boundary(MAXIMUM_NAME, inclusive=inclusive, exclusive=exclusive)
 
 
 def validate_boundaries(
@@ -84,3 +72,15 @@ def validate_boundaries(
 
     if minimum.value + minimum.alignment == maximum.value - maximum.alignment:
         raise SingleMatchBoundariesValueError(minimum, maximum)
+
+
+def _get_boundary(
+    name: str, *, inclusive: Optional[_T] = None, exclusive: Optional[_T] = None
+) -> Boundary[_T]:
+    if inclusive is None and exclusive is None:
+        raise MissingBoundaryValueError(name)
+
+    if inclusive is not None and exclusive is not None:
+        raise MutuallyExclusiveBoundaryValueError(name)
+
+    return Inclusive(name, inclusive) or Exclusive(name, exclusive)

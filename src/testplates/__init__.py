@@ -3,10 +3,10 @@ __all__ = [
     "WILDCARD",
     "ABSENT",
     "field",
-    "matches",
     "contains",
-    "ranges_between",
     "has_length",
+    "ranges_between",
+    "matches_pattern",
     "is_one_of",
     "is_permutation_of",
     "Object",
@@ -24,12 +24,14 @@ __all__ = [
     "NotEnoughValuesError",
 ]
 
+__module__ = __name__
+
 from .value import ANY, WILDCARD, ABSENT
 
 from .fields import field
 
 from .constraints import (
-    matches,
+    matches_pattern,
     contains,
     ranges_between,
     has_length,
