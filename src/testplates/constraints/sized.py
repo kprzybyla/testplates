@@ -5,7 +5,7 @@ import abc
 from typing import overload, Any, Sized, Optional
 
 from .constraint import Constraint
-from .boundary import validate_boundaries
+from .boundaries import get_minimum, get_maximum, validate_boundaries
 
 
 class AnySizedTemplate(Constraint, abc.ABC):
@@ -32,25 +32,37 @@ class SizedStaticTemplate(AnySizedTemplate):
 
 class SizedRangeTemplate(AnySizedTemplate):
 
-    __slots__ = ("_minimum", "_maximum")
+    __slots__ = ("_inclusive_minimum", "_inclusive_maximum")
 
-    def __init__(self, *, minimum: Optional[int] = None, maximum: Optional[int] = None) -> None:
-        validate_boundaries(inclusive_minimum=minimum, inclusive_maximum=maximum)
+    def __init__(
+        self, *, inclusive_minimum: Optional[int] = None, inclusive_maximum: Optional[int] = None
+    ) -> None:
+        validate_boundaries(
+            inclusive_minimum=inclusive_minimum, inclusive_maximum=inclusive_maximum
+        )
 
-        self._minimum = minimum
-        self._maximum = maximum
+        self._inclusive_minimum = inclusive_minimum
+        self._inclusive_maximum = inclusive_maximum
 
     def __repr__(self):
-        return f"{type(self).__name__}[minimum={self._minimum}, maximum={self._maximum}]"
+        minimum = get_minimum(inclusive=self._inclusive_minimum)
+        maximum = get_maximum(inclusive=self._inclusive_maximum)
+
+        parameters = [
+            f"{minimum.type}_{minimum.name}={minimum.value}",
+            f"{maximum.type}_{maximum.name}={maximum.value}",
+        ]
+
+        return f"{type(self).__name__}[{', '.join(parameters)}]"
 
     def __eq__(self, other: Any) -> bool:
         if not self.is_sized(other):
             return False
 
-        if self._minimum is not None and len(other) < self._minimum:
+        if self._inclusive_minimum is not None and len(other) < self._inclusive_minimum:
             return False
 
-        if self._maximum is not None and len(other) > self._maximum:
+        if self._inclusive_maximum is not None and len(other) > self._inclusive_maximum:
             return False
 
         return True
@@ -75,6 +87,6 @@ def has_length(
         return SizedStaticTemplate(length)
 
     if minimum is not None or maximum is not None:
-        return SizedRangeTemplate(minimum=minimum, maximum=maximum)
+        return SizedRangeTemplate(inclusive_minimum=minimum, inclusive_maximum=maximum)
 
     raise TypeError("has_length() missing 1 positional argument or 2 keyword-only arguments")

@@ -68,7 +68,7 @@ def test_ranges_between_returns_true_with_inclusive_minimum_and_maximum(
 
     assume(minimum != maximum)
 
-    template = ranges_between(inclusive_minimum=minimum, inclusive_maximum=maximum)
+    template = ranges_between(minimum=minimum, maximum=maximum)
 
     assert template == value
 
@@ -82,7 +82,7 @@ def test_ranges_between_returns_true_with_exclusive_minimum_and_inclusive_maximu
 
     assume(minimum + 1 < maximum)
 
-    template = ranges_between(exclusive_minimum=minimum, inclusive_maximum=maximum)
+    template = ranges_between(exclusive_minimum=minimum, maximum=maximum)
 
     assert template == value
 
@@ -96,7 +96,7 @@ def test_ranges_between_returns_true_with_inclusive_minimum_and_exclusive_maximu
 
     assume(minimum < maximum - 1)
 
-    template = ranges_between(inclusive_minimum=minimum, exclusive_maximum=maximum)
+    template = ranges_between(minimum=minimum, exclusive_maximum=maximum)
 
     assert template == value
 
@@ -117,8 +117,8 @@ def test_ranges_between_raises_value_error_on_missing_minimum_boundary(
     data: st.DataObject, value: int
 ) -> None:
     boundaries = [
+        dict(maximum=data.draw(st_inclusive_maximum(value))),
         dict(exclusive_maximum=data.draw(st_exclusive_maximum(value))),
-        dict(inclusive_maximum=data.draw(st_inclusive_maximum(value))),
     ]
 
     for boundary in boundaries:
@@ -136,8 +136,8 @@ def test_ranges_between_raises_value_error_on_missing_maximum_boundary(
     data: st.DataObject, value: int
 ) -> None:
     boundaries = [
+        dict(minimum=data.draw(st_inclusive_minimum(value))),
         dict(exclusive_minimum=data.draw(st_exclusive_minimum(value))),
-        dict(inclusive_minimum=data.draw(st_inclusive_minimum(value))),
     ]
 
     for boundary in boundaries:
@@ -155,15 +155,15 @@ def test_ranges_between_raises_value_error_on_mutually_exclusive_minimum_boundar
     data: st.DataObject, value: int
 ) -> None:
     maximums = [
+        dict(maximum=data.draw(st_inclusive_maximum(value))),
         dict(exclusive_maximum=data.draw(st_exclusive_maximum(value))),
-        dict(inclusive_maximum=data.draw(st_inclusive_maximum(value))),
     ]
 
     for maximum in maximums:
         ranges_between_partial = partial(
             ranges_between,
+            minimum=data.draw(st_inclusive_minimum(value)),
             exclusive_minimum=data.draw(st_exclusive_minimum(value)),
-            inclusive_minimum=data.draw(st_inclusive_minimum(value)),
             **maximum,
         )
 
@@ -179,15 +179,15 @@ def test_ranges_between_raises_value_error_on_mutually_exclusive_maximum_boundar
     data: st.DataObject, value: int
 ) -> None:
     minimums = [
+        dict(minimum=data.draw(st_inclusive_minimum(value))),
         dict(exclusive_minimum=data.draw(st_exclusive_minimum(value))),
-        dict(inclusive_minimum=data.draw(st_inclusive_minimum(value))),
     ]
 
     for minimum in minimums:
         ranges_between_partial = partial(
             ranges_between,
+            maximum=data.draw(st_inclusive_maximum(value)),
             exclusive_maximum=data.draw(st_exclusive_maximum(value)),
-            inclusive_maximum=data.draw(st_inclusive_maximum(value)),
             **minimum,
         )
 
