@@ -5,8 +5,8 @@ import abc
 from typing import overload, Any, Sized, Optional
 
 from testplates import __module__
+from testplates.abc import Constraint
 
-from .constraint import Constraint
 from .boundaries import get_minimum, get_maximum, validate_boundaries
 
 

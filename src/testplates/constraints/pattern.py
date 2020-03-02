@@ -6,8 +6,7 @@ import abc
 from typing import Any, AnyStr, Type, Generic, Pattern
 
 from testplates import __module__
-
-from .constraint import Constraint
+from testplates.abc import Constraint
 
 
 class MatchesPattern(Generic[AnyStr], Constraint, abc.ABC):

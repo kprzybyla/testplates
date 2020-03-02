@@ -3,9 +3,8 @@ __all__ = ["is_one_of"]
 from typing import Any, TypeVar, Generic
 
 from testplates import __module__
+from testplates.abc import Constraint
 from testplates.exceptions import NotEnoughValuesError
-
-from .constraint import Constraint
 
 _T = TypeVar("_T", covariant=True)
 

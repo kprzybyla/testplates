@@ -3,9 +3,8 @@ __all__ = ["ranges_between"]
 from typing import overload, Any, TypeVar, Generic, Optional
 
 from testplates import __module__
-from testplates.abc import SupportsBoundaries
+from testplates.abc import SupportsBoundaries, Constraint
 
-from .constraint import Constraint
 from .boundaries import get_minimum, get_maximum, validate_boundaries
 
 _Boundary = TypeVar("_Boundary", bound=SupportsBoundaries)

@@ -3,8 +3,7 @@ __all__ = ["is_permutation_of"]
 from typing import Any, TypeVar, Generic, Iterable
 
 from testplates import __module__
-
-from .constraint import Constraint
+from testplates.abc import Constraint
 
 _T = TypeVar("_T", covariant=True)
 

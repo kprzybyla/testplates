@@ -3,9 +3,8 @@ __all__ = ["contains"]
 from typing import Any, TypeVar, Generic, Container
 
 from testplates import __module__
+from testplates.abc import Constraint
 from testplates.exceptions import NotEnoughValuesError
-
-from .constraint import Constraint
 
 _T = TypeVar("_T", covariant=True)
 

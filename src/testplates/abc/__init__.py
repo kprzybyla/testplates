@@ -5,6 +5,7 @@ __all__ = [
     "SupportsInclusiveBoundaries",
     "SupportsBoundaries",
     "Boundary",
+    "Constraint",
     "Descriptor",
 ]
 
@@ -17,4 +18,5 @@ from .protocols import (
 )
 
 from .boundary import Boundary
+from .constraint import Constraint
 from .descriptor import Descriptor
