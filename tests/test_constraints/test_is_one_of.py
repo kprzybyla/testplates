@@ -29,7 +29,7 @@ def st_values_without(draw: Draw, value: _T) -> List[_T]:
 
 
 @given(values=st_values())
-def test_is_one_of_returns_true(values: List[_T]) -> None:
+def test_constraint_returns_true(values: List[_T]) -> None:
     value = random.choice(values)
 
     template = is_one_of(*values)
@@ -38,7 +38,7 @@ def test_is_one_of_returns_true(values: List[_T]) -> None:
 
 
 @given(data=st.data(), value=st_anything())
-def test_is_one_of_returns_false(data: st.DataObject, value: _T) -> None:
+def test_constraint_returns_false(data: st.DataObject, value: _T) -> None:
     values = data.draw(st_values_without(value))
 
     template = is_one_of(*values)
@@ -46,7 +46,7 @@ def test_is_one_of_returns_false(data: st.DataObject, value: _T) -> None:
     assert template != value
 
 
-def test_is_one_of_raises_value_error_when_no_values_were_provided() -> None:
+def test_constraint_raises_value_error_when_no_values_were_provided() -> None:
     template_partial = partial(is_one_of)
 
     with pytest.raises(ValueError):

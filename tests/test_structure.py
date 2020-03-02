@@ -1,7 +1,9 @@
-import pytest
-
 from typing import TypeVar
 from typing_extensions import Final
+from functools import partial
+
+import pytest
+
 from hypothesis import given, assume
 
 from testplates import (
@@ -31,7 +33,9 @@ def test_equality(value: _T, template_type: TemplateType, storage_type: StorageT
 
         key: Required[_T] = field()
 
-    assert Template(key=value) == storage_type(key=value)
+    template = Template(key=value)
+
+    assert template == storage_type(key=value)
 
 
 @given(value=st_anything())
@@ -43,7 +47,9 @@ def test_inequality_due_to_unequal_key(
 
         key: Required[_T] = field()
 
-    assert Template(key=value) != storage_type(other=value)
+    template = Template(key=value)
+
+    assert template != storage_type(other=value)
 
 
 @given(value=st_anything(), other=st_anything())
@@ -57,7 +63,9 @@ def test_inequality_due_to_unequal_value(
 
         key: Required[_T] = field()
 
-    assert Template(key=value) != storage_type(key=other)
+    template = Template(key=value)
+
+    assert template != storage_type(key=other)
 
 
 @given(value=st_anything())
@@ -67,7 +75,9 @@ def test_default_value(value: _T, template_type: TemplateType, storage_type: Sto
 
         key: Required[_T] = field(default=value)
 
-    assert Template() == storage_type(key=value)
+    template = Template()
+
+    assert template == storage_type(key=value)
 
 
 @given(value=st_anything(), default=st_anything())
@@ -81,7 +91,9 @@ def test_default_value_override(
 
         key: Required[_T] = field(default=default)
 
-    assert Template(key=value) == storage_type(key=value)
+    template = Template(key=value)
+
+    assert template == storage_type(key=value)
 
 
 @given(value=st_anything())
@@ -93,7 +105,9 @@ def test_any_value_matches_anything_in_required_field(
 
         key: Required[_T] = field()
 
-    assert Template(key=ANY) == storage_type(key=value)
+    template = Template(key=ANY)
+
+    assert template == storage_type(key=value)
 
 
 @given(value=st_anything())
@@ -105,7 +119,9 @@ def test_any_value_matches_anything_in_optional_field(
 
         key: Optional[_T] = field(optional=True)
 
-    assert Template(key=ANY) == storage_type(key=value)
+    template = Template(key=ANY)
+
+    assert template == storage_type(key=value)
 
 
 @given(value=st_anything())
@@ -117,8 +133,10 @@ def test_wildcard_value_matches_anything_in_optional_field(
 
         key: Optional[_T] = field(optional=True)
 
-    assert Template(key=WILDCARD) == storage_type()
-    assert Template(key=WILDCARD) == storage_type(key=value)
+    template = Template(key=WILDCARD)
+
+    assert template == storage_type()
+    assert template == storage_type(key=value)
 
 
 @template_parameters
@@ -127,11 +145,13 @@ def test_wildcard_value_raises_value_error_in_required_field(template_type: Temp
 
         key: Required[_T] = field()
 
+    template_partial = partial(Template, key=WILDCARD)
+
     with pytest.raises(ValueError):
-        Template(key=WILDCARD)
+        template_partial()
 
     with pytest.raises(ProhibitedValueError):
-        Template(key=WILDCARD)
+        template_partial()
 
 
 @template_and_storage_parameters
@@ -142,7 +162,9 @@ def test_absent_value_matches_anything_in_optional_field(
 
         key: Optional[_T] = field(optional=True)
 
-    assert Template(key=ABSENT) == storage_type()
+    template = Template(key=ABSENT)
+
+    assert template == storage_type()
 
 
 @given(value=st_anything())
@@ -154,7 +176,9 @@ def test_absent_value_mismatches_any_value_in_optional_field(
 
         key: Optional[_T] = field(optional=True)
 
-    assert Template(key=ABSENT) != storage_type(key=value)
+    template = Template(key=ABSENT)
+
+    assert template != storage_type(key=value)
 
 
 @template_parameters
@@ -163,11 +187,13 @@ def test_absent_value_raises_value_error_in_required_field(template_type: Templa
 
         key: Required[_T] = field()
 
+    template_partial = partial(Template, key=ABSENT)
+
     with pytest.raises(ValueError):
-        Template(key=ABSENT)
+        template_partial()
 
     with pytest.raises(ProhibitedValueError):
-        Template(key=ABSENT)
+        template_partial()
 
 
 @given(value=st_anything())
@@ -176,11 +202,13 @@ def test_unexpected_value_raises_value_error(value: _T, template_type: TemplateT
     class Template(template_type):  # type: ignore
         pass
 
+    template_partial = partial(Template, key=value)
+
     with pytest.raises(ValueError):
-        Template(key=value)
+        template_partial()
 
     with pytest.raises(UnexpectedValueError):
-        Template(key=value)
+        template_partial()
 
 
 @template_parameters
@@ -189,11 +217,13 @@ def test_missing_value_in_required_field_raises_value_error(template_type: Templ
 
         key: Required[_T] = field()
 
+    template_partial = partial(Template)
+
     with pytest.raises(ValueError):
-        Template()
+        template_partial()
 
     with pytest.raises(MissingValueError):
-        Template()
+        template_partial()
 
 
 @template_parameters
@@ -202,11 +232,13 @@ def test_missing_value_in_optional_field_raises_value_error(template_type: Templ
 
         key: Optional[_T] = field(optional=True)
 
+    template_partial = partial(Template)
+
     with pytest.raises(ValueError):
-        Template()
+        template_partial()
 
     with pytest.raises(MissingValueError):
-        Template()
+        template_partial()
 
 
 @given(default=st_anything())

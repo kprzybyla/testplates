@@ -14,7 +14,9 @@ def test_value_access_in_required_field(value: _T) -> None:
 
         key: Required[_T] = field()
 
-    assert Template(key=value).key == value
+    template = Template(key=value)
+
+    assert template.key == value
 
 
 @given(value=st_anything(), default=st_anything())
@@ -23,8 +25,11 @@ def test_value_access_in_required_field_with_default_value(value: _T, default: _
 
         key: Required[_T] = field(default=default)
 
-    assert Template().key == default
-    assert Template(key=value).key == value
+    template_value = Template(key=value)
+    template_default = Template()
+
+    assert template_value.key == value
+    assert template_default.key == default
 
 
 @given(value=st_anything())
@@ -33,7 +38,9 @@ def test_value_access_in_optional_field(value: _T) -> None:
 
         key: Optional[_T] = field(optional=True)
 
-    assert Template(key=value).key == value
+    template = Template(key=value)
+
+    assert template.key == value
 
 
 @given(value=st_anything(), default=st_anything())
@@ -42,5 +49,8 @@ def test_value_access_in_optional_field_with_default_value(value: _T, default: _
 
         key: Optional[_T] = field(default=default, optional=True)
 
-    assert Template().key == default
-    assert Template(key=value).key == value
+    template_value = Template(key=value)
+    template_default = Template()
+
+    assert template_value.key == value
+    assert template_default.key == default

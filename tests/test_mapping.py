@@ -3,7 +3,7 @@ from typing_extensions import Final
 
 from hypothesis import given
 
-from testplates import Mapping, field, Required, Optional
+from testplates import field, Mapping, Required, Optional
 
 from .conftest import st_anything
 
@@ -18,7 +18,9 @@ def test_value_access_in_required_field(value: _T) -> None:
 
         key: Required[_T] = field()
 
-    assert Template(key=value)[KEY] == value
+    template = Template(key=value)
+
+    assert template[KEY] == value
 
 
 @given(value=st_anything(), default=st_anything())
@@ -27,8 +29,11 @@ def test_value_access_in_required_field_with_default_value(value: _T, default: _
 
         key: Required[_T] = field(default=default)
 
-    assert Template()[KEY] == default
-    assert Template(key=value)[KEY] == value
+    template_value = Template(key=value)
+    template_default = Template()
+
+    assert template_value[KEY] == value
+    assert template_default[KEY] == default
 
 
 @given(value=st_anything())
@@ -37,7 +42,9 @@ def test_value_access_in_optional_field(value: _T) -> None:
 
         key: Optional[_T] = field(optional=True)
 
-    assert Template(key=value)[KEY] == value
+    template = Template(key=value)
+
+    assert template[KEY] == value
 
 
 @given(value=st_anything(), default=st_anything())
@@ -46,8 +53,11 @@ def test_value_access_in_optional_field_with_default_value(value: _T, default: _
 
         key: Optional[_T] = field(default=default, optional=True)
 
-    assert Template()[KEY] == default
-    assert Template(key=value)[KEY] == value
+    template_value = Template(key=value)
+    template_default = Template()
+
+    assert template_value[KEY] == value
+    assert template_default[KEY] == default
 
 
 @given(value=st_anything())
@@ -56,7 +66,9 @@ def test_len(value: _T) -> None:
 
         key: Required[_T] = field()
 
-    assert len(Template(key=value)) == 1
+    template = Template(key=value)
+
+    assert len(template) == 1
 
 
 @given(value=st_anything())
@@ -65,4 +77,6 @@ def test_iter(value: _T) -> None:
 
         key: Required[_T] = field()
 
-    assert list(iter(Template(key=value))) == [KEY]
+    template = Template(key=value)
+
+    assert list(iter(template)) == [KEY]

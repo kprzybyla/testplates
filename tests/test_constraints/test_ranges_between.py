@@ -46,7 +46,7 @@ def st_exclusive_maximum(draw: Draw, value: int) -> int:
 
 
 @given(data=st.data(), value=st_value())
-def test_ranges_between_returns_true_with_inclusive_minimum_and_maximum(
+def test_constraint_returns_true_with_inclusive_minimum_and_maximum(
     data: st.DataObject, value: int
 ):
     minimum = data.draw(st_inclusive_minimum(value))
@@ -60,7 +60,7 @@ def test_ranges_between_returns_true_with_inclusive_minimum_and_maximum(
 
 
 @given(data=st.data(), value=st_value())
-def test_ranges_between_returns_true_with_inclusive_minimum_and_exclusive_maximum(
+def test_constraint_returns_true_with_inclusive_minimum_and_exclusive_maximum(
     data: st.DataObject, value: int
 ):
     minimum = data.draw(st_inclusive_minimum(value))
@@ -74,7 +74,7 @@ def test_ranges_between_returns_true_with_inclusive_minimum_and_exclusive_maximu
 
 
 @given(data=st.data(), value=st_value())
-def test_ranges_between_returns_true_with_exclusive_minimum_and_inclusive_maximum(
+def test_constraint_returns_true_with_exclusive_minimum_and_inclusive_maximum(
     data: st.DataObject, value: int
 ):
     minimum = data.draw(st_exclusive_minimum(value))
@@ -88,7 +88,7 @@ def test_ranges_between_returns_true_with_exclusive_minimum_and_inclusive_maximu
 
 
 @given(data=st.data(), value=st_value())
-def test_ranges_between_returns_true_with_exclusive_minimum_and_maximum(
+def test_constraint_returns_true_with_exclusive_minimum_and_maximum(
     data: st.DataObject, value: int
 ):
     minimum = data.draw(st_exclusive_minimum(value))
@@ -101,12 +101,12 @@ def test_ranges_between_returns_true_with_exclusive_minimum_and_maximum(
     assert template == value
 
 
-def test_ranges_between_returns_false():
+def test_constraint_returns_false():
     # TODO(kprzybyla): FIXME
     raise NotImplementedError()
 
 
-def test_ranges_between_raises_type_error_on_missing_boundaries() -> None:
+def test_constraint_raises_type_error_on_missing_boundaries() -> None:
     template_partial = partial(ranges_between)
 
     with pytest.raises(TypeError):
@@ -114,7 +114,7 @@ def test_ranges_between_raises_type_error_on_missing_boundaries() -> None:
 
 
 @given(data=st.data(), value=st_value())
-def test_ranges_between_raises_value_error_on_missing_minimum_boundary(
+def test_constraint_raises_value_error_on_missing_minimum_boundary(
     data: st.DataObject, value: int
 ) -> None:
     inclusive = data.draw(st_inclusive_maximum(value))
@@ -131,7 +131,7 @@ def test_ranges_between_raises_value_error_on_missing_minimum_boundary(
 
 
 @given(data=st.data(), value=st_value())
-def test_ranges_between_raises_value_error_on_missing_maximum_boundary(
+def test_constraint_raises_value_error_on_missing_maximum_boundary(
     data: st.DataObject, value: int
 ) -> None:
     inclusive = data.draw(st_inclusive_minimum(value))
@@ -148,7 +148,7 @@ def test_ranges_between_raises_value_error_on_missing_maximum_boundary(
 
 
 @given(data=st.data(), value=st_value())
-def test_ranges_between_raises_value_error_on_mutually_exclusive_minimum_boundaries(
+def test_constraint_raises_value_error_on_mutually_exclusive_minimum_boundaries(
     data: st.DataObject, value: int
 ) -> None:
     inclusive_minimum = data.draw(st_inclusive_minimum(value))
@@ -173,7 +173,7 @@ def test_ranges_between_raises_value_error_on_mutually_exclusive_minimum_boundar
 
 
 @given(data=st.data(), value=st_value())
-def test_ranges_between_raises_value_error_on_mutually_exclusive_maximum_boundaries(
+def test_constraint_raises_value_error_on_mutually_exclusive_maximum_boundaries(
     data: st.DataObject, value: int
 ) -> None:
     inclusive_minimum = data.draw(st_inclusive_minimum(value))
@@ -197,6 +197,6 @@ def test_ranges_between_raises_value_error_on_mutually_exclusive_maximum_boundar
             template_partial()
 
 
-def test_ranges_between_raises_value_error_on_boundaries_overlapping():
+def test_constraint_raises_value_error_on_boundaries_overlapping():
     # TODO(kprzybyla): FIXME
     raise NotImplementedError()
