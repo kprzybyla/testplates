@@ -12,15 +12,20 @@ from testplates import matches_pattern
 
 from ..conftest import st_anything_except, Draw
 
+ANY_WORD = r"\w+"
+ANY_DIGIT = r"\d+"
+MAC_ADDRESS = r"([0-9A-Fa-f]{2}[:]){5}([0-9A-Fa-f]{2})"
+HEX_COLOR_NUMBER = r"\B#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})\b"
 
-# TODO(kprzybyla): FIXME
-@pytest.fixture(params=[r"\d+"])
+PATTERNS = [ANY_WORD, ANY_DIGIT, MAC_ADDRESS, HEX_COLOR_NUMBER]
+
+
+@pytest.fixture(params=PATTERNS)
 def str_pattern(request):
     return request.param
 
 
-# TODO(kprzybyla): FIXME
-@pytest.fixture(params=[rb"\d+"])
+@pytest.fixture(params=map(str.encode, PATTERNS))
 def bytes_pattern(request):
     return request.param
 
