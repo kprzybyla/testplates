@@ -194,9 +194,8 @@ def test_constraint_raises_value_error_on_missing_maximum_boundary(
 
 @given(data=st.data())
 def test_constraint_raises_value_error_on_boundaries_overlapping(data: st.DataObject) -> None:
-    # TODO(kprzybyla): FIXME
-    minimum = data.draw(st_minimum(sys.maxsize))
-    maximum = data.draw(st_minimum(minimum))
+    minimum = data.draw(st.integers())
+    maximum = data.draw(st.integers(max_value=minimum))
 
     assume(minimum != maximum)
 
