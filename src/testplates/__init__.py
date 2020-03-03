@@ -18,6 +18,7 @@ __all__ = [
     "UnexpectedValueError",
     "ProhibitedValueError",
     "MissingBoundaryError",
+    "InvalidBoundaryValueError",
     "MutuallyExclusiveBoundariesError",
     "OverlappingBoundariesError",
     "SingleMatchBoundariesError",
@@ -46,6 +47,7 @@ from .fields import Required, Optional
 from .exceptions import (
     DanglingDescriptorError,
     MissingValueError,
+    InvalidBoundaryValueError,
     UnexpectedValueError,
     ProhibitedValueError,
     MissingBoundaryError,

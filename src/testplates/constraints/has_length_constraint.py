@@ -6,6 +6,7 @@ from typing import overload, Any, Sized, Optional
 
 from testplates import __module__
 from testplates.abc import Constraint
+from testplates.exceptions import InvalidBoundaryValueError
 
 from .boundaries import get_minimum, get_maximum, validate_boundaries
 
@@ -42,6 +43,12 @@ class HasLengthBetween(AnyHasLength):
     def __init__(
         self, *, inclusive_minimum: Optional[int] = None, inclusive_maximum: Optional[int] = None
     ) -> None:
+        if inclusive_minimum is not None and inclusive_minimum < 0:
+            raise InvalidBoundaryValueError(inclusive_minimum)
+
+        if inclusive_maximum is not None and inclusive_maximum < 0:
+            raise InvalidBoundaryValueError(inclusive_maximum)
+
         validate_boundaries(
             inclusive_minimum=inclusive_minimum, inclusive_maximum=inclusive_maximum
         )

@@ -11,6 +11,7 @@ from hypothesis import strategies as st
 from testplates import (
     has_length,
     MissingBoundaryError,
+    InvalidBoundaryValueError,
     OverlappingBoundariesError,
     SingleMatchBoundariesError,
 )
@@ -33,8 +34,16 @@ class NotSized:
 
 
 @st.composite
-def st_length(draw: Draw) -> int:
-    return draw(st.integers(min_value=0, max_value=sys.maxsize))
+def st_length(draw: Draw, max_value: int = sys.maxsize) -> int:
+    return draw(st.integers(min_value=0, max_value=max_value))
+
+
+@st.composite
+def st_inverse_length(draw: Draw) -> int:
+    length = draw(st.integers(max_value=0))
+    assume(length != 0)
+
+    return length
 
 
 @st.composite
@@ -192,10 +201,32 @@ def test_constraint_raises_value_error_on_missing_maximum_boundary(
         template_partial()
 
 
+@given(length=st_inverse_length())
+def test_constraint_raises_value_error_on_minimum_boundary_below_zero(length: int) -> None:
+    template_partial = partial(has_length, minimum=length)
+
+    with pytest.raises(ValueError):
+        template_partial()
+
+    with pytest.raises(InvalidBoundaryValueError):
+        template_partial()
+
+
+@given(length=st_inverse_length())
+def test_constraint_raises_value_error_on_maximum_boundary_below_zero(length: int) -> None:
+    template_partial = partial(has_length, maximum=length)
+
+    with pytest.raises(ValueError):
+        template_partial()
+
+    with pytest.raises(InvalidBoundaryValueError):
+        template_partial()
+
+
 @given(data=st.data())
 def test_constraint_raises_value_error_on_boundaries_overlapping(data: st.DataObject) -> None:
-    minimum = data.draw(st.integers())
-    maximum = data.draw(st.integers(max_value=minimum))
+    minimum = data.draw(st_length())
+    maximum = data.draw(st_length(max_value=minimum))
 
     assume(minimum != maximum)
 

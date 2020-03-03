@@ -5,6 +5,7 @@ __all__ = [
     "UnexpectedValueError",
     "ProhibitedValueError",
     "MissingBoundaryError",
+    "InvalidBoundaryValueError",
     "MutuallyExclusiveBoundariesError",
     "OverlappingBoundariesError",
     "SingleMatchBoundariesError",
@@ -90,6 +91,10 @@ class ProhibitedValueError(TestplatesValueError):
 
 
 class MissingBoundaryError(TestplatesValueError):
+    ...
+
+
+class InvalidBoundaryValueError(TestplatesValueError):
     ...
 
 

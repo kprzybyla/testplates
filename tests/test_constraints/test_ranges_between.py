@@ -1,3 +1,4 @@
+from typing import Optional
 from functools import partial
 
 import pytest
@@ -5,14 +6,19 @@ import pytest
 from hypothesis import assume, given
 from hypothesis import strategies as st
 
-from testplates import ranges_between, MissingBoundaryError, MutuallyExclusiveBoundariesError
+from testplates import (
+    ranges_between,
+    MissingBoundaryError,
+    MutuallyExclusiveBoundariesError,
+    OverlappingBoundariesError,
+)
 
 from ..conftest import Draw
 
 
 @st.composite
-def st_value(draw: Draw) -> int:
-    return draw(st.integers())
+def st_value(draw: Draw, max_value: Optional[int] = None) -> int:
+    return draw(st.integers(max_value=max_value))
 
 
 @st.composite
@@ -193,6 +199,19 @@ def test_constraint_raises_value_error_on_mutually_exclusive_maximum_boundaries(
             template_partial()
 
 
-def test_constraint_raises_value_error_on_boundaries_overlapping():
-    # TODO(kprzybyla): FIXME
-    raise NotImplementedError()
+@given(data=st.data(), value=st_value())
+def test_constraint_raises_value_error_on_boundaries_overlapping(
+    data: st.DataObject, value: int
+) -> None:
+    minimum = data.draw(st_value())
+    maximum = data.draw(st_value(max_value=minimum))
+
+    assume(minimum != maximum)
+
+    template_partial = partial(ranges_between, minimum=minimum, maximum=maximum)
+
+    with pytest.raises(ValueError):
+        template_partial()
+
+    with pytest.raises(OverlappingBoundariesError):
+        template_partial()
