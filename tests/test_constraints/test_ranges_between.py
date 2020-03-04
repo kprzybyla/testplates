@@ -11,6 +11,7 @@ from testplates import (
     MissingBoundaryError,
     MutuallyExclusiveBoundariesError,
     OverlappingBoundariesError,
+    SingleMatchBoundariesError,
 )
 
 from ..conftest import Draw
@@ -51,12 +52,12 @@ def st_exclusive_maximum(draw: Draw, value: int) -> int:
 def test_constraint_returns_true_with_inclusive_minimum_and_maximum(
     data: st.DataObject, value: int
 ):
-    minimum = data.draw(st_inclusive_minimum(value))
-    maximum = data.draw(st_inclusive_maximum(value))
+    inclusive_minimum = data.draw(st_inclusive_minimum(value))
+    inclusive_maximum = data.draw(st_inclusive_maximum(value))
 
-    assume(minimum != maximum)
+    assume(inclusive_minimum != inclusive_maximum)
 
-    template = ranges_between(minimum=minimum, maximum=maximum)
+    template = ranges_between(minimum=inclusive_minimum, maximum=inclusive_maximum)
 
     assert template == value
 
@@ -65,12 +66,12 @@ def test_constraint_returns_true_with_inclusive_minimum_and_maximum(
 def test_constraint_returns_true_with_inclusive_minimum_and_exclusive_maximum(
     data: st.DataObject, value: int
 ):
-    minimum = data.draw(st_inclusive_minimum(value))
-    maximum = data.draw(st_exclusive_maximum(value))
+    inclusive_minimum = data.draw(st_inclusive_minimum(value))
+    exclusive_maximum = data.draw(st_exclusive_maximum(value))
 
-    assume(minimum < maximum - 1)
+    assume(inclusive_minimum < exclusive_maximum - 1)
 
-    template = ranges_between(minimum=minimum, exclusive_maximum=maximum)
+    template = ranges_between(minimum=inclusive_minimum, exclusive_maximum=exclusive_maximum)
 
     assert template == value
 
@@ -79,12 +80,12 @@ def test_constraint_returns_true_with_inclusive_minimum_and_exclusive_maximum(
 def test_constraint_returns_true_with_exclusive_minimum_and_inclusive_maximum(
     data: st.DataObject, value: int
 ):
-    minimum = data.draw(st_exclusive_minimum(value))
-    maximum = data.draw(st_inclusive_maximum(value))
+    exclusive_minimum = data.draw(st_exclusive_minimum(value))
+    inclusive_maximum = data.draw(st_inclusive_maximum(value))
 
-    assume(minimum + 1 < maximum)
+    assume(exclusive_minimum + 1 < inclusive_maximum)
 
-    template = ranges_between(exclusive_minimum=minimum, maximum=maximum)
+    template = ranges_between(exclusive_minimum=exclusive_minimum, maximum=inclusive_maximum)
 
     assert template == value
 
@@ -93,19 +94,137 @@ def test_constraint_returns_true_with_exclusive_minimum_and_inclusive_maximum(
 def test_constraint_returns_true_with_exclusive_minimum_and_maximum(
     data: st.DataObject, value: int
 ):
-    minimum = data.draw(st_exclusive_minimum(value))
-    maximum = data.draw(st_exclusive_maximum(value))
+    exclusive_minimum = data.draw(st_exclusive_minimum(value))
+    exclusive_maximum = data.draw(st_exclusive_maximum(value))
 
-    assume(minimum + 1 < maximum - 1)
+    assume(exclusive_minimum + 1 < exclusive_maximum - 1)
 
-    template = ranges_between(exclusive_minimum=minimum, exclusive_maximum=maximum)
+    template = ranges_between(
+        exclusive_minimum=exclusive_minimum, exclusive_maximum=exclusive_maximum
+    )
 
     assert template == value
 
 
-def test_constraint_returns_false():
-    # TODO(kprzybyla): FIXME
-    raise NotImplementedError()
+@given(data=st.data(), value=st_value())
+def test_constraint_returns_false_with_upper_inclusive_boundaries(
+    data: st.DataObject, value: int
+) -> None:
+    inclusive_minimum = data.draw(st.integers(min_value=value))
+    inclusive_maximum = data.draw(st.integers(min_value=inclusive_minimum))
+
+    assume(inclusive_minimum != value)
+    assume(inclusive_minimum != inclusive_maximum)
+
+    template = ranges_between(minimum=inclusive_minimum, maximum=inclusive_maximum)
+
+    assert template != value
+
+
+@given(data=st.data(), value=st_value())
+def test_constraint_returns_false_with_lower_inclusive_boundaries(
+    data: st.DataObject, value: int
+) -> None:
+    inclusive_maximum = data.draw(st.integers(max_value=value))
+    inclusive_minimum = data.draw(st.integers(max_value=inclusive_maximum))
+
+    assume(inclusive_maximum != value)
+    assume(inclusive_minimum != inclusive_maximum)
+
+    template = ranges_between(minimum=inclusive_minimum, maximum=inclusive_maximum)
+
+    assert template != value
+
+
+@given(data=st.data(), value=st_value())
+def test_constraint_returns_false_with_upper_inclusive_minimum_and_exclusive_maximum(
+    data: st.DataObject, value: int
+) -> None:
+    inclusive_minimum = data.draw(st.integers(min_value=value))
+    exclusive_maximum = data.draw(st.integers(min_value=inclusive_minimum))
+
+    assume(inclusive_minimum != value)
+    assume(inclusive_minimum < exclusive_maximum - 1)
+
+    template = ranges_between(minimum=inclusive_minimum, exclusive_maximum=exclusive_maximum)
+
+    assert template != value
+
+
+@given(data=st.data(), value=st_value())
+def test_constraint_returns_false_with_lower_inclusive_minimum_and_exclusive_maximum(
+    data: st.DataObject, value: int
+) -> None:
+    exclusive_maximum = data.draw(st.integers(max_value=value))
+    inclusive_minimum = data.draw(st.integers(max_value=exclusive_maximum))
+
+    assume(exclusive_maximum != value)
+    assume(inclusive_minimum < exclusive_maximum - 1)
+
+    template = ranges_between(minimum=inclusive_minimum, exclusive_maximum=exclusive_maximum)
+
+    assert template != value
+
+
+@given(data=st.data(), value=st_value())
+def test_constraint_returns_false_with_upper_exclusive_minimum_and_inclusive_maximum(
+    data: st.DataObject, value: int
+) -> None:
+    exclusive_minimum = data.draw(st.integers(min_value=value))
+    inclusive_maximum = data.draw(st.integers(min_value=exclusive_minimum))
+
+    assume(exclusive_minimum + 1 < inclusive_maximum)
+
+    template = ranges_between(exclusive_minimum=exclusive_minimum, maximum=inclusive_maximum)
+
+    assert template != value
+
+
+@given(data=st.data(), value=st_value())
+def test_constraint_returns_false_with_lower_exclusive_minimum_and_inclusive_maximum(
+    data: st.DataObject, value: int
+) -> None:
+    inclusive_maximum = data.draw(st.integers(max_value=value))
+    exclusive_minimum = data.draw(st.integers(max_value=inclusive_maximum))
+
+    assume(inclusive_maximum != value)
+    assume(exclusive_minimum + 1 < inclusive_maximum)
+
+    template = ranges_between(exclusive_minimum=exclusive_minimum, maximum=inclusive_maximum)
+
+    assert template != value
+
+
+@given(data=st.data(), value=st_value())
+def test_constraint_returns_false_with_upper_exclusive_minimum_and_maximum(
+    data: st.DataObject, value: int
+) -> None:
+    exclusive_minimum = data.draw(st.integers(min_value=value))
+    exclusive_maximum = data.draw(st.integers(min_value=exclusive_minimum))
+
+    assume(exclusive_minimum + 1 < exclusive_maximum - 1)
+
+    template = ranges_between(
+        exclusive_minimum=exclusive_minimum, exclusive_maximum=exclusive_maximum
+    )
+
+    assert template != value
+
+
+@given(data=st.data(), value=st_value())
+def test_constraint_returns_false_with_lower_exclusive_minimum_and_maximum(
+    data: st.DataObject, value: int
+) -> None:
+    exclusive_maximum = data.draw(st.integers(max_value=value))
+    exclusive_minimum = data.draw(st.integers(max_value=exclusive_maximum))
+
+    assume(exclusive_minimum + 1 < exclusive_maximum - 1)
+
+    template = ranges_between(
+        exclusive_minimum=exclusive_minimum, exclusive_maximum=exclusive_maximum
+    )
+
+    assert template != value
 
 
 def test_constraint_raises_type_error_on_missing_boundaries() -> None:
@@ -119,10 +238,10 @@ def test_constraint_raises_type_error_on_missing_boundaries() -> None:
 def test_constraint_raises_value_error_on_missing_minimum_boundary(
     data: st.DataObject, value: int
 ) -> None:
-    inclusive = data.draw(st_inclusive_maximum(value))
-    exclusive = data.draw(st_exclusive_maximum(value))
+    inclusive_maximum = data.draw(st_inclusive_maximum(value))
+    exclusive_maximum = data.draw(st_exclusive_maximum(value))
 
-    for boundary in [dict(maximum=inclusive), dict(exclusive_maximum=exclusive)]:
+    for boundary in [dict(maximum=inclusive_maximum), dict(exclusive_maximum=exclusive_maximum)]:
         template_partial = partial(ranges_between, **boundary)
 
         with pytest.raises(ValueError):
@@ -136,10 +255,10 @@ def test_constraint_raises_value_error_on_missing_minimum_boundary(
 def test_constraint_raises_value_error_on_missing_maximum_boundary(
     data: st.DataObject, value: int
 ) -> None:
-    inclusive = data.draw(st_inclusive_minimum(value))
-    exclusive = data.draw(st_exclusive_minimum(value))
+    inclusive_minimum = data.draw(st_inclusive_minimum(value))
+    exclusive_minimum = data.draw(st_exclusive_minimum(value))
 
-    for boundary in [dict(minimum=inclusive), dict(exclusive_minimum=exclusive)]:
+    for boundary in [dict(minimum=inclusive_minimum), dict(exclusive_minimum=exclusive_minimum)]:
         template_partial = partial(ranges_between, **boundary)
 
         with pytest.raises(ValueError):
@@ -200,18 +319,111 @@ def test_constraint_raises_value_error_on_mutually_exclusive_maximum_boundaries(
 
 
 @given(data=st.data(), value=st_value())
-def test_constraint_raises_value_error_on_boundaries_overlapping(
+def test_constraint_raises_value_error_on_inclusive_boundaries_overlapping(
     data: st.DataObject, value: int
 ) -> None:
-    minimum = data.draw(st_value())
-    maximum = data.draw(st_value(max_value=minimum))
+    inclusive_minimum = data.draw(st_value())
+    inclusive_maximum = data.draw(st_value(max_value=inclusive_minimum))
 
-    assume(minimum != maximum)
+    assume(inclusive_minimum != inclusive_maximum)
 
-    template_partial = partial(ranges_between, minimum=minimum, maximum=maximum)
+    template_partial = partial(
+        ranges_between, minimum=inclusive_minimum, maximum=inclusive_maximum
+    )
 
     with pytest.raises(ValueError):
         template_partial()
 
     with pytest.raises(OverlappingBoundariesError):
+        template_partial()
+
+
+@given(data=st.data(), value=st_value())
+def test_constraint_raises_value_error_on_inclusive_minimum_and_exclusive_maximum_overlapping(
+    value: int
+) -> None:
+    raise NotImplementedError()
+
+
+@given(data=st.data(), value=st_value())
+def test_constraint_raises_value_error_on_exclusive_minimum_and_inclusive_maximum_overlapping(
+    value: int
+) -> None:
+    raise NotImplementedError()
+
+
+@given(data=st.data(), value=st_value())
+def test_constraint_raises_value_error_on_exclusive_boundaries_overlapping(value: int) -> None:
+    raise NotImplementedError()
+
+
+@given(value=st_value())
+def test_constraint_raises_value_error_on_single_match_with_inclusive_boundaries(
+    value: int
+) -> None:
+    inclusive_minimum = value
+    inclusive_maximum = value
+
+    template_partial = partial(
+        ranges_between, minimum=inclusive_minimum, maximum=inclusive_maximum
+    )
+
+    with pytest.raises(ValueError):
+        template_partial()
+
+    with pytest.raises(SingleMatchBoundariesError):
+        template_partial()
+
+
+@given(value=st_value())
+def test_constraint_raises_value_error_on_single_match_with_inclusive_minimum_and_exclusive_maximum(
+    value: int
+) -> None:
+    inclusive_minimum = value
+    exclusive_maximum = value + 1
+
+    template_partial = partial(
+        ranges_between, minimum=inclusive_minimum, exclusive_maximum=exclusive_maximum
+    )
+
+    with pytest.raises(ValueError):
+        template_partial()
+
+    with pytest.raises(SingleMatchBoundariesError):
+        template_partial()
+
+
+@given(value=st_value())
+def test_constraint_raises_value_error_on_single_match_with_exclusive_minimum_and_inclusive_maximum(
+    value: int
+) -> None:
+    exclusive_minimum = value - 1
+    inclusive_maximum = value
+
+    template_partial = partial(
+        ranges_between, exclusive_minimum=exclusive_minimum, maximum=inclusive_maximum
+    )
+
+    with pytest.raises(ValueError):
+        template_partial()
+
+    with pytest.raises(SingleMatchBoundariesError):
+        template_partial()
+
+
+@given(value=st_value())
+def test_constraint_raises_value_error_on_single_match_with_exclusive_boundaries(
+    value: int
+) -> None:
+    exclusive_minimum = value - 1
+    exclusive_maximum = value + 1
+
+    template_partial = partial(
+        ranges_between, exclusive_minimum=exclusive_minimum, exclusive_maximum=exclusive_maximum
+    )
+
+    with pytest.raises(ValueError):
+        template_partial()
+
+    with pytest.raises(SingleMatchBoundariesError):
         template_partial()
