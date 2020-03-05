@@ -1,5 +1,4 @@
 from typing import TypeVar, Generic, List
-from functools import partial
 from dataclasses import dataclass
 
 import pytest
@@ -65,10 +64,5 @@ def test_constraint_always_returns_false_when_value_is_not_a_container(values: L
 
 
 def test_constraint_raises_value_error_when_less_than_one_value_was_provided() -> None:
-    template_partial = partial(contains)
-
-    with pytest.raises(ValueError):
-        template_partial()
-
     with pytest.raises(TooLittleValuesError):
-        template_partial()
+        contains()

@@ -1,7 +1,6 @@
 import random
 
 from typing import TypeVar, List
-from functools import partial
 
 import pytest
 
@@ -46,11 +45,9 @@ def test_constraint_returns_false(data: st.DataObject, value: _T) -> None:
     assert template != value
 
 
-def test_constraint_raises_value_error_when_no_values_were_provided() -> None:
-    template_partial = partial(is_one_of)
-
-    with pytest.raises(ValueError):
-        template_partial()
-
+@given(values=st.lists(st_anything(), max_size=1))
+def test_constraint_raises_value_error_when_less_than_two_values_were_provided(
+    values: List[_T]
+) -> None:
     with pytest.raises(TooLittleValuesError):
-        template_partial()
+        is_one_of(*values)

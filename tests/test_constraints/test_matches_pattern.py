@@ -1,7 +1,6 @@
 import re
 
 from typing import Any, AnyStr
-from functools import partial
 
 import pytest
 
@@ -111,7 +110,5 @@ def test_constraint_always_returns_false_for_bytes_pattern_on_str_value(
 
 @given(pattern=st_anything_except(str, bytes))
 def test_constraint_raises_type_error_on_invalid_pattern_type(pattern: Any) -> None:
-    template_partial = partial(matches_pattern, pattern)
-
     with pytest.raises(TypeError):
-        template_partial()
+        matches_pattern(pattern)
