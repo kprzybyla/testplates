@@ -1,4 +1,5 @@
 from typing import TypeVar, Generic, List
+from typing_extensions import Final
 from dataclasses import dataclass
 
 import pytest
@@ -8,9 +9,11 @@ from hypothesis import strategies as st
 
 from testplates import contains, TooLittleValuesError
 
-from ..conftest import st_anything, samples, Draw
+from ..conftest import samples, st_anything, Draw
 
 _T = TypeVar("_T")
+
+MINIMUM_NUMBER_OF_VALUES: Final[int] = 1
 
 
 @dataclass
@@ -28,13 +31,18 @@ class NotContainer:
 
 
 @st.composite
+def st_value(draw: Draw) -> _T:
+    return draw(st_anything())
+
+
+@st.composite
 def st_values(draw: Draw) -> List[_T]:
-    return draw(st.lists(st_anything(), min_size=1))
+    return draw(st.lists(st_value(), min_size=MINIMUM_NUMBER_OF_VALUES))
 
 
 @st.composite
 def st_values_without(draw: Draw, value: _T) -> List[_T]:
-    values = draw(st.lists(st_anything()))
+    values = draw(st.lists(st_value()))
     assume(value not in values)
 
     return values
@@ -47,7 +55,7 @@ def test_constraint_returns_true(values: List[_T]) -> None:
     assert template == Container(values)
 
 
-@given(data=st.data(), value=st_anything())
+@given(data=st.data(), value=st_value())
 def test_constraint_returns_false(data: st.DataObject, value: _T) -> None:
     values = data.draw(st_values_without(value))
 

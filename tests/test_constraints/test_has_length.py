@@ -1,6 +1,7 @@
 import sys
 
 from dataclasses import dataclass
+from typing_extensions import Final
 
 import pytest
 
@@ -16,6 +17,9 @@ from testplates import (
 )
 
 from ..conftest import Draw
+
+MINIMUM_LENGTH: Final[int] = 0
+MAXIMUM_LENGTH: Final[int] = sys.maxsize
 
 
 @dataclass
@@ -33,20 +37,30 @@ class NotSized:
 
 
 @st.composite
-def st_length(draw: Draw, max_value: int = sys.maxsize) -> int:
-    return draw(st.integers(min_value=0, max_value=max_value))
+def st_length(draw: Draw, min_value: int = MINIMUM_LENGTH, max_value: int = MAXIMUM_LENGTH) -> int:
+    return draw(st.integers(min_value=min_value, max_value=max_value))
 
 
 @st.composite
 def st_minimum(draw: Draw, length: int) -> int:
-    return draw(st.integers(min_value=0, max_value=length))
+    return draw(st.integers(min_value=MINIMUM_LENGTH, max_value=length))
 
 
 @st.composite
 def st_maximum(draw: Draw, length: int) -> int:
-    maximum = draw(st.integers(min_value=length, max_value=sys.maxsize))
+    maximum = draw(st.integers(min_value=length, max_value=MAXIMUM_LENGTH))
 
     return maximum
+
+
+@st.composite
+def st_length_below_minimum(draw: Draw) -> int:
+    return draw(st.integers(max_value=MINIMUM_LENGTH))
+
+
+@st.composite
+def st_length_above_maximum(draw: Draw) -> int:
+    return draw(st.integers(min_value=MAXIMUM_LENGTH))
 
 
 @given(length=st_length())
@@ -83,8 +97,8 @@ def test_constraint_returns_false(length: int, other: int) -> None:
 def test_constraint_returns_false_with_upper_minimum_and_maximum(
     data: st.DataObject, length: int
 ) -> None:
-    minimum = data.draw(st.integers(min_value=length, max_value=sys.maxsize))
-    maximum = data.draw(st.integers(min_value=minimum, max_value=sys.maxsize))
+    minimum = data.draw(st_length(min_value=length))
+    maximum = data.draw(st_length(min_value=minimum))
 
     assume(minimum != length)
     assume(minimum != maximum)
@@ -98,8 +112,8 @@ def test_constraint_returns_false_with_upper_minimum_and_maximum(
 def test_constraint_returns_false_with_lower_minimum_and_maximum(
     data: st.DataObject, length: int
 ) -> None:
-    maximum = data.draw(st.integers(min_value=0, max_value=length))
-    minimum = data.draw(st.integers(min_value=0, max_value=maximum))
+    maximum = data.draw(st_length(max_value=length))
+    minimum = data.draw(st_length(max_value=maximum))
 
     assume(maximum != length)
     assume(minimum != maximum)
@@ -159,33 +173,33 @@ def test_constraint_raises_value_error_on_missing_maximum_boundary(
 
 
 @given(data=st.data(), length=st_length())
-def test_constraint_raises_value_error_on_boundaries_below_zero(
+def test_constraint_raises_value_error_on_boundaries_below_minimum_length(
     data: st.DataObject, length: int
 ) -> None:
-    below_zero = data.draw(st.integers(max_value=0))
+    below_minimum = data.draw(st_length_below_minimum())
 
-    assume(below_zero != 0)
-
-    with pytest.raises(InvalidBoundaryValueError):
-        has_length(minimum=below_zero, maximum=length)
+    assume(below_minimum != MINIMUM_LENGTH)
 
     with pytest.raises(InvalidBoundaryValueError):
-        has_length(minimum=length, maximum=below_zero)
+        has_length(minimum=below_minimum, maximum=length)
+
+    with pytest.raises(InvalidBoundaryValueError):
+        has_length(minimum=length, maximum=below_minimum)
 
 
 @given(data=st.data(), length=st_length())
-def test_constraint_raises_value_error_on_boundaries_above_max_size(
+def test_constraint_raises_value_error_on_boundaries_above_maximum(
     data: st.DataObject, length: int
 ) -> None:
-    above_max_size = data.draw(st.integers(min_value=sys.maxsize))
+    above_maximum = data.draw(st_length_above_maximum())
 
-    assume(above_max_size != sys.maxsize)
-
-    with pytest.raises(InvalidBoundaryValueError):
-        has_length(minimum=above_max_size, maximum=length)
+    assume(above_maximum != MAXIMUM_LENGTH)
 
     with pytest.raises(InvalidBoundaryValueError):
-        has_length(minimum=length, maximum=above_max_size)
+        has_length(minimum=above_maximum, maximum=length)
+
+    with pytest.raises(InvalidBoundaryValueError):
+        has_length(minimum=length, maximum=above_maximum)
 
 
 @given(data=st.data())

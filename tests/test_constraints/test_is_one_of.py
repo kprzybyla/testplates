@@ -1,6 +1,7 @@
 import random
 
 from typing import TypeVar, List
+from typing_extensions import Final
 
 import pytest
 
@@ -13,16 +14,31 @@ from ..conftest import st_anything, Draw
 
 _T = TypeVar("_T")
 
+MINIMUM_NUMBER_OF_VALUES: Final[int] = 2
+
+
+@st.composite
+def st_value(draw: Draw) -> _T:
+    return draw(st_anything())
+
 
 @st.composite
 def st_values(draw: Draw) -> List[_T]:
-    return draw(st.lists(st_anything(), min_size=2))
+    return draw(st.lists(st_value(), min_size=MINIMUM_NUMBER_OF_VALUES))
 
 
 @st.composite
 def st_values_without(draw: Draw, value: _T) -> List[_T]:
-    values = draw(st.lists(st_anything(), min_size=2))
+    values = draw(st_values())
     assume(value not in values)
+
+    return values
+
+
+@st.composite
+def st_inverse_values(draw: Draw) -> List[_T]:
+    values = draw(st.lists(st_value(), max_size=MINIMUM_NUMBER_OF_VALUES))
+    assume(len(values) != MINIMUM_NUMBER_OF_VALUES)
 
     return values
 
@@ -36,7 +52,7 @@ def test_constraint_returns_true(values: List[_T]) -> None:
     assert template == value
 
 
-@given(data=st.data(), value=st_anything())
+@given(data=st.data(), value=st_value())
 def test_constraint_returns_false(data: st.DataObject, value: _T) -> None:
     values = data.draw(st_values_without(value))
 
@@ -45,7 +61,7 @@ def test_constraint_returns_false(data: st.DataObject, value: _T) -> None:
     assert template != value
 
 
-@given(values=st.lists(st_anything(), max_size=1))
+@given(values=st_inverse_values())
 def test_constraint_raises_value_error_when_less_than_two_values_were_provided(
     values: List[_T]
 ) -> None:

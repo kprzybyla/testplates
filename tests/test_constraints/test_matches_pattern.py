@@ -1,6 +1,7 @@
 import re
 
-from typing import Any, AnyStr
+from typing import Any, AnyStr, List
+from typing_extensions import Final
 
 import pytest
 
@@ -11,12 +12,12 @@ from testplates import matches_pattern
 
 from ..conftest import st_anything_except, Draw
 
-ANY_WORD = r"\w+"
-ANY_DIGIT = r"\d+"
-MAC_ADDRESS = r"([0-9A-Fa-f]{2}[:]){5}([0-9A-Fa-f]{2})"
-HEX_COLOR_NUMBER = r"\B#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})\b"
+ANY_WORD: Final[str] = r"\w+"
+ANY_DIGIT: Final[str] = r"\d+"
+MAC_ADDRESS: Final[str] = r"([0-9A-Fa-f]{2}[:]){5}([0-9A-Fa-f]{2})"
+HEX_COLOR_NUMBER: Final[str] = r"\B#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})\b"
 
-PATTERNS = [ANY_WORD, ANY_DIGIT, MAC_ADDRESS, HEX_COLOR_NUMBER]
+PATTERNS: Final[List[str]] = [ANY_WORD, ANY_DIGIT, MAC_ADDRESS, HEX_COLOR_NUMBER]
 
 
 @pytest.fixture(params=PATTERNS)
