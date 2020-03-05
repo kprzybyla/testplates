@@ -8,7 +8,7 @@ import pytest
 from hypothesis import assume, given
 from hypothesis import strategies as st
 
-from testplates import is_one_of, NoValuesError
+from testplates import is_one_of, TooLittleValuesError
 
 from ..conftest import st_anything, Draw
 
@@ -17,12 +17,12 @@ _T = TypeVar("_T")
 
 @st.composite
 def st_values(draw: Draw) -> List[_T]:
-    return draw(st.lists(st_anything(), min_size=1))
+    return draw(st.lists(st_anything(), min_size=2))
 
 
 @st.composite
 def st_values_without(draw: Draw, value: _T) -> List[_T]:
-    values = draw(st.lists(st_anything(), min_size=1))
+    values = draw(st.lists(st_anything(), min_size=2))
     assume(value not in values)
 
     return values
@@ -52,5 +52,5 @@ def test_constraint_raises_value_error_when_no_values_were_provided() -> None:
     with pytest.raises(ValueError):
         template_partial()
 
-    with pytest.raises(NoValuesError):
+    with pytest.raises(TooLittleValuesError):
         template_partial()

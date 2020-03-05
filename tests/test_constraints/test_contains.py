@@ -7,7 +7,7 @@ import pytest
 from hypothesis import assume, given
 from hypothesis import strategies as st
 
-from testplates import contains, NoValuesError
+from testplates import contains, TooLittleValuesError
 
 from ..conftest import st_anything, samples, Draw
 
@@ -64,11 +64,11 @@ def test_constraint_always_returns_false_when_value_is_not_a_container(values: L
     assert template != NotContainer()
 
 
-def test_constraint_raises_value_error_when_no_values_were_provided() -> None:
+def test_constraint_raises_value_error_when_less_than_one_value_was_provided() -> None:
     template_partial = partial(contains)
 
     with pytest.raises(ValueError):
         template_partial()
 
-    with pytest.raises(NoValuesError):
+    with pytest.raises(TooLittleValuesError):
         template_partial()

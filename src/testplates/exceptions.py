@@ -9,7 +9,7 @@ __all__ = [
     "MutuallyExclusiveBoundariesError",
     "OverlappingBoundariesError",
     "SingleMatchBoundariesError",
-    "NoValuesError",
+    "TooLittleValuesError",
     "InternalError",
     "MissingValueInternalError",
 ]
@@ -119,7 +119,7 @@ class SingleMatchBoundariesError(TestplatesValueError):
     ...
 
 
-class NoValuesError(TestplatesValueError):
+class TooLittleValuesError(TestplatesValueError):
 
     """
         Error indicating that not enough values were provided.

@@ -22,7 +22,7 @@ __all__ = [
     "MutuallyExclusiveBoundariesError",
     "OverlappingBoundariesError",
     "SingleMatchBoundariesError",
-    "NoValuesError",
+    "TooLittleValuesError",
 ]
 
 __module__ = __name__
@@ -54,5 +54,5 @@ from .exceptions import (
     MutuallyExclusiveBoundariesError,
     OverlappingBoundariesError,
     SingleMatchBoundariesError,
-    NoValuesError,
+    TooLittleValuesError,
 )
