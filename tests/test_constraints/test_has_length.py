@@ -1,6 +1,5 @@
 import sys
 
-from functools import partial
 from dataclasses import dataclass
 
 import pytest
@@ -39,14 +38,6 @@ def st_length(draw: Draw, max_value: int = sys.maxsize) -> int:
 
 
 @st.composite
-def st_inverse_length(draw: Draw) -> int:
-    length = draw(st.integers(max_value=0))
-    assume(length != 0)
-
-    return length
-
-
-@st.composite
 def st_minimum(draw: Draw, length: int) -> int:
     return draw(st.integers(min_value=0, max_value=length))
 
@@ -66,7 +57,9 @@ def test_constraint_returns_true(length: int) -> None:
 
 
 @given(data=st.data(), length=st_length())
-def test_constraint_returns_true_with_range(data: st.DataObject, length: int) -> None:
+def test_constraint_returns_true_with_minimum_and_maximum(
+    data: st.DataObject, length: int
+) -> None:
     minimum = data.draw(st_minimum(length))
     maximum = data.draw(st_maximum(length))
 
@@ -87,7 +80,9 @@ def test_constraint_returns_false(length: int, other: int) -> None:
 
 
 @given(data=st.data(), length=st_length())
-def test_constraint_returns_false_with_upper_range(data: st.DataObject, length: int) -> None:
+def test_constraint_returns_false_with_upper_minimum_and_maximum(
+    data: st.DataObject, length: int
+) -> None:
     minimum = data.draw(st.integers(min_value=length, max_value=sys.maxsize))
     maximum = data.draw(st.integers(min_value=minimum, max_value=sys.maxsize))
 
@@ -100,7 +95,9 @@ def test_constraint_returns_false_with_upper_range(data: st.DataObject, length: 
 
 
 @given(data=st.data(), length=st_length())
-def test_constraint_returns_false_with_lower_range(data: st.DataObject, length: int) -> None:
+def test_constraint_returns_false_with_lower_minimum_and_maximum(
+    data: st.DataObject, length: int
+) -> None:
     maximum = data.draw(st.integers(min_value=0, max_value=length))
     minimum = data.draw(st.integers(min_value=0, max_value=maximum))
 
@@ -120,7 +117,7 @@ def test_constraint_always_returns_false_when_value_is_not_sized(length: int) ->
 
 
 @given(data=st.data(), length=st_length())
-def test_constraint_always_returns_false_when_value_is_not_sized_with_range(
+def test_constraint_always_returns_false_when_value_is_not_sized_with_minimum_and_maximum(
     data: st.DataObject, length: int
 ) -> None:
     minimum = data.draw(st_minimum(length))
@@ -133,63 +130,62 @@ def test_constraint_always_returns_false_when_value_is_not_sized_with_range(
     assert template != NotSized()
 
 
+# noinspection PyArgumentList
 def test_constraint_raises_type_error_on_no_parameters() -> None:
-    template_partial = partial(has_length)
-
     with pytest.raises(TypeError):
-        template_partial()
+        has_length()
 
 
+# noinspection PyArgumentList
 @given(data=st.data(), length=st_length())
 def test_constraint_raises_value_error_on_missing_minimum_boundary(
     data: st.DataObject, length: int
 ) -> None:
     maximum = data.draw(st_maximum(length))
 
-    template_partial = partial(has_length, maximum=maximum)
-
-    with pytest.raises(ValueError):
-        template_partial()
-
     with pytest.raises(MissingBoundaryError):
-        template_partial()
+        has_length(maximum=maximum)
 
 
+# noinspection PyArgumentList
 @given(data=st.data(), length=st_length())
 def test_constraint_raises_value_error_on_missing_maximum_boundary(
     data: st.DataObject, length: int
 ) -> None:
     minimum = data.draw(st_minimum(length))
 
-    template_partial = partial(has_length, minimum=minimum)
-
-    with pytest.raises(ValueError):
-        template_partial()
-
     with pytest.raises(MissingBoundaryError):
-        template_partial()
+        has_length(minimum=minimum)
 
 
-@given(length=st_inverse_length())
-def test_constraint_raises_value_error_on_minimum_boundary_below_zero(length: int) -> None:
-    template_partial = partial(has_length, minimum=length)
+@given(data=st.data(), length=st_length())
+def test_constraint_raises_value_error_on_boundaries_below_zero(
+    data: st.DataObject, length: int
+) -> None:
+    below_zero = data.draw(st.integers(max_value=0))
 
-    with pytest.raises(ValueError):
-        template_partial()
-
-    with pytest.raises(InvalidBoundaryValueError):
-        template_partial()
-
-
-@given(length=st_inverse_length())
-def test_constraint_raises_value_error_on_maximum_boundary_below_zero(length: int) -> None:
-    template_partial = partial(has_length, maximum=length)
-
-    with pytest.raises(ValueError):
-        template_partial()
+    assume(below_zero != 0)
 
     with pytest.raises(InvalidBoundaryValueError):
-        template_partial()
+        has_length(minimum=below_zero, maximum=length)
+
+    with pytest.raises(InvalidBoundaryValueError):
+        has_length(minimum=length, maximum=below_zero)
+
+
+@given(data=st.data(), length=st_length())
+def test_constraint_raises_value_error_on_boundaries_above_max_size(
+    data: st.DataObject, length: int
+) -> None:
+    above_max_size = data.draw(st.integers(min_value=sys.maxsize))
+
+    assume(above_max_size != sys.maxsize)
+
+    with pytest.raises(InvalidBoundaryValueError):
+        has_length(minimum=above_max_size, maximum=length)
+
+    with pytest.raises(InvalidBoundaryValueError):
+        has_length(minimum=length, maximum=above_max_size)
 
 
 @given(data=st.data())
@@ -199,21 +195,11 @@ def test_constraint_raises_value_error_on_boundaries_overlapping(data: st.DataOb
 
     assume(minimum != maximum)
 
-    template_partial = partial(has_length, minimum=minimum, maximum=maximum)
-
-    with pytest.raises(ValueError):
-        template_partial()
-
     with pytest.raises(OverlappingBoundariesError):
-        template_partial()
+        has_length(minimum=minimum, maximum=maximum)
 
 
 @given(length=st_length())
 def test_constraint_raises_value_error_on_single_match_boundaries(length: int) -> None:
-    template_partial = partial(has_length, minimum=length, maximum=length)
-
-    with pytest.raises(ValueError):
-        template_partial()
-
     with pytest.raises(SingleMatchBoundariesError):
-        template_partial()
+        has_length(minimum=length, maximum=length)

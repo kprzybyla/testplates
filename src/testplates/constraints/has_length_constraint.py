@@ -1,6 +1,7 @@
 __all__ = ["has_length"]
 
 import abc
+import sys
 
 from typing import overload, Any, Sized, Optional
 
@@ -49,6 +50,12 @@ class HasLengthBetween(AnyHasLength):
         if inclusive_maximum is not None and inclusive_maximum < 0:
             raise InvalidBoundaryValueError(inclusive_maximum)
 
+        if inclusive_minimum is not None and inclusive_minimum > sys.maxsize:
+            raise InvalidBoundaryValueError(inclusive_minimum)
+
+        if inclusive_maximum is not None and inclusive_maximum > sys.maxsize:
+            raise InvalidBoundaryValueError(inclusive_maximum)
+
         validate_boundaries(
             inclusive_minimum=inclusive_minimum, inclusive_maximum=inclusive_maximum
         )
@@ -86,9 +93,7 @@ def has_length(length: int) -> HasLength:
 
 
 @overload
-def has_length(
-    *, minimum: Optional[int] = None, maximum: Optional[int] = None
-) -> HasLengthBetween:
+def has_length(*, minimum: int, maximum: int) -> HasLengthBetween:
     ...
 
 
