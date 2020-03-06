@@ -1,21 +1,4 @@
-__all__ = [
-    "SupportsAddition",
-    "SupportsSubtraction",
-    "SupportsExclusiveBoundaries",
-    "SupportsInclusiveBoundaries",
-    "SupportsBoundaries",
-    "Boundary",
-    "Constraint",
-    "Descriptor",
-]
-
-from .protocols import (
-    SupportsAddition,
-    SupportsSubtraction,
-    SupportsExclusiveBoundaries,
-    SupportsInclusiveBoundaries,
-    SupportsBoundaries,
-)
+__all__ = ["Boundary", "Constraint", "Descriptor"]
 
 from .boundary import Boundary
 from .constraint import Constraint

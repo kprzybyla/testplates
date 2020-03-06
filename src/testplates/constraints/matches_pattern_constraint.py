@@ -15,7 +15,7 @@ class MatchesPattern(Generic[AnyStr], Constraint, abc.ABC):
 
     def __init__(self, value: AnyStr, pattern_type: Type[AnyStr]) -> None:
         self._pattern: Pattern[AnyStr] = re.compile(value)
-        self._pattern_type = pattern_type
+        self._pattern_type: Type[AnyStr] = pattern_type
 
     def __repr__(self) -> str:
         return f"{__module__}.{type(self).__name__}[{self._pattern.pattern!r}]"

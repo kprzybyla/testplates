@@ -7,7 +7,6 @@ from hypothesis import assume, given
 from hypothesis import strategies as st
 
 from testplates import (
-    abc,
     ranges_between,
     MissingBoundaryError,
     MutuallyExclusiveBoundariesError,
@@ -20,7 +19,7 @@ from ..conftest import Draw
 EXCLUSIVE_ALIGNMENT: Final[int] = 1
 
 
-class NotImplementedBoundaries(abc.SupportsBoundaries):
+class NotImplementedBoundaries:
 
     __slots__ = ()
 

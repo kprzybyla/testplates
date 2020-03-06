@@ -11,7 +11,7 @@ from testplates.exceptions import (
     SingleMatchBoundariesError,
 )
 
-_T = TypeVar("_T")
+_T = TypeVar("_T", int, float)
 
 MINIMUM_NAME: Final[str] = "minimum"
 MAXIMUM_NAME: Final[str] = "maximum"
@@ -83,4 +83,10 @@ def _get_boundary(
     if inclusive is not None and exclusive is not None:
         raise MutuallyExclusiveBoundariesError(name)
 
-    return Inclusive(name, inclusive) or Exclusive(name, exclusive)
+    if inclusive is not None:
+        return Inclusive(name, inclusive)
+
+    if exclusive is not None:
+        return Exclusive(name, exclusive)
+
+    raise NotImplementedError()  # pragma: no cover

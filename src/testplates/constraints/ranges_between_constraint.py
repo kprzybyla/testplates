@@ -3,11 +3,11 @@ __all__ = ["ranges_between"]
 from typing import overload, Any, TypeVar, Generic, Optional
 
 from testplates import __module__
-from testplates.abc import SupportsBoundaries, Constraint
+from testplates.abc import Constraint
 
 from .boundaries import get_minimum, get_maximum, validate_boundaries
 
-_Boundary = TypeVar("_Boundary", bound=SupportsBoundaries)
+_Boundary = TypeVar("_Boundary", int, float)
 
 # TODO(kprzybyla): Remove noqa(F811) after github.com/PyCQA/pyflakes/issues/320 is released
 
@@ -36,10 +36,10 @@ class RangesBetween(Generic[_Boundary], Constraint):
             exclusive_maximum=exclusive_maximum,
         )
 
-        self._inclusive_minimum = inclusive_minimum
-        self._inclusive_maximum = inclusive_maximum
-        self._exclusive_minimum = exclusive_minimum
-        self._exclusive_maximum = exclusive_maximum
+        self._inclusive_minimum: Optional[_Boundary] = inclusive_minimum
+        self._inclusive_maximum: Optional[_Boundary] = inclusive_maximum
+        self._exclusive_minimum: Optional[_Boundary] = exclusive_minimum
+        self._exclusive_maximum: Optional[_Boundary] = exclusive_maximum
 
     def __repr__(self) -> str:
         minimum = get_minimum(inclusive=self._inclusive_minimum, exclusive=self._exclusive_minimum)

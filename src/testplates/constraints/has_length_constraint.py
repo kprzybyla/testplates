@@ -65,7 +65,7 @@ class HasLengthBetween(AnyHasLength):
         self._inclusive_minimum = inclusive_minimum
         self._inclusive_maximum = inclusive_maximum
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         minimum = get_minimum(inclusive=self._inclusive_minimum)
         maximum = get_maximum(inclusive=self._inclusive_maximum)
 

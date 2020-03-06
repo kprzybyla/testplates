@@ -2,12 +2,9 @@ __all__ = ["Boundary"]
 
 import abc
 
-from typing import TypeVar, Generic, Union
-from typing_extensions import Literal
+from typing import TypeVar, Generic
 
-from .protocols import SupportsAddition, SupportsSubtraction
-
-_T = TypeVar("_T", SupportsAddition, SupportsSubtraction)
+_T = TypeVar("_T", int, float)
 
 
 class Boundary(Generic[_T], abc.ABC):
@@ -16,7 +13,7 @@ class Boundary(Generic[_T], abc.ABC):
 
     def __init__(self, name: str, value: _T) -> None:
         self._name = name
-        self._value = value
+        self._value: _T = value
 
     def __repr__(self) -> str:
         return f"{self.type}_{self.name}({self.value})"
@@ -52,7 +49,7 @@ class Boundary(Generic[_T], abc.ABC):
 
     @property
     @abc.abstractmethod
-    def alignment(self) -> Union[Literal[0], Literal[1]]:
+    def alignment(self) -> int:
 
         """
             Returns boundary alignment.
