@@ -64,16 +64,14 @@ def st_length_above_maximum(draw: Draw) -> int:
 
 
 @given(length=st_length())
-def test_constraint_returns_true(length: int) -> None:
+def test_returns_true(length: int) -> None:
     template = has_length(length)
 
     assert template == Sized(length)
 
 
 @given(data=st.data(), length=st_length())
-def test_constraint_returns_true_with_minimum_and_maximum(
-    data: st.DataObject, length: int
-) -> None:
+def test_returns_true_with_minimum_and_maximum(data: st.DataObject, length: int) -> None:
     minimum = data.draw(st_minimum(length))
     maximum = data.draw(st_maximum(length))
 
@@ -85,7 +83,7 @@ def test_constraint_returns_true_with_minimum_and_maximum(
 
 
 @given(length=st_length(), other=st_length())
-def test_constraint_returns_false(length: int, other: int) -> None:
+def test_returns_false(length: int, other: int) -> None:
     assume(length != other)
 
     template = has_length(length)
@@ -94,9 +92,7 @@ def test_constraint_returns_false(length: int, other: int) -> None:
 
 
 @given(data=st.data(), length=st_length())
-def test_constraint_returns_false_with_upper_minimum_and_maximum(
-    data: st.DataObject, length: int
-) -> None:
+def test_returns_false_with_upper_minimum_and_maximum(data: st.DataObject, length: int) -> None:
     minimum = data.draw(st_length(min_value=length))
     maximum = data.draw(st_length(min_value=minimum))
 
@@ -109,9 +105,7 @@ def test_constraint_returns_false_with_upper_minimum_and_maximum(
 
 
 @given(data=st.data(), length=st_length())
-def test_constraint_returns_false_with_lower_minimum_and_maximum(
-    data: st.DataObject, length: int
-) -> None:
+def test_returns_false_with_lower_minimum_and_maximum(data: st.DataObject, length: int) -> None:
     maximum = data.draw(st_length(max_value=length))
     minimum = data.draw(st_length(max_value=maximum))
 
@@ -124,14 +118,14 @@ def test_constraint_returns_false_with_lower_minimum_and_maximum(
 
 
 @given(length=st_length())
-def test_constraint_always_returns_false_when_value_is_not_sized(length: int) -> None:
+def test_returns_false_when_value_is_not_sized(length: int) -> None:
     template = has_length(length)
 
     assert template != NotSized()
 
 
 @given(data=st.data(), length=st_length())
-def test_constraint_always_returns_false_when_value_is_not_sized_with_minimum_and_maximum(
+def test_returns_false_when_value_is_not_sized_with_minimum_and_maximum(
     data: st.DataObject, length: int
 ) -> None:
     minimum = data.draw(st_minimum(length))
@@ -145,16 +139,14 @@ def test_constraint_always_returns_false_when_value_is_not_sized_with_minimum_an
 
 
 # noinspection PyArgumentList
-def test_constraint_raises_type_error_on_no_parameters() -> None:
+def test_raises_error_on_no_parameters() -> None:
     with pytest.raises(TypeError):
         has_length()
 
 
 # noinspection PyArgumentList
 @given(data=st.data(), length=st_length())
-def test_constraint_raises_value_error_on_missing_minimum_boundary(
-    data: st.DataObject, length: int
-) -> None:
+def test_raises_error_on_missing_minimum_boundary(data: st.DataObject, length: int) -> None:
     maximum = data.draw(st_maximum(length))
 
     with pytest.raises(MissingBoundaryError):
@@ -163,9 +155,7 @@ def test_constraint_raises_value_error_on_missing_minimum_boundary(
 
 # noinspection PyArgumentList
 @given(data=st.data(), length=st_length())
-def test_constraint_raises_value_error_on_missing_maximum_boundary(
-    data: st.DataObject, length: int
-) -> None:
+def test_raises_error_on_missing_maximum_boundary(data: st.DataObject, length: int) -> None:
     minimum = data.draw(st_minimum(length))
 
     with pytest.raises(MissingBoundaryError):
@@ -173,9 +163,7 @@ def test_constraint_raises_value_error_on_missing_maximum_boundary(
 
 
 @given(data=st.data(), length=st_length())
-def test_constraint_raises_value_error_on_boundaries_below_minimum_length(
-    data: st.DataObject, length: int
-) -> None:
+def test_raises_error_on_boundaries_below_zero(data: st.DataObject, length: int) -> None:
     below_minimum = data.draw(st_length_below_minimum())
 
     assume(below_minimum != MINIMUM_LENGTH)
@@ -188,9 +176,7 @@ def test_constraint_raises_value_error_on_boundaries_below_minimum_length(
 
 
 @given(data=st.data(), length=st_length())
-def test_constraint_raises_value_error_on_boundaries_above_maximum(
-    data: st.DataObject, length: int
-) -> None:
+def test_raises_error_on_boundaries_above_max_size(data: st.DataObject, length: int) -> None:
     above_maximum = data.draw(st_length_above_maximum())
 
     assume(above_maximum != MAXIMUM_LENGTH)
@@ -203,7 +189,7 @@ def test_constraint_raises_value_error_on_boundaries_above_maximum(
 
 
 @given(data=st.data())
-def test_constraint_raises_value_error_on_boundaries_overlapping(data: st.DataObject) -> None:
+def test_raises_error_on_boundaries_overlapping(data: st.DataObject) -> None:
     minimum = data.draw(st_length())
     maximum = data.draw(st_length(max_value=minimum))
 
@@ -214,6 +200,6 @@ def test_constraint_raises_value_error_on_boundaries_overlapping(data: st.DataOb
 
 
 @given(length=st_length())
-def test_constraint_raises_value_error_on_single_match_boundaries(length: int) -> None:
+def test_raises_error_on_single_match_boundaries(length: int) -> None:
     with pytest.raises(SingleMatchBoundariesError):
         has_length(minimum=length, maximum=length)

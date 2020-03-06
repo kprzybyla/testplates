@@ -44,7 +44,7 @@ def st_inverse_values(draw: Draw) -> List[_T]:
 
 
 @given(values=st_values())
-def test_constraint_returns_true(values: List[_T]) -> None:
+def test_returns_true(values: List[_T]) -> None:
     value = random.choice(values)
 
     template = is_one_of(*values)
@@ -53,7 +53,7 @@ def test_constraint_returns_true(values: List[_T]) -> None:
 
 
 @given(data=st.data(), value=st_value())
-def test_constraint_returns_false(data: st.DataObject, value: _T) -> None:
+def test_returns_false(data: st.DataObject, value: _T) -> None:
     values = data.draw(st_values_without(value))
 
     template = is_one_of(*values)
@@ -62,8 +62,6 @@ def test_constraint_returns_false(data: st.DataObject, value: _T) -> None:
 
 
 @given(values=st_inverse_values())
-def test_constraint_raises_value_error_when_less_than_two_values_were_provided(
-    values: List[_T]
-) -> None:
+def test_raises_error_when_less_than_two_values_were_provided(values: List[_T]) -> None:
     with pytest.raises(TooLittleValuesError):
         is_one_of(*values)

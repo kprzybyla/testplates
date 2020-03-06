@@ -20,7 +20,7 @@ from ..conftest import Draw
 EXCLUSIVE_ALIGNMENT: Final[int] = 1
 
 
-class BoundariesNotImplemented(abc.SupportsBoundaries):
+class NotImplementedBoundaries(abc.SupportsBoundaries):
 
     __slots__ = ()
 
@@ -69,9 +69,9 @@ def st_exclusive_maximum(draw: Draw, value: int) -> int:
 
 
 @given(data=st.data(), value=st_value())
-def test_constraint_returns_true_with_inclusive_minimum_and_maximum(
+def test_returns_true_with_inclusive_minimum_and_inclusive_maximum(
     data: st.DataObject, value: int
-):
+) -> None:
     inclusive_minimum = data.draw(st_inclusive_minimum(value))
     inclusive_maximum = data.draw(st_inclusive_maximum(value))
 
@@ -83,9 +83,9 @@ def test_constraint_returns_true_with_inclusive_minimum_and_maximum(
 
 
 @given(data=st.data(), value=st_value())
-def test_constraint_returns_true_with_inclusive_minimum_and_exclusive_maximum(
+def test_returns_true_with_inclusive_minimum_and_exclusive_maximum(
     data: st.DataObject, value: int
-):
+) -> None:
     inclusive_minimum = data.draw(st_inclusive_minimum(value))
     exclusive_maximum = data.draw(st_exclusive_maximum(value))
 
@@ -97,9 +97,9 @@ def test_constraint_returns_true_with_inclusive_minimum_and_exclusive_maximum(
 
 
 @given(data=st.data(), value=st_value())
-def test_constraint_returns_true_with_exclusive_minimum_and_inclusive_maximum(
+def test_returns_true_with_exclusive_minimum_and_inclusive_maximum(
     data: st.DataObject, value: int
-):
+) -> None:
     exclusive_minimum = data.draw(st_exclusive_minimum(value))
     inclusive_maximum = data.draw(st_inclusive_maximum(value))
 
@@ -111,9 +111,9 @@ def test_constraint_returns_true_with_exclusive_minimum_and_inclusive_maximum(
 
 
 @given(data=st.data(), value=st_value())
-def test_constraint_returns_true_with_exclusive_minimum_and_maximum(
+def test_returns_true_with_exclusive_minimum_and_exclusive_maximum(
     data: st.DataObject, value: int
-):
+) -> None:
     exclusive_minimum = data.draw(st_exclusive_minimum(value))
     exclusive_maximum = data.draw(st_exclusive_maximum(value))
 
@@ -127,7 +127,7 @@ def test_constraint_returns_true_with_exclusive_minimum_and_maximum(
 
 
 @given(data=st.data(), value=st_value())
-def test_constraint_returns_false_with_upper_inclusive_boundaries(
+def test_returns_false_with_upper_inclusive_minimum_and_inclusive_maximum(
     data: st.DataObject, value: int
 ) -> None:
     inclusive_minimum = data.draw(st_value(min_value=value))
@@ -142,7 +142,7 @@ def test_constraint_returns_false_with_upper_inclusive_boundaries(
 
 
 @given(data=st.data(), value=st_value())
-def test_constraint_returns_false_with_lower_inclusive_boundaries(
+def test_returns_false_with_lower_inclusive_minimum_and_inclusive_maximum(
     data: st.DataObject, value: int
 ) -> None:
     inclusive_maximum = data.draw(st_value(max_value=value))
@@ -157,7 +157,7 @@ def test_constraint_returns_false_with_lower_inclusive_boundaries(
 
 
 @given(data=st.data(), value=st_value())
-def test_constraint_returns_false_with_upper_inclusive_minimum_and_exclusive_maximum(
+def test_returns_false_with_upper_inclusive_minimum_and_exclusive_maximum(
     data: st.DataObject, value: int
 ) -> None:
     inclusive_minimum = data.draw(st_value(min_value=value))
@@ -172,7 +172,7 @@ def test_constraint_returns_false_with_upper_inclusive_minimum_and_exclusive_max
 
 
 @given(data=st.data(), value=st_value())
-def test_constraint_returns_false_with_lower_inclusive_minimum_and_exclusive_maximum(
+def test_returns_false_with_lower_inclusive_minimum_and_exclusive_maximum(
     data: st.DataObject, value: int
 ) -> None:
     exclusive_maximum = data.draw(st_value(max_value=value))
@@ -187,7 +187,7 @@ def test_constraint_returns_false_with_lower_inclusive_minimum_and_exclusive_max
 
 
 @given(data=st.data(), value=st_value())
-def test_constraint_returns_false_with_upper_exclusive_minimum_and_inclusive_maximum(
+def test_returns_false_with_upper_exclusive_minimum_and_inclusive_maximum(
     data: st.DataObject, value: int
 ) -> None:
     exclusive_minimum = data.draw(st_value(min_value=value))
@@ -201,7 +201,7 @@ def test_constraint_returns_false_with_upper_exclusive_minimum_and_inclusive_max
 
 
 @given(data=st.data(), value=st_value())
-def test_constraint_returns_false_with_lower_exclusive_minimum_and_inclusive_maximum(
+def test_returns_false_with_lower_exclusive_minimum_and_inclusive_maximum(
     data: st.DataObject, value: int
 ) -> None:
     inclusive_maximum = data.draw(st_value(max_value=value))
@@ -216,7 +216,7 @@ def test_constraint_returns_false_with_lower_exclusive_minimum_and_inclusive_max
 
 
 @given(data=st.data(), value=st_value())
-def test_constraint_returns_false_with_upper_exclusive_minimum_and_maximum(
+def test_returns_false_with_upper_exclusive_minimum_and_exclusive_maximum(
     data: st.DataObject, value: int
 ) -> None:
     exclusive_minimum = data.draw(st_value(min_value=value))
@@ -232,7 +232,7 @@ def test_constraint_returns_false_with_upper_exclusive_minimum_and_maximum(
 
 
 @given(data=st.data(), value=st_value())
-def test_constraint_returns_false_with_lower_exclusive_minimum_and_maximum(
+def test_returns_false_with_lower_exclusive_minimum_and_exclusive_maximum(
     data: st.DataObject, value: int
 ) -> None:
     exclusive_maximum = data.draw(st_value(max_value=value))
@@ -248,7 +248,7 @@ def test_constraint_returns_false_with_lower_exclusive_minimum_and_maximum(
 
 
 @given(data=st.data(), value=st_value())
-def test_constraint_always_returns_false_with_inclusive_minimum_and_maximum_when_value_does_not_implement_boundaries(
+def test_returns_false_when_value_does_not_implement_boundaries_with_inclusive_boundaries(
     data: st.DataObject, value: int
 ) -> None:
     inclusive_minimum = data.draw(st_inclusive_minimum(value))
@@ -258,11 +258,11 @@ def test_constraint_always_returns_false_with_inclusive_minimum_and_maximum_when
 
     template = ranges_between(minimum=inclusive_minimum, maximum=inclusive_maximum)
 
-    assert template != BoundariesNotImplemented()
+    assert template != NotImplementedBoundaries()
 
 
 @given(data=st.data(), value=st_value())
-def test_constraint_always_returns_false_with_exclusive_minimum_and_maximum_when_value_does_not_implement_boundaries(
+def test_returns_false_when_value_does_not_implement_boundaries_with_exclusive_boundaries(
     data: st.DataObject, value: int
 ) -> None:
     exclusive_minimum = data.draw(st_inclusive_minimum(value))
@@ -274,20 +274,18 @@ def test_constraint_always_returns_false_with_exclusive_minimum_and_maximum_when
         exclusive_minimum=exclusive_minimum, exclusive_maximum=exclusive_maximum
     )
 
-    assert template != BoundariesNotImplemented()
+    assert template != NotImplementedBoundaries()
 
 
 # noinspection PyArgumentList
-def test_constraint_raises_type_error_on_missing_boundaries() -> None:
+def test_raises_error_on_missing_boundaries() -> None:
     with pytest.raises(TypeError):
         ranges_between()
 
 
 # noinspection PyArgumentList
 @given(data=st.data(), value=st_value())
-def test_constraint_raises_value_error_on_missing_minimum_boundary(
-    data: st.DataObject, value: int
-) -> None:
+def test_raises_error_on_missing_minimum_boundary(data: st.DataObject, value: int) -> None:
     inclusive_maximum = data.draw(st_inclusive_maximum(value))
     exclusive_maximum = data.draw(st_exclusive_maximum(value))
 
@@ -300,9 +298,7 @@ def test_constraint_raises_value_error_on_missing_minimum_boundary(
 
 # noinspection PyArgumentList
 @given(data=st.data(), value=st_value())
-def test_constraint_raises_value_error_on_missing_maximum_boundary(
-    data: st.DataObject, value: int
-) -> None:
+def test_raises_error_on_missing_maximum_boundary(data: st.DataObject, value: int) -> None:
     inclusive_minimum = data.draw(st_inclusive_minimum(value))
     exclusive_minimum = data.draw(st_exclusive_minimum(value))
 
@@ -315,9 +311,7 @@ def test_constraint_raises_value_error_on_missing_maximum_boundary(
 
 # noinspection PyArgumentList
 @given(data=st.data(), value=st_value())
-def test_constraint_raises_value_error_on_mutually_exclusive_boundaries(
-    data: st.DataObject, value: int
-) -> None:
+def test_raises_error_on_mutually_exclusive_boundaries(data: st.DataObject, value: int) -> None:
     inclusive_minimum = data.draw(st_inclusive_minimum(value))
     inclusive_maximum = data.draw(st_inclusive_maximum(value))
 
@@ -362,7 +356,7 @@ def test_constraint_raises_value_error_on_mutually_exclusive_boundaries(
 
 
 @given(data=st.data(), value=st_value())
-def test_constraint_raises_value_error_on_inclusive_boundaries_overlapping(
+def test_raises_error_on_inclusive_minimum_and_inclusive_maximum_overlapping(
     data: st.DataObject, value: int
 ) -> None:
     inclusive_minimum = data.draw(st_value())
@@ -375,7 +369,7 @@ def test_constraint_raises_value_error_on_inclusive_boundaries_overlapping(
 
 
 @given(data=st.data(), value=st_value())
-def test_constraint_raises_value_error_on_inclusive_minimum_and_exclusive_maximum_overlapping(
+def test_raises_error_on_inclusive_minimum_and_exclusive_maximum_overlapping(
     data: st.DataObject, value: int
 ) -> None:
     inclusive_minimum = data.draw(st_value())
@@ -386,7 +380,7 @@ def test_constraint_raises_value_error_on_inclusive_minimum_and_exclusive_maximu
 
 
 @given(data=st.data(), value=st_value())
-def test_constraint_raises_value_error_on_exclusive_minimum_and_inclusive_maximum_overlapping(
+def test_raises_error_on_exclusive_minimum_and_inclusive_maximum_overlapping(
     data: st.DataObject, value: int
 ) -> None:
     exclusive_minimum = data.draw(st_value())
@@ -397,7 +391,7 @@ def test_constraint_raises_value_error_on_exclusive_minimum_and_inclusive_maximu
 
 
 @given(data=st.data(), value=st_value())
-def test_constraint_raises_value_error_on_exclusive_boundaries_overlapping(
+def test_raises_error_on_exclusive_minimum_and_exclusive_maximum_overlapping(
     data: st.DataObject, value: int
 ) -> None:
     exclusive_minimum = data.draw(st_value())
@@ -408,7 +402,7 @@ def test_constraint_raises_value_error_on_exclusive_boundaries_overlapping(
 
 
 @given(value=st_value())
-def test_constraint_raises_value_error_on_single_match_with_inclusive_boundaries(
+def test_raises_error_on_single_match_with_inclusive_minimum_and_inclusive_maximum(
     value: int
 ) -> None:
     inclusive_minimum = value
@@ -419,7 +413,7 @@ def test_constraint_raises_value_error_on_single_match_with_inclusive_boundaries
 
 
 @given(value=st_value())
-def test_constraint_raises_value_error_on_single_match_with_inclusive_minimum_and_exclusive_maximum(
+def test_raises_error_on_single_match_with_inclusive_minimum_and_exclusive_maximum(
     value: int
 ) -> None:
     inclusive_minimum = value
@@ -430,7 +424,7 @@ def test_constraint_raises_value_error_on_single_match_with_inclusive_minimum_an
 
 
 @given(value=st_value())
-def test_constraint_raises_value_error_on_single_match_with_exclusive_minimum_and_inclusive_maximum(
+def test_raises_error_on_single_match_with_exclusive_minimum_and_inclusive_maximum(
     value: int
 ) -> None:
     exclusive_minimum = value - EXCLUSIVE_ALIGNMENT
@@ -441,7 +435,7 @@ def test_constraint_raises_value_error_on_single_match_with_exclusive_minimum_an
 
 
 @given(value=st_value())
-def test_constraint_raises_value_error_on_single_match_with_exclusive_boundaries(
+def test_raises_error_on_single_match_with_exclusive_minimum_and_inclusive_maximum(
     value: int
 ) -> None:
     exclusive_minimum = value - EXCLUSIVE_ALIGNMENT
