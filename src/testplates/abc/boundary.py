@@ -18,8 +18,14 @@ class Boundary(Generic[_T], abc.ABC):
     def __repr__(self) -> str:
         return f"{self.type}_{self.name}({self.value})"
 
-    def __bool__(self) -> bool:
-        return self._value is not None
+    @property
+    def name(self) -> str:
+
+        """
+            Returns boundary name.
+        """
+
+        return self._name
 
     @property
     def value(self) -> _T:
@@ -29,15 +35,6 @@ class Boundary(Generic[_T], abc.ABC):
         """
 
         return self._value
-
-    @property
-    def name(self) -> str:
-
-        """
-            Returns boundary name.
-        """
-
-        return self._name
 
     @property
     @abc.abstractmethod
