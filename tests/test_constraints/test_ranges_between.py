@@ -7,6 +7,7 @@ from hypothesis import assume, given
 from hypothesis import strategies as st
 
 from testplates import (
+    abc,
     ranges_between,
     MissingBoundaryError,
     MutuallyExclusiveBoundariesError,
@@ -17,6 +18,23 @@ from testplates import (
 from ..conftest import Draw
 
 EXCLUSIVE_ALIGNMENT: Final[int] = 1
+
+
+class BoundariesNotImplemented(abc.SupportsBoundaries):
+
+    __slots__ = ()
+
+    def __gt__(self, other):
+        return NotImplemented
+
+    def __lt__(self, other):
+        return NotImplemented
+
+    def __ge__(self, other):
+        return NotImplemented
+
+    def __le__(self, other):
+        return NotImplemented
 
 
 @st.composite
@@ -227,6 +245,36 @@ def test_constraint_returns_false_with_lower_exclusive_minimum_and_maximum(
     )
 
     assert template != value
+
+
+@given(data=st.data(), value=st_value())
+def test_constraint_always_returns_false_with_inclusive_minimum_and_maximum_when_value_does_not_implement_boundaries(
+    data: st.DataObject, value: int
+) -> None:
+    inclusive_minimum = data.draw(st_inclusive_minimum(value))
+    inclusive_maximum = data.draw(st_inclusive_maximum(value))
+
+    assume(inclusive_minimum != inclusive_maximum)
+
+    template = ranges_between(minimum=inclusive_minimum, maximum=inclusive_maximum)
+
+    assert template != BoundariesNotImplemented()
+
+
+@given(data=st.data(), value=st_value())
+def test_constraint_always_returns_false_with_exclusive_minimum_and_maximum_when_value_does_not_implement_boundaries(
+    data: st.DataObject, value: int
+) -> None:
+    exclusive_minimum = data.draw(st_inclusive_minimum(value))
+    exclusive_maximum = data.draw(st_inclusive_maximum(value))
+
+    assume(exclusive_minimum + EXCLUSIVE_ALIGNMENT < exclusive_maximum - EXCLUSIVE_ALIGNMENT)
+
+    template = ranges_between(
+        exclusive_minimum=exclusive_minimum, exclusive_maximum=exclusive_maximum
+    )
+
+    assert template != BoundariesNotImplemented()
 
 
 # noinspection PyArgumentList

@@ -51,19 +51,28 @@ class RangesBetween(Generic[_Boundary], Constraint):
         return f"{__module__}.{type(self).__name__}[{', '.join(parameters)}]"
 
     def __eq__(self, other: Any) -> bool:
-        if not isinstance(other, SupportsBoundaries):
+        if (
+            self._inclusive_minimum is not None
+            and other.__ge__(self._inclusive_minimum) is not True
+        ):
             return False
 
-        if self._inclusive_minimum is not None and other < self._inclusive_minimum:
+        if (
+            self._inclusive_maximum is not None
+            and other.__le__(self._inclusive_maximum) is not True
+        ):
             return False
 
-        if self._inclusive_maximum is not None and other > self._inclusive_maximum:
+        if (
+            self._exclusive_minimum is not None
+            and other.__gt__(self._exclusive_minimum) is not True
+        ):
             return False
 
-        if self._exclusive_minimum is not None and other <= self._exclusive_minimum:
-            return False
-
-        if self._exclusive_maximum is not None and other >= self._exclusive_maximum:
+        if (
+            self._exclusive_maximum is not None
+            and other.__lt__(self._exclusive_maximum) is not True
+        ):
             return False
 
         return True

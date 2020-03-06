@@ -6,6 +6,8 @@ __all__ = [
     "SupportsBoundaries",
 ]
 
+import abc
+
 from typing import Any, TypeVar
 from typing_extensions import runtime_checkable, Protocol
 
@@ -19,6 +21,7 @@ class SupportsAddition(Protocol):
         Protocol for object with addition capabilities.
     """
 
+    @abc.abstractmethod
     def __add__(self, other: _T) -> _T:
 
         """
@@ -35,6 +38,7 @@ class SupportsSubtraction(Protocol):
         Protocol for object with subtraction capabilities.
     """
 
+    @abc.abstractmethod
     def __sub__(self, other: _T) -> _T:
 
         """
@@ -44,13 +48,13 @@ class SupportsSubtraction(Protocol):
         """
 
 
-@runtime_checkable
 class SupportsExclusiveBoundaries(Protocol):
 
     """
         Protocol for object with exclusive boundaries.
     """
 
+    @abc.abstractmethod
     def __gt__(self, other: Any) -> bool:
 
         """
@@ -59,6 +63,7 @@ class SupportsExclusiveBoundaries(Protocol):
             :param other: any other object
         """
 
+    @abc.abstractmethod
     def __lt__(self, other: Any) -> bool:
 
         """
@@ -68,13 +73,13 @@ class SupportsExclusiveBoundaries(Protocol):
         """
 
 
-@runtime_checkable
 class SupportsInclusiveBoundaries(Protocol):
 
     """
         Protocol for object with inclusive boundaries.
     """
 
+    @abc.abstractmethod
     def __ge__(self, other: Any) -> bool:
 
         """
@@ -83,6 +88,7 @@ class SupportsInclusiveBoundaries(Protocol):
             :param other: any other object
         """
 
+    @abc.abstractmethod
     def __le__(self, other: Any) -> bool:
 
         """
@@ -92,7 +98,6 @@ class SupportsInclusiveBoundaries(Protocol):
         """
 
 
-@runtime_checkable
 class SupportsBoundaries(SupportsExclusiveBoundaries, SupportsInclusiveBoundaries, Protocol):
 
     """
