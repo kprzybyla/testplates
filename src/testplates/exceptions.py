@@ -156,3 +156,7 @@ class MissingValueInternalError(InternalError):
 
     def __init__(self, field: abc.Descriptor[_T]) -> None:
         super().__init__(f"Field {field.name!r} is internally missing value ({field!r})")
+
+
+class UnreachableCodeError(InternalError):
+    ...

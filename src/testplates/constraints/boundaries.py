@@ -9,6 +9,7 @@ from testplates.exceptions import (
     MutuallyExclusiveBoundariesError,
     OverlappingBoundariesError,
     SingleMatchBoundariesError,
+    UnreachableCodeError,
 )
 
 _T = TypeVar("_T", int, float)
@@ -89,4 +90,4 @@ def _get_boundary(
     if exclusive is not None:
         return Exclusive(name, exclusive)
 
-    raise NotImplementedError()  # pragma: no cover
+    raise UnreachableCodeError()  # pragma: no cover
