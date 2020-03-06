@@ -9,6 +9,8 @@ from .boundaries import get_minimum, get_maximum, validate_boundaries
 
 _Boundary = TypeVar("_Boundary", bound=SupportsBoundaries)
 
+# TODO(kprzybyla): Remove noqa (F811) after github.com/PyCQA/pyflakes/issues/320 is released
+
 
 class RangesBetween(Generic[_Boundary], Constraint):
 
@@ -85,28 +87,28 @@ def ranges_between(
     ...
 
 
-@overload
+@overload  # noqa
 def ranges_between(
     *, minimum: Optional[_Boundary], exclusive_maximum: Optional[_Boundary]
 ) -> RangesBetween[_Boundary]:
     ...
 
 
-@overload
+@overload  # noqa
 def ranges_between(
     *, exclusive_minimum: Optional[_Boundary], maximum: Optional[_Boundary]
 ) -> RangesBetween[_Boundary]:
     ...
 
 
-@overload
+@overload  # noqa
 def ranges_between(
     *, exclusive_minimum: Optional[_Boundary], exclusive_maximum: Optional[_Boundary]
 ) -> RangesBetween[_Boundary]:
     ...
 
 
-def ranges_between(
+def ranges_between(  # noqa
     *,
     minimum: Optional[_Boundary] = None,
     maximum: Optional[_Boundary] = None,

@@ -435,7 +435,7 @@ def test_raises_error_on_single_match_with_exclusive_minimum_and_inclusive_maxim
 
 
 @given(value=st_value())
-def test_raises_error_on_single_match_with_exclusive_minimum_and_inclusive_maximum(
+def test_raises_error_on_single_match_with_exclusive_minimum_and_exclusive_maximum(
     value: int
 ) -> None:
     exclusive_minimum = value - EXCLUSIVE_ALIGNMENT

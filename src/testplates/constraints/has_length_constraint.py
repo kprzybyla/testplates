@@ -11,6 +11,8 @@ from testplates.exceptions import InvalidBoundaryValueError
 
 from .boundaries import get_minimum, get_maximum, validate_boundaries
 
+# TODO(kprzybyla): Remove noqa (F811) after github.com/PyCQA/pyflakes/issues/320 is released
+
 
 class AnyHasLength(Constraint, abc.ABC):
 
@@ -92,12 +94,12 @@ def has_length(length: int) -> HasLength:
     ...
 
 
-@overload
+@overload  # noqa
 def has_length(*, minimum: int, maximum: int) -> HasLengthBetween:
     ...
 
 
-def has_length(
+def has_length(  # noqa
     length: Optional[int] = None, *, minimum: Optional[int] = None, maximum: Optional[int] = None
 ) -> AnyHasLength:
     if length is not None:

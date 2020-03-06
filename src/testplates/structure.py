@@ -64,9 +64,9 @@ class Field(Generic[_T], Descriptor[_T]):
     def __get__(self, instance: Structure[_T], owner: Type[Structure[_T]]) -> _T:
         ...
 
-    def __get__(
+    def __get__(  # noqa
         self, instance: Optional[Structure[_T]], owner: Type[Structure[_T]]
-    ) -> Union[Field[_T], _T]:  # noqa
+    ) -> Union[Field[_T], _T]:
 
         """
             Returns either field itself or field value.
