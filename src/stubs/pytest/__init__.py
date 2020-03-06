@@ -1,9 +1,9 @@
 from types import TracebackType
-from typing import Any, Type, TypeVar, Generic, Union, Tuple, Pattern, Optional
+from typing import Any, Type, TypeVar, Generic, Union, Tuple, Pattern, Optional  # noqa
+
+# TODO(kprzybyla): Remove noqa (F401) after github.com/PyCQA/pyflakes/issues/447 is released
 
 _E = TypeVar("_E", bound=BaseException)
-
-from . import mark
 
 
 class ExceptionInfo(Generic[_E]):

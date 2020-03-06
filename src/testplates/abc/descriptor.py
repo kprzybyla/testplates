@@ -9,6 +9,7 @@ from typing import overload, Any, TypeVar, Generic, Union, Optional
 _T = TypeVar("_T")
 
 # TODO(kprzybyla): Remove noqa (F811) after github.com/PyCQA/pyflakes/issues/320 is released
+# TODO(kprzybyla): Remove noqa (F821) after github.com/PyCQA/pyflakes/issues/356 is released
 
 
 class Descriptor(Generic[_T], abc.ABC):
@@ -32,7 +33,7 @@ class Descriptor(Generic[_T], abc.ABC):
         """
 
     @overload
-    def __get__(self, instance: None, owner: Any) -> Descriptor[_T]:
+    def __get__(self, instance: None, owner: Any) -> Descriptor[_T]:  # noqa
         ...
 
     @overload  # noqa
