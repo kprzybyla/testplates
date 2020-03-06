@@ -34,8 +34,8 @@ _T = TypeVar("_T", covariant=True)
 
 Bases = Tuple[type, ...]
 
-# TODO(kprzybyla): Remove noqa (F811) after github.com/PyCQA/pyflakes/issues/320 is released
-# TODO(kprzybyla): Remove noqa (F821) after github.com/PyCQA/pyflakes/issues/356 is released
+# TODO(kprzybyla): Remove noqa(F811) after github.com/PyCQA/pyflakes/issues/320 is released
+# TODO(kprzybyla): Remove noqa(F821) after github.com/PyCQA/pyflakes/issues/356 is released
 
 
 class Field(Generic[_T], Descriptor[_T]):
@@ -54,20 +54,20 @@ class Field(Generic[_T], Descriptor[_T]):
             f"[{self._name!r}, default={self.default!r}, is_optional={self.is_optional!r}]"
         )
 
-    def __set_name__(self, owner: Type[Structure[_T]], name: str) -> None:  # noqa
+    def __set_name__(self, owner: Type[Structure[_T]], name: str) -> None:  # noqa(F821)
         self._name = name
 
     @overload
-    def __get__(self, instance: None, owner: Type[Structure[_T]]) -> Field[_T]:  # noqa
+    def __get__(self, instance: None, owner: Type[Structure[_T]]) -> Field[_T]:  # noqa(F821)
         ...
 
-    @overload  # noqa
-    def __get__(self, instance: Structure[_T], owner: Type[Structure[_T]]) -> _T:  # noqa
+    @overload  # noqa(F811)
+    def __get__(self, instance: Structure[_T], owner: Type[Structure[_T]]) -> _T:  # noqa(F821)
         ...
 
-    def __get__(  # noqa
-        self, instance: Optional[Structure[_T]], owner: Type[Structure[_T]]  # noqa
-    ) -> Union[Field[_T], _T]:  # noqa
+    def __get__(  # noqa(F811)
+        self, instance: Optional[Structure[_T]], owner: Type[Structure[_T]]  # noqa(F821)
+    ) -> Union[Field[_T], _T]:  # noqa(F821)
 
         """
             Returns either field itself or field value.
@@ -177,7 +177,7 @@ class StructureMeta(Generic[_T], abc.ABCMeta):
 
     def __new__(
         mcs, name: str, bases: Bases, namespace: _StructureDict[_T]
-    ) -> StructureMeta[_T]:  # noqa
+    ) -> StructureMeta[_T]:  # noqa(F821)
         instance = cast(StructureMeta[_T], super().__new__(mcs, name, bases, namespace))
         instance._fields_ = namespace.fields
 
