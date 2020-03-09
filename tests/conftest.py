@@ -39,8 +39,8 @@ template_and_storage_parameters = pytest.mark.parametrize(
 )
 
 
-def samples(values: List[_T]) -> List[_T]:
-    return random.sample(values, k=random.randint(0, len(values)))
+def samples(values: List[_T], minimum: int = 0) -> List[_T]:
+    return random.sample(values, k=random.randint(minimum, len(values)))
 
 
 def st_anything() -> st.SearchStrategy[_T]:
