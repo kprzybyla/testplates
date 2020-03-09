@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Any, Optional
 from typing_extensions import Final
 
 import pytest
@@ -23,16 +23,16 @@ class NotImplementedBoundaries:
 
     __slots__ = ()
 
-    def __gt__(self, other):
+    def __gt__(self, other: Any) -> bool:
         return NotImplemented
 
-    def __lt__(self, other):
+    def __lt__(self, other: Any) -> bool:
         return NotImplemented
 
-    def __ge__(self, other):
+    def __ge__(self, other: Any) -> bool:
         return NotImplemented
 
-    def __le__(self, other):
+    def __le__(self, other: Any) -> bool:
         return NotImplemented
 
 
@@ -402,7 +402,7 @@ def test_raises_error_on_exclusive_minimum_and_exclusive_maximum_overlapping(
 
 @given(value=st_value())
 def test_raises_error_on_single_match_with_inclusive_minimum_and_inclusive_maximum(
-    value: int
+    value: int,
 ) -> None:
     inclusive_minimum = value
     inclusive_maximum = value
@@ -413,7 +413,7 @@ def test_raises_error_on_single_match_with_inclusive_minimum_and_inclusive_maxim
 
 @given(value=st_value())
 def test_raises_error_on_single_match_with_inclusive_minimum_and_exclusive_maximum(
-    value: int
+    value: int,
 ) -> None:
     inclusive_minimum = value
     exclusive_maximum = value + EXCLUSIVE_ALIGNMENT
@@ -424,7 +424,7 @@ def test_raises_error_on_single_match_with_inclusive_minimum_and_exclusive_maxim
 
 @given(value=st_value())
 def test_raises_error_on_single_match_with_exclusive_minimum_and_inclusive_maximum(
-    value: int
+    value: int,
 ) -> None:
     exclusive_minimum = value - EXCLUSIVE_ALIGNMENT
     inclusive_maximum = value
@@ -435,7 +435,7 @@ def test_raises_error_on_single_match_with_exclusive_minimum_and_inclusive_maxim
 
 @given(value=st_value())
 def test_raises_error_on_single_match_with_exclusive_minimum_and_exclusive_maximum(
-    value: int
+    value: int,
 ) -> None:
     exclusive_minimum = value - EXCLUSIVE_ALIGNMENT
     exclusive_maximum = value + EXCLUSIVE_ALIGNMENT
