@@ -17,17 +17,8 @@ ANY_DIGIT: Final[str] = r"\d+"
 MAC_ADDRESS: Final[str] = r"([0-9A-Fa-f]{2}[:]){5}([0-9A-Fa-f]{2})"
 HEX_COLOR_NUMBER: Final[str] = r"\B#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})\b"
 
-PATTERNS: Final[List[str]] = [ANY_WORD, ANY_DIGIT, MAC_ADDRESS, HEX_COLOR_NUMBER]
-
-
-@pytest.fixture(params=PATTERNS)
-def str_pattern(request):
-    return request.param
-
-
-@pytest.fixture(params=map(str.encode, PATTERNS))
-def bytes_pattern(request):
-    return request.param
+STR_PATTERNS: Final[List[str]] = [ANY_WORD, ANY_DIGIT, MAC_ADDRESS, HEX_COLOR_NUMBER]
+BYTES_PATTERNS: Final[List[str]] = list(map(str.encode, STR_PATTERNS))
 
 
 @st.composite
@@ -52,59 +43,63 @@ def st_inverse_bytes_regex(draw: Draw, pattern: bytes) -> bytes:
 
 
 @given(data=st.data())
-def test_returns_true_with_str_pattern(data: st.DataObject, str_pattern: str) -> None:
-    value = data.draw(st_regex(str_pattern))
+@pytest.mark.parametrize("pattern", STR_PATTERNS)
+def test_returns_true_with_str_pattern(data: st.DataObject, pattern: str) -> None:
+    value = data.draw(st_regex(pattern))
 
-    template = matches_pattern(str_pattern)
-
-    assert template == value
-
-
-@given(data=st.data())
-def test_returns_true_with_bytes_pattern(data: st.DataObject, bytes_pattern: bytes) -> None:
-    value = data.draw(st_regex(bytes_pattern))
-
-    template = matches_pattern(bytes_pattern)
+    template = matches_pattern(pattern)
 
     assert template == value
 
 
 @given(data=st.data())
-def test_returns_false_with_str_pattern(data: st.DataObject, str_pattern: str) -> None:
-    value = data.draw(st_inverse_str_regex(str_pattern))
+@pytest.mark.parametrize("pattern", BYTES_PATTERNS)
+def test_returns_true_with_bytes_pattern(data: st.DataObject, pattern: bytes) -> None:
+    value = data.draw(st_regex(pattern))
 
-    template = matches_pattern(str_pattern)
+    template = matches_pattern(pattern)
+
+    assert template == value
+
+
+@given(data=st.data())
+@pytest.mark.parametrize("pattern", STR_PATTERNS)
+def test_returns_false_with_str_pattern(data: st.DataObject, pattern: str) -> None:
+    value = data.draw(st_inverse_str_regex(pattern))
+
+    template = matches_pattern(pattern)
 
     assert template != value
 
 
 @given(data=st.data())
-def test_returns_false_with_bytes_pattern(data: st.DataObject, bytes_pattern: bytes) -> None:
-    value = data.draw(st_inverse_bytes_regex(bytes_pattern))
+@pytest.mark.parametrize("pattern", BYTES_PATTERNS)
+def test_returns_false_with_bytes_pattern(data: st.DataObject, pattern: bytes) -> None:
+    value = data.draw(st_inverse_bytes_regex(pattern))
 
-    template = matches_pattern(bytes_pattern)
+    template = matches_pattern(pattern)
 
     assert template != value
 
 
 @given(data=st.data())
-def test_returns_false_with_str_pattern_and_bytes_value(
-    data: st.DataObject, str_pattern: str
-) -> None:
-    value = data.draw(st_regex(str_pattern))
+@pytest.mark.parametrize("pattern", STR_PATTERNS)
+def test_returns_false_with_str_pattern_and_bytes_value(data: st.DataObject, pattern: str) -> None:
+    value = data.draw(st_regex(pattern))
 
-    template = matches_pattern(str_pattern)
+    template = matches_pattern(pattern)
 
     assert template != value.encode()
 
 
 @given(data=st.data())
+@pytest.mark.parametrize("pattern", BYTES_PATTERNS)
 def test_returns_false_with_bytes_pattern_and_str_value(
-    data: st.DataObject, bytes_pattern: bytes
+    data: st.DataObject, pattern: bytes
 ) -> None:
-    value = data.draw(st_regex(bytes_pattern))
+    value = data.draw(st_regex(pattern))
 
-    template = matches_pattern(bytes_pattern)
+    template = matches_pattern(pattern)
 
     assert template != value.decode()
 
