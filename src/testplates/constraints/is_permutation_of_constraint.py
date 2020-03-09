@@ -23,7 +23,7 @@ class IsPermutationOf(Generic[_T], Constraint):
         self._values = values
 
     def __repr__(self) -> str:
-        return f"{__module__}.{type(self).__name__}[{self._values!r}]"
+        return f"{__module__}.{type(self).__name__}{self._values!r}"
 
     def __eq__(self, other: Any) -> bool:
         if not isinstance(other, Iterable):

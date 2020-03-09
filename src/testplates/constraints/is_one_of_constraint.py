@@ -9,7 +9,7 @@ from testplates.exceptions import TooLittleValuesError
 
 _T = TypeVar("_T", covariant=True)
 
-MINIMUM_NUMBER_OF_VALUES: Final[int] = 1
+MINIMUM_NUMBER_OF_VALUES: Final[int] = 2
 
 
 class IsOneOf(Generic[_T], Constraint):
