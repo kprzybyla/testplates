@@ -128,8 +128,8 @@ class TooLittleValuesError(TestplatesValueError):
         that requires at least one value to be provided.
     """
 
-    def __init__(self) -> None:
-        super().__init__("Template requires at least one value to be provided")
+    def __init__(self, required: int) -> None:
+        super().__init__(f"Template requires at least {required} value(s) to be provided")
 
 
 class InternalError(TestplatesError):

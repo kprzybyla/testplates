@@ -1,6 +1,7 @@
 __all__ = ["is_one_of"]
 
 from typing import Any, TypeVar, Generic
+from typing_extensions import Final
 
 from testplates import __module__
 from testplates.abc import Constraint
@@ -8,14 +9,16 @@ from testplates.exceptions import TooLittleValuesError
 
 _T = TypeVar("_T", covariant=True)
 
+MINIMUM_NUMBER_OF_VALUES: Final[int] = 1
+
 
 class IsOneOf(Generic[_T], Constraint):
 
     __slots__ = ("_values",)
 
     def __init__(self, *values: _T) -> None:
-        if len(values) < 2:
-            raise TooLittleValuesError()
+        if len(values) < MINIMUM_NUMBER_OF_VALUES:
+            raise TooLittleValuesError(MINIMUM_NUMBER_OF_VALUES)
 
         self._values = values
 
