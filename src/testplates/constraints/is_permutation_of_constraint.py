@@ -1,6 +1,6 @@
 __all__ = ["is_permutation_of"]
 
-from typing import Any, TypeVar, Generic, List, Iterable
+from typing import Any, TypeVar, Generic, List, Collection
 from typing_extensions import Final
 
 from testplates import __module__
@@ -26,7 +26,7 @@ class IsPermutationOf(Generic[_T], Constraint):
         return f"{__module__}.{type(self).__name__}{self._values!r}"
 
     def __eq__(self, other: Any) -> bool:
-        if not isinstance(other, Iterable):
+        if not isinstance(other, Collection):
             return False
 
         if len(other) != len(self._values):

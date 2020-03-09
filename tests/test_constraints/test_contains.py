@@ -1,4 +1,4 @@
-from typing import TypeVar, Generic, List
+from typing import TypeVar, List, Container
 from typing_extensions import Final
 from dataclasses import dataclass
 
@@ -17,7 +17,7 @@ MINIMUM_NUMBER_OF_VALUES: Final[int] = 1
 
 
 @dataclass
-class Container(Generic[_T]):
+class ContainerWrapper(Container[_T]):
 
     values: List[_T]
 
@@ -52,7 +52,7 @@ def st_values_without(draw: Draw, value: _T) -> List[_T]:
 def test_returns_true(values: List[_T]) -> None:
     template = contains(*values)
 
-    assert template == Container(values)
+    assert template == ContainerWrapper(values)
 
 
 @given(data=st.data(), value=st_value())
@@ -61,11 +61,11 @@ def test_returns_false(data: st.DataObject, value: _T) -> None:
 
     template = contains(value, *samples(values))
 
-    assert template != Container(values)
+    assert template != ContainerWrapper(values)
 
 
 @given(values=st_values())
-def test_returns_false_when_value_is_not_a_container(values: List[_T]) -> None:
+def test_returns_false_when_value_is_not_container(values: List[_T]) -> None:
     template = contains(*values)
 
     assert template != NotContainer()

@@ -1,6 +1,7 @@
 import sys
 
 from dataclasses import dataclass
+from typing import Sized
 from typing_extensions import Final
 
 import pytest
@@ -23,7 +24,7 @@ MAXIMUM_LENGTH: Final[int] = sys.maxsize
 
 
 @dataclass
-class Sized:
+class SizedWrapper(Sized):
 
     length: int
 
@@ -67,7 +68,7 @@ def st_length_above_maximum(draw: Draw) -> int:
 def test_returns_true(length: int) -> None:
     template = has_length(length)
 
-    assert template == Sized(length)
+    assert template == SizedWrapper(length)
 
 
 @given(data=st.data(), length=st_length())
@@ -79,7 +80,7 @@ def test_returns_true_with_minimum_and_maximum(data: st.DataObject, length: int)
 
     template = has_length(minimum=minimum, maximum=maximum)
 
-    assert template == Sized(length)
+    assert template == SizedWrapper(length)
 
 
 @given(length=st_length(), other=st_length())
@@ -88,7 +89,7 @@ def test_returns_false(length: int, other: int) -> None:
 
     template = has_length(length)
 
-    assert template != Sized(other)
+    assert template != SizedWrapper(other)
 
 
 @given(data=st.data(), length=st_length())
@@ -101,7 +102,7 @@ def test_returns_false_with_upper_minimum_and_maximum(data: st.DataObject, lengt
 
     template = has_length(minimum=minimum, maximum=maximum)
 
-    assert template != Sized(length)
+    assert template != SizedWrapper(length)
 
 
 @given(data=st.data(), length=st_length())
@@ -114,7 +115,7 @@ def test_returns_false_with_lower_minimum_and_maximum(data: st.DataObject, lengt
 
     template = has_length(minimum=minimum, maximum=maximum)
 
-    assert template != Sized(length)
+    assert template != SizedWrapper(length)
 
 
 @given(length=st_length())

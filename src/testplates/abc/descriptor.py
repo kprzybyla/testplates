@@ -36,8 +36,8 @@ class Descriptor(Generic[_T], abc.ABC):
     def __get__(self, instance: None, owner: Any) -> Descriptor[_T]:  # noqa(F821)
         ...
 
-    @overload  # noqa(F811)
-    def __get__(self, instance: Any, owner: Any) -> _T:
+    @overload
+    def __get__(self, instance: Any, owner: Any) -> _T:  # noqa(F811)
         ...
 
     def __get__(  # noqa(F811)

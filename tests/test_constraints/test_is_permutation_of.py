@@ -1,8 +1,8 @@
 import random
-import itertools
 
-from typing import TypeVar, List
+from typing import TypeVar, List, Iterator, Collection
 from typing_extensions import Final
+from dataclasses import dataclass
 
 import pytest
 
@@ -18,9 +18,61 @@ _T = TypeVar("_T")
 MINIMUM_NUMBER_OF_VALUES: Final[int] = 2
 
 
+@dataclass
+class CollectionWrapper(Collection[_T]):
+
+    values: List[_T]
+
+    def __len__(self) -> int:
+        return len(self.values)
+
+    def __iter__(self) -> Iterator[_T]:
+        return iter(self.values)
+
+    def __contains__(self, item: _T) -> bool:
+        return item in self.values
+
+
+@dataclass
+class NotSized:
+
+    values: List[_T]
+
+    __len__ = None
+
+    def __iter__(self) -> Iterator[_T]:
+        return iter(self.values)
+
+    def __contains__(self, item: _T) -> bool:
+        return item in self.values
+
+
+@dataclass
 class NotIterable:
 
+    values: List[_T]
+
     __iter__ = None
+
+    def __len__(self) -> int:
+        return len(self.values)
+
+    def __contains__(self, item: _T) -> bool:
+        return item in self.values
+
+
+@dataclass
+class NotContainer:
+
+    values: List[_T]
+
+    __contains__ = None
+
+    def __len__(self) -> int:
+        return len(self.values)
+
+    def __iter__(self) -> Iterator[_T]:
+        return iter(self.values)
 
 
 def shuffle(values: List[_T]) -> List[_T]:
@@ -58,7 +110,7 @@ def test_returns_true(values: List[_T]) -> None:
 
     template = is_permutation_of(permutation)
 
-    assert template == values
+    assert template == CollectionWrapper(values)
 
 
 @given(values=st_values(), other=st_value())
@@ -72,7 +124,7 @@ def test_returns_false(values: List[_T], other: _T) -> None:
 
     template = is_permutation_of(permutation)
 
-    assert template != values
+    assert template != CollectionWrapper(values)
 
 
 @given(values=st_values())
@@ -84,7 +136,7 @@ def test_returns_false_when_permutation_has_more_values(values: List[_T]) -> Non
 
     template = is_permutation_of(permutation)
 
-    assert template != values
+    assert template != CollectionWrapper(values)
 
 
 @given(values=st_values())
@@ -95,14 +147,28 @@ def test_returns_false_when_permutation_has_fewer_values(values: List[_T]) -> No
 
     template = is_permutation_of(permutation)
 
-    assert template != values
+    assert template != CollectionWrapper(values)
+
+
+@given(values=st_values())
+def test_returns_false_when_value_is_not_sized(values: List[_T]) -> None:
+    template = is_permutation_of(values)
+
+    assert template != NotSized(values)
 
 
 @given(values=st_values())
 def test_returns_false_when_value_is_not_iterable(values: List[_T]) -> None:
     template = is_permutation_of(values)
 
-    assert template != NotIterable()
+    assert template != NotIterable(values)
+
+
+@given(values=st_values())
+def test_returns_false_when_value_is_not_container(values: List[_T]) -> None:
+    template = is_permutation_of(values)
+
+    assert template != NotContainer(values)
 
 
 @given(values=st_inverse_values())
