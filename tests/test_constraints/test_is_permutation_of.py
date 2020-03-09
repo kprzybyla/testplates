@@ -24,7 +24,7 @@ class NotIterable:
 
 
 def shuffle(values: List[_T]) -> List[_T]:
-    shuffled = values[:]
+    shuffled = values.copy()
     random.shuffle(shuffled)
 
     return shuffled
@@ -56,7 +56,7 @@ def st_inverse_values(draw: Draw) -> List[_T]:
 def test_returns_true(values: List[_T]) -> None:
     permutation = shuffle(values)
 
-    template = is_permutation_of(*permutation)
+    template = is_permutation_of(permutation)
 
     assert template == values
 
@@ -70,7 +70,19 @@ def test_returns_false(values: List[_T], other: _T) -> None:
     permutation = shuffle(values)
     permutation[index] = other
 
-    template = is_permutation_of(*permutation)
+    template = is_permutation_of(permutation)
+
+    assert template != values
+
+
+@given(values=st_values())
+def test_returns_false_when_permutation_has_more_values(values: List[_T]) -> None:
+    permutation = values.copy()
+    permutation.extend(samples(values))
+
+    assume(len(permutation) > len(values))
+
+    template = is_permutation_of(permutation)
 
     assert template != values
 
@@ -81,14 +93,14 @@ def test_returns_false_when_permutation_has_fewer_values(values: List[_T]) -> No
 
     assume(len(permutation) < len(values))
 
-    template = is_permutation_of(*permutation)
+    template = is_permutation_of(permutation)
 
     assert template != values
 
 
 @given(values=st_values())
 def test_returns_false_when_value_is_not_iterable(values: List[_T]) -> None:
-    template = is_permutation_of(*values)
+    template = is_permutation_of(values)
 
     assert template != NotIterable()
 
@@ -96,4 +108,4 @@ def test_returns_false_when_value_is_not_iterable(values: List[_T]) -> None:
 @given(values=st_inverse_values())
 def test_raises_error_when_less_than_two_values_were_provided(values: List[_T]) -> None:
     with pytest.raises(TooLittleValuesError):
-        is_permutation_of(*values)
+        is_permutation_of(values)
