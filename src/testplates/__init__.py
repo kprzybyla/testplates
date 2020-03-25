@@ -9,6 +9,7 @@ __all__ = [
     "matches_pattern",
     "is_one_of",
     "is_permutation_of",
+    "exceptions",
     "Object",
     "Mapping",
     "Required",
