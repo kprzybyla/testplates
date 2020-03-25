@@ -10,7 +10,7 @@
 dist/
 build/
 pip-wheel-metadata/
-_version.py
+__version__.py
 
 # pytest
 .pytest_cache/

@@ -1,9 +1,15 @@
+include LICENSE
 include README.rst
 include setup.py
 
-graft src
-
-exclude tests/**/*
 exclude .gitignore
+
+exclude tox.ini
+exclude setup.cfg
+exclude MANIFEST.in
+exclude pyproject.toml
+
+exclude src/stubs/**/*
+exclude tests/**/*
 
 recursive-exclude * *.pyc *.pyo
