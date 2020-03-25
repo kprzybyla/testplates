@@ -13,12 +13,12 @@ __all__ = [
     "TooLittleValuesError",
     "InternalError",
     "MissingValueInternalError",
+    "UnreachableCodeError",
 ]
 
-from typing import TypeVar, Optional
+from typing import Any, TypeVar, Optional
 
-from . import abc
-from .value import Maybe
+from testplates import abc
 
 _T = TypeVar("_T")
 
@@ -74,7 +74,7 @@ class UnexpectedValueError(TestplatesValueError):
         not defined inside the template class.
     """
 
-    def __init__(self, key: str, value: Maybe[_T]) -> None:
+    def __init__(self, key: str, value: _T) -> None:
         super().__init__(f"Unexpected key {key!r} with value {value!r}")
 
 
@@ -87,7 +87,7 @@ class ProhibitedValueError(TestplatesValueError):
         is invalid for given field due to its nature.
     """
 
-    def __init__(self, field: abc.Descriptor[_T], value: Maybe[_T]) -> None:
+    def __init__(self, field: abc.Descriptor[_T], value: Any) -> None:
         super().__init__(f"Value {value!r} is prohibited for field {field!r}")
 
 

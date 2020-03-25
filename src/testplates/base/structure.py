@@ -18,17 +18,17 @@ from typing import (
     Optional,
 )
 
-from .abc import Descriptor
-from .utils import matches
-from .value import WILDCARD, ABSENT, MISSING, Maybe
-
-from .exceptions import (
+from testplates.abc import Descriptor
+from testplates.exceptions import (
     DanglingDescriptorError,
     MissingValueError,
     UnexpectedValueError,
     ProhibitedValueError,
     MissingValueInternalError,
 )
+
+from .utils import matches
+from .value import WILDCARD, ABSENT, MISSING, Maybe
 
 _T = TypeVar("_T", covariant=True)
 

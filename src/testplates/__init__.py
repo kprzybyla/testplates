@@ -1,8 +1,12 @@
 __all__ = [
+    "field",
+    "Required",
+    "Optional",
+    "Object",
+    "Mapping",
     "ANY",
     "WILDCARD",
     "ABSENT",
-    "field",
     "contains",
     "has_length",
     "ranges_between",
@@ -10,10 +14,6 @@ __all__ = [
     "is_one_of",
     "is_permutation_of",
     "exceptions",
-    "Object",
-    "Mapping",
-    "Required",
-    "Optional",
     "TestplatesError",
     "TestplatesValueError",
     "DanglingDescriptorError",
@@ -30,26 +30,20 @@ __all__ = [
 
 __module__ = __name__
 
-from .value import ANY, WILDCARD, ABSENT
+from testplates.base import field, Required, Optional, Object, Mapping, ANY, WILDCARD, ABSENT
 
-from .fields import field
-
-from .constraints import (
-    matches_pattern,
+from testplates.constraints import (
     contains,
-    ranges_between,
     has_length,
+    ranges_between,
+    matches_pattern,
     is_one_of,
     is_permutation_of,
 )
 
-from .object import Object
-from .mapping import Mapping
-from .fields import Required, Optional
+from testplates import exceptions
 
-from . import exceptions
-
-from .exceptions import (
+from testplates.exceptions import (
     TestplatesError,
     TestplatesValueError,
     DanglingDescriptorError,
