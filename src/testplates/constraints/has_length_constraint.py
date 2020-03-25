@@ -5,7 +5,8 @@ import sys
 
 from typing import overload, Any, Sized, Optional
 
-from testplates import __module__
+import testplates
+
 from testplates.abc import Constraint
 from testplates.exceptions import InvalidLengthValueError
 
@@ -30,7 +31,7 @@ class HasLength(AnyHasLength):
         self._length = length
 
     def __repr__(self) -> str:
-        return f"{__module__}.{type(self).__name__}[{self._length}]"
+        return f"{testplates.__name__}.{type(self).__name__}[{self._length}]"
 
     def __eq__(self, other: Any) -> bool:
         if not super().__eq__(other):
@@ -74,7 +75,7 @@ class HasLengthBetween(AnyHasLength):
             f"{maximum.type}_{maximum.name}={maximum.value}",
         ]
 
-        return f"{__module__}.{type(self).__name__}[{', '.join(parameters)}]"
+        return f"{testplates.__name__}.{type(self).__name__}[{', '.join(parameters)}]"
 
     def __eq__(self, other: Any) -> bool:
         if not super().__eq__(other):

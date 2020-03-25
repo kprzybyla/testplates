@@ -5,7 +5,8 @@ import abc
 
 from typing import Any, AnyStr, Type, Generic, Pattern
 
-from testplates import __module__
+import testplates
+
 from testplates.abc import Constraint
 
 
@@ -18,7 +19,7 @@ class MatchesPattern(Generic[AnyStr], Constraint, abc.ABC):
         self._pattern_type: Type[AnyStr] = pattern_type
 
     def __repr__(self) -> str:
-        return f"{__module__}.{type(self).__name__}[{self._pattern.pattern!r}]"
+        return f"{testplates.__name__}.{type(self).__name__}[{self._pattern.pattern!r}]"
 
     def __eq__(self, other: Any) -> bool:
         if not isinstance(other, self._pattern_type):

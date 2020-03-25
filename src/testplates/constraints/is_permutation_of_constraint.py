@@ -3,7 +3,8 @@ __all__ = ["is_permutation_of"]
 from typing import Any, TypeVar, Generic, List, Collection
 from typing_extensions import Final
 
-from testplates import __module__
+import testplates
+
 from testplates.abc import Constraint
 from testplates.exceptions import TooLittleValuesError
 
@@ -23,7 +24,7 @@ class IsPermutationOf(Generic[_T], Constraint):
         self._values = values
 
     def __repr__(self) -> str:
-        return f"{__module__}.{type(self).__name__}{self._values!r}"
+        return f"{testplates.__name__}.{type(self).__name__}{self._values!r}"
 
     def __eq__(self, other: Any) -> bool:
         if not isinstance(other, Collection):

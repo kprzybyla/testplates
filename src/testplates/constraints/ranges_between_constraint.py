@@ -2,7 +2,8 @@ __all__ = ["ranges_between"]
 
 from typing import overload, Any, TypeVar, Generic, Optional
 
-from testplates import __module__
+import testplates
+
 from testplates.abc import Constraint
 
 from .boundaries import get_minimum, get_maximum, validate_boundaries
@@ -50,7 +51,7 @@ class RangesBetween(Generic[_Boundary], Constraint):
             f"{maximum.type}_{maximum.name}={maximum.value}",
         ]
 
-        return f"{__module__}.{type(self).__name__}[{', '.join(parameters)}]"
+        return f"{testplates.__name__}.{type(self).__name__}[{', '.join(parameters)}]"
 
     def __eq__(self, other: Any) -> bool:
         if (

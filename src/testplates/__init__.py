@@ -28,8 +28,6 @@ __all__ = [
     "TooLittleValuesError",
 ]
 
-__module__ = __name__
-
 from testplates.base import field, Required, Optional, Object, Mapping, ANY, WILDCARD, ABSENT
 
 from testplates.constraints import (
