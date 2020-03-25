@@ -20,12 +20,14 @@ def samples(values: List[_T], minimum: int = 0) -> List[_T]:
 
 
 def st_anything_comparable() -> st.SearchStrategy[_Ex]:
-    strategy = st.from_type(type).flatmap(st.from_type)
+    def filter_anything_comparable(value: _T) -> bool:
+        return value == value
 
-    return strategy.filter(lambda x: x == x)  # type: ignore
+    return st.from_type(type).flatmap(st.from_type).filter(filter_anything_comparable)
 
 
 def st_anything_except(*types: type) -> st.SearchStrategy[_Ex]:
-    strategy = st.from_type(type).flatmap(st.from_type)
+    def filter_anything_except(value: _T) -> bool:
+        return not isinstance(value, types)
 
-    return strategy.filter(lambda x: not isinstance(x, types))  # type: ignore
+    return st.from_type(type).flatmap(st.from_type).filter(filter_anything_except)
