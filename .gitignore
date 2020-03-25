@@ -1,6 +1,9 @@
 # Python
 *.pyc
 
+# PyCharm
+.idea/
+
 # setup.py
 .eggs/
 *.egg-info/
@@ -9,10 +12,7 @@ build/
 pip-wheel-metadata/
 _version.py
 
-# PyCharm
-.idea/
-
-# py.test
+# pytest
 .pytest_cache/
 
 # mypy
@@ -21,9 +21,9 @@ _version.py
 # tox
 .tox/
 
-# Hypothesis
+# hypothesis
 .hypothesis/
 
-# Coverage
+# coverage
 .coverage
 coverage/
