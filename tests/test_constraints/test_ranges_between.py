@@ -37,22 +37,24 @@ class NotImplementedBoundaries:
 
 
 @st.composite
-def st_value(draw: Draw, min_value: Optional[int] = None, max_value: Optional[int] = None) -> int:
-    return draw(st.integers(min_value=min_value, max_value=max_value))
+def st_value(
+    draw: Draw[int], min_value: Optional[int] = None, max_value: Optional[int] = None
+) -> int:
+    return draw(st.integers(min_value=min_value, max_value=max_value))  # type: ignore
 
 
 @st.composite
-def st_inclusive_minimum(draw: Draw, value: int) -> int:
+def st_inclusive_minimum(draw: Draw[int], value: int) -> int:
     return draw(st.integers(max_value=value))
 
 
 @st.composite
-def st_inclusive_maximum(draw: Draw, value: int) -> int:
+def st_inclusive_maximum(draw: Draw[int], value: int) -> int:
     return draw(st.integers(min_value=value))
 
 
 @st.composite
-def st_exclusive_minimum(draw: Draw, value: int) -> int:
+def st_exclusive_minimum(draw: Draw[int], value: int) -> int:
     minimum = draw(st_inclusive_minimum(value))
     assume(value != minimum)
 
@@ -60,7 +62,7 @@ def st_exclusive_minimum(draw: Draw, value: int) -> int:
 
 
 @st.composite
-def st_exclusive_maximum(draw: Draw, value: int) -> int:
+def st_exclusive_maximum(draw: Draw[int], value: int) -> int:
     maximum = draw(st_inclusive_maximum(value))
     assume(value != maximum)
 
@@ -279,7 +281,7 @@ def test_returns_false_when_value_does_not_implement_boundaries_with_exclusive_b
 # noinspection PyArgumentList
 def test_raises_error_on_missing_boundaries() -> None:
     with pytest.raises(TypeError):
-        ranges_between()
+        ranges_between()  # type: ignore
 
 
 # noinspection PyArgumentList
@@ -289,10 +291,10 @@ def test_raises_error_on_missing_minimum_boundary(data: st.DataObject, value: in
     exclusive_maximum = data.draw(st_exclusive_maximum(value))
 
     with pytest.raises(MissingBoundaryError):
-        ranges_between(maximum=inclusive_maximum)
+        ranges_between(maximum=inclusive_maximum)  # type: ignore
 
     with pytest.raises(MissingBoundaryError):
-        ranges_between(exclusive_maximum=exclusive_maximum)
+        ranges_between(exclusive_maximum=exclusive_maximum)  # type: ignore
 
 
 # noinspection PyArgumentList
@@ -302,10 +304,10 @@ def test_raises_error_on_missing_maximum_boundary(data: st.DataObject, value: in
     exclusive_minimum = data.draw(st_exclusive_minimum(value))
 
     with pytest.raises(MissingBoundaryError):
-        ranges_between(minimum=inclusive_minimum)
+        ranges_between(minimum=inclusive_minimum)  # type: ignore
 
     with pytest.raises(MissingBoundaryError):
-        ranges_between(exclusive_minimum=exclusive_minimum)
+        ranges_between(exclusive_minimum=exclusive_minimum)  # type: ignore
 
 
 # noinspection PyArgumentList
@@ -322,28 +324,28 @@ def test_raises_error_on_mutually_exclusive_boundaries(data: st.DataObject, valu
             minimum=inclusive_minimum,
             maximum=inclusive_maximum,
             exclusive_minimum=exclusive_minimum,
-        )
+        )  # type: ignore
 
     with pytest.raises(MutuallyExclusiveBoundariesError):
         ranges_between(
             minimum=inclusive_minimum,
             exclusive_minimum=exclusive_minimum,
             exclusive_maximum=exclusive_maximum,
-        )
+        )  # type: ignore
 
     with pytest.raises(MutuallyExclusiveBoundariesError):
         ranges_between(
             minimum=inclusive_minimum,
             maximum=inclusive_maximum,
             exclusive_maximum=exclusive_maximum,
-        )
+        )  # type: ignore
 
     with pytest.raises(MutuallyExclusiveBoundariesError):
         ranges_between(
             maximum=inclusive_maximum,
             exclusive_minimum=exclusive_minimum,
             exclusive_maximum=exclusive_maximum,
-        )
+        )  # type: ignore
 
     with pytest.raises(MutuallyExclusiveBoundariesError):
         ranges_between(
@@ -351,12 +353,12 @@ def test_raises_error_on_mutually_exclusive_boundaries(data: st.DataObject, valu
             maximum=inclusive_maximum,
             exclusive_minimum=exclusive_minimum,
             exclusive_maximum=exclusive_maximum,
-        )
+        )  # type: ignore
 
 
-@given(data=st.data(), value=st_value())
+@given(data=st.data())
 def test_raises_error_on_inclusive_minimum_and_inclusive_maximum_overlapping(
-    data: st.DataObject, value: int
+    data: st.DataObject,
 ) -> None:
     inclusive_minimum = data.draw(st_value())
     inclusive_maximum = data.draw(st_value(max_value=inclusive_minimum))
@@ -367,9 +369,9 @@ def test_raises_error_on_inclusive_minimum_and_inclusive_maximum_overlapping(
         ranges_between(minimum=inclusive_minimum, maximum=inclusive_maximum)
 
 
-@given(data=st.data(), value=st_value())
+@given(data=st.data())
 def test_raises_error_on_inclusive_minimum_and_exclusive_maximum_overlapping(
-    data: st.DataObject, value: int
+    data: st.DataObject,
 ) -> None:
     inclusive_minimum = data.draw(st_value())
     exclusive_maximum = data.draw(st_value(max_value=inclusive_minimum))
@@ -378,9 +380,9 @@ def test_raises_error_on_inclusive_minimum_and_exclusive_maximum_overlapping(
         ranges_between(minimum=inclusive_minimum, exclusive_maximum=exclusive_maximum)
 
 
-@given(data=st.data(), value=st_value())
+@given(data=st.data())
 def test_raises_error_on_exclusive_minimum_and_inclusive_maximum_overlapping(
-    data: st.DataObject, value: int
+    data: st.DataObject,
 ) -> None:
     exclusive_minimum = data.draw(st_value())
     inclusive_maximum = data.draw(st_value(max_value=exclusive_minimum))
@@ -389,9 +391,9 @@ def test_raises_error_on_exclusive_minimum_and_inclusive_maximum_overlapping(
         ranges_between(exclusive_minimum=exclusive_minimum, maximum=inclusive_maximum)
 
 
-@given(data=st.data(), value=st_value())
+@given(data=st.data())
 def test_raises_error_on_exclusive_minimum_and_exclusive_maximum_overlapping(
-    data: st.DataObject, value: int
+    data: st.DataObject,
 ) -> None:
     exclusive_minimum = data.draw(st_value())
     exclusive_maximum = data.draw(st_value(max_value=exclusive_minimum + EXCLUSIVE_ALIGNMENT))

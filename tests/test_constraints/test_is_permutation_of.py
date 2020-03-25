@@ -1,6 +1,6 @@
 import random
 
-from typing import TypeVar, List, Iterator, Collection
+from typing import TypeVar, Sized, Iterable, Iterator, Container, Collection, List
 from typing_extensions import Final
 from dataclasses import dataclass
 
@@ -11,7 +11,7 @@ from hypothesis import strategies as st
 
 from testplates import is_permutation_of, TooLittleValuesError
 
-from ..conftest import samples, st_anything, Draw
+from ..conftest import samples, st_anything_comparable, Draw
 
 _T = TypeVar("_T")
 
@@ -29,12 +29,12 @@ class CollectionWrapper(Collection[_T]):
     def __iter__(self) -> Iterator[_T]:
         return iter(self.values)
 
-    def __contains__(self, item: _T) -> bool:
+    def __contains__(self, item: object) -> bool:
         return item in self.values
 
 
 @dataclass
-class NotSized:
+class NotSized(Iterable[_T], Container[_T]):
 
     values: List[_T]
 
@@ -43,12 +43,12 @@ class NotSized:
     def __iter__(self) -> Iterator[_T]:
         return iter(self.values)
 
-    def __contains__(self, item: _T) -> bool:
+    def __contains__(self, item: object) -> bool:
         return item in self.values
 
 
 @dataclass
-class NotIterable:
+class NotIterable(Sized, Container[_T]):
 
     values: List[_T]
 
@@ -57,12 +57,12 @@ class NotIterable:
     def __len__(self) -> int:
         return len(self.values)
 
-    def __contains__(self, item: _T) -> bool:
+    def __contains__(self, item: object) -> bool:
         return item in self.values
 
 
 @dataclass
-class NotContainer:
+class NotContainer(Sized, Iterable[_T]):
 
     values: List[_T]
 
@@ -87,17 +87,17 @@ def random_index(values: List[_T]) -> int:
 
 
 @st.composite
-def st_value(draw: Draw) -> _T:
-    return draw(st_anything())
+def st_value(draw: Draw[_T]) -> _T:
+    return draw(st_anything_comparable())
 
 
 @st.composite
-def st_values(draw: Draw) -> List[_T]:
+def st_values(draw: Draw[List[_T]]) -> List[_T]:
     return draw(st.lists(st_value(), min_size=MINIMUM_NUMBER_OF_VALUES))
 
 
 @st.composite
-def st_inverse_values(draw: Draw) -> List[_T]:
+def st_inverse_values(draw: Draw[List[_T]]) -> List[_T]:
     values = draw(st.lists(st_value(), max_size=MINIMUM_NUMBER_OF_VALUES))
     assume(len(values) != MINIMUM_NUMBER_OF_VALUES)
 

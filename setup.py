@@ -26,9 +26,9 @@ def main():
         ],
         install_requires=["typing_extensions ~= 3.7.0"],
         extras_require={
-            "black": ["black == 19.3b0"],
+            "black": ["black == 19.10b0"],
             "lint": ["flake8 ~= 3.7.0"],
-            "mypy": ["mypy ~= 0.760"],
+            "mypy": ["mypy ~= 0.760", "pytest ~= 5.3.0", "hypothesis ~= 5.6.0"],
             "test": ["pytest ~= 5.3.0", "pytest-cov ~= 2.8.0", "hypothesis ~= 5.6.0"],
             "deploy": ["wheel", "twine"],
         },
@@ -37,6 +37,7 @@ def main():
         setup_requires=["setuptools_scm"],
         packages=find_packages(where="src"),
         package_dir={"": "src"},
+        package_data={"testplates": ["py.typed"]},
     )
 
 

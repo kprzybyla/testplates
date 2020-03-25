@@ -9,7 +9,7 @@ from hypothesis import strategies as st
 
 from testplates import contains, TooLittleValuesError
 
-from ..conftest import samples, st_anything, Draw
+from ..conftest import samples, st_anything_comparable, Draw
 
 _T = TypeVar("_T")
 
@@ -21,7 +21,7 @@ class ContainerWrapper(Container[_T]):
 
     values: List[_T]
 
-    def __contains__(self, item: _T) -> bool:
+    def __contains__(self, item: object) -> bool:
         return item in self.values
 
 
@@ -31,17 +31,17 @@ class NotContainer:
 
 
 @st.composite
-def st_value(draw: Draw) -> _T:
-    return draw(st_anything())
+def st_value(draw: Draw[_T]) -> _T:
+    return draw(st_anything_comparable())
 
 
 @st.composite
-def st_values(draw: Draw) -> List[_T]:
+def st_values(draw: Draw[List[_T]]) -> List[_T]:
     return draw(st.lists(st_value(), min_size=MINIMUM_NUMBER_OF_VALUES))
 
 
 @st.composite
-def st_values_without(draw: Draw, value: _T) -> List[_T]:
+def st_values_without(draw: Draw[List[_T]], value: _T) -> List[_T]:
     values = draw(st.lists(st_value()))
     assume(value not in values)
 

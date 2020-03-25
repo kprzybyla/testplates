@@ -3,12 +3,12 @@ from hypothesis import given
 
 from testplates import field, Object, Required, Optional
 
-from .conftest import st_anything
+from .conftest import st_anything_comparable
 
 _T = TypeVar("_T")
 
 
-@given(value=st_anything())
+@given(value=st_anything_comparable())
 def test_value_access_in_required_field(value: _T) -> None:
     class Template(Object):
 
@@ -19,7 +19,7 @@ def test_value_access_in_required_field(value: _T) -> None:
     assert template.key == value
 
 
-@given(value=st_anything(), default=st_anything())
+@given(value=st_anything_comparable(), default=st_anything_comparable())
 def test_value_access_in_required_field_with_default_value(value: _T, default: _T) -> None:
     class Template(Object):
 
@@ -32,7 +32,7 @@ def test_value_access_in_required_field_with_default_value(value: _T, default: _
     assert template_default.key == default
 
 
-@given(value=st_anything())
+@given(value=st_anything_comparable())
 def test_value_access_in_optional_field(value: _T) -> None:
     class Template(Object):
 
@@ -43,7 +43,7 @@ def test_value_access_in_optional_field(value: _T) -> None:
     assert template.key == value
 
 
-@given(value=st_anything(), default=st_anything())
+@given(value=st_anything_comparable(), default=st_anything_comparable())
 def test_value_access_in_optional_field_with_default_value(value: _T, default: _T) -> None:
     class Template(Object):
 

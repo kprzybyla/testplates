@@ -13,12 +13,14 @@ __all__ = [
     "Mapping",
     "Required",
     "Optional",
+    "TestplatesError",
+    "TestplatesValueError",
     "DanglingDescriptorError",
     "MissingValueError",
     "UnexpectedValueError",
     "ProhibitedValueError",
     "MissingBoundaryError",
-    "InvalidBoundaryValueError",
+    "InvalidLengthValueError",
     "MutuallyExclusiveBoundariesError",
     "OverlappingBoundariesError",
     "SingleMatchBoundariesError",
@@ -44,10 +46,14 @@ from .object import Object
 from .mapping import Mapping
 from .fields import Required, Optional
 
+from . import exceptions
+
 from .exceptions import (
+    TestplatesError,
+    TestplatesValueError,
     DanglingDescriptorError,
     MissingValueError,
-    InvalidBoundaryValueError,
+    InvalidLengthValueError,
     UnexpectedValueError,
     ProhibitedValueError,
     MissingBoundaryError,

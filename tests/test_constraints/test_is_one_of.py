@@ -10,7 +10,7 @@ from hypothesis import strategies as st
 
 from testplates import is_one_of, TooLittleValuesError
 
-from ..conftest import st_anything, Draw
+from ..conftest import st_anything_comparable, Draw
 
 _T = TypeVar("_T")
 
@@ -18,17 +18,17 @@ MINIMUM_NUMBER_OF_VALUES: Final[int] = 2
 
 
 @st.composite
-def st_value(draw: Draw) -> _T:
-    return draw(st_anything())
+def st_value(draw: Draw[_T]) -> _T:
+    return draw(st_anything_comparable())
 
 
 @st.composite
-def st_values(draw: Draw) -> List[_T]:
+def st_values(draw: Draw[List[_T]]) -> List[_T]:
     return draw(st.lists(st_value(), min_size=MINIMUM_NUMBER_OF_VALUES))
 
 
 @st.composite
-def st_values_without(draw: Draw, value: _T) -> List[_T]:
+def st_values_without(draw: Draw[List[_T]], value: _T) -> List[_T]:
     values = draw(st_values())
     assume(value not in values)
 
@@ -36,7 +36,7 @@ def st_values_without(draw: Draw, value: _T) -> List[_T]:
 
 
 @st.composite
-def st_inverse_values(draw: Draw) -> List[_T]:
+def st_inverse_values(draw: Draw[List[_T]]) -> List[_T]:
     values = draw(st.lists(st_value(), max_size=MINIMUM_NUMBER_OF_VALUES))
     assume(len(values) != MINIMUM_NUMBER_OF_VALUES)
 

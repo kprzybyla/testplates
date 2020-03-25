@@ -1,4 +1,6 @@
-from typing import Any, List, Callable, Optional
+from typing import Any, Union, Tuple, List, Iterable, Callable, Optional
+
+class MarkDecorator: ...
 
 def parametrize(
     argnames: str,
@@ -7,3 +9,8 @@ def parametrize(
     ids: Optional[List[str]] = None,
     scope: Optional[str] = None,
 ) -> Callable[..., Callable[..., None]]: ...
+def param(
+    *values: Any,
+    marks: Union[MarkDecorator, Iterable[MarkDecorator]] = (),
+    id: Optional[str] = None,
+) -> Tuple[Any, Iterable[MarkDecorator], Optional[str]]: ...

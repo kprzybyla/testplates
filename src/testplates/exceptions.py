@@ -1,11 +1,12 @@
 __all__ = [
     "TestplatesError",
+    "TestplatesValueError",
     "DanglingDescriptorError",
     "MissingValueError",
     "UnexpectedValueError",
     "ProhibitedValueError",
     "MissingBoundaryError",
-    "InvalidBoundaryValueError",
+    "InvalidLengthValueError",
     "MutuallyExclusiveBoundariesError",
     "OverlappingBoundariesError",
     "SingleMatchBoundariesError",
@@ -14,7 +15,7 @@ __all__ = [
     "MissingValueInternalError",
 ]
 
-from typing import TypeVar
+from typing import TypeVar, Optional
 
 from . import abc
 from .value import Maybe
@@ -32,7 +33,7 @@ class TestplatesError(Exception):
 class TestplatesValueError(ValueError, TestplatesError):
 
     """
-        Error indicating any kind of value error.
+        Base testplates value error.
     """
 
 
@@ -61,7 +62,7 @@ class MissingValueError(TestplatesValueError):
     """
 
     def __init__(self, field: abc.Descriptor[_T]) -> None:
-        super().__init__(f"Missing value in required field {field.name!r} ({field!r})")
+        super().__init__(f"Missing value in required field {field!r}")
 
 
 class UnexpectedValueError(TestplatesValueError):
@@ -87,15 +88,33 @@ class ProhibitedValueError(TestplatesValueError):
     """
 
     def __init__(self, field: abc.Descriptor[_T], value: Maybe[_T]) -> None:
-        super().__init__(f"Value {value} is prohibited for field {field.name!r} ({field!r}")
+        super().__init__(f"Value {value!r} is prohibited for field {field!r}")
 
 
 class MissingBoundaryError(TestplatesValueError):
-    ...
+
+    """
+        Error indicating missing boundary.
+
+        Raised when user forgot to set mandatory boundary
+        for given field with minimum and maximum constraints.
+    """
+
+    def __init__(self, name: str) -> None:
+        super().__init__(f"Missing value for mandatory boundary {name!r}")
 
 
-class InvalidBoundaryValueError(TestplatesValueError):
-    ...
+class InvalidLengthValueError(TestplatesValueError):
+
+    """
+        Error indicating invalid length boundary value.
+
+        Raised when user sets boundary with value that
+        does not meet length boundary value expectations.
+    """
+
+    def __init__(self, value: Optional[int]) -> None:
+        super().__init__(f"Invalid value {value} ...")
 
 
 class MutuallyExclusiveBoundariesError(TestplatesValueError):
@@ -112,11 +131,17 @@ class MutuallyExclusiveBoundariesError(TestplatesValueError):
 
 
 class OverlappingBoundariesError(TestplatesValueError):
-    ...
+
+    """
+        ...
+    """
 
 
 class SingleMatchBoundariesError(TestplatesValueError):
-    ...
+
+    """
+        ...
+    """
 
 
 class TooLittleValuesError(TestplatesValueError):
@@ -159,4 +184,10 @@ class MissingValueInternalError(InternalError):
 
 
 class UnreachableCodeError(InternalError):
-    ...
+
+    """
+        ...
+    """
+
+    def __init__(self) -> None:
+        super().__init__("This code section should be unreachable")

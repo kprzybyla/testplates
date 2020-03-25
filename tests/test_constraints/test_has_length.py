@@ -12,7 +12,7 @@ from hypothesis import strategies as st
 from testplates import (
     has_length,
     MissingBoundaryError,
-    InvalidBoundaryValueError,
+    InvalidLengthValueError,
     OverlappingBoundariesError,
     SingleMatchBoundariesError,
 )
@@ -38,29 +38,31 @@ class NotSized:
 
 
 @st.composite
-def st_length(draw: Draw, min_value: int = MINIMUM_LENGTH, max_value: int = MAXIMUM_LENGTH) -> int:
+def st_length(
+    draw: Draw[int], min_value: int = MINIMUM_LENGTH, max_value: int = MAXIMUM_LENGTH
+) -> int:
     return draw(st.integers(min_value=min_value, max_value=max_value))
 
 
 @st.composite
-def st_minimum(draw: Draw, length: int) -> int:
+def st_minimum(draw: Draw[int], length: int) -> int:
     return draw(st.integers(min_value=MINIMUM_LENGTH, max_value=length))
 
 
 @st.composite
-def st_maximum(draw: Draw, length: int) -> int:
+def st_maximum(draw: Draw[int], length: int) -> int:
     maximum = draw(st.integers(min_value=length, max_value=MAXIMUM_LENGTH))
 
     return maximum
 
 
 @st.composite
-def st_length_below_minimum(draw: Draw) -> int:
+def st_length_below_minimum(draw: Draw[int]) -> int:
     return draw(st.integers(max_value=MINIMUM_LENGTH))
 
 
 @st.composite
-def st_length_above_maximum(draw: Draw) -> int:
+def st_length_above_maximum(draw: Draw[int]) -> int:
     return draw(st.integers(min_value=MAXIMUM_LENGTH))
 
 
@@ -142,7 +144,7 @@ def test_returns_false_when_value_is_not_sized_with_minimum_and_maximum(
 # noinspection PyArgumentList
 def test_raises_error_on_no_parameters() -> None:
     with pytest.raises(TypeError):
-        has_length()
+        has_length()  # type: ignore
 
 
 # noinspection PyArgumentList
@@ -151,7 +153,7 @@ def test_raises_error_on_missing_minimum_boundary(data: st.DataObject, length: i
     maximum = data.draw(st_maximum(length))
 
     with pytest.raises(MissingBoundaryError):
-        has_length(maximum=maximum)
+        has_length(maximum=maximum)  # type: ignore
 
 
 # noinspection PyArgumentList
@@ -160,7 +162,7 @@ def test_raises_error_on_missing_maximum_boundary(data: st.DataObject, length: i
     minimum = data.draw(st_minimum(length))
 
     with pytest.raises(MissingBoundaryError):
-        has_length(minimum=minimum)
+        has_length(minimum=minimum)  # type: ignore
 
 
 @given(data=st.data(), length=st_length())
@@ -169,10 +171,10 @@ def test_raises_error_on_boundaries_below_zero(data: st.DataObject, length: int)
 
     assume(below_minimum != MINIMUM_LENGTH)
 
-    with pytest.raises(InvalidBoundaryValueError):
+    with pytest.raises(InvalidLengthValueError):
         has_length(minimum=below_minimum, maximum=length)
 
-    with pytest.raises(InvalidBoundaryValueError):
+    with pytest.raises(InvalidLengthValueError):
         has_length(minimum=length, maximum=below_minimum)
 
 
@@ -182,10 +184,10 @@ def test_raises_error_on_boundaries_above_max_size(data: st.DataObject, length: 
 
     assume(above_maximum != MAXIMUM_LENGTH)
 
-    with pytest.raises(InvalidBoundaryValueError):
+    with pytest.raises(InvalidLengthValueError):
         has_length(minimum=above_maximum, maximum=length)
 
-    with pytest.raises(InvalidBoundaryValueError):
+    with pytest.raises(InvalidLengthValueError):
         has_length(minimum=length, maximum=above_maximum)
 
 
