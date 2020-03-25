@@ -1,18 +1,26 @@
 import random
 
 from typing import TypeVar, List, Callable
+from typing_extensions import Final
 from decimal import Decimal
 
-from hypothesis import strategies as st
+from hypothesis import settings, strategies as st
 
 _T = TypeVar("_T")
 _Ex = TypeVar("_Ex", covariant=True)
 
 Draw = Callable[[st.SearchStrategy[_Ex]], _Ex]
 
-st.register_type_strategy(float, st.floats(allow_nan=False))
+PROFILE_NO_INCREMENTAL: Final[str] = "no-incremental"
+
+# Use no incremental mode due to multiple issues with hypothesis
+# shrinking mechanism which eventually leads to random tests hanging
+settings.register_profile(PROFILE_NO_INCREMENTAL, database=None)
+settings.load_profile(PROFILE_NO_INCREMENTAL)
+
+# Do not generate NaN value in Decimal since it does not support
+# comparison and raises InvalidOperation exception upon comparison
 st.register_type_strategy(Decimal, st.decimals(allow_nan=False))
-st.register_type_strategy(complex, st.complex_numbers(allow_nan=False))
 
 
 def samples(values: List[_T], minimum: int = 0) -> List[_T]:
