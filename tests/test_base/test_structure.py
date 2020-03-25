@@ -18,8 +18,10 @@ from testplates import (
     ProhibitedValueError,
 )
 
+from tests.conftest import st_anything_comparable
+
 from .assets import TemplateType, StorageType
-from .conftest import st_anything_comparable, template_parameters, template_and_storage_parameters
+from .conftest import template_parameters, template_and_storage_parameters
 
 _T = TypeVar("_T")
 

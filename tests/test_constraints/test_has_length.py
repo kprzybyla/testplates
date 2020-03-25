@@ -17,7 +17,7 @@ from testplates import (
     SingleMatchBoundariesError,
 )
 
-from ..conftest import Draw
+from tests.conftest import Draw
 
 MINIMUM_LENGTH: Final[int] = 0
 MAXIMUM_LENGTH: Final[int] = sys.maxsize

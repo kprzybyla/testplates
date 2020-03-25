@@ -3,7 +3,7 @@ from hypothesis import given
 
 from testplates import field, Object, Required, Optional
 
-from .conftest import st_anything_comparable
+from tests.conftest import st_anything_comparable
 
 _T = TypeVar("_T")
 

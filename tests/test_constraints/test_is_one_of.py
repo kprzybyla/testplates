@@ -10,7 +10,7 @@ from hypothesis import strategies as st
 
 from testplates import is_one_of, TooLittleValuesError
 
-from ..conftest import st_anything_comparable, Draw
+from tests.conftest import st_anything_comparable, Draw
 
 _T = TypeVar("_T")
 

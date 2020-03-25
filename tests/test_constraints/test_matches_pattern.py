@@ -10,7 +10,7 @@ from hypothesis import strategies as st
 
 from testplates import matches_pattern
 
-from ..conftest import st_anything_except, Draw
+from tests.conftest import st_anything_except, Draw
 
 ANY_WORD: Final[str] = r"\w+"
 ANY_DIGIT: Final[str] = r"\d+"

@@ -14,7 +14,7 @@ from testplates import (
     SingleMatchBoundariesError,
 )
 
-from ..conftest import Draw
+from tests.conftest import Draw
 
 EXCLUSIVE_ALIGNMENT: Final[int] = 1
 

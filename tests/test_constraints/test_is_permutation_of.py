@@ -11,7 +11,7 @@ from hypothesis import strategies as st
 
 from testplates import is_permutation_of, TooLittleValuesError
 
-from ..conftest import samples, st_anything_comparable, Draw
+from tests.conftest import samples, st_anything_comparable, Draw
 
 _T = TypeVar("_T")
 
