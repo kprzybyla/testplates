@@ -38,7 +38,7 @@ Bases = Tuple[type, ...]
 # TODO(kprzybyla): Remove noqa(F821) after github.com/PyCQA/pyflakes/issues/356 is released
 
 
-class Field(Generic[_T], Descriptor[_T]):
+class Field(Generic[_T], Descriptor[Any, _T]):
 
     __slots__ = ("_default", "_optional", "_name")
 

@@ -48,7 +48,7 @@ class DanglingDescriptorError(TestplatesError):
         cause unexpected behaviour.
     """
 
-    def __init__(self, descriptor: abc.Descriptor[_T]) -> None:
+    def __init__(self, descriptor: abc.Descriptor[Any, _T]) -> None:
         super().__init__(f"Descriptor {descriptor!r} is not attached to any class")
 
 
@@ -61,7 +61,7 @@ class MissingValueError(TestplatesValueError):
         value for given field with actual value.
     """
 
-    def __init__(self, field: abc.Descriptor[_T]) -> None:
+    def __init__(self, field: abc.Descriptor[Any, _T]) -> None:
         super().__init__(f"Missing value in required field {field!r}")
 
 
@@ -87,7 +87,7 @@ class ProhibitedValueError(TestplatesValueError):
         is invalid for given field due to its nature.
     """
 
-    def __init__(self, field: abc.Descriptor[_T], value: Any) -> None:
+    def __init__(self, field: abc.Descriptor[Any, _T], value: Any) -> None:
         super().__init__(f"Value {value!r} is prohibited for field {field!r}")
 
 
@@ -179,7 +179,7 @@ class MissingValueInternalError(InternalError):
         from logical point of view it should not.
     """
 
-    def __init__(self, field: abc.Descriptor[_T]) -> None:
+    def __init__(self, field: abc.Descriptor[Any, _T]) -> None:
         super().__init__(f"Field {field.name!r} is internally missing value ({field!r})")
 
 

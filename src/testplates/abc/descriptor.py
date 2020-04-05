@@ -4,15 +4,16 @@ __all__ = ["Descriptor"]
 
 import abc
 
-from typing import overload, Any, TypeVar, Generic, Union, Optional
+from typing import overload, Type, TypeVar, Generic, Union, Optional
 
+_C = TypeVar("_C")
 _T = TypeVar("_T")
 
 # TODO(kprzybyla): Remove noqa(F811) after github.com/PyCQA/pyflakes/issues/320 is released
 # TODO(kprzybyla): Remove noqa(F821) after github.com/PyCQA/pyflakes/issues/356 is released
 
 
-class Descriptor(Generic[_T], abc.ABC):
+class Descriptor(Generic[_C, _T], abc.ABC):
 
     """
         Abstract non-data descriptor class.
@@ -23,7 +24,7 @@ class Descriptor(Generic[_T], abc.ABC):
     def __repr__(self) -> str:
         return f"{type(self).__name__}[{self.name!r}]"
 
-    def __set_name__(self, owner: Any, name: str) -> None:
+    def __set_name__(self, owner: Type[_C], name: str) -> None:
 
         """
             Sets descriptor name upon attachment to parent class.
@@ -33,16 +34,16 @@ class Descriptor(Generic[_T], abc.ABC):
         """
 
     @overload
-    def __get__(self, instance: None, owner: Any) -> Descriptor[_T]:  # noqa(F821)
+    def __get__(self, instance: None, owner: Type[_C]) -> Descriptor[_C, _T]:  # noqa(F821)
         ...
 
     @overload
-    def __get__(self, instance: Any, owner: Any) -> _T:  # noqa(F811)
+    def __get__(self, instance: _C, owner: Type[_C]) -> _T:  # noqa(F811)
         ...
 
     def __get__(  # noqa(F811)
-        self, instance: Optional[Any], owner: Any
-    ) -> Union[Descriptor[_T], _T]:  # noqa(F821)
+        self, instance: Optional[_C], owner: Type[_C]
+    ) -> Union[Descriptor[_C, _T], _T]:  # noqa(F821)
 
         """
             Returns either descriptor itself or descriptor value.
