@@ -6,7 +6,7 @@ from typing_extensions import Final
 import testplates
 
 from testplates.abc import Constraint
-from testplates.exceptions import TooLittleValuesError
+from testplates.exceptions import InsufficientValuesError
 
 _T = TypeVar("_T", covariant=True)
 
@@ -19,7 +19,7 @@ class Contains(Generic[_T], Constraint):
 
     def __init__(self, *values: _T) -> None:
         if len(values) < MINIMUM_NUMBER_OF_VALUES:
-            raise TooLittleValuesError(MINIMUM_NUMBER_OF_VALUES)
+            raise InsufficientValuesError(MINIMUM_NUMBER_OF_VALUES)
 
         self._values = values
 

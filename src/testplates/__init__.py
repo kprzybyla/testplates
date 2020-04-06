@@ -21,11 +21,11 @@ __all__ = [
     "UnexpectedValueError",
     "ProhibitedValueError",
     "MissingBoundaryError",
-    "InvalidLengthValueError",
+    "InvalidLengthError",
     "MutuallyExclusiveBoundariesError",
     "OverlappingBoundariesError",
     "SingleMatchBoundariesError",
-    "TooLittleValuesError",
+    "InsufficientValuesError",
 ]
 
 from testplates.base import field, Required, Optional, Object, Mapping, ANY, WILDCARD, ABSENT
@@ -46,12 +46,12 @@ from testplates.exceptions import (
     TestplatesValueError,
     DanglingDescriptorError,
     MissingValueError,
-    InvalidLengthValueError,
+    InvalidLengthError,
     UnexpectedValueError,
     ProhibitedValueError,
     MissingBoundaryError,
     MutuallyExclusiveBoundariesError,
     OverlappingBoundariesError,
     SingleMatchBoundariesError,
-    TooLittleValuesError,
+    InsufficientValuesError,
 )

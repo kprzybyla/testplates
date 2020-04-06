@@ -12,7 +12,7 @@ from hypothesis import strategies as st
 from testplates import (
     has_length,
     MissingBoundaryError,
-    InvalidLengthValueError,
+    InvalidLengthError,
     OverlappingBoundariesError,
     SingleMatchBoundariesError,
 )
@@ -171,10 +171,10 @@ def test_raises_error_on_boundaries_below_zero(data: st.DataObject, length: int)
 
     assume(below_minimum != MINIMUM_LENGTH)
 
-    with pytest.raises(InvalidLengthValueError):
+    with pytest.raises(InvalidLengthError):
         has_length(minimum=below_minimum, maximum=length)
 
-    with pytest.raises(InvalidLengthValueError):
+    with pytest.raises(InvalidLengthError):
         has_length(minimum=length, maximum=below_minimum)
 
 
@@ -184,10 +184,10 @@ def test_raises_error_on_boundaries_above_max_size(data: st.DataObject, length: 
 
     assume(above_maximum != MAXIMUM_LENGTH)
 
-    with pytest.raises(InvalidLengthValueError):
+    with pytest.raises(InvalidLengthError):
         has_length(minimum=above_maximum, maximum=length)
 
-    with pytest.raises(InvalidLengthValueError):
+    with pytest.raises(InvalidLengthError):
         has_length(minimum=length, maximum=above_maximum)
 
 

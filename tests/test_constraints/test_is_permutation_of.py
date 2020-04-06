@@ -9,7 +9,7 @@ import pytest
 from hypothesis import assume, given
 from hypothesis import strategies as st
 
-from testplates import is_permutation_of, TooLittleValuesError
+from testplates import is_permutation_of, InsufficientValuesError
 
 from tests.conftest import samples, st_anything_comparable, Draw
 
@@ -173,5 +173,5 @@ def test_returns_false_when_value_is_not_container(values: List[_T]) -> None:
 
 @given(values=st_inverse_values())
 def test_raises_error_when_less_than_two_values_were_provided(values: List[_T]) -> None:
-    with pytest.raises(TooLittleValuesError):
+    with pytest.raises(InsufficientValuesError):
         is_permutation_of(values)
