@@ -5,7 +5,7 @@ from typing import cast, Any, Generic, TypeVar
 from .value import MISSING, Maybe
 from .structure import Structure
 
-_T = TypeVar("_T", covariant=True)
+_T = TypeVar("_T")
 
 
 class _Object(Generic[_T], Structure[_T]):

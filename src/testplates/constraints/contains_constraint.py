@@ -7,7 +7,7 @@ import testplates
 from testplates.abc import Constraint
 from testplates.exceptions import InsufficientValuesError
 
-_T = TypeVar("_T", covariant=True)
+_T = TypeVar("_T")
 
 MINIMUM_NUMBER_OF_VALUES: Final[int] = 1
 
@@ -36,5 +36,5 @@ class Contains(Generic[_T], Constraint):
         return True
 
 
-def contains(*values: Any) -> Contains[Any]:
+def contains(*values: _T) -> Contains[_T]:
     return Contains(*values)

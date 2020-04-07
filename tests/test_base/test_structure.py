@@ -29,7 +29,7 @@ KEY: Final[str] = "key"
 
 @given(value=st_anything_comparable())
 @template_and_storage_parameters
-def test_equality(value: _T, template_type: TemplateType, storage_type: StorageType) -> None:
+def test_equality(value: _T, template_type: TemplateType, storage_type: StorageType[_T]) -> None:
     class Template(template_type):  # type: ignore
 
         key: Required[_T] = field()
@@ -42,7 +42,7 @@ def test_equality(value: _T, template_type: TemplateType, storage_type: StorageT
 @given(value=st_anything_comparable())
 @template_and_storage_parameters
 def test_inequality_due_to_unequal_key(
-    value: _T, template_type: TemplateType, storage_type: StorageType
+    value: _T, template_type: TemplateType, storage_type: StorageType[_T]
 ) -> None:
     class Template(template_type):  # type: ignore
 
@@ -56,7 +56,7 @@ def test_inequality_due_to_unequal_key(
 @given(value=st_anything_comparable(), other=st_anything_comparable())
 @template_and_storage_parameters
 def test_inequality_due_to_unequal_value(
-    value: _T, other: _T, template_type: TemplateType, storage_type: StorageType
+    value: _T, other: _T, template_type: TemplateType, storage_type: StorageType[_T]
 ) -> None:
     assume(value != other)
 
@@ -71,7 +71,9 @@ def test_inequality_due_to_unequal_value(
 
 @given(value=st_anything_comparable())
 @template_and_storage_parameters
-def test_default_value(value: _T, template_type: TemplateType, storage_type: StorageType) -> None:
+def test_default_value(
+    value: _T, template_type: TemplateType, storage_type: StorageType[_T]
+) -> None:
     class Template(template_type):  # type: ignore
 
         key: Required[_T] = field(default=value)
@@ -84,7 +86,7 @@ def test_default_value(value: _T, template_type: TemplateType, storage_type: Sto
 @given(value=st_anything_comparable(), default=st_anything_comparable())
 @template_and_storage_parameters
 def test_default_value_override(
-    value: _T, default: _T, template_type: TemplateType, storage_type: StorageType
+    value: _T, default: _T, template_type: TemplateType, storage_type: StorageType[_T]
 ) -> None:
     assume(value != default)
 
@@ -100,7 +102,7 @@ def test_default_value_override(
 @given(value=st_anything_comparable())
 @template_and_storage_parameters
 def test_any_value_matches_anything_in_required_field(
-    value: _T, template_type: TemplateType, storage_type: StorageType
+    value: _T, template_type: TemplateType, storage_type: StorageType[_T]
 ) -> None:
     class Template(template_type):  # type: ignore
 
@@ -114,7 +116,7 @@ def test_any_value_matches_anything_in_required_field(
 @given(value=st_anything_comparable())
 @template_and_storage_parameters
 def test_any_value_matches_anything_in_optional_field(
-    value: _T, template_type: TemplateType, storage_type: StorageType
+    value: _T, template_type: TemplateType, storage_type: StorageType[_T]
 ) -> None:
     class Template(template_type):  # type: ignore
 
@@ -128,7 +130,7 @@ def test_any_value_matches_anything_in_optional_field(
 @given(value=st_anything_comparable())
 @template_and_storage_parameters
 def test_wildcard_value_matches_anything_in_optional_field(
-    value: _T, template_type: TemplateType, storage_type: StorageType
+    value: _T, template_type: TemplateType, storage_type: StorageType[_T]
 ) -> None:
     class Template(template_type):  # type: ignore
 
@@ -157,7 +159,7 @@ def test_wildcard_value_raises_value_error_in_required_field(template_type: Temp
 
 @template_and_storage_parameters
 def test_absent_value_matches_anything_in_optional_field(
-    template_type: TemplateType, storage_type: StorageType
+    template_type: TemplateType, storage_type: StorageType[_T]
 ) -> None:
     class Template(template_type):  # type: ignore
 
@@ -171,7 +173,7 @@ def test_absent_value_matches_anything_in_optional_field(
 @given(value=st_anything_comparable())
 @template_and_storage_parameters
 def test_absent_value_mismatches_any_value_in_optional_field(
-    value: _T, template_type: TemplateType, storage_type: StorageType
+    value: _T, template_type: TemplateType, storage_type: StorageType[_T]
 ) -> None:
     class Template(template_type):  # type: ignore
 

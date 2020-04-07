@@ -1,10 +1,10 @@
 __all__ = ["ObjectStorage", "MappingStorage", "StorageType", "TemplateType"]
 
-from typing import Any, Type, TypeVar, Union, Dict
+from typing import Type, TypeVar, Union, Dict
 
 from testplates import Object, Mapping
 
-_T = TypeVar("_T", covariant=True)
+_T = TypeVar("_T")
 
 MappingStorage = dict
 
@@ -17,5 +17,5 @@ class ObjectStorage(Dict[str, _T]):
             raise AttributeError(item) from None
 
 
-StorageType = Type[Union[ObjectStorage[Any], Dict[str, Any]]]
+StorageType = Type[Union[ObjectStorage[_T], Dict[str, _T]]]
 TemplateType = Type[Union[Object, Mapping]]

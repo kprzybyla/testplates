@@ -7,7 +7,7 @@ import testplates
 from testplates.abc import Constraint
 from testplates.exceptions import InsufficientValuesError
 
-_T = TypeVar("_T", covariant=True)
+_T = TypeVar("_T")
 
 MINIMUM_NUMBER_OF_VALUES: Final[int] = 2
 
@@ -29,5 +29,5 @@ class IsOneOf(Generic[_T], Constraint):
         return other in self._values
 
 
-def is_one_of(*values: Any) -> IsOneOf[Any]:
+def is_one_of(*values: _T) -> IsOneOf[_T]:
     return IsOneOf(*values)

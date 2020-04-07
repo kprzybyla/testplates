@@ -31,6 +31,7 @@ from .utils import matches
 from .value import WILDCARD, ABSENT, MISSING, Maybe
 
 _T = TypeVar("_T", covariant=True)
+_V = TypeVar("_V")
 
 Bases = Tuple[type, ...]
 
@@ -137,16 +138,16 @@ class Field(Generic[_T], Descriptor[Any, _T]):
             raise ProhibitedValueError(self, value)
 
 
-class _StructureDict(Generic[_T], Dict[str, Any]):
+class _StructureDict(Generic[_T, _V], Dict[str, _V]):
 
     __slots__ = ("_fields_",)
 
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
-        super().__init__(*args, **kwargs)
+    def __init__(self, **kwargs: _V) -> None:
+        super().__init__(**kwargs)
 
         self._fields_: Dict[str, Field[_T]] = {}
 
-    def __setitem__(self, key: str, value: Any) -> None:
+    def __setitem__(self, key: str, value: _V) -> None:
         if isinstance(value, Field):
             self.fields[key] = value
 
@@ -169,14 +170,14 @@ class StructureMeta(Generic[_T], abc.ABCMeta):
     _fields_: Dict[str, Field[_T]]
 
     @classmethod
-    def __prepare__(mcs, __name: str, __bases: Bases, **kwargs: Any) -> _StructureDict[_T]:
+    def __prepare__(mcs, __name: str, __bases: Bases, **kwargs: Any) -> _StructureDict[_T, Any]:
         return _StructureDict()
 
     def __repr__(self) -> str:
         return f"StructureMeta[{dict(self._fields_)}]"
 
     def __new__(
-        mcs, name: str, bases: Bases, namespace: _StructureDict[_T]
+        mcs, name: str, bases: Bases, namespace: _StructureDict[_T, Any]
     ) -> StructureMeta[_T]:  # noqa(F821)
         instance = cast(StructureMeta[_T], super().__new__(mcs, name, bases, namespace))
         instance._fields_ = namespace.fields

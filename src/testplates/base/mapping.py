@@ -7,7 +7,7 @@ from typing import Any, TypeVar, Generic, Iterator
 from .value import MISSING, Maybe
 from .structure import Structure
 
-_T = TypeVar("_T", covariant=True)
+_T = TypeVar("_T")
 
 
 class _Mapping(Generic[_T], Structure[_T], typing.Mapping[str, _T]):

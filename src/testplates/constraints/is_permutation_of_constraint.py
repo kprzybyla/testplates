@@ -7,7 +7,7 @@ import testplates
 from testplates.abc import Constraint
 from testplates.exceptions import InsufficientValuesError
 
-_T = TypeVar("_T", covariant=True)
+_T = TypeVar("_T")
 
 MINIMUM_NUMBER_OF_VALUES: Final[int] = 2
 
@@ -45,5 +45,5 @@ class IsPermutationOf(Generic[_T], Constraint):
         return True
 
 
-def is_permutation_of(values: Any) -> IsPermutationOf[Any]:
+def is_permutation_of(values: List[_T]) -> IsPermutationOf[_T]:
     return IsPermutationOf(values)
