@@ -16,7 +16,7 @@ class IsPermutationOf(Generic[_T], Constraint):
 
     __slots__ = ("_values",)
 
-    def __init__(self, values: List[_T]) -> None:
+    def __init__(self, values: List[_T], /) -> None:
         if len(values) < MINIMUM_NUMBER_OF_VALUES:
             raise InsufficientValuesError(MINIMUM_NUMBER_OF_VALUES)
 
@@ -45,5 +45,5 @@ class IsPermutationOf(Generic[_T], Constraint):
         return True
 
 
-def is_permutation_of(values: List[_T]) -> IsPermutationOf[_T]:
+def is_permutation_of(values: List[_T], /) -> IsPermutationOf[_T]:
     return IsPermutationOf(values)

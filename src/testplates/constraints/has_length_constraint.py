@@ -10,8 +10,6 @@ from testplates.abc import Constraint
 
 from .boundaries import get_length_boundaries
 
-# TODO(kprzybyla): Remove noqa(F811) after github.com/PyCQA/pyflakes/issues/320 is released
-
 
 class AnyHasLength(Constraint, abc.ABC):
 
@@ -25,7 +23,7 @@ class HasLength(AnyHasLength):
 
     __slots__ = ("_length",)
 
-    def __init__(self, length: int) -> None:
+    def __init__(self, length: int, /) -> None:
         self._length = length
 
     def __repr__(self) -> str:
@@ -68,17 +66,21 @@ class HasLengthBetween(AnyHasLength):
 
 
 @overload
-def has_length(length: int) -> HasLength:
+def has_length(length: int, /) -> HasLength:
     ...
 
 
-@overload  # noqa(F811)
+@overload
 def has_length(*, minimum: int, maximum: int) -> HasLengthBetween:
     ...
 
 
-def has_length(  # noqa(F811)
-    length: Optional[int] = None, *, minimum: Optional[int] = None, maximum: Optional[int] = None
+def has_length(
+    length: Optional[int] = None,
+    /,
+    *,
+    minimum: Optional[int] = None,
+    maximum: Optional[int] = None,
 ) -> AnyHasLength:
     if length is not None:
         return HasLength(length)

@@ -35,9 +35,6 @@ _V = TypeVar("_V")
 
 Bases = Tuple[type, ...]
 
-# TODO(kprzybyla): Remove noqa(F811) after github.com/PyCQA/pyflakes/issues/320 is released
-# TODO(kprzybyla): Remove noqa(F821) after github.com/PyCQA/pyflakes/issues/356 is released
-
 
 class Field(Generic[_T], Descriptor[Any, _T]):
 
@@ -55,20 +52,20 @@ class Field(Generic[_T], Descriptor[Any, _T]):
             f"[{self._name!r}, default={self.default!r}, is_optional={self.is_optional!r}]"
         )
 
-    def __set_name__(self, owner: Type[Structure[_T]], name: str) -> None:  # noqa(F821)
+    def __set_name__(self, owner: Type[Structure[_T]], name: str) -> None:
         self._name = name
 
     @overload
-    def __get__(self, instance: None, owner: Type[Structure[_T]]) -> Field[_T]:  # noqa(F821)
+    def __get__(self, instance: None, owner: Type[Structure[_T]]) -> Field[_T]:
         ...
 
-    @overload  # noqa(F811)
-    def __get__(self, instance: Structure[_T], owner: Type[Structure[_T]]) -> _T:  # noqa(F821)
+    @overload
+    def __get__(self, instance: Structure[_T], owner: Type[Structure[_T]]) -> _T:
         ...
 
-    def __get__(  # noqa(F811)
-        self, instance: Optional[Structure[_T]], owner: Type[Structure[_T]]  # noqa(F821)
-    ) -> Union[Field[_T], _T]:  # noqa(F821)
+    def __get__(
+        self, instance: Optional[Structure[_T]], owner: Type[Structure[_T]]
+    ) -> Union[Field[_T], _T]:
 
         """
             Returns either field itself or field value.
@@ -120,7 +117,7 @@ class Field(Generic[_T], Descriptor[Any, _T]):
 
         return self._optional
 
-    def validate(self, value: Maybe[_T]) -> None:
+    def validate(self, value: Maybe[_T], /) -> None:
 
         """
             Validates the given value against the field.
@@ -178,7 +175,7 @@ class StructureMeta(Generic[_T], abc.ABCMeta):
 
     def __new__(
         mcs, name: str, bases: Bases, namespace: _StructureDict[_T, Any]
-    ) -> StructureMeta[_T]:  # noqa(F821)
+    ) -> StructureMeta[_T]:
         instance = cast(StructureMeta[_T], super().__new__(mcs, name, bases, namespace))
         instance._fields_ = namespace.fields
 
@@ -221,7 +218,7 @@ class Structure(Generic[_T], abc.ABC, metaclass=StructureMeta):
 
     @staticmethod
     @abc.abstractmethod
-    def _get_value_(self: Any, key: str, *, default: Maybe[_T] = MISSING) -> Maybe[_T]:
+    def _get_value_(self: Any, key: str, /, *, default: Maybe[_T] = MISSING) -> Maybe[_T]:
 
         """
             Extracts value by given key using a specific protocol.

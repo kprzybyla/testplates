@@ -25,7 +25,7 @@ class _Mapping(Generic[_T], Structure[_T], typing.Mapping[str, _T]):
 
     @staticmethod
     def _get_value_(
-        self: typing.Mapping[str, _T], key: str, *, default: Maybe[_T] = MISSING
+        self: typing.Mapping[str, _T], key: str, /, *, default: Maybe[_T] = MISSING
     ) -> Maybe[_T]:
         return self.get(key, default)
 

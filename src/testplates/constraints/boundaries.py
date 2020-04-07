@@ -41,7 +41,7 @@ class Inclusive(Boundary[_T]):
     def alignment(self) -> int:
         return INCLUSIVE_ALIGNMENT
 
-    def fits(self, value: _T) -> bool:
+    def fits(self, value: _T, /) -> bool:
         if self.name == MINIMUM_NAME and value.__ge__(self.value) is not True:
             return False
 
@@ -63,7 +63,7 @@ class Exclusive(Boundary[_T]):
     def alignment(self) -> int:
         return EXCLUSIVE_ALIGNMENT
 
-    def fits(self, value: _T) -> bool:
+    def fits(self, value: _T, /) -> bool:
         if self.name == MINIMUM_NAME and value.__gt__(self.value) is not True:
             return False
 
@@ -122,7 +122,7 @@ def get_length_boundaries(
 
 
 def _get_boundary(
-    name: str, *, inclusive: Optional[_T] = None, exclusive: Optional[_T] = None
+    name: str, /, *, inclusive: Optional[_T] = None, exclusive: Optional[_T] = None
 ) -> Boundary[_T]:
     if inclusive is None and exclusive is None:
         raise MissingBoundaryError(name)

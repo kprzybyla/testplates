@@ -10,8 +10,6 @@ from .boundaries import get_boundaries
 
 _T = TypeVar("_T", int, float)
 
-# TODO(kprzybyla): Remove noqa(F811) after github.com/PyCQA/pyflakes/issues/320 is released
-
 
 class RangesBetween(Generic[_T], Constraint):
 
@@ -52,24 +50,24 @@ def ranges_between(*, minimum: Optional[_T], maximum: Optional[_T]) -> RangesBet
     ...
 
 
-@overload  # noqa(F811)
+@overload
 def ranges_between(*, minimum: Optional[_T], exclusive_maximum: Optional[_T]) -> RangesBetween[_T]:
     ...
 
 
-@overload  # noqa(F811)
+@overload
 def ranges_between(*, exclusive_minimum: Optional[_T], maximum: Optional[_T]) -> RangesBetween[_T]:
     ...
 
 
-@overload  # noqa(F811)
+@overload
 def ranges_between(
     *, exclusive_minimum: Optional[_T], exclusive_maximum: Optional[_T]
 ) -> RangesBetween[_T]:
     ...
 
 
-def ranges_between(  # noqa(F811)
+def ranges_between(
     *,
     minimum: Optional[_T] = None,
     maximum: Optional[_T] = None,

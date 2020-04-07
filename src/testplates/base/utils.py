@@ -7,7 +7,7 @@ from .value import ANY, WILDCARD, ABSENT, MISSING, Value, Maybe
 _T = TypeVar("_T")
 
 
-def matches(self_value: Maybe[Value[_T]], other_value: Maybe[Value[_T]]) -> bool:
+def matches(self_value: Maybe[Value[_T]], other_value: Maybe[Value[_T]], /) -> bool:
 
     """
         Compares self value and other value and

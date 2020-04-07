@@ -59,7 +59,7 @@ class Boundary(Generic[_T], abc.ABC):
         """
 
     @abc.abstractmethod
-    def fits(self, value: _T) -> bool:
+    def fits(self, value: _T, /) -> bool:
 
         """
             Returns True if value fits within boundary, otherwise False.

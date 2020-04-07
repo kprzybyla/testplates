@@ -14,7 +14,7 @@ class MatchesPattern(Generic[AnyStr], Constraint, abc.ABC):
 
     __slots__ = ("_pattern", "_pattern_type")
 
-    def __init__(self, value: AnyStr, pattern_type: Type[AnyStr]) -> None:
+    def __init__(self, value: AnyStr, /, pattern_type: Type[AnyStr]) -> None:
         self._pattern: Pattern[AnyStr] = re.compile(value)
         self._pattern_type: Type[AnyStr] = pattern_type
 
@@ -28,7 +28,7 @@ class MatchesPattern(Generic[AnyStr], Constraint, abc.ABC):
         return bool(self._pattern.match(other))
 
 
-def matches_pattern(pattern: AnyStr) -> MatchesPattern[AnyStr]:
+def matches_pattern(pattern: AnyStr, /) -> MatchesPattern[AnyStr]:
     if isinstance(pattern, str):
         return MatchesPattern(pattern, str)
 
