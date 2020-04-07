@@ -18,7 +18,7 @@ from typing import (
     Optional,
 )
 
-from testplates.abc import Descriptor
+from testplates.abc import Template, Descriptor
 from testplates.exceptions import (
     DanglingDescriptorError,
     MissingValueError,
@@ -182,7 +182,7 @@ class StructureMeta(Generic[_T], abc.ABCMeta):
         return instance
 
 
-class Structure(Generic[_T], abc.ABC, metaclass=StructureMeta):
+class Structure(Generic[_T], Template, abc.ABC, metaclass=StructureMeta):
 
     __slots__ = ("_values_",)
 

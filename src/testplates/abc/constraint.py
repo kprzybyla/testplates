@@ -2,25 +2,9 @@ __all__ = ["Constraint"]
 
 import abc
 
-from typing import Any
+from .template import Template
 
 
-class Constraint(abc.ABC):
+class Constraint(Template, abc.ABC):
 
     __slots__ = ()
-
-    @abc.abstractmethod
-    def __repr__(self) -> str:
-
-        """
-            Constraint representation.
-        """
-
-    @abc.abstractmethod
-    def __eq__(self, other: Any) -> bool:
-
-        """
-            Constraint equality conditions and requirements.
-
-            :param other: any other object
-        """
