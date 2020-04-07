@@ -16,7 +16,7 @@ __all__ = [
     "UnreachableCodeExecutionInternalError",
 ]
 
-from typing import Any, TypeVar
+from typing import Any, TypeVar, Generic
 from typing_extensions import Final
 
 from testplates import abc
@@ -33,6 +33,9 @@ class TestplatesError(Exception):
     """
         Base testplates error.
     """
+
+    def __init__(self, message: str):
+        super().__init__(message)
 
     @property
     def message(self) -> str:
@@ -57,6 +60,8 @@ class DanglingDescriptorError(TestplatesError):
     """
 
     def __init__(self, descriptor: abc.Descriptor[_C, _T]) -> None:
+        self.descriptor = descriptor
+
         super().__init__(f"Descriptor {descriptor!r} defined outside of the class definition")
 
 
@@ -70,6 +75,8 @@ class MissingValueError(TestplatesValueError):
     """
 
     def __init__(self, field: abc.Descriptor[_C, _T]) -> None:
+        self.field = field
+
         super().__init__(f"Missing value for required field {field!r}")
 
 
@@ -83,6 +90,9 @@ class UnexpectedValueError(TestplatesValueError):
     """
 
     def __init__(self, key: str, value: _T) -> None:
+        self.key = key
+        self.value = value
+
         super().__init__(f"Unexpected key {key!r} with value {value!r}")
 
 
@@ -96,6 +106,9 @@ class ProhibitedValueError(TestplatesValueError):
     """
 
     def __init__(self, field: abc.Descriptor[_C, _T], value: Any) -> None:
+        self.field = field
+        self.value = value
+
         super().__init__(f"Prohibited value {value!r} for field {field!r}")
 
 
@@ -109,6 +122,8 @@ class MissingBoundaryError(TestplatesValueError):
     """
 
     def __init__(self, name: str) -> None:
+        self.name = name
+
         super().__init__(f"Missing value for mandatory boundary {name!r}")
 
 
@@ -122,6 +137,8 @@ class InvalidLengthError(TestplatesValueError):
     """
 
     def __init__(self, boundary: abc.Boundary[int]) -> None:
+        self.boundary = boundary
+
         super().__init__(f"Invalid value for length boundary {boundary!r}")
 
 
@@ -135,10 +152,12 @@ class MutuallyExclusiveBoundariesError(TestplatesValueError):
     """
 
     def __init__(self, name: str) -> None:
+        self.name = name
+
         super().__init__(f"Mutually exclusive {name!r} boundaries set at the same time")
 
 
-class OverlappingBoundariesError(TestplatesValueError):
+class OverlappingBoundariesError(Generic[_B], TestplatesValueError):
 
     """
         Error indicating overlapping boundaries.
@@ -148,10 +167,13 @@ class OverlappingBoundariesError(TestplatesValueError):
     """
 
     def __init__(self, minimum: abc.Boundary[_B], maximum: abc.Boundary[_B]) -> None:
+        self.minimum: abc.Boundary[_B] = minimum
+        self.maximum: abc.Boundary[_B] = maximum
+
         super().__init__(f"Overlapping minimum {minimum!r} and maximum {maximum!r} boundaries")
 
 
-class SingleMatchBoundariesError(TestplatesValueError):
+class SingleMatchBoundariesError(Generic[_B], TestplatesValueError):
 
     """
         Error indicating single match boundaries range.
@@ -161,6 +183,9 @@ class SingleMatchBoundariesError(TestplatesValueError):
     """
 
     def __init__(self, minimum: abc.Boundary[_B], maximum: abc.Boundary[_B]) -> None:
+        self.minimum: abc.Boundary[_B] = minimum
+        self.maximum: abc.Boundary[_B] = maximum
+
         super().__init__(f"Single match minimum {minimum!r} and maximum {maximum!r} boundaries")
 
 
@@ -175,6 +200,8 @@ class InsufficientValuesError(TestplatesValueError):
     """
 
     def __init__(self, required: int) -> None:
+        self.required = required
+
         super().__init__(f"Expected at least {required!r} value(s) to be provided")
 
 
@@ -201,6 +228,8 @@ class MissingValueInternalError(InternalError):
     """
 
     def __init__(self, field: abc.Descriptor[_C, _T]) -> None:
+        self.field = field
+
         super().__init__(f"Missing value for field {field!r}")
 
 
