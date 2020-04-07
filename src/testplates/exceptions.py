@@ -23,6 +23,7 @@ from testplates import abc
 
 _C = TypeVar("_C")
 _T = TypeVar("_T")
+_B = TypeVar("_B", int, float)
 
 ISSUE_TRACKER: Final[str] = "https://github.com/kprzybyla/testplates/issues"
 
@@ -120,7 +121,7 @@ class InvalidLengthError(TestplatesValueError):
         that does not meet length boundary requirements.
     """
 
-    def __init__(self, boundary: abc.Boundary[_T]) -> None:
+    def __init__(self, boundary: abc.Boundary[int]) -> None:
         super().__init__(f"Invalid value for length boundary {boundary!r}")
 
 
@@ -146,7 +147,7 @@ class OverlappingBoundariesError(TestplatesValueError):
         boundaries with values the overlap over each other.
     """
 
-    def __init__(self, minimum: abc.Boundary[_T], maximum: abc.Boundary[_T]) -> None:
+    def __init__(self, minimum: abc.Boundary[_B], maximum: abc.Boundary[_B]) -> None:
         super().__init__(f"Overlapping minimum {minimum!r} and maximum {maximum!r} boundaries")
 
 
@@ -159,7 +160,7 @@ class SingleMatchBoundariesError(TestplatesValueError):
         creates range which matches only single value.
     """
 
-    def __init__(self, minimum: abc.Boundary[_T], maximum: abc.Boundary[_T]) -> None:
+    def __init__(self, minimum: abc.Boundary[_B], maximum: abc.Boundary[_B]) -> None:
         super().__init__(f"Single match minimum {minimum!r} and maximum {maximum!r} boundaries")
 
 

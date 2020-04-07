@@ -1,16 +1,14 @@
 __all__ = ["has_length"]
 
 import abc
-import sys
 
 from typing import overload, Any, Sized, Optional
 
 import testplates
 
 from testplates.abc import Constraint
-from testplates.exceptions import InvalidLengthError
 
-from .boundaries import get_minimum, get_maximum, validate_boundaries
+from .boundaries import get_length_boundaries
 
 # TODO(kprzybyla): Remove noqa(F811) after github.com/PyCQA/pyflakes/issues/320 is released
 
@@ -42,37 +40,22 @@ class HasLength(AnyHasLength):
 
 class HasLengthBetween(AnyHasLength):
 
-    __slots__ = ("_inclusive_minimum", "_inclusive_maximum")
+    __slots__ = ("_minimum", "_maximum")
 
     def __init__(
         self, *, inclusive_minimum: Optional[int] = None, inclusive_maximum: Optional[int] = None
     ) -> None:
-        if inclusive_minimum is not None and inclusive_minimum < 0:
-            raise InvalidLengthError(inclusive_minimum)
-
-        if inclusive_maximum is not None and inclusive_maximum < 0:
-            raise InvalidLengthError(inclusive_maximum)
-
-        if inclusive_minimum is not None and inclusive_minimum > sys.maxsize:
-            raise InvalidLengthError(inclusive_minimum)
-
-        if inclusive_maximum is not None and inclusive_maximum > sys.maxsize:
-            raise InvalidLengthError(inclusive_maximum)
-
-        validate_boundaries(
+        minimum, maximum = get_length_boundaries(
             inclusive_minimum=inclusive_minimum, inclusive_maximum=inclusive_maximum
         )
 
-        self._inclusive_minimum = inclusive_minimum
-        self._inclusive_maximum = inclusive_maximum
+        self._minimum = minimum
+        self._maximum = maximum
 
     def __repr__(self) -> str:
-        minimum = get_minimum(inclusive=self._inclusive_minimum)
-        maximum = get_maximum(inclusive=self._inclusive_maximum)
-
         parameters = [
-            f"{minimum.type}_{minimum.name}={minimum.value}",
-            f"{maximum.type}_{maximum.name}={maximum.value}",
+            repr(self._minimum),
+            repr(self._maximum),
         ]
 
         return f"{testplates.__name__}.{type(self).__name__}[{', '.join(parameters)}]"
@@ -81,13 +64,7 @@ class HasLengthBetween(AnyHasLength):
         if not super().__eq__(other):
             return False
 
-        if self._inclusive_minimum is not None and len(other) < self._inclusive_minimum:
-            return False
-
-        if self._inclusive_maximum is not None and len(other) > self._inclusive_maximum:
-            return False
-
-        return True
+        return self._minimum.fits(len(other)) and self._maximum.fits(len(other))
 
 
 @overload

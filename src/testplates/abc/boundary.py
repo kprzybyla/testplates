@@ -16,7 +16,7 @@ class Boundary(Generic[_T], abc.ABC):
         self._value: _T = value
 
     def __repr__(self) -> str:
-        return f"{self.type}_{self.name}({self.value})"
+        return f"{self.type}_{self.name}={self.value}"
 
     @property
     def name(self) -> str:
@@ -56,4 +56,13 @@ class Boundary(Generic[_T], abc.ABC):
 
             If alignment is equal to 0, value equal to boundary is accepted.
             If alignment is equal to 1, value equal to boundary is not accepted.
+        """
+
+    @abc.abstractmethod
+    def fits(self, value: _T) -> bool:
+
+        """
+            Returns True if value fits within boundary, otherwise False.
+
+            :param value: value to be validated
         """

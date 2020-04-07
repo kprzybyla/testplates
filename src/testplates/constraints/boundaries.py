@@ -1,11 +1,14 @@
-__all__ = ["get_minimum", "get_maximum", "validate_boundaries"]
+__all__ = ["get_minimum", "get_maximum", "get_boundaries", "get_length_boundaries"]
 
-from typing import TypeVar, Optional
+import sys
+
+from typing import TypeVar, Tuple, Optional
 from typing_extensions import Final
 
 from testplates.abc import Boundary
 from testplates.exceptions import (
     MissingBoundaryError,
+    InvalidLengthError,
     MutuallyExclusiveBoundariesError,
     OverlappingBoundariesError,
     SingleMatchBoundariesError,
@@ -23,6 +26,9 @@ EXCLUSIVE_NAME: Final[str] = "exclusive"
 INCLUSIVE_ALIGNMENT: Final[int] = 0
 EXCLUSIVE_ALIGNMENT: Final[int] = 1
 
+LENGTH_MINIMUM: Final[int] = 0
+LENGTH_MAXIMUM: Final[int] = sys.maxsize
+
 
 class Inclusive(Boundary[_T]):
 
@@ -35,6 +41,15 @@ class Inclusive(Boundary[_T]):
     @property
     def alignment(self) -> int:
         return INCLUSIVE_ALIGNMENT
+
+    def fits(self, value: _T) -> bool:
+        if self.name == MINIMUM_NAME and value.__ge__(self.value) is not True:
+            return False
+
+        if self.name == MAXIMUM_NAME and value.__le__(self.value) is not True:
+            return False
+
+        return True
 
 
 class Exclusive(Boundary[_T]):
@@ -49,6 +64,15 @@ class Exclusive(Boundary[_T]):
     def alignment(self) -> int:
         return EXCLUSIVE_ALIGNMENT
 
+    def fits(self, value: _T) -> bool:
+        if self.name == MINIMUM_NAME and value.__gt__(self.value) is not True:
+            return False
+
+        if self.name == MAXIMUM_NAME and value.__lt__(self.value) is not True:
+            return False
+
+        return True
+
 
 def get_minimum(*, inclusive: Optional[_T] = None, exclusive: Optional[_T] = None) -> Boundary[_T]:
     return _get_boundary(MINIMUM_NAME, inclusive=inclusive, exclusive=exclusive)
@@ -58,13 +82,13 @@ def get_maximum(*, inclusive: Optional[_T] = None, exclusive: Optional[_T] = Non
     return _get_boundary(MAXIMUM_NAME, inclusive=inclusive, exclusive=exclusive)
 
 
-def validate_boundaries(
+def get_boundaries(
     *,
     inclusive_minimum: Optional[_T] = None,
     inclusive_maximum: Optional[_T] = None,
     exclusive_minimum: Optional[_T] = None,
     exclusive_maximum: Optional[_T] = None,
-) -> None:
+) -> Tuple[Boundary[_T], Boundary[_T]]:
     minimum = get_minimum(inclusive=inclusive_minimum, exclusive=exclusive_minimum)
     maximum = get_maximum(inclusive=inclusive_maximum, exclusive=exclusive_maximum)
 
@@ -73,6 +97,29 @@ def validate_boundaries(
 
     if minimum.value + minimum.alignment == maximum.value - maximum.alignment:
         raise SingleMatchBoundariesError(minimum, maximum)
+
+    return minimum, maximum
+
+
+def get_length_boundaries(
+    *, inclusive_minimum: Optional[int] = None, inclusive_maximum: Optional[int] = None
+) -> Tuple[Boundary[int], Boundary[int]]:
+    minimum = get_minimum(inclusive=inclusive_minimum)
+    maximum = get_maximum(inclusive=inclusive_maximum)
+
+    if minimum.value < LENGTH_MINIMUM or minimum.value > LENGTH_MAXIMUM:
+        raise InvalidLengthError(minimum)
+
+    if maximum.value < LENGTH_MINIMUM or maximum.value > LENGTH_MAXIMUM:
+        raise InvalidLengthError(maximum)
+
+    if minimum.value + minimum.alignment > maximum.value - maximum.alignment:
+        raise OverlappingBoundariesError(minimum, maximum)
+
+    if minimum.value + minimum.alignment == maximum.value - maximum.alignment:
+        raise SingleMatchBoundariesError(minimum, maximum)
+
+    return minimum, maximum
 
 
 def _get_boundary(
