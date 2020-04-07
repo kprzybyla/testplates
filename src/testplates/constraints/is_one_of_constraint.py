@@ -1,7 +1,6 @@
 __all__ = ["is_one_of"]
 
-from typing import Any, TypeVar, Generic
-from typing_extensions import Final
+from typing import Any, TypeVar, Generic, Final
 
 import testplates
 

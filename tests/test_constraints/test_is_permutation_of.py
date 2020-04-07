@@ -1,7 +1,6 @@
 import random
 
-from typing import TypeVar, Sized, Iterable, Iterator, Container, Collection, List
-from typing_extensions import Final
+from typing import TypeVar, Sized, Iterable, Iterator, Container, Collection, List, Final
 from dataclasses import dataclass
 
 import pytest

@@ -13,8 +13,7 @@ __all__ = [
 
 import enum
 
-from typing import TypeVar, Union
-from typing_extensions import Literal
+from typing import TypeVar, Union, Literal
 
 _T = TypeVar("_T")
 

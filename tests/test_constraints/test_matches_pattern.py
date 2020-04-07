@@ -1,7 +1,6 @@
 import re
 
-from typing import Any, List
-from typing_extensions import Final
+from typing import Any, List, Final
 
 import pytest
 

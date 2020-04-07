@@ -2,8 +2,7 @@ __all__ = ["get_minimum", "get_maximum", "get_boundaries", "get_length_boundarie
 
 import sys
 
-from typing import TypeVar, Tuple, Optional
-from typing_extensions import Final
+from typing import TypeVar, Tuple, Optional, Final
 
 from testplates.abc import Boundary
 from testplates.exceptions import (

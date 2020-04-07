@@ -1,5 +1,4 @@
-from typing import Any, Optional
-from typing_extensions import Final
+from typing import Any, Optional, Final
 
 import pytest
 

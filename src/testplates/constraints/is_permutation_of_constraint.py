@@ -1,7 +1,6 @@
 __all__ = ["is_permutation_of"]
 
-from typing import Any, TypeVar, Generic, List, Collection
-from typing_extensions import Final
+from typing import Any, TypeVar, Generic, List, Collection, Final
 
 import testplates
 

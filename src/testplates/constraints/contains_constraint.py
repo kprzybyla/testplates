@@ -1,7 +1,6 @@
 __all__ = ["contains"]
 
-from typing import Any, TypeVar, Generic, Container
-from typing_extensions import Final
+from typing import Any, TypeVar, Generic, Container, Final
 
 import testplates
 

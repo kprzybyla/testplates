@@ -1,7 +1,6 @@
 import random
 
-from typing import TypeVar, List, Callable
-from typing_extensions import Final
+from typing import TypeVar, List, Callable, Final
 from decimal import Decimal
 
 from hypothesis import settings, strategies as st

@@ -1,8 +1,7 @@
 import sys
 
 from dataclasses import dataclass
-from typing import Sized
-from typing_extensions import Final
+from typing import Sized, Final
 
 import pytest
 

@@ -1,7 +1,6 @@
 import random
 
-from typing import TypeVar, List
-from typing_extensions import Final
+from typing import TypeVar, List, Final
 
 import pytest
 

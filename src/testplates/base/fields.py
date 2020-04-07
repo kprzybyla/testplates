@@ -1,7 +1,6 @@
 __all__ = ["field", "Required", "Optional"]
 
-from typing import overload, Any, TypeVar, Union
-from typing_extensions import Literal
+from typing import overload, Any, TypeVar, Union, Literal
 
 from .value import MISSING, Value, Maybe, LiteralAny, LiteralWildcard, LiteralAbsent
 from .structure import Field

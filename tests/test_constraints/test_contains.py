@@ -1,5 +1,4 @@
-from typing import TypeVar, List, Container
-from typing_extensions import Final
+from typing import TypeVar, List, Container, Final
 from dataclasses import dataclass
 
 import pytest

@@ -1,5 +1,4 @@
-from typing import Any, TypeVar
-from typing_extensions import Final
+from typing import Any, TypeVar, Final
 from functools import partial
 
 import pytest

@@ -16,8 +16,7 @@ __all__ = [
     "UnreachableCodeExecutionInternalError",
 ]
 
-from typing import Any, TypeVar, Generic
-from typing_extensions import Final
+from typing import Any, TypeVar, Generic, Final
 
 from testplates import abc
 
