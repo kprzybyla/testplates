@@ -27,7 +27,7 @@ from testplates.exceptions import (
     MissingValueInternalError,
 )
 
-from .utils import matches
+from .utils import matches, format_like_dict
 from .value import WILDCARD, ABSENT, MISSING, Maybe
 
 _T = TypeVar("_T", covariant=True)
@@ -47,10 +47,13 @@ class Field(Generic[_T], Descriptor[Any, _T]):
         self._name: Optional[str] = None
 
     def __repr__(self) -> str:
-        return (
-            f"{type(self).__name__}"
-            f"[{self._name!r}, default={self.default!r}, is_optional={self.is_optional!r}]"
-        )
+        parameters = [
+            f"{self._name!r}",
+            f"default={self.default!r}",
+            f"is_optional={self.is_optional!r}",
+        ]
+
+        return f"{type(self).__name__}({', '.join(parameters)})"
 
     def __set_name__(self, owner: Type[Structure[_T]], name: str) -> None:
         self._name = name
@@ -171,7 +174,7 @@ class StructureMeta(Generic[_T], abc.ABCMeta):
         return _StructureDict()
 
     def __repr__(self) -> str:
-        return f"StructureMeta[{dict(self._fields_)}]"
+        return f"{type(self).__name__}({format_like_dict(self._fields_)})"
 
     def __new__(
         mcs, name: str, bases: Bases, namespace: _StructureDict[_T, Any]
@@ -204,7 +207,7 @@ class Structure(Generic[_T], Template, abc.ABC, metaclass=StructureMeta):
         self._values_ = values
 
     def __repr__(self) -> str:
-        return f"{type(self).__name__}[{self._values_}]"
+        return f"{type(self).__name__}({format_like_dict(self._values_)})"
 
     def __eq__(self, other: Any) -> bool:
         for key, field in self._fields_.items():

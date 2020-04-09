@@ -27,7 +27,7 @@ class HasLength(AnyHasLength):
         self._length = length
 
     def __repr__(self) -> str:
-        return f"{testplates.__name__}.{type(self).__name__}[{self._length}]"
+        return f"{testplates.__name__}.{has_length.__name__}({self._length})"
 
     def __eq__(self, other: Any) -> bool:
         if not super().__eq__(other):
@@ -51,12 +51,12 @@ class HasLengthBetween(AnyHasLength):
         self._maximum = maximum
 
     def __repr__(self) -> str:
-        parameters = [
+        boundaries = [
             repr(self._minimum),
             repr(self._maximum),
         ]
 
-        return f"{testplates.__name__}.{type(self).__name__}[{', '.join(parameters)}]"
+        return f"{testplates.__name__}.{has_length.__name__}({', '.join(boundaries)})"
 
     def __eq__(self, other: Any) -> bool:
         if not super().__eq__(other):

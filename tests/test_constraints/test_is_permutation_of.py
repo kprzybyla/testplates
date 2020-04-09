@@ -104,6 +104,15 @@ def st_inverse_values(draw: Draw[List[_T]]) -> List[_T]:
 
 
 @given(values=st_values())
+def test_repr(values: List[_T]) -> None:
+    fmt = "testplates.is_permutation_of({values})"
+
+    template = is_permutation_of(values)
+
+    assert repr(template) == fmt.format(values=repr(values))
+
+
+@given(values=st_values())
 def test_returns_true(values: List[_T]) -> None:
     permutation = shuffle(values)
 

@@ -43,6 +43,15 @@ def st_inverse_values(draw: Draw[List[_T]]) -> List[_T]:
 
 
 @given(values=st_values())
+def test_repr(values: List[_T]) -> None:
+    fmt = "testplates.is_one_of({values})"
+
+    template = is_one_of(*values)
+
+    assert repr(template) == fmt.format(values=", ".join(repr(value) for value in values))
+
+
+@given(values=st_values())
 def test_returns_true(values: List[_T]) -> None:
     value = random.choice(values)
 

@@ -1,6 +1,6 @@
-__all__ = ["matches"]
+__all__ = ["matches", "format_like_dict"]
 
-from typing import TypeVar
+from typing import Any, TypeVar, Mapping
 
 from .value import ANY, WILDCARD, ABSENT, MISSING, Value, Maybe
 
@@ -30,3 +30,7 @@ def matches(self_value: Maybe[Value[_T]], other_value: Maybe[Value[_T]], /) -> b
         return True
 
     return self_value == other_value
+
+
+def format_like_dict(mapping: Mapping[Any, Any]) -> str:
+    return ", ".join((f"{key}={value!r}" for key, value in mapping.items()))

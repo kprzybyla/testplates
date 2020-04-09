@@ -18,9 +18,7 @@ class Descriptor(Generic[_C, _T], abc.ABC):
 
     __slots__ = ()
 
-    def __repr__(self) -> str:
-        return f"{type(self).__name__}[{self.name!r}]"
-
+    @abc.abstractmethod
     def __set_name__(self, owner: Type[_C], name: str) -> None:
 
         """
@@ -38,6 +36,7 @@ class Descriptor(Generic[_C, _T], abc.ABC):
     def __get__(self, instance: _C, owner: Type[_C]) -> _T:
         ...
 
+    @abc.abstractmethod
     def __get__(self, instance: Optional[_C], owner: Type[_C]) -> Union[Descriptor[_C, _T], _T]:
 
         """

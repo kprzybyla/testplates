@@ -48,6 +48,15 @@ def st_values_without(draw: Draw[List[_T]], value: _T) -> List[_T]:
 
 
 @given(values=st_values())
+def test_repr(values: List[_T]) -> None:
+    fmt = "testplates.contains({values})"
+
+    template = contains(*values)
+
+    assert repr(template) == fmt.format(values=", ".join(repr(value) for value in values))
+
+
+@given(values=st_values())
 def test_returns_true(values: List[_T]) -> None:
     template = contains(*values)
 

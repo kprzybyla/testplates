@@ -15,9 +15,6 @@ class Boundary(Generic[_T], abc.ABC):
         self._name = name
         self._value: _T = value
 
-    def __repr__(self) -> str:
-        return f"{self.type}_{self.name}={self.value}"
-
     @property
     def name(self) -> str:
 

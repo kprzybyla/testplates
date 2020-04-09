@@ -33,9 +33,16 @@ class Inclusive(Boundary[_T]):
 
     __slots__ = ()
 
+    def __repr__(self) -> str:
+        return f"{self.name}={self.value}"
+
     @property
     def type(self) -> str:
         return INCLUSIVE_NAME
+
+    @property
+    def alias(self) -> str:
+        return self.name
 
     @property
     def alignment(self) -> int:
@@ -54,6 +61,9 @@ class Inclusive(Boundary[_T]):
 class Exclusive(Boundary[_T]):
 
     __slots__ = ()
+
+    def __repr__(self) -> str:
+        return f"{self.type}_{self.name}={self.value}"
 
     @property
     def type(self) -> str:

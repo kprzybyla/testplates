@@ -1,6 +1,6 @@
 import re
 
-from typing import Any, List, Final
+from typing import Any, AnyStr, List, Union, Final
 
 import pytest
 
@@ -18,6 +18,8 @@ HEX_COLOR_NUMBER: Final[str] = r"\B#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})\b"
 
 STR_PATTERNS: Final[List[str]] = [ANY_WORD, ANY_DIGIT, MAC_ADDRESS, HEX_COLOR_NUMBER]
 BYTES_PATTERNS: Final[List[bytes]] = list(map(str.encode, STR_PATTERNS))
+
+PATTERNS: Final[List[Union[str, bytes]]] = [*STR_PATTERNS, *BYTES_PATTERNS]
 
 # TODO(kprzybyla): Implement generic st_regex after following issue is resolved:
 #                  https://github.com/HypothesisWorks/hypothesis/issues/2365
@@ -47,6 +49,15 @@ def st_inverse_bytes_regex(draw: Draw[bytes], pattern: bytes) -> bytes:
     assume(not re.match(pattern, binary))
 
     return binary
+
+
+@pytest.mark.parametrize("pattern", PATTERNS)
+def test_repr(pattern: AnyStr) -> None:
+    fmt = "testplates.matches_pattern({pattern})"
+
+    template = matches_pattern(pattern)
+
+    assert repr(template) == fmt.format(pattern=repr(pattern))
 
 
 @given(data=st.data())

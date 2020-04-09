@@ -66,6 +66,29 @@ def st_length_above_maximum(draw: Draw[int]) -> int:
 
 
 @given(length=st_length())
+def test_repr(length: int) -> None:
+    fmt = "testplates.has_length({length})"
+
+    template = has_length(length)
+
+    assert repr(template) == fmt.format(length=length)
+
+
+@given(data=st.data(), length=st_length())
+def test_repr_with_minimum_and_maximum(data: st.DataObject, length: int) -> None:
+    fmt = "testplates.has_length(minimum={minimum}, maximum={maximum})"
+
+    minimum = data.draw(st_minimum(length))
+    maximum = data.draw(st_maximum(length))
+
+    assume(minimum != maximum)
+
+    template = has_length(minimum=minimum, maximum=maximum)
+
+    assert repr(template) == fmt.format(minimum=minimum, maximum=maximum)
+
+
+@given(length=st_length())
 def test_returns_true(length: int) -> None:
     template = has_length(length)
 

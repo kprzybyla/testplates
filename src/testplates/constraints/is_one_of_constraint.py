@@ -7,6 +7,8 @@ import testplates
 from testplates.abc import Constraint
 from testplates.exceptions import InsufficientValuesError
 
+from .utils import format_like_tuple
+
 _T = TypeVar("_T")
 
 MINIMUM_NUMBER_OF_VALUES: Final[int] = 2
@@ -23,7 +25,7 @@ class IsOneOf(Generic[_T], Constraint):
         self._values = values
 
     def __repr__(self) -> str:
-        return f"{testplates.__name__}.{type(self).__name__}{list(self._values)!r}"
+        return f"{testplates.__name__}.{is_one_of.__name__}({format_like_tuple(self._values)})"
 
     def __eq__(self, other: Any) -> bool:
         return other in self._values

@@ -34,12 +34,12 @@ class RangesBetween(Generic[_T], Constraint):
         self._maximum: Boundary[_T] = maximum
 
     def __repr__(self) -> str:
-        parameters = [
+        boundaries = [
             repr(self._minimum),
             repr(self._maximum),
         ]
 
-        return f"{testplates.__name__}.{type(self).__name__}[{', '.join(parameters)}]"
+        return f"{testplates.__name__}.{ranges_between.__name__}({', '.join(boundaries)})"
 
     def __eq__(self, other: Any) -> bool:
         return self._minimum.fits(other) and self._maximum.fits(other)

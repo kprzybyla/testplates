@@ -15,6 +15,8 @@ import enum
 
 from typing import TypeVar, Union, Literal
 
+import testplates
+
 _T = TypeVar("_T")
 
 
@@ -45,6 +47,9 @@ class _SpecialValueType(enum.Enum):
         Matches the corresponding field if, and only if, the field value is absent.
     """
 
+    def __repr__(self) -> str:
+        return f"{testplates.__name__}.{self.name}"
+
 
 class _MissingType(enum.Enum):
 
@@ -57,6 +62,9 @@ class _MissingType(enum.Enum):
     """
         Indicator for missing value.
     """
+
+    def __repr__(self) -> str:
+        return f"{testplates.__name__}.{self.name}"
 
 
 LiteralAny = Literal[_SpecialValueType.ANY]
