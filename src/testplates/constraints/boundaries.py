@@ -1,4 +1,11 @@
-__all__ = ["get_minimum", "get_maximum", "get_boundaries", "get_length_boundaries"]
+__all__ = [
+    "get_minimum",
+    "get_maximum",
+    "get_boundaries",
+    "get_length_boundaries",
+    "Inclusive",
+    "Exclusive",
+]
 
 import sys
 
@@ -39,10 +46,6 @@ class Inclusive(Boundary[_T]):
     @property
     def type(self) -> str:
         return INCLUSIVE_NAME
-
-    @property
-    def alias(self) -> str:
-        return self.name
 
     @property
     def alignment(self) -> int:

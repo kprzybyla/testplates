@@ -47,11 +47,12 @@ class Field(Generic[_T], Descriptor[Any, _T]):
         self._name: Optional[str] = None
 
     def __repr__(self) -> str:
-        parameters = [
-            f"{self._name!r}",
-            f"default={self.default!r}",
-            f"is_optional={self.is_optional!r}",
-        ]
+        parameters = [f"{self._name!r}"]
+
+        if self.default is not MISSING:
+            parameters.append(f"default={self.default!r}")
+
+        parameters.append(f"optional={self.is_optional!r}")
 
         return f"{type(self).__name__}({', '.join(parameters)})"
 

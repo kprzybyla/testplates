@@ -28,6 +28,34 @@ KEY: Final[str] = "key"
 
 
 @given(value=st_anything_comparable())
+@template_parameters
+def test_repr(value: _T, template_type: TemplateType) -> None:
+    fmt = "Template({key}={value})"
+
+    class Template(template_type):  # type: ignore
+
+        key: Required[_T] = field()
+
+    template = Template(key=value)
+
+    assert repr(template) == fmt.format(key=KEY, value=repr(value))
+
+
+@given(value=st_anything_comparable())
+@template_parameters
+def test_meta_repr(value: _T, template_type: TemplateType) -> None:
+    fmt = "StructureMeta({key}={field})"
+
+    class Template(template_type):  # type: ignore
+
+        key: Required[_T] = field()
+
+    template = Template(key=value)
+
+    assert repr(type(template)) == fmt.format(key=KEY, field=repr(Template.key))
+
+
+@given(value=st_anything_comparable())
 @template_and_storage_parameters
 def test_equality(value: _T, template_type: TemplateType, storage_type: StorageType[_T]) -> None:
     class Template(template_type):  # type: ignore
