@@ -34,7 +34,7 @@ def test_repr(value: _T, template_type: TemplateType) -> None:
 
     class Template(template_type):  # type: ignore
 
-        key: Required[_T] = field()
+        key: Required[Any] = field()
 
     template = Template(key=value)
 
@@ -48,7 +48,7 @@ def test_meta_repr(value: _T, template_type: TemplateType) -> None:
 
     class Template(template_type):  # type: ignore
 
-        key: Required[_T] = field()
+        key: Required[Any] = field()
 
     template = Template(key=value)
 
@@ -205,7 +205,7 @@ def test_absent_value_mismatches_any_value_in_optional_field(
 ) -> None:
     class Template(template_type):  # type: ignore
 
-        key: Optional[Any] = field(optional=True)
+        key: Optional[_T] = field(optional=True)
 
     template = Template(key=ABSENT)
 
@@ -279,7 +279,7 @@ def test_default_value_prevents_value_error_in_required_field_on_missing_value(
 ) -> None:
     class Template(template_type):  # type: ignore
 
-        key: Required[Any] = field(default=default)
+        key: Required[_T] = field(default=default)
 
     Template()
 
@@ -291,7 +291,7 @@ def test_default_value_prevents_value_error_in_optional_field_on_missing_value(
 ) -> None:
     class Template(template_type):  # type: ignore
 
-        key: Optional[Any] = field(default=default, optional=True)
+        key: Optional[_T] = field(default=default, optional=True)
 
     Template()
 

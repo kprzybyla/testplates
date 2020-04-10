@@ -7,7 +7,7 @@ from testplates.constraints.boundaries import Inclusive, Exclusive
 
 from tests.conftest import st_anything_comparable
 
-_T = TypeVar("_T")
+_T = TypeVar("_T", int, float)
 
 INCLUSIVE_NAME: Final[str] = "inclusive"
 EXCLUSIVE_NAME: Final[str] = "exclusive"
