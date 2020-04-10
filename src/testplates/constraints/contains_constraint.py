@@ -5,9 +5,8 @@ from typing import Any, TypeVar, Generic, Container, Final
 import testplates
 
 from testplates.abc import Constraint
+from testplates.utils import format_like_tuple
 from testplates.exceptions import InsufficientValuesError
-
-from .utils import format_like_tuple
 
 _T = TypeVar("_T")
 

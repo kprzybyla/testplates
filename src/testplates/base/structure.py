@@ -19,6 +19,7 @@ from typing import (
 )
 
 from testplates.abc import Template, Descriptor
+from testplates.utils import matches, format_like_dict
 from testplates.exceptions import (
     DanglingDescriptorError,
     MissingValueError,
@@ -27,7 +28,6 @@ from testplates.exceptions import (
     MissingValueInternalError,
 )
 
-from .utils import matches, format_like_dict
 from .value import WILDCARD, ABSENT, MISSING, Maybe
 
 _T = TypeVar("_T", covariant=True)

@@ -1,8 +1,8 @@
-__all__ = ["matches", "format_like_dict"]
+__all__ = ["matches", "format_like_tuple", "format_like_dict"]
 
-from typing import Any, TypeVar, Mapping
+from typing import Any, TypeVar, Iterable, Mapping
 
-from .value import ANY, WILDCARD, ABSENT, MISSING, Value, Maybe
+from testplates.base.value import ANY, WILDCARD, ABSENT, MISSING, Value, Maybe
 
 _T = TypeVar("_T")
 
@@ -30,6 +30,10 @@ def matches(self_value: Maybe[Value[_T]], other_value: Maybe[Value[_T]], /) -> b
         return True
 
     return self_value == other_value
+
+
+def format_like_tuple(values: Iterable[Any]) -> str:
+    return ", ".join((repr(value) for value in values))
 
 
 def format_like_dict(mapping: Mapping[Any, Any]) -> str:
