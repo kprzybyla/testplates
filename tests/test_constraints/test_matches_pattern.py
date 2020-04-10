@@ -55,9 +55,9 @@ def st_inverse_bytes_regex(draw: Draw[bytes], pattern: bytes) -> bytes:
 def test_repr(pattern: AnyStr) -> None:
     fmt = "testplates.matches_pattern({pattern})"
 
-    template = matches_pattern(pattern)
+    constraint = matches_pattern(pattern)
 
-    assert repr(template) == fmt.format(pattern=repr(pattern))
+    assert repr(constraint) == fmt.format(pattern=repr(pattern))
 
 
 @given(data=st.data())
@@ -65,9 +65,9 @@ def test_repr(pattern: AnyStr) -> None:
 def test_returns_true_with_str_pattern(data: st.DataObject, pattern: str) -> None:
     value = data.draw(st_str_regex(pattern))
 
-    template = matches_pattern(pattern)
+    constraint = matches_pattern(pattern)
 
-    assert template == value
+    assert constraint == value
 
 
 @given(data=st.data())
@@ -75,9 +75,9 @@ def test_returns_true_with_str_pattern(data: st.DataObject, pattern: str) -> Non
 def test_returns_true_with_bytes_pattern(data: st.DataObject, pattern: bytes) -> None:
     value = data.draw(st_bytes_regex(pattern))
 
-    template = matches_pattern(pattern)
+    constraint = matches_pattern(pattern)
 
-    assert template == value
+    assert constraint == value
 
 
 @given(data=st.data())
@@ -85,9 +85,9 @@ def test_returns_true_with_bytes_pattern(data: st.DataObject, pattern: bytes) ->
 def test_returns_false_with_str_pattern(data: st.DataObject, pattern: str) -> None:
     value = data.draw(st_inverse_str_regex(pattern))
 
-    template = matches_pattern(pattern)
+    constraint = matches_pattern(pattern)
 
-    assert template != value
+    assert constraint != value
 
 
 @given(data=st.data())
@@ -95,9 +95,9 @@ def test_returns_false_with_str_pattern(data: st.DataObject, pattern: str) -> No
 def test_returns_false_with_bytes_pattern(data: st.DataObject, pattern: bytes) -> None:
     value = data.draw(st_inverse_bytes_regex(pattern))
 
-    template = matches_pattern(pattern)
+    constraint = matches_pattern(pattern)
 
-    assert template != value
+    assert constraint != value
 
 
 @given(data=st.data())
@@ -105,9 +105,9 @@ def test_returns_false_with_bytes_pattern(data: st.DataObject, pattern: bytes) -
 def test_returns_false_with_str_pattern_and_bytes_value(data: st.DataObject, pattern: str) -> None:
     value = data.draw(st_str_regex(pattern))
 
-    template = matches_pattern(pattern)
+    constraint = matches_pattern(pattern)
 
-    assert template != value.encode()
+    assert constraint != value.encode()
 
 
 @given(data=st.data())
@@ -117,9 +117,9 @@ def test_returns_false_with_bytes_pattern_and_str_value(
 ) -> None:
     value = data.draw(st_bytes_regex(pattern))
 
-    template = matches_pattern(pattern)
+    constraint = matches_pattern(pattern)
 
-    assert template != value.decode()
+    assert constraint != value.decode()
 
 
 @given(pattern=st_anything_except(str, bytes))

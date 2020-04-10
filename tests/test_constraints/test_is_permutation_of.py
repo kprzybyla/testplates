@@ -107,18 +107,18 @@ def st_inverse_values(draw: Draw[List[_T]]) -> List[_T]:
 def test_repr(values: List[_T]) -> None:
     fmt = "testplates.is_permutation_of({values})"
 
-    template = is_permutation_of(values)
+    constraint = is_permutation_of(values)
 
-    assert repr(template) == fmt.format(values=repr(values))
+    assert repr(constraint) == fmt.format(values=repr(values))
 
 
 @given(values=st_values())
 def test_returns_true(values: List[_T]) -> None:
     permutation = shuffle(values)
 
-    template = is_permutation_of(permutation)
+    constraint = is_permutation_of(permutation)
 
-    assert template == CollectionWrapper(values)
+    assert constraint == CollectionWrapper(values)
 
 
 @given(values=st_values(), other=st_value())
@@ -130,9 +130,9 @@ def test_returns_false(values: List[_T], other: _T) -> None:
     permutation = shuffle(values)
     permutation[index] = other
 
-    template = is_permutation_of(permutation)
+    constraint = is_permutation_of(permutation)
 
-    assert template != CollectionWrapper(values)
+    assert constraint != CollectionWrapper(values)
 
 
 @given(values=st_values())
@@ -142,9 +142,9 @@ def test_returns_false_when_permutation_has_more_values(values: List[_T]) -> Non
 
     assume(len(permutation) > len(values))
 
-    template = is_permutation_of(permutation)
+    constraint = is_permutation_of(permutation)
 
-    assert template != CollectionWrapper(values)
+    assert constraint != CollectionWrapper(values)
 
 
 @given(values=st_values())
@@ -153,30 +153,30 @@ def test_returns_false_when_permutation_has_fewer_values(values: List[_T]) -> No
 
     assume(len(permutation) < len(values))
 
-    template = is_permutation_of(permutation)
+    constraint = is_permutation_of(permutation)
 
-    assert template != CollectionWrapper(values)
+    assert constraint != CollectionWrapper(values)
 
 
 @given(values=st_values())
 def test_returns_false_when_value_is_not_sized(values: List[_T]) -> None:
-    template = is_permutation_of(values)
+    constraint = is_permutation_of(values)
 
-    assert template != NotSized(values)
+    assert constraint != NotSized(values)
 
 
 @given(values=st_values())
 def test_returns_false_when_value_is_not_iterable(values: List[_T]) -> None:
-    template = is_permutation_of(values)
+    constraint = is_permutation_of(values)
 
-    assert template != NotIterable(values)
+    assert constraint != NotIterable(values)
 
 
 @given(values=st_values())
 def test_returns_false_when_value_is_not_container(values: List[_T]) -> None:
-    template = is_permutation_of(values)
+    constraint = is_permutation_of(values)
 
-    assert template != NotContainer(values)
+    assert constraint != NotContainer(values)
 
 
 @given(values=st_inverse_values())

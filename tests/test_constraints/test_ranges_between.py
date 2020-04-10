@@ -79,9 +79,9 @@ def test_repr_with_inclusive_minimum_and_inclusive_maximum(
 
     assume(inclusive_minimum != inclusive_maximum)
 
-    template = ranges_between(minimum=inclusive_minimum, maximum=inclusive_maximum)
+    constraint = ranges_between(minimum=inclusive_minimum, maximum=inclusive_maximum)
 
-    assert repr(template) == fmt.format(minimum=inclusive_minimum, maximum=inclusive_maximum)
+    assert repr(constraint) == fmt.format(minimum=inclusive_minimum, maximum=inclusive_maximum)
 
 
 @given(data=st.data(), value=st_value())
@@ -95,9 +95,9 @@ def test_repr_with_inclusive_minimum_and_exclusive_maximum(
 
     assume(inclusive_minimum != exclusive_maximum - EXCLUSIVE_ALIGNMENT)
 
-    template = ranges_between(minimum=inclusive_minimum, exclusive_maximum=exclusive_maximum)
+    constraint = ranges_between(minimum=inclusive_minimum, exclusive_maximum=exclusive_maximum)
 
-    assert repr(template) == fmt.format(minimum=inclusive_minimum, maximum=exclusive_maximum)
+    assert repr(constraint) == fmt.format(minimum=inclusive_minimum, maximum=exclusive_maximum)
 
 
 @given(data=st.data(), value=st_value())
@@ -111,9 +111,9 @@ def test_repr_with_exclusive_minimum_and_inclusive_maximum(
 
     assume(exclusive_minimum + EXCLUSIVE_ALIGNMENT != inclusive_maximum)
 
-    template = ranges_between(exclusive_minimum=exclusive_minimum, maximum=inclusive_maximum)
+    constraint = ranges_between(exclusive_minimum=exclusive_minimum, maximum=inclusive_maximum)
 
-    assert repr(template) == fmt.format(minimum=exclusive_minimum, maximum=inclusive_maximum)
+    assert repr(constraint) == fmt.format(minimum=exclusive_minimum, maximum=inclusive_maximum)
 
 
 @given(data=st.data(), value=st_value())
@@ -127,11 +127,11 @@ def test_repr_with_exclusive_minimum_and_exclusive_maximum(
 
     assume(exclusive_minimum + EXCLUSIVE_ALIGNMENT != exclusive_maximum - EXCLUSIVE_ALIGNMENT)
 
-    template = ranges_between(
+    constraint = ranges_between(
         exclusive_minimum=exclusive_minimum, exclusive_maximum=exclusive_maximum
     )
 
-    assert repr(template) == fmt.format(minimum=exclusive_minimum, maximum=exclusive_maximum)
+    assert repr(constraint) == fmt.format(minimum=exclusive_minimum, maximum=exclusive_maximum)
 
 
 @given(data=st.data(), value=st_value())
@@ -143,9 +143,9 @@ def test_returns_true_with_inclusive_minimum_and_inclusive_maximum(
 
     assume(inclusive_minimum != inclusive_maximum)
 
-    template = ranges_between(minimum=inclusive_minimum, maximum=inclusive_maximum)
+    constraint = ranges_between(minimum=inclusive_minimum, maximum=inclusive_maximum)
 
-    assert template == value
+    assert constraint == value
 
 
 @given(data=st.data(), value=st_value())
@@ -157,9 +157,9 @@ def test_returns_true_with_inclusive_minimum_and_exclusive_maximum(
 
     assume(inclusive_minimum != exclusive_maximum - EXCLUSIVE_ALIGNMENT)
 
-    template = ranges_between(minimum=inclusive_minimum, exclusive_maximum=exclusive_maximum)
+    constraint = ranges_between(minimum=inclusive_minimum, exclusive_maximum=exclusive_maximum)
 
-    assert template == value
+    assert constraint == value
 
 
 @given(data=st.data(), value=st_value())
@@ -171,9 +171,9 @@ def test_returns_true_with_exclusive_minimum_and_inclusive_maximum(
 
     assume(exclusive_minimum + EXCLUSIVE_ALIGNMENT != inclusive_maximum)
 
-    template = ranges_between(exclusive_minimum=exclusive_minimum, maximum=inclusive_maximum)
+    constraint = ranges_between(exclusive_minimum=exclusive_minimum, maximum=inclusive_maximum)
 
-    assert template == value
+    assert constraint == value
 
 
 @given(data=st.data(), value=st_value())
@@ -185,11 +185,11 @@ def test_returns_true_with_exclusive_minimum_and_exclusive_maximum(
 
     assume(exclusive_minimum + EXCLUSIVE_ALIGNMENT != exclusive_maximum - EXCLUSIVE_ALIGNMENT)
 
-    template = ranges_between(
+    constraint = ranges_between(
         exclusive_minimum=exclusive_minimum, exclusive_maximum=exclusive_maximum
     )
 
-    assert template == value
+    assert constraint == value
 
 
 @given(data=st.data(), value=st_value())
@@ -202,9 +202,9 @@ def test_returns_false_with_upper_inclusive_minimum_and_inclusive_maximum(
     assume(inclusive_minimum != value)
     assume(inclusive_minimum != inclusive_maximum)
 
-    template = ranges_between(minimum=inclusive_minimum, maximum=inclusive_maximum)
+    constraint = ranges_between(minimum=inclusive_minimum, maximum=inclusive_maximum)
 
-    assert template != value
+    assert constraint != value
 
 
 @given(data=st.data(), value=st_value())
@@ -217,9 +217,9 @@ def test_returns_false_with_lower_inclusive_minimum_and_inclusive_maximum(
     assume(inclusive_maximum != value)
     assume(inclusive_minimum != inclusive_maximum)
 
-    template = ranges_between(minimum=inclusive_minimum, maximum=inclusive_maximum)
+    constraint = ranges_between(minimum=inclusive_minimum, maximum=inclusive_maximum)
 
-    assert template != value
+    assert constraint != value
 
 
 @given(data=st.data(), value=st_value())
@@ -232,9 +232,9 @@ def test_returns_false_with_upper_inclusive_minimum_and_exclusive_maximum(
     assume(inclusive_minimum != value)
     assume(inclusive_minimum < exclusive_maximum - EXCLUSIVE_ALIGNMENT)
 
-    template = ranges_between(minimum=inclusive_minimum, exclusive_maximum=exclusive_maximum)
+    constraint = ranges_between(minimum=inclusive_minimum, exclusive_maximum=exclusive_maximum)
 
-    assert template != value
+    assert constraint != value
 
 
 @given(data=st.data(), value=st_value())
@@ -247,9 +247,9 @@ def test_returns_false_with_lower_inclusive_minimum_and_exclusive_maximum(
     assume(exclusive_maximum != value)
     assume(inclusive_minimum < exclusive_maximum - EXCLUSIVE_ALIGNMENT)
 
-    template = ranges_between(minimum=inclusive_minimum, exclusive_maximum=exclusive_maximum)
+    constraint = ranges_between(minimum=inclusive_minimum, exclusive_maximum=exclusive_maximum)
 
-    assert template != value
+    assert constraint != value
 
 
 @given(data=st.data(), value=st_value())
@@ -261,9 +261,9 @@ def test_returns_false_with_upper_exclusive_minimum_and_inclusive_maximum(
 
     assume(exclusive_minimum + EXCLUSIVE_ALIGNMENT < inclusive_maximum)
 
-    template = ranges_between(exclusive_minimum=exclusive_minimum, maximum=inclusive_maximum)
+    constraint = ranges_between(exclusive_minimum=exclusive_minimum, maximum=inclusive_maximum)
 
-    assert template != value
+    assert constraint != value
 
 
 @given(data=st.data(), value=st_value())
@@ -276,9 +276,9 @@ def test_returns_false_with_lower_exclusive_minimum_and_inclusive_maximum(
     assume(inclusive_maximum != value)
     assume(exclusive_minimum + EXCLUSIVE_ALIGNMENT < inclusive_maximum)
 
-    template = ranges_between(exclusive_minimum=exclusive_minimum, maximum=inclusive_maximum)
+    constraint = ranges_between(exclusive_minimum=exclusive_minimum, maximum=inclusive_maximum)
 
-    assert template != value
+    assert constraint != value
 
 
 @given(data=st.data(), value=st_value())
@@ -290,11 +290,11 @@ def test_returns_false_with_upper_exclusive_minimum_and_exclusive_maximum(
 
     assume(exclusive_minimum + EXCLUSIVE_ALIGNMENT < exclusive_maximum - EXCLUSIVE_ALIGNMENT)
 
-    template = ranges_between(
+    constraint = ranges_between(
         exclusive_minimum=exclusive_minimum, exclusive_maximum=exclusive_maximum
     )
 
-    assert template != value
+    assert constraint != value
 
 
 @given(data=st.data(), value=st_value())
@@ -306,11 +306,11 @@ def test_returns_false_with_lower_exclusive_minimum_and_exclusive_maximum(
 
     assume(exclusive_minimum + EXCLUSIVE_ALIGNMENT < exclusive_maximum - EXCLUSIVE_ALIGNMENT)
 
-    template = ranges_between(
+    constraint = ranges_between(
         exclusive_minimum=exclusive_minimum, exclusive_maximum=exclusive_maximum
     )
 
-    assert template != value
+    assert constraint != value
 
 
 @given(data=st.data(), value=st_value())
@@ -322,9 +322,9 @@ def test_returns_false_when_value_does_not_implement_boundaries_with_inclusive_b
 
     assume(inclusive_minimum != inclusive_maximum)
 
-    template = ranges_between(minimum=inclusive_minimum, maximum=inclusive_maximum)
+    constraint = ranges_between(minimum=inclusive_minimum, maximum=inclusive_maximum)
 
-    assert template != NotImplementedBoundaries()
+    assert constraint != NotImplementedBoundaries()
 
 
 @given(data=st.data(), value=st_value())
@@ -336,11 +336,11 @@ def test_returns_false_when_value_does_not_implement_boundaries_with_exclusive_b
 
     assume(exclusive_minimum + EXCLUSIVE_ALIGNMENT < exclusive_maximum - EXCLUSIVE_ALIGNMENT)
 
-    template = ranges_between(
+    constraint = ranges_between(
         exclusive_minimum=exclusive_minimum, exclusive_maximum=exclusive_maximum
     )
 
-    assert template != NotImplementedBoundaries()
+    assert constraint != NotImplementedBoundaries()
 
 
 # noinspection PyArgumentList

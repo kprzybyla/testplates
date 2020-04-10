@@ -46,27 +46,27 @@ def st_inverse_values(draw: Draw[List[_T]]) -> List[_T]:
 def test_repr(values: List[_T]) -> None:
     fmt = "testplates.is_one_of({values})"
 
-    template = is_one_of(*values)
+    constraint = is_one_of(*values)
 
-    assert repr(template) == fmt.format(values=", ".join(repr(value) for value in values))
+    assert repr(constraint) == fmt.format(values=", ".join(repr(value) for value in values))
 
 
 @given(values=st_values())
 def test_returns_true(values: List[_T]) -> None:
     value = random.choice(values)
 
-    template = is_one_of(*values)
+    constraint = is_one_of(*values)
 
-    assert template == value
+    assert constraint == value
 
 
 @given(data=st.data(), value=st_value())
 def test_returns_false(data: st.DataObject, value: _T) -> None:
     values = data.draw(st_values_without(value))
 
-    template = is_one_of(*values)
+    constraint = is_one_of(*values)
 
-    assert template != value
+    assert constraint != value
 
 
 @given(values=st_inverse_values())

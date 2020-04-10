@@ -69,9 +69,9 @@ def st_length_above_maximum(draw: Draw[int]) -> int:
 def test_repr(length: int) -> None:
     fmt = "testplates.has_length({length})"
 
-    template = has_length(length)
+    constraint = has_length(length)
 
-    assert repr(template) == fmt.format(length=length)
+    assert repr(constraint) == fmt.format(length=length)
 
 
 @given(data=st.data(), length=st_length())
@@ -83,16 +83,16 @@ def test_repr_with_minimum_and_maximum(data: st.DataObject, length: int) -> None
 
     assume(minimum != maximum)
 
-    template = has_length(minimum=minimum, maximum=maximum)
+    constraint = has_length(minimum=minimum, maximum=maximum)
 
-    assert repr(template) == fmt.format(minimum=minimum, maximum=maximum)
+    assert repr(constraint) == fmt.format(minimum=minimum, maximum=maximum)
 
 
 @given(length=st_length())
 def test_returns_true(length: int) -> None:
-    template = has_length(length)
+    constraint = has_length(length)
 
-    assert template == SizedWrapper(length)
+    assert constraint == SizedWrapper(length)
 
 
 @given(data=st.data(), length=st_length())
@@ -102,18 +102,18 @@ def test_returns_true_with_minimum_and_maximum(data: st.DataObject, length: int)
 
     assume(minimum != maximum)
 
-    template = has_length(minimum=minimum, maximum=maximum)
+    constraint = has_length(minimum=minimum, maximum=maximum)
 
-    assert template == SizedWrapper(length)
+    assert constraint == SizedWrapper(length)
 
 
 @given(length=st_length(), other=st_length())
 def test_returns_false(length: int, other: int) -> None:
     assume(length != other)
 
-    template = has_length(length)
+    constraint = has_length(length)
 
-    assert template != SizedWrapper(other)
+    assert constraint != SizedWrapper(other)
 
 
 @given(data=st.data(), length=st_length())
@@ -124,9 +124,9 @@ def test_returns_false_with_upper_minimum_and_maximum(data: st.DataObject, lengt
     assume(minimum != length)
     assume(minimum != maximum)
 
-    template = has_length(minimum=minimum, maximum=maximum)
+    constraint = has_length(minimum=minimum, maximum=maximum)
 
-    assert template != SizedWrapper(length)
+    assert constraint != SizedWrapper(length)
 
 
 @given(data=st.data(), length=st_length())
@@ -137,16 +137,16 @@ def test_returns_false_with_lower_minimum_and_maximum(data: st.DataObject, lengt
     assume(maximum != length)
     assume(minimum != maximum)
 
-    template = has_length(minimum=minimum, maximum=maximum)
+    constraint = has_length(minimum=minimum, maximum=maximum)
 
-    assert template != SizedWrapper(length)
+    assert constraint != SizedWrapper(length)
 
 
 @given(length=st_length())
 def test_returns_false_when_value_is_not_sized(length: int) -> None:
-    template = has_length(length)
+    constraint = has_length(length)
 
-    assert template != NotSized()
+    assert constraint != NotSized()
 
 
 @given(data=st.data(), length=st_length())
@@ -158,9 +158,9 @@ def test_returns_false_when_value_is_not_sized_with_minimum_and_maximum(
 
     assume(minimum != maximum)
 
-    template = has_length(minimum=minimum, maximum=maximum)
+    constraint = has_length(minimum=minimum, maximum=maximum)
 
-    assert template != NotSized()
+    assert constraint != NotSized()
 
 
 # noinspection PyArgumentList

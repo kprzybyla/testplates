@@ -51,32 +51,32 @@ def st_values_without(draw: Draw[List[_T]], value: _T) -> List[_T]:
 def test_repr(values: List[_T]) -> None:
     fmt = "testplates.contains({values})"
 
-    template = contains(*values)
+    constraint = contains(*values)
 
-    assert repr(template) == fmt.format(values=", ".join(repr(value) for value in values))
+    assert repr(constraint) == fmt.format(values=", ".join(repr(value) for value in values))
 
 
 @given(values=st_values())
 def test_returns_true(values: List[_T]) -> None:
-    template = contains(*values)
+    constraint = contains(*values)
 
-    assert template == ContainerWrapper(values)
+    assert constraint == ContainerWrapper(values)
 
 
 @given(data=st.data(), value=st_value())
 def test_returns_false(data: st.DataObject, value: _T) -> None:
     values = data.draw(st_values_without(value))
 
-    template = contains(value, *samples(values))
+    constraint = contains(value, *samples(values))
 
-    assert template != ContainerWrapper(values)
+    assert constraint != ContainerWrapper(values)
 
 
 @given(values=st_values())
 def test_returns_false_when_value_is_not_container(values: List[_T]) -> None:
-    template = contains(*values)
+    constraint = contains(*values)
 
-    assert template != NotContainer()
+    assert constraint != NotContainer()
 
 
 def test_raises_error_when_less_than_one_value_was_provided() -> None:
