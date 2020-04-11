@@ -11,7 +11,7 @@ _T = TypeVar("_T")
 
 
 def test_repr_for_required_field_without_default_value() -> None:
-    fmt = "Field('key', optional=False)"
+    fmt = "testplates.Field('key', optional=False)"
 
     class Template(Object):
 
@@ -22,7 +22,7 @@ def test_repr_for_required_field_without_default_value() -> None:
 
 @given(value=st_anything_comparable())
 def test_repr_for_required_field_with_default_value(value: _T) -> None:
-    fmt = "Field('key', default={value}, optional=False)"
+    fmt = "testplates.Field('key', default={value}, optional=False)"
 
     class Template(Object):
 
@@ -32,7 +32,7 @@ def test_repr_for_required_field_with_default_value(value: _T) -> None:
 
 
 def test_repr_for_optional_field_without_default_value() -> None:
-    fmt = "Field('key', optional=True)"
+    fmt = "testplates.Field('key', optional=True)"
 
     class Template(Object):
 
@@ -43,7 +43,7 @@ def test_repr_for_optional_field_without_default_value() -> None:
 
 @given(value=st_anything_comparable())
 def test_repr_for_optional_field_with_default_value(value: _T) -> None:
-    fmt = "Field('key', default={value}, optional=True)"
+    fmt = "testplates.Field('key', default={value}, optional=True)"
 
     class Template(Object):
 

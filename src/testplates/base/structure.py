@@ -18,6 +18,8 @@ from typing import (
     Optional,
 )
 
+import testplates
+
 from testplates.abc import Template, Descriptor
 from testplates.utils import matches, format_like_dict
 from testplates.exceptions import (
@@ -54,7 +56,7 @@ class Field(Generic[_T], Descriptor[Any, _T]):
 
         parameters.append(f"optional={self.is_optional!r}")
 
-        return f"{type(self).__name__}({', '.join(parameters)})"
+        return f"{testplates.__name__}.{type(self).__name__}({', '.join(parameters)})"
 
     def __set_name__(self, owner: Type[Structure[_T]], name: str) -> None:
         self._name = name
@@ -175,7 +177,7 @@ class StructureMeta(Generic[_T], abc.ABCMeta):
         return _StructureDict()
 
     def __repr__(self) -> str:
-        return f"{type(self).__name__}({format_like_dict(self._fields_)})"
+        return f"{testplates.__name__}.{type(self).__name__}({format_like_dict(self._fields_)})"
 
     def __new__(
         mcs, name: str, bases: Bases, namespace: _StructureDict[_T, Any]

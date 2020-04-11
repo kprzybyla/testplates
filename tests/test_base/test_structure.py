@@ -44,7 +44,7 @@ def test_repr(value: _T, template_type: TemplateType) -> None:
 @given(value=st_anything_comparable())
 @template_parameters
 def test_meta_repr(value: _T, template_type: TemplateType) -> None:
-    fmt = "StructureMeta({key}={field})"
+    fmt = "testplates.StructureMeta({key}={field})"
 
     class Template(template_type):  # type: ignore
 
