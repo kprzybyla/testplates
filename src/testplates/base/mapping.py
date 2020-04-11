@@ -4,7 +4,7 @@ import typing
 
 from typing import Any, TypeVar, Generic, Iterator
 
-from .value import MISSING, Maybe
+from .value import Maybe, MISSING
 from .structure import Structure
 
 _T = TypeVar("_T")

@@ -2,7 +2,7 @@ __all__ = ["matches", "format_like_tuple", "format_like_dict"]
 
 from typing import Any, TypeVar, Iterable, Mapping
 
-from testplates.base.value import ANY, WILDCARD, ABSENT, MISSING, Value, Maybe
+from testplates.base.value import Value, Maybe, ANY, WILDCARD, ABSENT, MISSING
 
 _T = TypeVar("_T")
 

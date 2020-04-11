@@ -28,7 +28,7 @@ from testplates.exceptions import (
     MissingValueInternalError,
 )
 
-from .value import WILDCARD, ABSENT, MISSING, Maybe
+from .value import Maybe, WILDCARD, ABSENT, MISSING
 
 _T = TypeVar("_T", covariant=True)
 _V = TypeVar("_V")
