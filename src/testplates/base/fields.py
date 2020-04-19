@@ -54,4 +54,15 @@ def field(*, default: Maybe[_T] = ..., optional: bool = ...) -> Field[Value[_T]]
 def field(
     *, default: Maybe[_T] = MISSING, optional: bool = False
 ) -> Union[Required[_T], Optional[_T], Field[Value[_T]]]:
+
+    """
+        Creates field for structure template.
+
+        This is basically a wrapper for :class:`Field`
+        with all possible overloads for its arguments.
+
+        :param default: field default value
+        :param optional: indication whether field is optional or not
+    """
+
     return Field(default=default, optional=optional)

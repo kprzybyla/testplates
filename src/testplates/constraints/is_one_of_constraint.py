@@ -31,4 +31,12 @@ class IsOneOf(Generic[_T], Constraint):
 
 
 def is_one_of(*values: _T) -> IsOneOf[_T]:
+
+    """
+        Returns constraint object that matches any object
+        which was specified via the positional arguments.
+
+        :param values: values to be matched by constraint object
+    """
+
     return IsOneOf(*values)

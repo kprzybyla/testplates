@@ -7,6 +7,10 @@ from typing import Any
 
 class Template(abc.ABC):
 
+    """
+        Abstract template class.
+    """
+
     __slots__ = ()
 
     @abc.abstractmethod
@@ -22,5 +26,5 @@ class Template(abc.ABC):
         """
             Template equality conditions and requirements.
 
-            :param other: any other object
+            :param other: object which will be compared to the template
         """

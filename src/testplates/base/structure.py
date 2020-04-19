@@ -40,6 +40,10 @@ Bases = Tuple[type, ...]
 
 class Field(Generic[_T], Descriptor[Any, _T]):
 
+    """
+        Field descriptor class.
+    """
+
     __slots__ = ("_default", "_optional", "_name")
 
     def __init__(self, *, default: Maybe[_T] = MISSING, optional: bool = False) -> None:
@@ -76,13 +80,13 @@ class Field(Generic[_T], Descriptor[Any, _T]):
         """
             Returns either field itself or field value.
 
-            Return value depends on the fact whether field was access
+            Return value depends on the fact whether field was accessed
             via :class:`Structure` class object or class instance attribute.
 
             :param instance: :class:`Structure` class instance to which field is attached or None
             :param owner: :class:`Structure` class object to which field is attached
 
-            :raises AttributeError: When field value is missing when trying to access it
+            :raises AttributeError: When field value is missing upon access
         """
 
         if instance is None:
@@ -126,7 +130,7 @@ class Field(Generic[_T], Descriptor[Any, _T]):
     def validate(self, value: Maybe[_T], /) -> None:
 
         """
-            Validates the given value against the field.
+            Validates the given value against the field requirements.
 
             :param value: value to be validated
         """
@@ -158,15 +162,14 @@ class _StructureDict(Generic[_T, _V], Dict[str, _V]):
 
     @property
     def fields(self) -> Dict[str, Field[_T]]:
-
-        """
-            Returns fields descriptors.
-        """
-
         return self._fields_
 
 
 class StructureMeta(Generic[_T], abc.ABCMeta):
+
+    """
+        Structure template metaclass.
+    """
 
     __slots__ = ()
 
@@ -189,6 +192,10 @@ class StructureMeta(Generic[_T], abc.ABCMeta):
 
 
 class Structure(Generic[_T], Template, abc.ABC, metaclass=StructureMeta):
+
+    """
+        Structure template base class.
+    """
 
     __slots__ = ("_values_",)
 
@@ -227,11 +234,11 @@ class Structure(Generic[_T], Template, abc.ABC, metaclass=StructureMeta):
     def _get_value_(self: Any, key: str, /, *, default: Maybe[_T] = MISSING) -> Maybe[_T]:
 
         """
-            Extracts value by given key using a specific protocol.
+            Extracts value by given key using a type specific protocol.
 
             If value is missing, returns default value.
 
-            :param self: object with a specific protocol
-            :param key: key used to access the value
-            :param default: default value in case value is missing
+            :param self: object with a type specific protocol
+            :param key: key used to access the value in a structure
+            :param default: default value that will be used in case value is missing
         """

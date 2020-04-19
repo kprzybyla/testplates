@@ -87,10 +87,26 @@ class Exclusive(Boundary[_T]):
 
 
 def get_minimum(*, inclusive: Optional[_T] = None, exclusive: Optional[_T] = None) -> Boundary[_T]:
+
+    """
+        Gets minimum boundary.
+
+        :param inclusive: inclusive boundary value or None
+        :param exclusive: exclusive boundary value or None
+    """
+
     return _get_boundary(MINIMUM_NAME, inclusive=inclusive, exclusive=exclusive)
 
 
 def get_maximum(*, inclusive: Optional[_T] = None, exclusive: Optional[_T] = None) -> Boundary[_T]:
+
+    """
+        Gets maximum boundary.
+
+        :param inclusive: inclusive boundary value or None
+        :param exclusive: exclusive boundary value or None
+    """
+
     return _get_boundary(MAXIMUM_NAME, inclusive=inclusive, exclusive=exclusive)
 
 
@@ -101,6 +117,16 @@ def get_boundaries(
     exclusive_minimum: Optional[_T] = None,
     exclusive_maximum: Optional[_T] = None,
 ) -> Tuple[Boundary[_T], Boundary[_T]]:
+
+    """
+        Gets both minimum and maximum boundaries.
+
+        :param inclusive_minimum: inclusive minimum boundary value or None
+        :param inclusive_maximum: inclusive maximum boundary value or None
+        :param exclusive_minimum: exclusive minimum boundary value or None
+        :param exclusive_maximum: exclusive maximum boundary value or None
+    """
+
     minimum = get_minimum(inclusive=inclusive_minimum, exclusive=exclusive_minimum)
     maximum = get_maximum(inclusive=inclusive_maximum, exclusive=exclusive_maximum)
 
@@ -114,8 +140,16 @@ def get_boundaries(
 
 
 def get_length_boundaries(
-    *, inclusive_minimum: Optional[int] = None, inclusive_maximum: Optional[int] = None
-) -> Tuple[Boundary[int], Boundary[int]]:
+    *, inclusive_minimum: int, inclusive_maximum: int
+) -> Tuple[Inclusive[int], Inclusive[int]]:
+
+    """
+        Gets both minimum and maximum length boundaries.
+
+        :param inclusive_minimum: length minimum value
+        :param inclusive_maximum: length maximum value
+    """
+
     minimum = get_minimum(inclusive=inclusive_minimum)
     maximum = get_maximum(inclusive=inclusive_maximum)
 
@@ -137,6 +171,16 @@ def get_length_boundaries(
 def _get_boundary(
     name: str, /, *, inclusive: Optional[_T] = None, exclusive: Optional[_T] = None
 ) -> Boundary[_T]:
+
+    """
+        Gets either inclusive or exclusive
+        boundary with given name and value.
+
+        :param name: boundary name
+        :param inclusive: inclusive boundary value
+        :param exclusive: exclusive boundary value
+    """
+
     if inclusive is None and exclusive is None:
         raise MissingBoundaryError(name)
 

@@ -1,4 +1,4 @@
-from testplates.base.value import ANY, WILDCARD, ABSENT, MISSING
+from testplates import ANY, WILDCARD, ABSENT, MISSING
 
 
 def test_repr_any() -> None:

@@ -38,4 +38,12 @@ class Contains(Generic[_T], Constraint):
 
 
 def contains(*values: _T) -> Contains[_T]:
+
+    """
+        Returns constraint object that matches any container object
+        that contains all values specified via the positional arguments.
+
+        :param values: values to be present in container object
+    """
+
     return Contains(*values)

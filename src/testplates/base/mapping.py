@@ -12,6 +12,10 @@ _T = TypeVar("_T")
 
 class _Mapping(Generic[_T], Structure[_T], typing.Mapping[str, _T]):
 
+    """
+        Mapping-like structure template class.
+    """
+
     __slots__ = ()
 
     def __getitem__(self, item: str) -> _T:

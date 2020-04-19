@@ -74,6 +74,17 @@ def ranges_between(
     exclusive_minimum: Optional[_T] = None,
     exclusive_maximum: Optional[_T] = None,
 ) -> RangesBetween[_T]:
+
+    """
+        Returns constraint object that matches any object with boundaries
+        support that ranges between minimum and maximum boundaries values.
+
+        :param minimum: inclusive minimum boundary value
+        :param maximum: inclusive maximum boundary value
+        :param exclusive_minimum: exclusive minimum boundary value
+        :param exclusive_maximum: exclusive maximum boundary value
+    """
+
     if (
         minimum is not None
         or maximum is not None

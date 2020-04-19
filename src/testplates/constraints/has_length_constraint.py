@@ -82,6 +82,17 @@ def has_length(
     minimum: Optional[int] = None,
     maximum: Optional[int] = None,
 ) -> AnyHasLength:
+
+    """
+        Returns constraint object that matches any sized object
+        that has length equal to the exact value or length
+        between minimum and maximum boundaries values.
+
+        :param length: exact length value
+        :param minimum: minimum length boundary value
+        :param maximum: maximum length boundary value
+    """
+
     if length is not None:
         return HasLength(length)
 

@@ -29,6 +29,14 @@ class MatchesPattern(Generic[AnyStr], Constraint, abc.ABC):
 
 
 def matches_pattern(pattern: AnyStr, /) -> MatchesPattern[AnyStr]:
+
+    """
+        Returns constraint object that matches any string
+        object whose content matches the specified pattern.
+
+        :param pattern: pattern to be matched inside string content
+    """
+
     if isinstance(pattern, str):
         return MatchesPattern(pattern, str)
 

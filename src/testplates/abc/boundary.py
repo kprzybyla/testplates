@@ -9,6 +9,10 @@ _T = TypeVar("_T", int, float)
 
 class Boundary(Generic[_T], abc.ABC):
 
+    """
+        Abstract boundary class.
+    """
+
     __slots__ = ("_name", "_value")
 
     def __init__(self, name: str, value: _T) -> None:

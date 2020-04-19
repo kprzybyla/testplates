@@ -10,6 +10,10 @@ _T = TypeVar("_T")
 
 class _Object(Generic[_T], Structure[_T]):
 
+    """
+        Object-like structure template class.
+    """
+
     __slots__ = ()
 
     @staticmethod

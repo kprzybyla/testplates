@@ -46,4 +46,12 @@ class IsPermutationOf(Generic[_T], Constraint):
 
 
 def is_permutation_of(values: List[_T], /) -> IsPermutationOf[_T]:
+
+    """
+        Returns constraint object that matches any collection object
+        that is a permutation of values specified via parameter.
+
+        :param values: values to be matched as permutation
+    """
+
     return IsPermutationOf(values)

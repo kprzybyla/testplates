@@ -38,6 +38,11 @@ class TestplatesError(Exception):
 
     @property
     def message(self) -> str:
+
+        """
+            Returns error message.
+        """
+
         return "".join(self.args)
 
 

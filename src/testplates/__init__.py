@@ -7,6 +7,7 @@ __all__ = [
     "ANY",
     "WILDCARD",
     "ABSENT",
+    "MISSING",
     "contains",
     "has_length",
     "ranges_between",
@@ -28,7 +29,17 @@ __all__ = [
     "InsufficientValuesError",
 ]
 
-from testplates.base import field, Required, Optional, Object, Mapping, ANY, WILDCARD, ABSENT
+from testplates.base import (
+    field,
+    Required,
+    Optional,
+    Object,
+    Mapping,
+    ANY,
+    WILDCARD,
+    ABSENT,
+    MISSING,
+)
 
 from testplates.constraints import (
     contains,

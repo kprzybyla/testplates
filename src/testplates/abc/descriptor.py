@@ -43,7 +43,7 @@ class Descriptor(Generic[_C, _T], abc.ABC):
             Returns either descriptor itself or descriptor value.
 
             Return value depends on the fact whether descriptor
-            was access via class object or class instance attribute.
+            was accessed via class object or class instance attribute.
 
             :param instance: class instance to which descriptor is attached or None
             :param owner: class object to which descriptor is attached
