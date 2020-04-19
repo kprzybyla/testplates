@@ -1,9 +1,9 @@
-Testing Templates (testplates)
-------------------------------
+Testing Templates
+-----------------
 
 .. image:: https://img.shields.io/badge/python-3.7%2B-blue.svg
 
-**Test**\ ing Tem\ **plates**. Under development.
+Testing Templates. Under development.
 
 
 Bugs/Requests
