@@ -1,7 +1,7 @@
 Testing Templates
 -----------------
 
-.. image:: https://img.shields.io/badge/python-3.7%2B-blue.svg
+.. image:: https://img.shields.io/badge/python-3.8-blue.svg
 
 Testing Templates. Under development.
 
