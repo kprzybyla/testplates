@@ -24,6 +24,7 @@ def main():
             "Topic :: Software Development :: Testing",
             "Topic :: Software Development :: Libraries",
         ],
+        python_requires="~= 3.8",
         extras_require={
             "black": ["black == 19.10b0"],
             "lint": ["flake8 ~= 3.7.0"],
