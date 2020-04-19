@@ -29,6 +29,11 @@ def main():
             "lint": ["flake8 ~= 3.7.0"],
             "mypy": ["mypy ~= 0.760", "pytest ~= 5.3.0", "hypothesis ~= 5.6.0"],
             "test": ["pytest ~= 5.3.0", "pytest-cov ~= 2.8.0", "hypothesis ~= 5.6.0"],
+            "docs": [
+                "sphinx ~= 3.0.0",
+                "sphinx_rtd_theme ~= 0.4.3",
+                "sphinx_autodoc_typehints ~= 1.10.0",
+            ],
             "deploy": ["wheel", "twine"],
         },
         use_scm_version={"write_to": os.path.join("src/testplates/__version__.py")},
