@@ -1,5 +1,4 @@
-from typing import TypeVar
-from typing_extensions import Final
+from typing import TypeVar, Final
 
 from hypothesis import given, strategies as st
 

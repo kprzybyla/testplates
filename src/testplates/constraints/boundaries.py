@@ -140,8 +140,8 @@ def get_boundaries(
 
 
 def get_length_boundaries(
-    *, inclusive_minimum: int, inclusive_maximum: int
-) -> Tuple[Inclusive[int], Inclusive[int]]:
+    *, inclusive_minimum: Optional[int] = None, inclusive_maximum: Optional[int] = None
+) -> Tuple[Boundary[int], Boundary[int]]:
 
     """
         Gets both minimum and maximum length boundaries.
