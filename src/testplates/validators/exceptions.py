@@ -1,34 +1,74 @@
-class ValidatorError(Exception):
+class ValidationError(Exception):
     pass
 
 
-class InvalidTypeError(ValidatorError):
+class InvalidTypeError(ValidationError):
     pass
 
 
-class InvalidMinimumValueError(ValidatorError):
+class ProhibitedBooleanValueError(ValidationError):
     pass
 
 
-class InvalidMaximumValueError(ValidatorError):
+class InvalidMinimumValueError(ValidationError):
     pass
 
 
-class InvalidLengthError(ValidatorError):
+class InvalidMaximumValueError(ValidationError):
     pass
 
 
-class InvalidMinimumLengthError(ValidatorError):
+class InvalidLengthError(ValidationError):
     pass
 
 
-class InvalidMaximumLengthError(ValidatorError):
+class InvalidMinimumLengthError(ValidationError):
     pass
 
 
-class InvalidPatternTypeError(ValidatorError):
+class InvalidMaximumLengthError(ValidationError):
     pass
 
 
-class InvalidFormatError(ValidatorError):
+class InvalidPatternTypeError(ValidationError):
+    pass
+
+
+class InvalidFormatError(ValidationError):
+    pass
+
+
+class ItemValidationError(ValidationError):
+    pass
+
+
+class InvalidMinimumSizeError(ValidationError):
+    pass
+
+
+class InvalidMaximumSizeError(ValidationError):
+    pass
+
+
+class UniquenessError(ValidationError):
+    pass
+
+
+class MemberValidationError(ValidationError):
+    pass
+
+
+class FieldValidationError(ValidationError):
+    pass
+
+
+class ProhibitedValueError(ValidationError):
+    pass
+
+
+class RequiredKeyMissingError(ValidationError):
+    pass
+
+
+class RequiredKeyValidatorMissingError(ValidationError):
     pass

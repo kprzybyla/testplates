@@ -1,12 +1,11 @@
-__all__ = ["String", "ByteString", "BitString", "HexString"]
+__all__ = ["String", "ByteString"]
 
 import re
 
-from typing import TypeVar, Generic, Optional, Final
+from typing import Type, TypeVar, Generic, Optional
 
 from .base_validator import BaseValidator
 from .exceptions import (
-    InvalidTypeError,
     InvalidLengthError,
     InvalidMinimumLengthError,
     InvalidMaximumLengthError,
@@ -16,9 +15,6 @@ from .exceptions import (
 
 _T = TypeVar("_T", str, bytes)
 
-BITSTRING_PATTERN: Final[str] = re.compile("[01]*")
-HEXSTRING_PATTERN: Final[str] = re.compile("(?:0x)?[0-9a-fA-F]*")
-
 
 class BaseString(BaseValidator[_T], Generic[_T]):
 
@@ -26,21 +22,25 @@ class BaseString(BaseValidator[_T], Generic[_T]):
 
     def __init__(
         self,
+        *,
         length: Optional[int] = None,
         minimum_length: Optional[int] = None,
         maximum_length: Optional[int] = None,
         pattern: Optional[_T] = None,
     ) -> None:
+        # TODO(kprzybyla): Add validation or arguments here
+
         self._length = length
         self._minimum_length = minimum_length
         self._maximum_length = maximum_length
         self._pattern = re.compile(pattern)
 
-        # TODO(kprzybyla): Add validation or arguments here
+    @property
+    def allowed_types(self) -> Type[_T]:
+        return str, bytes
 
     def validate(self, data: _T) -> None:
-        if not isinstance(data, (str, bytes)):
-            raise InvalidTypeError(data, (str, bytes))
+        super().validate(data)
 
         if self._length is not None and len(data) != self._length:
             raise InvalidLengthError(data, self._length)
@@ -59,44 +59,18 @@ class BaseString(BaseValidator[_T], Generic[_T]):
 
 
 class String(BaseString[str]):
-    pass
+
+    __slots__ = ()
+
+    @property
+    def allowed_types(self) -> Type[str]:
+        return str
 
 
 class ByteString(BaseString[bytes]):
-    pass
-
-
-class BitString(String):
 
     __slots__ = ()
 
-    def __init__(
-        self,
-        length: Optional[int] = None,
-        minimum_length: Optional[int] = None,
-        maximum_length: Optional[int] = None,
-    ):
-        super().__init__(
-            length=length,
-            minimum_length=minimum_length,
-            maximum_length=maximum_length,
-            pattern=BITSTRING_PATTERN,
-        )
-
-
-class HexString(String):
-
-    __slots__ = ()
-
-    def __init__(
-        self,
-        length: Optional[int] = None,
-        minimum_length: Optional[int] = None,
-        maximum_length: Optional[int] = None,
-    ):
-        super().__init__(
-            length=length,
-            minimum_length=minimum_length,
-            maximum_length=maximum_length,
-            pattern=HEXSTRING_PATTERN,
-        )
+    @property
+    def allowed_types(self) -> Type[bytes]:
+        return bytes
