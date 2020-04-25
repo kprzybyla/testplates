@@ -1,9 +1,15 @@
 __all__ = ["Enum"]
 
-from typing import TypeVar, Generic
+from typing import TypeVar, Generic, Mapping
 
+from .utils import has_unique_items
 from .base_validator import BaseValidator
-from .exceptions import ValidationError, MemberValidationError, ProhibitedValueError
+from .exceptions import (
+    ValidationError,
+    MemberValidationError,
+    ProhibitedValueError,
+    EnumAliasesNotAllowed,
+)
 
 _T = TypeVar("_T")
 
@@ -12,9 +18,19 @@ class Enum(BaseValidator[_T], Generic[_T]):
 
     __slots__ = ("_validator", "_members")
 
-    def __init__(self, validator: BaseValidator[_T], /, **members: _T) -> None:
+    def __init__(
+        self,
+        validator: BaseValidator[_T],
+        members: Mapping[str, _T],
+        /,
+        *,
+        allow_aliases: bool = True,
+    ) -> None:
         for value in members.values():
             validator.validate(value)
+
+        if not allow_aliases and not has_unique_items(members.values()):
+            raise EnumAliasesNotAllowed()
 
         self._validator = validator
         self._members = members

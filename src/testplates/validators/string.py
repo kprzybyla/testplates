@@ -1,4 +1,4 @@
-__all__ = ["String", "ByteString"]
+__all__ = ["String", "Bytes"]
 
 import re
 
@@ -67,7 +67,7 @@ class String(BaseString[str]):
         return str
 
 
-class ByteString(BaseString[bytes]):
+class Bytes(BaseString[bytes]):
 
     __slots__ = ()
 

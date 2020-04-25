@@ -1,9 +1,12 @@
+__all__ = ["Sequence"]
+
 import typing
 
 from typing import Type, TypeVar, Generic, Optional
 
 from testplates.constraints.boundaries import get_length_boundaries
 
+from .utils import has_unique_items
 from .base_validator import BaseValidator
 from .exceptions import (
     ValidationError,
@@ -20,12 +23,6 @@ def validate_items(validator: BaseValidator[_T], items: typing.Sequence[_T]) -> 
     if validator is not None:
         for item in items:
             validator.validate(item)
-
-
-def has_unique_items(items: typing.Sequence[_T]) -> bool:
-    visited = set()
-
-    return not any(item in visited or visited.add(item) for item in items)
 
 
 class Sequence(BaseValidator[typing.Sequence[_T]], Generic[_T]):

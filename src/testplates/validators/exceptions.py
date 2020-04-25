@@ -72,3 +72,15 @@ class RequiredKeyMissingError(ValidationError):
 
 class RequiredKeyValidatorMissingError(ValidationError):
     pass
+
+
+class InvalidKeyError(ValidationError):
+    pass
+
+
+class ChoiceValidationError(ValidationError):
+    pass
+
+
+class EnumAliasesNotAllowed(ValidationError):
+    pass
