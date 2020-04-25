@@ -1,9 +1,8 @@
-__all__ = ["Enum"]
+__all__ = ["enum_validator"]
 
-from typing import TypeVar, Generic, Mapping
+from typing import TypeVar, Mapping, Callable, Optional
 
 from .utils import has_unique_items
-from .base_validator import BaseValidator
 from .exceptions import (
     ValidationError,
     MemberValidationError,
@@ -14,34 +13,29 @@ from .exceptions import (
 _T = TypeVar("_T")
 
 
-class Enum(BaseValidator[_T], Generic[_T]):
+def enum_validator(
+    validate_member_value: Callable[[_T], Optional[Exception]],
+    members: Mapping[str, _T],
+    /,
+    *,
+    allow_aliases: bool = True,
+) -> Callable[[_T], Optional[Exception]]:
+    for value in members.values():
+        error = validate_member_value(value)
 
-    __slots__ = ("_validator", "_members")
+        if error is not None:
+            raise error
 
-    def __init__(
-        self,
-        validator: BaseValidator[_T],
-        members: Mapping[str, _T],
-        /,
-        *,
-        allow_aliases: bool = True,
-    ) -> None:
-        for value in members.values():
-            validator.validate(value)
+    if not allow_aliases and not has_unique_items(members.values()):
+        raise EnumAliasesNotAllowed()
 
-        if not allow_aliases and not has_unique_items(members.values()):
-            raise EnumAliasesNotAllowed()
+    def validate(data: _T) -> Optional[Exception]:
+        if (error := validate_member_value(data)) is not None:
+            return MemberValidationError(error)
 
-        self._validator = validator
-        self._members = members
-
-    def validate(self, data: _T) -> None:
-        try:
-            self._validator.validate(data)
-        except ValidationError as error:
-            raise MemberValidationError(error) from error
-
-        values = self._members.values()
+        values = members.values()
 
         if data not in values:
-            raise ProhibitedValueError(data, values)
+            return ProhibitedValueError(data, values)
+
+    return validate

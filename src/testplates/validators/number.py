@@ -1,10 +1,10 @@
-__all__ = ["Number", "Integer", "Float"]
+__all__ = ["number_validator", "integer_validator", "float_validator"]
 
-from typing import Type, TypeVar, Generic, Optional
+from typing import TypeVar, Callable, Optional
 
 from testplates.constraints.boundaries import get_boundaries
 
-from .base_validator import BaseValidator
+from .type import type_validator
 from .exceptions import (
     InvalidMinimumValueError,
     InvalidMaximumValueError,
@@ -13,61 +13,84 @@ from .exceptions import (
 
 _T = TypeVar("_T", int, float)
 
-
-class Number(BaseValidator[_T], Generic[_T]):
-
-    __slots__ = ("_minimum", "_maximum", "_allow_boolean")
-
-    def __init__(
-        self,
-        *,
-        minimum: Optional[_T] = None,
-        maximum: Optional[_T] = None,
-        exclusive_minimum: Optional[_T] = None,
-        exclusive_maximum: Optional[_T] = None,
-        allow_boolean: bool = False,
-    ) -> None:
-        minimum, maximum = get_boundaries(
-            inclusive_minimum=minimum,
-            inclusive_maximum=maximum,
-            exclusive_minimum=exclusive_minimum,
-            exclusive_maximum=exclusive_maximum,
-        )
-
-        self._minimum = minimum
-        self._maximum = maximum
-        self._allow_boolean = allow_boolean
-
-    @property
-    def allowed_types(self) -> Type[_T]:
-        return int, float
-
-    def validate(self, data: _T) -> None:
-        super().validate(data)
-
-        if not self._allow_boolean and isinstance(data, bool):
-            raise ProhibitedBooleanValueError(data)
-
-        if not self._minimum.fits(data):
-            raise InvalidMinimumValueError(data, self._minimum)
-
-        if not self._maximum.fits(data):
-            raise InvalidMaximumValueError(data, self._maximum)
+validate_number_type = type_validator(allowed_types=(int, float))
+validate_integer_type = type_validator(allowed_types=int)
+validate_float_type = type_validator(allowed_types=float)
 
 
-class Integer(Number[int]):
+def number_validator(
+    *,
+    validate_type: Callable[[_T], Optional[Exception]] = validate_number_type,
+    minimum: Optional[_T] = None,
+    maximum: Optional[_T] = None,
+    exclusive_minimum: Optional[_T] = None,
+    exclusive_maximum: Optional[_T] = None,
+    allow_boolean: bool = False,
+) -> Callable[[_T], Optional[Exception]]:
+    minimum, maximum = get_boundaries(
+        inclusive_minimum=minimum,
+        inclusive_maximum=maximum,
+        exclusive_minimum=exclusive_minimum,
+        exclusive_maximum=exclusive_maximum,
+    )
 
-    __slots__ = ()
+    def validate(data: _T) -> Optional[Exception]:
+        if (error := validate_type(data)) is not None:
+            return error
 
-    @property
-    def allowed_types(self) -> Type[int]:
-        return int
+        if not allow_boolean and isinstance(data, bool):
+            return ProhibitedBooleanValueError(data)
+
+        if not minimum.fits(data):
+            return InvalidMinimumValueError(data, minimum)
+
+        if not maximum.fits(data):
+            return InvalidMaximumValueError(data, maximum)
+
+    return validate
 
 
-class Float(Number[float]):
+def integer_validator(
+    *,
+    minimum: Optional[int] = None,
+    maximum: Optional[int] = None,
+    exclusive_minimum: Optional[int] = None,
+    exclusive_maximum: Optional[int] = None,
+    allow_boolean: bool = False,
+) -> Callable[[int], Optional[Exception]]:
+    validate_integer = number_validator(
+        validate_type=validate_integer_type,
+        minimum=minimum,
+        maximum=maximum,
+        exclusive_minimum=exclusive_minimum,
+        exclusive_maximum=exclusive_maximum,
+        allow_boolean=allow_boolean,
+    )
 
-    __slots__ = ()
+    def validate(data: int) -> Optional[Exception]:
+        return validate_integer(data)
 
-    @property
-    def allowed_types(self) -> Type[float]:
-        return float
+    return validate
+
+
+def float_validator(
+    *,
+    minimum: Optional[float] = None,
+    maximum: Optional[float] = None,
+    exclusive_minimum: Optional[float] = None,
+    exclusive_maximum: Optional[float] = None,
+    allow_boolean: bool = False,
+) -> Callable[[float], Optional[Exception]]:
+    validate_float = number_validator(
+        validate_type=validate_float_type,
+        minimum=minimum,
+        maximum=maximum,
+        exclusive_minimum=exclusive_minimum,
+        exclusive_maximum=exclusive_maximum,
+        allow_boolean=allow_boolean,
+    )
+
+    def validate(data: float) -> Optional[Exception]:
+        return validate_float(data)
+
+    return validate

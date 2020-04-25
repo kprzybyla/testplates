@@ -1,10 +1,10 @@
-__all__ = ["String", "Bytes"]
+__all__ = ["any_string_validator", "string_validator", "bytes_validator"]
 
 import re
 
-from typing import Type, TypeVar, Generic, Optional
+from typing import TypeVar, Callable, Optional
 
-from .base_validator import BaseValidator
+from .type import type_validator
 from .exceptions import (
     InvalidLengthError,
     InvalidMinimumLengthError,
@@ -15,62 +15,82 @@ from .exceptions import (
 
 _T = TypeVar("_T", str, bytes)
 
-
-class BaseString(BaseValidator[_T], Generic[_T]):
-
-    __slots__ = ("_length", "_minimum_length", "_maximum_length", "_pattern")
-
-    def __init__(
-        self,
-        *,
-        length: Optional[int] = None,
-        minimum_length: Optional[int] = None,
-        maximum_length: Optional[int] = None,
-        pattern: Optional[_T] = None,
-    ) -> None:
-        # TODO(kprzybyla): Add validation or arguments here
-
-        self._length = length
-        self._minimum_length = minimum_length
-        self._maximum_length = maximum_length
-        self._pattern = re.compile(pattern)
-
-    @property
-    def allowed_types(self) -> Type[_T]:
-        return str, bytes
-
-    def validate(self, data: _T) -> None:
-        super().validate(data)
-
-        if self._length is not None and len(data) != self._length:
-            raise InvalidLengthError(data, self._length)
-
-        if self._minimum_length is not None and len(data) < self._minimum_length:
-            raise InvalidMinimumLengthError(data, self._minimum_length)
-
-        if self._maximum_length is not None and len(data) > self._maximum_length:
-            raise InvalidMaximumLengthError(data, self._maximum_length)
-
-        if self._pattern is not None and not isinstance(self._pattern.pattern, type(data)):
-            raise InvalidPatternTypeError(data, self._pattern)
-
-        if self._pattern is not None and not self._pattern.match(data):
-            raise InvalidFormatError(data, self._pattern)
+validate_any_string_type = type_validator(allowed_types=(str, bytes))
+validate_string_type = type_validator(allowed_types=str)
+validate_bytes_type = type_validator(allowed_types=bytes)
 
 
-class String(BaseString[str]):
+def any_string_validator(
+    *,
+    validate_type: Callable[[_T], Optional[Exception]] = validate_any_string_type,
+    length: Optional[int] = None,
+    minimum_length: Optional[int] = None,
+    maximum_length: Optional[int] = None,
+    pattern: Optional[_T] = None,
+) -> Callable[[_T], Optional[Exception]]:
+    # TODO(kprzybyla): Add validation or arguments here
 
-    __slots__ = ()
+    pattern = re.compile(pattern)
 
-    @property
-    def allowed_types(self) -> Type[str]:
-        return str
+    def validate(data: _T) -> Optional[Exception]:
+        if (error := validate_type(data)) is not None:
+            return error
+
+        if length is not None and len(data) != length:
+            return InvalidLengthError(data, length)
+
+        if minimum_length is not None and len(data) < minimum_length:
+            return InvalidMinimumLengthError(data, minimum_length)
+
+        if maximum_length is not None and len(data) > maximum_length:
+            return InvalidMaximumLengthError(data, maximum_length)
+
+        if pattern is not None and not isinstance(pattern.pattern, type(data)):
+            return InvalidPatternTypeError(data, pattern)
+
+        if pattern is not None and not pattern.match(data):
+            return InvalidFormatError(data, pattern)
+
+    return validate
 
 
-class Bytes(BaseString[bytes]):
+def string_validator(
+    *,
+    length: Optional[int] = None,
+    minimum_length: Optional[int] = None,
+    maximum_length: Optional[int] = None,
+    pattern: Optional[str] = None,
+) -> Callable[[str], Optional[Exception]]:
+    validate_string = any_string_validator(
+        validate_type=validate_string_type,
+        length=length,
+        minimum_length=minimum_length,
+        maximum_length=maximum_length,
+        pattern=pattern,
+    )
 
-    __slots__ = ()
+    def validate(data: str) -> Optional[Exception]:
+        return validate_string(data)
 
-    @property
-    def allowed_types(self) -> Type[bytes]:
-        return bytes
+    return validate
+
+
+def bytes_validator(
+    *,
+    length: Optional[int] = None,
+    minimum_length: Optional[int] = None,
+    maximum_length: Optional[int] = None,
+    pattern: Optional[bytes] = None,
+) -> Callable[[bytes], Optional[Exception]]:
+    validate_bytes = any_string_validator(
+        validate_type=validate_bytes_type,
+        length=length,
+        minimum_length=minimum_length,
+        maximum_length=maximum_length,
+        pattern=pattern,
+    )
+
+    def validate(data: bytes) -> Optional[Exception]:
+        return validate_bytes(data)
+
+    return validate

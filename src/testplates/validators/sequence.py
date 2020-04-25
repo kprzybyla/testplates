@@ -1,15 +1,14 @@
-__all__ = ["Sequence"]
+__all__ = ["sequence_validator"]
 
 import typing
 
-from typing import Type, TypeVar, Generic, Optional
+from typing import TypeVar, Callable, Optional
 
 from testplates.constraints.boundaries import get_length_boundaries
 
+from .type import type_validator, validate_any
 from .utils import has_unique_items
-from .base_validator import BaseValidator
 from .exceptions import (
-    ValidationError,
     ItemValidationError,
     InvalidMinimumSizeError,
     InvalidMaximumSizeError,
@@ -18,52 +17,36 @@ from .exceptions import (
 
 _T = TypeVar("_T")
 
-
-def validate_items(validator: BaseValidator[_T], items: typing.Sequence[_T]) -> None:
-    if validator is not None:
-        for item in items:
-            validator.validate(item)
+validate_sequence_type = type_validator(allowed_types=typing.Sequence)
 
 
-class Sequence(BaseValidator[typing.Sequence[_T]], Generic[_T]):
+def sequence_validator(
+    validate_item: Callable[[_T], Optional[Exception]] = validate_any,
+    /,
+    *,
+    minimum_size: Optional[int] = None,
+    maximum_size: Optional[int] = None,
+    unique_items: bool = False,
+) -> Callable[[typing.Sequence[_T]], Optional[Exception]]:
+    minimum_size, maximum_size = get_length_boundaries(
+        inclusive_minimum=minimum_size, inclusive_maximum=maximum_size
+    )
 
-    __slots__ = ("_item_validator", "_minimum_size", "_maximum_size", "_unique_items")
+    def validate(data: typing.Sequence[_T]) -> Optional[Exception]:
+        if (error := validate_sequence_type(data)) is not None:
+            return error
 
-    def __init__(
-        self,
-        item_validator: BaseValidator[_T] = None,
-        /,
-        *,
-        minimum_size: Optional[int] = None,
-        maximum_size: Optional[int] = None,
-        unique_items: bool = False,
-    ) -> None:
-        minimum_size, maximum_size = get_length_boundaries(
-            inclusive_minimum=minimum_size, inclusive_maximum=maximum_size
-        )
+        for item in data:
+            if (error := validate_item(item)) is not None:
+                return ItemValidationError(error)
 
-        self._item_validator = item_validator
-        self._minimum_size = minimum_size
-        self._maximum_size = maximum_size
-        self._unique_items = unique_items
+        if not minimum_size.fits(len(data)):
+            return InvalidMinimumSizeError(data, minimum_size)
 
-    @property
-    def allowed_types(self) -> Type[typing.Sequence]:
-        return typing.Sequence
+        if not maximum_size.fits(len(data)):
+            return InvalidMaximumSizeError(data, maximum_size)
 
-    def validate(self, data: typing.Sequence[_T]) -> None:
-        super().validate(data)
+        if unique_items and not has_unique_items(data):
+            return UniquenessError(data)
 
-        try:
-            validate_items(self._item_validator, data)
-        except ValidationError as error:
-            raise ItemValidationError(error) from error
-
-        if not self._minimum_size.fits(len(data)):
-            raise InvalidMinimumSizeError(data, self._minimum_size)
-
-        if not self._maximum_size.fits(len(data)):
-            raise InvalidMaximumSizeError(data, self._maximum_size)
-
-        if self._unique_items and not has_unique_items(data):
-            raise UniquenessError(data)
+    return validate

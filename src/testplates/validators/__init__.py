@@ -1,22 +1,23 @@
 __all__ = [
-    "BaseValidator",
-    "Boolean",
-    "Number",
-    "Integer",
-    "Float",
-    "String",
-    "Bytes",
-    "Enum",
-    "Sequence",
-    "Mapping",
-    "Union",
+    "type_validator",
+    "boolean_validator",
+    "number_validator",
+    "integer_validator",
+    "float_validator",
+    "any_string_validator",
+    "string_validator",
+    "bytes_validator",
+    "enum_validator",
+    "sequence_validator",
+    "mapping_validator",
+    "union_validator",
 ]
 
-from .base_validator import BaseValidator
-from .boolean import Boolean
-from .number import Number, Integer, Float
-from .string import String, Bytes
-from .enum import Enum
-from .sequence import Sequence
-from .mapping import Mapping
-from .union import Union
+from .type import type_validator
+from .boolean import boolean_validator
+from .number import number_validator, integer_validator, float_validator
+from .string import any_string_validator, string_validator, bytes_validator
+from .enum import enum_validator
+from .sequence import sequence_validator
+from .mapping import mapping_validator
+from .union import union_validator

@@ -1,35 +1,30 @@
-__all__ = ["Union"]
+__all__ = ["union_validator"]
 
-from typing import Type, TypeVar, Tuple, Mapping
+from typing import TypeVar, Tuple, Mapping, Callable, Optional
 
-from .base_validator import BaseValidator
-from .exceptions import ValidationError, InvalidKeyError, ChoiceValidationError
+from .type import type_validator
+from .exceptions import InvalidKeyError, ChoiceValidationError
 
 _T = TypeVar("_T")
 
+validate_union_type = type_validator(allowed_types=tuple)
 
-class Union(BaseValidator[Tuple[str, _T]]):
 
-    __slots__ = ("_choices",)
-
-    def __init__(self, choices: Mapping[str, BaseValidator[_T]], /):
-        self._choices = choices
-
-    @property
-    def allowed_types(self) -> Type[Tuple]:
-        return tuple
-
-    def validate(self, data: Tuple[str, _T]) -> None:
-        super().validate(data)
+def union_validator(
+    choices: Mapping[str, Callable[[_T], Optional[Exception]]], /
+) -> Callable[[Tuple[str, _T]], Optional[Exception]]:
+    def validate(data: Tuple[str, _T]) -> Optional[Exception]:
+        if (error := validate_union_type(data)) is not None:
+            return error
 
         key, value = data
 
-        validator = self._choices.get(key, None)
+        validate_choice = choices.get(key, None)
 
-        if validator is None:
-            raise InvalidKeyError(data, key)
+        if validate_choice is None:
+            return InvalidKeyError(data, key)
 
-        try:
-            validator.validate(value)
-        except ValidationError as error:
-            raise ChoiceValidationError(data, key, error) from None
+        if (error := validate_choice(value)) is not None:
+            return ChoiceValidationError(data, key, error)
+
+    return validate

@@ -1,14 +1,14 @@
-__all__ = ["Boolean"]
+__all__ = ["boolean_validator"]
 
-from typing import Type
+from typing import Callable, Optional
 
-from .base_validator import BaseValidator
+from .type import type_validator
+
+validate_boolean_type = type_validator(allowed_types=bool)
 
 
-class Boolean(BaseValidator[bool]):
+def boolean_validator() -> Callable[[bool], Optional[Exception]]:
+    def validate(data: bool) -> Optional[Exception]:
+        return validate_boolean_type(data)
 
-    __slots__ = ()
-
-    @property
-    def allowed_types(self) -> Type[bool]:
-        return bool
+    return validate
