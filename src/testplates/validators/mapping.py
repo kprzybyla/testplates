@@ -37,4 +37,6 @@ def mapping_validator(
             if (error := validate_field(value)) is not None:
                 return FieldValidationError(data, key, error)
 
+        return None
+
     return validate

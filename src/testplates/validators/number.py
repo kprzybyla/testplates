@@ -21,22 +21,22 @@ validate_float_type = type_validator(allowed_types=float)
 def number_validator(
     *,
     validate_type: Callable[[_T], Optional[Exception]] = validate_number_type,
-    minimum: Optional[_T] = None,
-    maximum: Optional[_T] = None,
-    exclusive_minimum: Optional[_T] = None,
-    exclusive_maximum: Optional[_T] = None,
+    minimum_value: Optional[_T] = None,
+    maximum_value: Optional[_T] = None,
+    exclusive_minimum_value: Optional[_T] = None,
+    exclusive_maximum_value: Optional[_T] = None,
     allow_boolean: bool = False,
 ) -> Callable[[_T], Optional[Exception]]:
     minimum, maximum = get_boundaries(
-        inclusive_minimum=minimum,
-        inclusive_maximum=maximum,
-        exclusive_minimum=exclusive_minimum,
-        exclusive_maximum=exclusive_maximum,
+        inclusive_minimum=minimum_value,
+        inclusive_maximum=maximum_value,
+        exclusive_minimum=exclusive_minimum_value,
+        exclusive_maximum=exclusive_maximum_value,
     )
 
     def validate(data: _T) -> Optional[Exception]:
         if (error := validate_type(data)) is not None:
-            return error
+            return error  # type: ignore
 
         if not allow_boolean and isinstance(data, bool):
             return ProhibitedBooleanValueError(data)
@@ -47,23 +47,25 @@ def number_validator(
         if not maximum.fits(data):
             return InvalidMaximumValueError(data, maximum)
 
+        return None
+
     return validate
 
 
 def integer_validator(
     *,
-    minimum: Optional[int] = None,
-    maximum: Optional[int] = None,
-    exclusive_minimum: Optional[int] = None,
-    exclusive_maximum: Optional[int] = None,
+    minimum_value: Optional[int] = None,
+    maximum_value: Optional[int] = None,
+    exclusive_minimum_value: Optional[int] = None,
+    exclusive_maximum_value: Optional[int] = None,
     allow_boolean: bool = False,
 ) -> Callable[[int], Optional[Exception]]:
     validate_integer = number_validator(
         validate_type=validate_integer_type,
-        minimum=minimum,
-        maximum=maximum,
-        exclusive_minimum=exclusive_minimum,
-        exclusive_maximum=exclusive_maximum,
+        minimum_value=minimum_value,
+        maximum_value=maximum_value,
+        exclusive_minimum_value=exclusive_minimum_value,
+        exclusive_maximum_value=exclusive_maximum_value,
         allow_boolean=allow_boolean,
     )
 
@@ -75,18 +77,18 @@ def integer_validator(
 
 def float_validator(
     *,
-    minimum: Optional[float] = None,
-    maximum: Optional[float] = None,
-    exclusive_minimum: Optional[float] = None,
-    exclusive_maximum: Optional[float] = None,
+    minimum_value: Optional[float] = None,
+    maximum_value: Optional[float] = None,
+    exclusive_minimum_value: Optional[float] = None,
+    exclusive_maximum_value: Optional[float] = None,
     allow_boolean: bool = False,
 ) -> Callable[[float], Optional[Exception]]:
     validate_float = number_validator(
         validate_type=validate_float_type,
-        minimum=minimum,
-        maximum=maximum,
-        exclusive_minimum=exclusive_minimum,
-        exclusive_maximum=exclusive_maximum,
+        minimum_value=minimum_value,
+        maximum_value=maximum_value,
+        exclusive_minimum_value=exclusive_minimum_value,
+        exclusive_maximum_value=exclusive_maximum_value,
         allow_boolean=allow_boolean,
     )
 

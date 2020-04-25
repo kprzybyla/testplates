@@ -38,4 +38,6 @@ def enum_validator(
         if data not in values:
             return ProhibitedValueError(data, values)
 
+        return None
+
     return validate

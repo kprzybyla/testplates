@@ -1,9 +1,15 @@
 __all__ = ["has_unique_items"]
 
-from typing import Sequence, Hashable
+from typing import Iterable, Hashable
 
 
-def has_unique_items(items: Sequence[Hashable]) -> bool:
+def has_unique_items(items: Iterable[Hashable]) -> bool:
     visited = set()
 
-    return not any(item in visited or visited.add(item) for item in items)
+    for item in items:
+        if item in visited:
+            return False
+        else:
+            visited.add(item)
+
+    return True

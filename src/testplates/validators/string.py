@@ -30,11 +30,11 @@ def any_string_validator(
 ) -> Callable[[_T], Optional[Exception]]:
     # TODO(kprzybyla): Add validation or arguments here
 
-    pattern = re.compile(pattern)
+    regex = re.compile(pattern) if pattern is not None else None
 
     def validate(data: _T) -> Optional[Exception]:
         if (error := validate_type(data)) is not None:
-            return error
+            return error  # type: ignore
 
         if length is not None and len(data) != length:
             return InvalidLengthError(data, length)
@@ -45,11 +45,13 @@ def any_string_validator(
         if maximum_length is not None and len(data) > maximum_length:
             return InvalidMaximumLengthError(data, maximum_length)
 
-        if pattern is not None and not isinstance(pattern.pattern, type(data)):
-            return InvalidPatternTypeError(data, pattern)
+        if regex is not None and not isinstance(regex.pattern, type(data)):
+            return InvalidPatternTypeError(data, regex)
 
-        if pattern is not None and not pattern.match(data):
-            return InvalidFormatError(data, pattern)
+        if regex is not None and not regex.match(data):
+            return InvalidFormatError(data, regex)
+
+        return None
 
     return validate
 

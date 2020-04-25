@@ -27,4 +27,6 @@ def union_validator(
         if (error := validate_choice(value)) is not None:
             return ChoiceValidationError(data, key, error)
 
+        return None
+
     return validate
