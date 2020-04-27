@@ -1,6 +1,6 @@
 import random
 
-from typing import TypeVar, List, Callable, Final
+from typing import TypeVar, List, Iterable, Callable, Final
 from decimal import Decimal
 
 from hypothesis import settings, strategies as st
@@ -22,6 +22,10 @@ settings.load_profile(PROFILE_NO_INCREMENTAL)
 st.register_type_strategy(Decimal, st.decimals(allow_nan=False))
 
 
+def sample(data: Iterable[_T]) -> _T:
+    return random.choice(list(data))
+
+
 def samples(values: List[_T], minimum: int = 0) -> List[_T]:
     return random.sample(values, k=random.randint(minimum, len(values)))
 
@@ -38,3 +42,10 @@ def st_anything_except(*types: type) -> st.SearchStrategy[_Ex]:
         return not isinstance(value, types)
 
     return st.from_type(type).flatmap(st.from_type).filter(filter_anything_except)
+
+
+def st_anytype_except_type_of(value: _T) -> st.SearchStrategy[_Ex]:
+    def filter_anytype_except(type_: type) -> bool:
+        return not issubclass(type(value), type_)
+
+    return st.from_type(type).flatmap(st.from_type).map(type).filter(filter_anytype_except)

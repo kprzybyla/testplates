@@ -3,7 +3,9 @@ class ValidationError(Exception):
 
 
 class InvalidTypeError(ValidationError):
-    pass
+    def __init__(self, data, allowed_types):
+        self.data = data
+        self.allowed_types = allowed_types
 
 
 class ProhibitedBooleanValueError(ValidationError):
