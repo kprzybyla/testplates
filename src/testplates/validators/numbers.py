@@ -1,4 +1,4 @@
-__all__ = ["number_validator", "integer_validator", "float_validator"]
+__all__ = ["any_number_validator", "integer_validator", "float_validator"]
 
 from typing import TypeVar, Callable, Optional
 
@@ -13,14 +13,14 @@ from .exceptions import (
 
 _T = TypeVar("_T", int, float)
 
-validate_number_type = type_validator(allowed_types=(int, float))
+validate_any_number_type = type_validator(allowed_types=(int, float))
 validate_integer_type = type_validator(allowed_types=int)
 validate_float_type = type_validator(allowed_types=float)
 
 
-def number_validator(
+def any_number_validator(
     *,
-    validate_type: Callable[[_T], Optional[Exception]] = validate_number_type,
+    validate_type: Callable[[_T], Optional[Exception]] = validate_any_number_type,
     minimum_value: Optional[_T] = None,
     maximum_value: Optional[_T] = None,
     exclusive_minimum_value: Optional[_T] = None,
@@ -60,7 +60,7 @@ def integer_validator(
     exclusive_maximum_value: Optional[int] = None,
     allow_boolean: bool = False,
 ) -> Callable[[int], Optional[Exception]]:
-    validate_integer = number_validator(
+    validate_integer = any_number_validator(
         validate_type=validate_integer_type,
         minimum_value=minimum_value,
         maximum_value=maximum_value,
@@ -83,7 +83,7 @@ def float_validator(
     exclusive_maximum_value: Optional[float] = None,
     allow_boolean: bool = False,
 ) -> Callable[[float], Optional[Exception]]:
-    validate_float = number_validator(
+    validate_float = any_number_validator(
         validate_type=validate_float_type,
         minimum_value=minimum_value,
         maximum_value=maximum_value,

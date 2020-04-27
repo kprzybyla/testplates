@@ -1,7 +1,7 @@
 __all__ = [
     "type_validator",
     "boolean_validator",
-    "number_validator",
+    "any_number_validator",
     "integer_validator",
     "float_validator",
     "any_string_validator",
@@ -15,8 +15,8 @@ __all__ = [
 
 from .type import type_validator
 from .boolean import boolean_validator
-from .number import number_validator, integer_validator, float_validator
-from .string import any_string_validator, string_validator, bytes_validator
+from .numbers import any_number_validator, integer_validator, float_validator
+from .strings import any_string_validator, string_validator, bytes_validator
 from .enum import enum_validator
 from .sequence import sequence_validator
 from .mapping import mapping_validator
