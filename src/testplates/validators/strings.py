@@ -2,7 +2,7 @@ __all__ = ["any_string_validator", "string_validator", "bytes_validator"]
 
 import re
 
-from typing import TypeVar, Callable, Optional, Final
+from typing import overload, TypeVar, Callable, Optional, Final
 
 from testplates.boundaries import get_length_boundaries
 
@@ -21,7 +21,22 @@ validate_any_string_type: Final = type_validator(allowed_types=(str, bytes))
 validate_string_type: Final = type_validator(allowed_types=str)
 validate_bytes_type: Final = type_validator(allowed_types=bytes)
 
-# TODO(kprzybyla): Add overloads for validators
+
+@overload
+def any_string_validator(
+    *, length: Optional[int] = None, pattern: Optional[_T] = None
+) -> Callable[[_T], Optional[Exception]]:
+    ...
+
+
+@overload
+def any_string_validator(
+    *,
+    minimum_length: Optional[int] = None,
+    maximum_length: Optional[int] = None,
+    pattern: Optional[_T] = None,
+) -> Callable[[_T], Optional[Exception]]:
+    ...
 
 
 def any_string_validator(
@@ -65,6 +80,24 @@ def any_string_validator(
     return validate
 
 
+@overload
+def string_validator(
+    *, length: Optional[int] = None, pattern: Optional[str] = None
+) -> Callable[[str], Optional[Exception]]:
+    ...
+
+
+@overload
+def string_validator(
+    *,
+    minimum_length: Optional[int] = None,
+    maximum_length: Optional[int] = None,
+    pattern: Optional[str] = None,
+) -> Callable[[str], Optional[Exception]]:
+    ...
+
+
+# noinspection PyArgumentList
 def string_validator(
     *,
     length: Optional[int] = None,
@@ -72,22 +105,40 @@ def string_validator(
     maximum_length: Optional[int] = None,
     pattern: Optional[str] = None,
 ) -> Callable[[str], Optional[Exception]]:
-    validate_string = any_string_validator(
+    validate_string: Callable[[str], Optional[Exception]] = any_string_validator(
         length=length,
         minimum_length=minimum_length,
         maximum_length=maximum_length,
         pattern=pattern,
-    )
+    )  # type: ignore
 
     def validate(data: str) -> Optional[Exception]:
         if (error := validate_string_type(data)) is not None:
-            return error  # type: ignore
+            return error
 
         return validate_string(data)
 
     return validate
 
 
+@overload
+def bytes_validator(
+    *, length: Optional[int] = None, pattern: Optional[bytes] = None
+) -> Callable[[bytes], Optional[Exception]]:
+    ...
+
+
+@overload
+def bytes_validator(
+    *,
+    minimum_length: Optional[int] = None,
+    maximum_length: Optional[int] = None,
+    pattern: Optional[bytes] = None,
+) -> Callable[[bytes], Optional[Exception]]:
+    ...
+
+
+# noinspection PyArgumentList
 def bytes_validator(
     *,
     length: Optional[int] = None,
@@ -95,16 +146,16 @@ def bytes_validator(
     maximum_length: Optional[int] = None,
     pattern: Optional[bytes] = None,
 ) -> Callable[[bytes], Optional[Exception]]:
-    validate_bytes = any_string_validator(
+    validate_bytes: Callable[[bytes], Optional[Exception]] = any_string_validator(
         length=length,
         minimum_length=minimum_length,
         maximum_length=maximum_length,
         pattern=pattern,
-    )
+    )  # type: ignore
 
     def validate(data: bytes) -> Optional[Exception]:
         if (error := validate_bytes_type(data)) is not None:
-            return error  # type: ignore
+            return error
 
         return validate_bytes(data)
 

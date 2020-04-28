@@ -1,6 +1,6 @@
 __all__ = ["any_number_validator", "integer_validator", "float_validator"]
 
-from typing import TypeVar, Callable, Optional, Final
+from typing import overload, TypeVar, Callable, Optional, Final
 
 from testplates.boundaries import get_boundaries
 
@@ -17,10 +17,48 @@ validate_any_number_type: Final = type_validator(allowed_types=(int, float))
 validate_integer_type: Final = type_validator(allowed_types=int)
 validate_float_type: Final = type_validator(allowed_types=float)
 
-# TODO(kprzybyla): Add overloads for validators
 
-
+@overload
 def any_number_validator(
+    *,
+    minimum_value: Optional[_T] = None,
+    maximum_value: Optional[_T] = None,
+    allow_boolean: bool = False,
+) -> Callable[[_T], Optional[Exception]]:
+    ...
+
+
+@overload
+def any_number_validator(
+    *,
+    minimum_value: Optional[_T] = None,
+    exclusive_maximum_value: Optional[_T] = None,
+    allow_boolean: bool = False,
+) -> Callable[[_T], Optional[Exception]]:
+    ...
+
+
+@overload
+def any_number_validator(
+    *,
+    exclusive_minimum_value: Optional[_T] = None,
+    maximum_value: Optional[_T] = None,
+    allow_boolean: bool = False,
+) -> Callable[[_T], Optional[Exception]]:
+    ...
+
+
+@overload
+def any_number_validator(
+    *,
+    exclusive_minimum_value: Optional[_T] = None,
+    exclusive_maximum_value: Optional[_T] = None,
+    allow_boolean: bool = False,
+) -> Callable[[_T], Optional[Exception]]:
+    ...
+
+
+def any_number_validator(  # type: ignore
     *,
     minimum_value: Optional[_T] = None,
     maximum_value: Optional[_T] = None,
@@ -53,6 +91,47 @@ def any_number_validator(
     return validate
 
 
+@overload
+def integer_validator(
+    *,
+    minimum_value: Optional[int] = None,
+    maximum_value: Optional[int] = None,
+    allow_boolean: bool = False,
+) -> Callable[[int], Optional[Exception]]:
+    ...
+
+
+@overload
+def integer_validator(
+    *,
+    minimum_value: Optional[int] = None,
+    exclusive_maximum_value: Optional[int] = None,
+    allow_boolean: bool = False,
+) -> Callable[[int], Optional[Exception]]:
+    ...
+
+
+@overload
+def integer_validator(
+    *,
+    exclusive_minimum_value: Optional[int] = None,
+    maximum_value: Optional[int] = None,
+    allow_boolean: bool = False,
+) -> Callable[[int], Optional[Exception]]:
+    ...
+
+
+@overload
+def integer_validator(
+    *,
+    exclusive_minimum_value: Optional[int] = None,
+    exclusive_maximum_value: Optional[int] = None,
+    allow_boolean: bool = False,
+) -> Callable[[int], Optional[Exception]]:
+    ...
+
+
+# noinspection PyArgumentList
 def integer_validator(
     *,
     minimum_value: Optional[int] = None,
@@ -61,23 +140,54 @@ def integer_validator(
     exclusive_maximum_value: Optional[int] = None,
     allow_boolean: bool = False,
 ) -> Callable[[int], Optional[Exception]]:
-    validate_integer = any_number_validator(
+    validate_integer: Callable[[int], Optional[Exception]] = any_number_validator(
         minimum_value=minimum_value,
         maximum_value=maximum_value,
         exclusive_minimum_value=exclusive_minimum_value,
         exclusive_maximum_value=exclusive_maximum_value,
         allow_boolean=allow_boolean,
-    )
+    )  # type: ignore
 
     def validate(data: int) -> Optional[Exception]:
         if (error := validate_integer_type(data)) is not None:
-            return error  # type: ignore
+            return error
 
         return validate_integer(data)
 
     return validate
 
 
+@overload
+def float_validator(
+    *, minimum_value: Optional[float] = None, maximum_value: Optional[float] = None
+) -> Callable[[float], Optional[Exception]]:
+    ...
+
+
+@overload
+def float_validator(
+    *, minimum_value: Optional[float] = None, exclusive_maximum_value: Optional[float] = None
+) -> Callable[[float], Optional[Exception]]:
+    ...
+
+
+@overload
+def float_validator(
+    *, exclusive_minimum_value: Optional[float] = None, maximum_value: Optional[float] = None
+) -> Callable[[float], Optional[Exception]]:
+    ...
+
+
+@overload
+def float_validator(
+    *,
+    exclusive_minimum_value: Optional[float] = None,
+    exclusive_maximum_value: Optional[float] = None,
+) -> Callable[[float], Optional[Exception]]:
+    ...
+
+
+# noinspection PyArgumentList
 def float_validator(
     *,
     minimum_value: Optional[float] = None,
@@ -85,17 +195,17 @@ def float_validator(
     exclusive_minimum_value: Optional[float] = None,
     exclusive_maximum_value: Optional[float] = None,
 ) -> Callable[[float], Optional[Exception]]:
-    validate_float = any_number_validator(
+    validate_float: Callable[[float], Optional[Exception]] = any_number_validator(
         minimum_value=minimum_value,
         maximum_value=maximum_value,
         exclusive_minimum_value=exclusive_minimum_value,
         exclusive_maximum_value=exclusive_maximum_value,
         allow_boolean=False,
-    )
+    )  # type: ignore
 
     def validate(data: float) -> Optional[Exception]:
         if (error := validate_float_type(data)) is not None:
-            return error  # type: ignore
+            return error
 
         return validate_float(data)
 
