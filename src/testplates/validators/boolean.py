@@ -1,10 +1,10 @@
 __all__ = ["boolean_validator"]
 
-from typing import Callable, Optional
+from typing import Callable, Optional, Final
 
 from .type import type_validator
 
-validate_boolean_type = type_validator(allowed_types=bool)
+validate_boolean_type: Final = type_validator(allowed_types=bool)
 
 
 def boolean_validator() -> Callable[[bool], Optional[Exception]]:

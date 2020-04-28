@@ -9,15 +9,20 @@ class InvalidTypeError(ValidationError):
 
 
 class ProhibitedBooleanValueError(ValidationError):
-    pass
+    def __init__(self, data):
+        self.data = data
 
 
 class InvalidMinimumValueError(ValidationError):
-    pass
+    def __init__(self, data, minimum):
+        self.data = data
+        self.minimum = minimum
 
 
 class InvalidMaximumValueError(ValidationError):
-    pass
+    def __init__(self, data, maximum):
+        self.data = data
+        self.maximum = maximum
 
 
 class InvalidLengthError(ValidationError):

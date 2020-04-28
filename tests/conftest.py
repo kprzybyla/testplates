@@ -1,6 +1,6 @@
 import random
 
-from typing import TypeVar, List, Iterable, Callable, Final
+from typing import TypeVar, List, Iterable, Callable, Optional, Final
 from decimal import Decimal
 
 from hypothesis import settings, strategies as st
@@ -39,7 +39,7 @@ def st_anything_comparable() -> st.SearchStrategy[_Ex]:
 
 def st_anything_except(*types: type) -> st.SearchStrategy[_Ex]:
     def filter_anything_except(value: _T) -> bool:
-        return not isinstance(value, types)
+        return value == value and not isinstance(value, types)
 
     return st.from_type(type).flatmap(st.from_type).filter(filter_anything_except)
 
@@ -49,3 +49,10 @@ def st_anytype_except_type_of(value: _T) -> st.SearchStrategy[_Ex]:
         return not issubclass(type(value), type_)
 
     return st.from_type(type).flatmap(st.from_type).map(type).filter(filter_anytype_except)
+
+
+@st.composite
+def st_floats_without_nan(
+    draw: Draw[float], min_value: Optional[float] = None, max_value: Optional[float] = None
+) -> float:
+    return draw(st.floats(min_value=min_value, max_value=max_value, allow_nan=False))

@@ -2,7 +2,7 @@ __all__ = ["any_string_validator", "string_validator", "bytes_validator"]
 
 import re
 
-from typing import TypeVar, Callable, Optional
+from typing import TypeVar, Callable, Optional, Final
 
 from .type import type_validator
 from .exceptions import (
@@ -15,14 +15,13 @@ from .exceptions import (
 
 _T = TypeVar("_T", str, bytes)
 
-validate_any_string_type = type_validator(allowed_types=(str, bytes))
-validate_string_type = type_validator(allowed_types=str)
-validate_bytes_type = type_validator(allowed_types=bytes)
+validate_any_string_type: Final = type_validator(allowed_types=(str, bytes))
+validate_string_type: Final = type_validator(allowed_types=str)
+validate_bytes_type: Final = type_validator(allowed_types=bytes)
 
 
 def any_string_validator(
     *,
-    validate_type: Callable[[_T], Optional[Exception]] = validate_any_string_type,
     length: Optional[int] = None,
     minimum_length: Optional[int] = None,
     maximum_length: Optional[int] = None,
@@ -33,7 +32,7 @@ def any_string_validator(
     regex = re.compile(pattern) if pattern is not None else None
 
     def validate(data: _T) -> Optional[Exception]:
-        if (error := validate_type(data)) is not None:
+        if (error := validate_any_string_type(data)) is not None:
             return error  # type: ignore
 
         if length is not None and len(data) != length:
@@ -64,7 +63,6 @@ def string_validator(
     pattern: Optional[str] = None,
 ) -> Callable[[str], Optional[Exception]]:
     validate_string = any_string_validator(
-        validate_type=validate_string_type,
         length=length,
         minimum_length=minimum_length,
         maximum_length=maximum_length,
@@ -72,6 +70,9 @@ def string_validator(
     )
 
     def validate(data: str) -> Optional[Exception]:
+        if (error := validate_string_type(data)) is not None:
+            return error  # type: ignore
+
         return validate_string(data)
 
     return validate
@@ -85,7 +86,6 @@ def bytes_validator(
     pattern: Optional[bytes] = None,
 ) -> Callable[[bytes], Optional[Exception]]:
     validate_bytes = any_string_validator(
-        validate_type=validate_bytes_type,
         length=length,
         minimum_length=minimum_length,
         maximum_length=maximum_length,
@@ -93,6 +93,9 @@ def bytes_validator(
     )
 
     def validate(data: bytes) -> Optional[Exception]:
+        if (error := validate_bytes_type(data)) is not None:
+            return error  # type: ignore
+
         return validate_bytes(data)
 
     return validate

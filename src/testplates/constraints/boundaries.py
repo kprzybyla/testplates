@@ -28,6 +28,7 @@ MAXIMUM_NAME: Final[str] = "maximum"
 
 INCLUSIVE_NAME: Final[str] = "inclusive"
 EXCLUSIVE_NAME: Final[str] = "exclusive"
+UNLIMITED_NAME: Final[str] = "unlimited"
 
 INCLUSIVE_ALIGNMENT: Final[int] = 0
 EXCLUSIVE_ALIGNMENT: Final[int] = 1
@@ -86,6 +87,22 @@ class Exclusive(Boundary[_T]):
         return True
 
 
+class Unlimited(Boundary[_T]):
+
+    __slots__ = ()
+
+    @property
+    def type(self) -> str:
+        return UNLIMITED_NAME
+
+    @property
+    def alignment(self) -> int:
+        raise NotImplementedError()
+
+    def fits(self, value: _T, /) -> bool:
+        return True
+
+
 def get_minimum(*, inclusive: Optional[_T] = None, exclusive: Optional[_T] = None) -> Boundary[_T]:
 
     """
@@ -129,6 +146,9 @@ def get_boundaries(
 
     minimum = get_minimum(inclusive=inclusive_minimum, exclusive=exclusive_minimum)
     maximum = get_maximum(inclusive=inclusive_maximum, exclusive=exclusive_maximum)
+
+    if isinstance(minimum, Unlimited) or isinstance(maximum, Unlimited):
+        return minimum, maximum
 
     if minimum.value + minimum.alignment > maximum.value - maximum.alignment:
         raise OverlappingBoundariesError(minimum, maximum)
@@ -181,9 +201,6 @@ def _get_boundary(
         :param exclusive: exclusive boundary value
     """
 
-    if inclusive is None and exclusive is None:
-        raise MissingBoundaryError(name)
-
     if inclusive is not None and exclusive is not None:
         raise MutuallyExclusiveBoundariesError(name)
 
@@ -193,4 +210,4 @@ def _get_boundary(
     if exclusive is not None:
         return Exclusive(name, exclusive)
 
-    raise UnreachableCodeExecutionInternalError()  # pragma: no cover
+    return Unlimited(name, None)
