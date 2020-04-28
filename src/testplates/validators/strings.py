@@ -4,6 +4,8 @@ import re
 
 from typing import TypeVar, Callable, Optional, Final
 
+from testplates.boundaries import get_length_boundaries
+
 from .type import type_validator
 from .exceptions import (
     InvalidLengthError,
@@ -19,6 +21,8 @@ validate_any_string_type: Final = type_validator(allowed_types=(str, bytes))
 validate_string_type: Final = type_validator(allowed_types=str)
 validate_bytes_type: Final = type_validator(allowed_types=bytes)
 
+# TODO(kprzybyla): Add overloads for validators
+
 
 def any_string_validator(
     *,
@@ -27,7 +31,12 @@ def any_string_validator(
     maximum_length: Optional[int] = None,
     pattern: Optional[_T] = None,
 ) -> Callable[[_T], Optional[Exception]]:
-    # TODO(kprzybyla): Add validation or arguments here
+    if length is not None and (minimum_length is not None or maximum_length is not None):
+        raise ...
+
+    maximum, minimum = get_length_boundaries(
+        inclusive_minimum=minimum_length, inclusive_maximum=maximum_length
+    )
 
     regex = re.compile(pattern) if pattern is not None else None
 
@@ -38,17 +47,18 @@ def any_string_validator(
         if length is not None and len(data) != length:
             return InvalidLengthError(data, length)
 
-        if minimum_length is not None and len(data) < minimum_length:
+        if minimum.fits(len(data)):
             return InvalidMinimumLengthError(data, minimum_length)
 
-        if maximum_length is not None and len(data) > maximum_length:
+        if maximum.fits(len(data)):
             return InvalidMaximumLengthError(data, maximum_length)
 
-        if regex is not None and not isinstance(regex.pattern, type(data)):
-            return InvalidPatternTypeError(data, regex)
+        if regex is not None:
+            if not isinstance(regex.pattern, type(data)):
+                return InvalidPatternTypeError(data, regex)
 
-        if regex is not None and not regex.match(data):
-            return InvalidFormatError(data, regex)
+            if not regex.match(data):
+                return InvalidFormatError(data, regex)
 
         return None
 

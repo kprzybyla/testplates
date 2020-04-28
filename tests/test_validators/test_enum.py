@@ -16,6 +16,8 @@ EnumFactory = Callable[[Dict[str, _T]], Enum]
 
 uint8: Final = integer_validator(minimum_value=0, maximum_value=255)
 
+# TODO(kprzybyla): Refactor strategies into composites
+
 
 @pytest.fixture
 def enum_factory() -> EnumFactory:
@@ -36,7 +38,6 @@ def st_negative_integer(draw: Draw[int]) -> int:
     return draw(st.integers(max_value=-1))
 
 
-# noinspection PyArgumentList
 @given(members=st.dictionaries(st.text(min_size=1), st_uint8(), min_size=1))
 def test_validation_success(enum_factory: EnumFactory, members: Dict[str, _T]) -> None:
     enum_type = enum_factory(members)
@@ -49,7 +50,6 @@ def test_validation_success(enum_factory: EnumFactory, members: Dict[str, _T]) -
     assert error is None
 
 
-# noinspection PyArgumentList
 @given(members=st.dictionaries(st.text(min_size=1), st_negative_integer(), min_size=1))
 def test_validation_failure_due_to_member_validation_error(
     enum_factory: EnumFactory, members: Dict[str, _T]

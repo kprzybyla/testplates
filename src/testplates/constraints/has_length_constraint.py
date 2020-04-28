@@ -7,8 +7,7 @@ from typing import overload, Any, Sized, Optional
 import testplates
 
 from testplates.abc import Constraint
-
-from .boundaries import get_length_boundaries
+from testplates.boundaries import get_length_boundaries
 
 
 class AnyHasLength(Constraint, abc.ABC):

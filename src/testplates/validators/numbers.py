@@ -2,7 +2,7 @@ __all__ = ["any_number_validator", "integer_validator", "float_validator"]
 
 from typing import TypeVar, Callable, Optional, Final
 
-from testplates.constraints.boundaries import get_boundaries
+from testplates.boundaries import get_boundaries
 
 from .type import type_validator
 from .exceptions import (
@@ -16,6 +16,8 @@ _T = TypeVar("_T", int, float)
 validate_any_number_type: Final = type_validator(allowed_types=(int, float))
 validate_integer_type: Final = type_validator(allowed_types=int)
 validate_float_type: Final = type_validator(allowed_types=float)
+
+# TODO(kprzybyla): Add overloads for validators
 
 
 def any_number_validator(

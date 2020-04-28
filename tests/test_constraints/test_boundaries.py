@@ -2,7 +2,7 @@ from typing import TypeVar, Final
 
 from hypothesis import given, strategies as st
 
-from testplates.constraints.boundaries import Inclusive, Exclusive
+from testplates.boundaries import Inclusive, Exclusive
 
 from tests.conftest import st_anything_comparable
 

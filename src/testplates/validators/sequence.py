@@ -4,7 +4,7 @@ import typing
 
 from typing import TypeVar, Callable, Optional
 
-from testplates.constraints.boundaries import get_length_boundaries
+from testplates.boundaries import get_length_boundaries
 
 from .type import type_validator, validate_any
 from .utils import has_unique_items
@@ -19,11 +19,14 @@ _T = TypeVar("_T")
 
 validate_sequence_type = type_validator(allowed_types=typing.Sequence)
 
+# TODO(kprzybyla): Add overloads for validators
+
 
 def sequence_validator(
     validate_item: Callable[[_T], Optional[Exception]] = validate_any,
     /,
     *,
+    size: Optional[int] = None,
     minimum_size: Optional[int] = None,
     maximum_size: Optional[int] = None,
     unique_items: bool = False,

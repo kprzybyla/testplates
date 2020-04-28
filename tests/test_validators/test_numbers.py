@@ -50,6 +50,10 @@ integer_validators_parameters = pytest.mark.parametrize(
 # TODO(kprzybyla): Think about test where any_number_validator is used and maximum
 #                  value is float and data type is int. Should we allow such things?
 
+# TODO(kprzybyla): Add tests with exclusive boundaries mixed with other boundaries etc?
+
+# TODO(kprzybyla): Verify that everything is tested
+
 
 @given(st_data=st.data())
 @validators_and_strategies_parameters

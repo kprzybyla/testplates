@@ -5,8 +5,7 @@ from typing import overload, Any, TypeVar, Generic, Optional
 import testplates
 
 from testplates.abc import Boundary, Constraint
-
-from .boundaries import get_boundaries
+from testplates.boundaries import get_boundaries
 
 _T = TypeVar("_T", int, float)
 
