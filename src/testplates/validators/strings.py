@@ -2,8 +2,9 @@ __all__ = ["any_string_validator", "string_validator", "bytes_validator"]
 
 import re
 
-from typing import overload, TypeVar, Callable, Optional, Final
+from typing import overload, TypeVar, Union, Pattern as Regex, Callable, Optional, Final
 
+from testplates.abc import Boundary
 from testplates.boundaries import get_length_boundaries
 
 from .type import type_validator
@@ -17,9 +18,15 @@ from .exceptions import (
 
 _T = TypeVar("_T", str, bytes)
 
+AnyString = Union[str, bytes]
+
 validate_any_string_type: Final = type_validator(allowed_types=(str, bytes))
 validate_string_type: Final = type_validator(allowed_types=str)
 validate_bytes_type: Final = type_validator(allowed_types=bytes)
+
+
+def get_regex(pattern: Optional[_T]) -> Optional[Regex[_T]]:
+    return re.compile(pattern) if pattern is not None else None
 
 
 @overload
@@ -46,34 +53,18 @@ def any_string_validator(
     maximum_length: Optional[int] = None,
     pattern: Optional[_T] = None,
 ) -> Callable[[_T], Optional[Exception]]:
-    if length is not None and (minimum_length is not None or maximum_length is not None):
-        raise ...
-
-    maximum, minimum = get_length_boundaries(
-        inclusive_minimum=minimum_length, inclusive_maximum=maximum_length
-    )
-
-    regex = re.compile(pattern) if pattern is not None else None
+    maximum, minimum = get_length_boundaries(length, minimum_length, maximum_length)
+    regex = get_regex(pattern)
 
     def validate(data: _T) -> Optional[Exception]:
         if (error := validate_any_string_type(data)) is not None:
             return error  # type: ignore
 
-        if length is not None and len(data) != length:
-            return InvalidLengthError(data, length)
+        if (error := validate_any_string_length(data, length, minimum, maximum)) is not None:  # type: ignore
+            return error  # type: ignore
 
-        if minimum.fits(len(data)):
-            return InvalidMinimumLengthError(data, minimum_length)
-
-        if maximum.fits(len(data)):
-            return InvalidMaximumLengthError(data, maximum_length)
-
-        if regex is not None:
-            if not isinstance(regex.pattern, type(data)):
-                return InvalidPatternTypeError(data, regex)
-
-            if not regex.match(data):
-                return InvalidFormatError(data, regex)
+        if (error := validate_any_string_regex(data, regex)) is not None:  # type: ignore
+            return error  # type: ignore
 
         return None
 
@@ -97,7 +88,6 @@ def string_validator(
     ...
 
 
-# noinspection PyArgumentList
 def string_validator(
     *,
     length: Optional[int] = None,
@@ -105,18 +95,20 @@ def string_validator(
     maximum_length: Optional[int] = None,
     pattern: Optional[str] = None,
 ) -> Callable[[str], Optional[Exception]]:
-    validate_string: Callable[[str], Optional[Exception]] = any_string_validator(
-        length=length,
-        minimum_length=minimum_length,
-        maximum_length=maximum_length,
-        pattern=pattern,
-    )  # type: ignore
+    maximum, minimum = get_length_boundaries(length, minimum_length, maximum_length)
+    regex = get_regex(pattern)
 
     def validate(data: str) -> Optional[Exception]:
         if (error := validate_string_type(data)) is not None:
             return error
 
-        return validate_string(data)
+        if (error := validate_any_string_length(data, length, minimum, maximum)) is not None:
+            return error
+
+        if (error := validate_any_string_regex(data, regex)) is not None:
+            return error
+
+        return None
 
     return validate
 
@@ -138,7 +130,6 @@ def bytes_validator(
     ...
 
 
-# noinspection PyArgumentList
 def bytes_validator(
     *,
     length: Optional[int] = None,
@@ -146,17 +137,45 @@ def bytes_validator(
     maximum_length: Optional[int] = None,
     pattern: Optional[bytes] = None,
 ) -> Callable[[bytes], Optional[Exception]]:
-    validate_bytes: Callable[[bytes], Optional[Exception]] = any_string_validator(
-        length=length,
-        minimum_length=minimum_length,
-        maximum_length=maximum_length,
-        pattern=pattern,
-    )  # type: ignore
+    maximum, minimum = get_length_boundaries(length, minimum_length, maximum_length)
+    regex = get_regex(pattern)
 
     def validate(data: bytes) -> Optional[Exception]:
         if (error := validate_bytes_type(data)) is not None:
             return error
 
-        return validate_bytes(data)
+        if (error := validate_any_string_length(data, length, minimum, maximum)) is not None:
+            return error
+
+        if (error := validate_any_string_regex(data, regex)) is not None:
+            return error
+
+        return None
 
     return validate
+
+
+def validate_any_string_length(
+    data: AnyString, length: Optional[int], minimum: Boundary[int], maximum: Boundary[int], /
+) -> Optional[Exception]:
+    if length is not None and len(data) != length:
+        return InvalidLengthError(data, length)
+
+    if minimum.fits(len(data)):
+        return InvalidMinimumLengthError(data, minimum)
+
+    if maximum.fits(len(data)):
+        return InvalidMaximumLengthError(data, maximum)
+
+    return None
+
+
+def validate_any_string_regex(data: _T, regex: Optional[Regex[_T]], /) -> Optional[Exception]:
+    if regex is not None:
+        if not isinstance(regex.pattern, type(data)):
+            return InvalidPatternTypeError(data, regex)
+
+        if not regex.match(data):
+            return InvalidFormatError(data, regex)
+
+    return None

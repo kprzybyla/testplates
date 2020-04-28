@@ -78,10 +78,10 @@ def any_number_validator(
         if (error := validate_any_number_type(data)) is not None:
             return error
 
-        if (error := validate_boolean_type(data, allow_boolean=allow_boolean)) is not None:
+        if (error := validate_any_number_boolean_type(data, allow_boolean)) is not None:
             return error
 
-        if (error := validate_boundaries(data, minimum=minimum, maximum=maximum)) is not None:
+        if (error := validate_any_number_boundaries(data, minimum, maximum)) is not None:
             return error
 
         return None
@@ -148,10 +148,10 @@ def integer_validator(
         if (error := validate_integer_type(data)) is not None:
             return error
 
-        if (error := validate_boolean_type(data, allow_boolean=allow_boolean)) is not None:
+        if (error := validate_any_number_boolean_type(data, allow_boolean)) is not None:
             return error
 
-        if (error := validate_boundaries(data, minimum=minimum, maximum=maximum)) is not None:
+        if (error := validate_any_number_boundaries(data, minimum, maximum)) is not None:
             return error
 
         return None
@@ -207,7 +207,7 @@ def float_validator(
         if (error := validate_float_type(data)) is not None:
             return error
 
-        if (error := validate_boundaries(data, minimum=minimum, maximum=maximum)) is not None:
+        if (error := validate_any_number_boundaries(data, minimum, maximum)) is not None:
             return error
 
         return None
@@ -215,15 +215,17 @@ def float_validator(
     return validate
 
 
-def validate_boolean_type(data: Union[int, float], *, allow_boolean: bool) -> Optional[Exception]:
+def validate_any_number_boolean_type(
+    data: Union[int, float], allow_boolean: bool, /
+) -> Optional[Exception]:
     if not allow_boolean and isinstance(data, bool):
         return ProhibitedBooleanValueError(data)
 
     return None
 
 
-def validate_boundaries(
-    data: _T, *, minimum: Boundary[_T], maximum: Boundary[_T]
+def validate_any_number_boundaries(
+    data: _T, minimum: Boundary[_T], maximum: Boundary[_T], /
 ) -> Optional[Exception]:
     if not minimum.fits(data):
         return InvalidMinimumValueError(data, minimum)
