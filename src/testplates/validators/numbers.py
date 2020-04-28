@@ -1,7 +1,8 @@
 __all__ = ["any_number_validator", "integer_validator", "float_validator"]
 
-from typing import overload, TypeVar, Callable, Optional, Final
+from typing import overload, TypeVar, Union, Callable, Optional, Final
 
+from testplates.abc import Boundary
 from testplates.boundaries import get_boundaries
 
 from .type import type_validator
@@ -11,7 +12,7 @@ from .exceptions import (
     ProhibitedBooleanValueError,
 )
 
-_T = TypeVar("_T", int, float)
+_T = TypeVar("_T", bound=Union[int, float])
 
 validate_any_number_type: Final = type_validator(allowed_types=(int, float))
 validate_integer_type: Final = type_validator(allowed_types=int)
@@ -58,7 +59,7 @@ def any_number_validator(
     ...
 
 
-def any_number_validator(  # type: ignore
+def any_number_validator(
     *,
     minimum_value: Optional[_T] = None,
     maximum_value: Optional[_T] = None,
@@ -75,16 +76,13 @@ def any_number_validator(  # type: ignore
 
     def validate(data: _T) -> Optional[Exception]:
         if (error := validate_any_number_type(data)) is not None:
-            return error  # type: ignore
+            return error
 
-        if not allow_boolean and isinstance(data, bool):
-            return ProhibitedBooleanValueError(data)
+        if (error := validate_boolean_type(data, allow_boolean=allow_boolean)) is not None:
+            return error
 
-        if not minimum.fits(data):
-            return InvalidMinimumValueError(data, minimum)
-
-        if not maximum.fits(data):
-            return InvalidMaximumValueError(data, maximum)
+        if (error := validate_boundaries(data, minimum=minimum, maximum=maximum)) is not None:
+            return error
 
         return None
 
@@ -131,7 +129,6 @@ def integer_validator(
     ...
 
 
-# noinspection PyArgumentList
 def integer_validator(
     *,
     minimum_value: Optional[int] = None,
@@ -140,19 +137,24 @@ def integer_validator(
     exclusive_maximum_value: Optional[int] = None,
     allow_boolean: bool = False,
 ) -> Callable[[int], Optional[Exception]]:
-    validate_integer: Callable[[int], Optional[Exception]] = any_number_validator(
-        minimum_value=minimum_value,
-        maximum_value=maximum_value,
-        exclusive_minimum_value=exclusive_minimum_value,
-        exclusive_maximum_value=exclusive_maximum_value,
-        allow_boolean=allow_boolean,
-    )  # type: ignore
+    minimum, maximum = get_boundaries(
+        inclusive_minimum=minimum_value,
+        inclusive_maximum=maximum_value,
+        exclusive_minimum=exclusive_minimum_value,
+        exclusive_maximum=exclusive_maximum_value,
+    )
 
     def validate(data: int) -> Optional[Exception]:
         if (error := validate_integer_type(data)) is not None:
             return error
 
-        return validate_integer(data)
+        if (error := validate_boolean_type(data, allow_boolean=allow_boolean)) is not None:
+            return error
+
+        if (error := validate_boundaries(data, minimum=minimum, maximum=maximum)) is not None:
+            return error
+
+        return None
 
     return validate
 
@@ -187,7 +189,6 @@ def float_validator(
     ...
 
 
-# noinspection PyArgumentList
 def float_validator(
     *,
     minimum_value: Optional[float] = None,
@@ -195,18 +196,39 @@ def float_validator(
     exclusive_minimum_value: Optional[float] = None,
     exclusive_maximum_value: Optional[float] = None,
 ) -> Callable[[float], Optional[Exception]]:
-    validate_float: Callable[[float], Optional[Exception]] = any_number_validator(
-        minimum_value=minimum_value,
-        maximum_value=maximum_value,
-        exclusive_minimum_value=exclusive_minimum_value,
-        exclusive_maximum_value=exclusive_maximum_value,
-        allow_boolean=False,
-    )  # type: ignore
+    minimum, maximum = get_boundaries(
+        inclusive_minimum=minimum_value,
+        inclusive_maximum=maximum_value,
+        exclusive_minimum=exclusive_minimum_value,
+        exclusive_maximum=exclusive_maximum_value,
+    )
 
     def validate(data: float) -> Optional[Exception]:
         if (error := validate_float_type(data)) is not None:
             return error
 
-        return validate_float(data)
+        if (error := validate_boundaries(data, minimum=minimum, maximum=maximum)) is not None:
+            return error
+
+        return None
 
     return validate
+
+
+def validate_boolean_type(data: Union[int, float], *, allow_boolean: bool) -> Optional[Exception]:
+    if not allow_boolean and isinstance(data, bool):
+        return ProhibitedBooleanValueError(data)
+
+    return None
+
+
+def validate_boundaries(
+    data: _T, *, minimum: Boundary[_T], maximum: Boundary[_T]
+) -> Optional[Exception]:
+    if not minimum.fits(data):
+        return InvalidMinimumValueError(data, minimum)
+
+    if not maximum.fits(data):
+        return InvalidMaximumValueError(data, maximum)
+
+    return None

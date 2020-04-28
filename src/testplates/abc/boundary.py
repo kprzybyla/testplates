@@ -2,9 +2,9 @@ __all__ = ["Boundary"]
 
 import abc
 
-from typing import TypeVar, Generic
+from typing import TypeVar, Generic, Union
 
-_T = TypeVar("_T", int, float)
+_T = TypeVar("_T", bound=Union[int, float])
 
 
 class Boundary(Generic[_T], abc.ABC):

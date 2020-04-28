@@ -13,12 +13,10 @@ from typing import TypeVar, Tuple, Optional, Final
 
 from testplates.abc import Boundary
 from testplates.exceptions import (
-    MissingBoundaryError,
     InvalidLengthError,
     MutuallyExclusiveBoundariesError,
     OverlappingBoundariesError,
     SingleMatchBoundariesError,
-    UnreachableCodeExecutionInternalError,
 )
 
 _T = TypeVar("_T", int, float)
