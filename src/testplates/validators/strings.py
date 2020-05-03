@@ -58,13 +58,13 @@ def any_string_validator(
 
     def validate(data: _T) -> Optional[Exception]:
         if (error := validate_any_string_type(data)) is not None:
-            return error  # type: ignore
+            return error
 
-        if (error := validate_any_string_length(data, length, minimum, maximum)) is not None:  # type: ignore
-            return error  # type: ignore
+        if (error := validate_any_string_length(data, length, minimum, maximum)) is not None:
+            return error
 
-        if (error := validate_any_string_regex(data, regex)) is not None:  # type: ignore
-            return error  # type: ignore
+        if (error := validate_any_string_regex(data, regex)) is not None:
+            return error
 
         return None
 
