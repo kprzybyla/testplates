@@ -27,7 +27,7 @@ def main():
         python_requires="~= 3.8",
         extras_require={
             "black": ["black == 19.10b0"],
-            "lint": ["flake8 ~= 3.7.0"],
+            "lint": ["flake8 ~= 3.8.0"],
             "mypy": ["mypy ~= 0.760", "pytest ~= 5.3.0", "hypothesis ~= 5.6.0"],
             "test": ["pytest ~= 5.3.0", "pytest-cov ~= 2.8.0", "hypothesis ~= 5.6.0"],
             "docs": [
