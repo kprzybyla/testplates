@@ -6,6 +6,7 @@ from testplates.abc import Boundary
 from testplates.boundaries import get_boundaries
 
 from .type import type_validator
+from .utils import Result, Validator
 from .exceptions import (
     InvalidMinimumValueError,
     InvalidMaximumValueError,
@@ -25,7 +26,7 @@ def any_number_validator(
     minimum_value: Optional[_T] = None,
     maximum_value: Optional[_T] = None,
     allow_boolean: bool = False,
-) -> Callable[[_T], Optional[Exception]]:
+) -> Result[Validator[_T]]:
     ...
 
 
@@ -35,7 +36,7 @@ def any_number_validator(
     minimum_value: Optional[_T] = None,
     exclusive_maximum_value: Optional[_T] = None,
     allow_boolean: bool = False,
-) -> Callable[[_T], Optional[Exception]]:
+) -> Result[Validator[_T]]:
     ...
 
 
@@ -45,7 +46,7 @@ def any_number_validator(
     exclusive_minimum_value: Optional[_T] = None,
     maximum_value: Optional[_T] = None,
     allow_boolean: bool = False,
-) -> Callable[[_T], Optional[Exception]]:
+) -> Result[Validator[_T]]:
     ...
 
 
@@ -55,7 +56,7 @@ def any_number_validator(
     exclusive_minimum_value: Optional[_T] = None,
     exclusive_maximum_value: Optional[_T] = None,
     allow_boolean: bool = False,
-) -> Callable[[_T], Optional[Exception]]:
+) -> Result[Validator[_T]]:
     ...
 
 
@@ -66,7 +67,7 @@ def any_number_validator(
     exclusive_minimum_value: Optional[_T] = None,
     exclusive_maximum_value: Optional[_T] = None,
     allow_boolean: bool = False,
-) -> Callable[[_T], Optional[Exception]]:
+) -> Result[Validator[_T]]:
     minimum, maximum = get_boundaries(
         inclusive_minimum=minimum_value,
         inclusive_maximum=maximum_value,
@@ -95,7 +96,7 @@ def integer_validator(
     minimum_value: Optional[int] = None,
     maximum_value: Optional[int] = None,
     allow_boolean: bool = False,
-) -> Callable[[int], Optional[Exception]]:
+) -> Result[Validator[int]]:
     ...
 
 
@@ -105,7 +106,7 @@ def integer_validator(
     minimum_value: Optional[int] = None,
     exclusive_maximum_value: Optional[int] = None,
     allow_boolean: bool = False,
-) -> Callable[[int], Optional[Exception]]:
+) -> Result[Validator[int]]:
     ...
 
 
@@ -125,7 +126,7 @@ def integer_validator(
     exclusive_minimum_value: Optional[int] = None,
     exclusive_maximum_value: Optional[int] = None,
     allow_boolean: bool = False,
-) -> Callable[[int], Optional[Exception]]:
+) -> Result[Validator[int]]:
     ...
 
 
@@ -136,7 +137,7 @@ def integer_validator(
     exclusive_minimum_value: Optional[int] = None,
     exclusive_maximum_value: Optional[int] = None,
     allow_boolean: bool = False,
-) -> Callable[[int], Optional[Exception]]:
+) -> Result[Validator[int]]:
     minimum, maximum = get_boundaries(
         inclusive_minimum=minimum_value,
         inclusive_maximum=maximum_value,
@@ -162,21 +163,21 @@ def integer_validator(
 @overload
 def float_validator(
     *, minimum_value: Optional[float] = None, maximum_value: Optional[float] = None
-) -> Callable[[float], Optional[Exception]]:
+) -> Result[Validator[float]]:
     ...
 
 
 @overload
 def float_validator(
     *, minimum_value: Optional[float] = None, exclusive_maximum_value: Optional[float] = None
-) -> Callable[[float], Optional[Exception]]:
+) -> Result[Validator[float]]:
     ...
 
 
 @overload
 def float_validator(
     *, exclusive_minimum_value: Optional[float] = None, maximum_value: Optional[float] = None
-) -> Callable[[float], Optional[Exception]]:
+) -> Result[Validator[float]]:
     ...
 
 
@@ -185,7 +186,7 @@ def float_validator(
     *,
     exclusive_minimum_value: Optional[float] = None,
     exclusive_maximum_value: Optional[float] = None,
-) -> Callable[[float], Optional[Exception]]:
+) -> Result[Validator[float]]:
     ...
 
 
@@ -195,7 +196,7 @@ def float_validator(
     maximum_value: Optional[float] = None,
     exclusive_minimum_value: Optional[float] = None,
     exclusive_maximum_value: Optional[float] = None,
-) -> Callable[[float], Optional[Exception]]:
+) -> Result[Validator[float]]:
     minimum, maximum = get_boundaries(
         inclusive_minimum=minimum_value,
         inclusive_maximum=maximum_value,

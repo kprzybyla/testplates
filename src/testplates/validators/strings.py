@@ -8,6 +8,7 @@ from testplates.abc import Boundary
 from testplates.boundaries import get_length_boundaries
 
 from .type import type_validator
+from .utils import Result, Validator
 from .exceptions import (
     InvalidLengthError,
     InvalidMinimumLengthError,
@@ -32,7 +33,7 @@ def get_regex(pattern: Optional[_T]) -> Optional[Regex[_T]]:
 @overload
 def any_string_validator(
     *, length: Optional[int] = None, pattern: Optional[_T] = None
-) -> Callable[[_T], Optional[Exception]]:
+) -> Result[Validator[_T]]:
     ...
 
 
@@ -42,7 +43,7 @@ def any_string_validator(
     minimum_length: Optional[int] = None,
     maximum_length: Optional[int] = None,
     pattern: Optional[_T] = None,
-) -> Callable[[_T], Optional[Exception]]:
+) -> Result[Validator[_T]]:
     ...
 
 
@@ -52,7 +53,7 @@ def any_string_validator(
     minimum_length: Optional[int] = None,
     maximum_length: Optional[int] = None,
     pattern: Optional[_T] = None,
-) -> Callable[[_T], Optional[Exception]]:
+) -> Result[Validator[_T]]:
     maximum, minimum = get_length_boundaries(length, minimum_length, maximum_length)
     regex = get_regex(pattern)
 
@@ -74,7 +75,7 @@ def any_string_validator(
 @overload
 def string_validator(
     *, length: Optional[int] = None, pattern: Optional[str] = None
-) -> Callable[[str], Optional[Exception]]:
+) -> Result[Validator[str]]:
     ...
 
 
@@ -84,7 +85,7 @@ def string_validator(
     minimum_length: Optional[int] = None,
     maximum_length: Optional[int] = None,
     pattern: Optional[str] = None,
-) -> Callable[[str], Optional[Exception]]:
+) -> Result[Validator[str]]:
     ...
 
 
@@ -94,7 +95,7 @@ def string_validator(
     minimum_length: Optional[int] = None,
     maximum_length: Optional[int] = None,
     pattern: Optional[str] = None,
-) -> Callable[[str], Optional[Exception]]:
+) -> Result[Validator[str]]:
     maximum, minimum = get_length_boundaries(length, minimum_length, maximum_length)
     regex = get_regex(pattern)
 
@@ -116,7 +117,7 @@ def string_validator(
 @overload
 def bytes_validator(
     *, length: Optional[int] = None, pattern: Optional[bytes] = None
-) -> Callable[[bytes], Optional[Exception]]:
+) -> Result[Validator[bytes]]:
     ...
 
 
@@ -126,7 +127,7 @@ def bytes_validator(
     minimum_length: Optional[int] = None,
     maximum_length: Optional[int] = None,
     pattern: Optional[bytes] = None,
-) -> Callable[[bytes], Optional[Exception]]:
+) -> Result[Validator[bytes]]:
     ...
 
 
@@ -136,7 +137,7 @@ def bytes_validator(
     minimum_length: Optional[int] = None,
     maximum_length: Optional[int] = None,
     pattern: Optional[bytes] = None,
-) -> Callable[[bytes], Optional[Exception]]:
+) -> Result[Callable[[bytes], Optional[Exception]]]:
     maximum, minimum = get_length_boundaries(length, minimum_length, maximum_length)
     regex = get_regex(pattern)
 

@@ -3,6 +3,7 @@ __all__ = ["union_validator"]
 from typing import TypeVar, Tuple, Mapping, Callable, Optional
 
 from .type import type_validator
+from .utils import Result, Validator
 from .exceptions import InvalidKeyError, ChoiceValidationError
 
 _T = TypeVar("_T")
@@ -12,7 +13,7 @@ validate_union_type = type_validator(allowed_types=tuple)
 
 def union_validator(
     choices: Mapping[str, Callable[[_T], Optional[Exception]]], /
-) -> Callable[[Tuple[str, _T]], Optional[Exception]]:
+) -> Result[Validator[Tuple[str, _T]]]:
     def validate(data: Tuple[str, _T]) -> Optional[Exception]:
         if (error := validate_union_type(data)) is not None:
             return error

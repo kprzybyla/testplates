@@ -6,8 +6,8 @@ from typing import TypeVar, Callable, Optional
 
 from testplates.boundaries import get_length_boundaries
 
-from .type import type_validator, validate_any
-from .utils import has_unique_items
+from .type import type_validator
+from .utils import validate_any, has_unique_items, Result, Validator
 from .exceptions import (
     ItemValidationError,
     InvalidMinimumSizeError,
@@ -30,7 +30,7 @@ def sequence_validator(
     minimum_size: Optional[int] = None,
     maximum_size: Optional[int] = None,
     unique_items: bool = False,
-) -> Callable[[typing.Sequence[_T]], Optional[Exception]]:
+) -> Result[Validator[typing.Sequence[_T]]]:
     minimum, maximum = get_length_boundaries(
         inclusive_minimum=minimum_size, inclusive_maximum=maximum_size
     )

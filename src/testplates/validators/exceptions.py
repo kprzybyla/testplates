@@ -1,26 +1,32 @@
+from enum import Enum, EnumMeta
+from typing import Any, TypeVar
+
+_T = TypeVar("_T")
+
+
 class ValidationError(Exception):
     pass
 
 
 class InvalidTypeError(ValidationError):
-    def __init__(self, data, allowed_types):
+    def __init__(self, data, allowed_types) -> None:
         self.data = data
         self.allowed_types = allowed_types
 
 
 class ProhibitedBooleanValueError(ValidationError):
-    def __init__(self, data):
+    def __init__(self, data: bool) -> None:
         self.data = data
 
 
 class InvalidMinimumValueError(ValidationError):
-    def __init__(self, data, minimum):
+    def __init__(self, data, minimum) -> None:
         self.data = data
         self.minimum = minimum
 
 
 class InvalidMaximumValueError(ValidationError):
-    def __init__(self, data, maximum):
+    def __init__(self, data, maximum) -> None:
         self.data = data
         self.maximum = maximum
 
@@ -62,7 +68,10 @@ class UniquenessError(ValidationError):
 
 
 class MemberValidationError(ValidationError):
-    pass
+    def __init__(self, enum_type: EnumMeta, member: Enum, error: Exception) -> None:
+        self.enum_type = enum_type
+        self.member = member
+        self.error = error
 
 
 class FieldValidationError(ValidationError):
