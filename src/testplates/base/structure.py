@@ -49,7 +49,7 @@ class Field(Generic[_T], Descriptor[Any, _T]):
 
     def __init__(
         self,
-        validator: Optional[Validator] = None,
+        validator: Optional[Validator[_T]] = None,
         /,
         *,
         default: Maybe[_T] = MISSING,
@@ -116,7 +116,7 @@ class Field(Generic[_T], Descriptor[Any, _T]):
         return self._name
 
     @property
-    def validator(self) -> Optional[Validator]:
+    def validator(self) -> Optional[Validator[_T]]:
 
         """
             Returns field validator function

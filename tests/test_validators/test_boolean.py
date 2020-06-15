@@ -21,7 +21,7 @@ def test_validation_success(data: bool) -> None:
 @given(data=st_anything_except(bool))
 def test_validation_failure(data: _T) -> None:
     validate = boolean_validator()
-    error = validate(data)
+    error = validate(data)  # type: ignore
 
     assert isinstance(error, InvalidTypeError)
     assert error.data == data
