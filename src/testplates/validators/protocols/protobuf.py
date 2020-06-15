@@ -1,5 +1,5 @@
 __all__ = [
-    "bool_",
+    "bool",
     "int32",
     "int64",
     "uint32",
@@ -10,13 +10,13 @@ __all__ = [
     "fixed64",
     "sfixed32",
     "sfixed64",
-    "float_",
+    "float",
     "double",
     "string",
-    "bytes_",
+    "bytes",
     "enum",
     "repeated",
-    "map_",
+    "map",
     "message",
     "one_of",
 ]
@@ -43,13 +43,8 @@ STRING_MAXIMUM_LENGTH: Final[int] = 2 ** 32
 BYTES_MAXIMUM_LENGTH: Final[int] = 2 ** 32
 
 
-def bool_() -> Callable[[bool], Optional[Exception]]:
-    validate_bool = validators.boolean_validator()
-
-    def validate(data: bool) -> Optional[Exception]:
-        return validate_bool(data)
-
-    return validate
+bool_ = validators.boolean_validator
+enum = validators.enum_validator
 
 
 def int32() -> Callable[[int], Optional[Exception]]:
@@ -202,21 +197,7 @@ def bytes_() -> Callable[[bytes], Optional[Exception]]:
     return validate
 
 
-def enum(
-    validate_member_value: Callable[[_T], Optional[Exception]],
-    members: Mapping[str, _T],
-    /,
-    *,
-    allow_aliases: bool = True,
-) -> Callable[[_T], Optional[Exception]]:
-    validate_enum = validators.enum_validator(
-        validate_member_value, members, allow_aliases=allow_aliases
-    )
-
-    def validate(data: _T) -> Optional[Exception]:
-        return validate_enum(data)
-
-    return validate
+# TODO(kprzybyla): Implement below types validators
 
 
 def repeated() -> Callable[[Sequence[_T]], Optional[Exception]]:
@@ -245,3 +226,9 @@ def one_of() -> Callable[[Tuple[str, _T]], Optional[Exception]]:
         raise NotImplementedError(data)
 
     return validate
+
+
+bool = bool_
+float = float_
+bytes = bytes_
+map = map_
