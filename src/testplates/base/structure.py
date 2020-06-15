@@ -15,13 +15,14 @@ from typing import (
     Union,
     Tuple,
     Dict,
+    Callable,
     Optional,
 )
 
 import testplates
 
 from testplates.abc import Template, Descriptor
-from testplates.utils import matches, format_like_dict
+from testplates.utils import is_value, matches, format_like_dict
 from testplates.exceptions import (
     DanglingDescriptorError,
     MissingValueError,
@@ -30,12 +31,12 @@ from testplates.exceptions import (
     MissingValueInternalError,
 )
 
-from .value import Maybe, WILDCARD, ABSENT, MISSING
+from .value import Maybe, ANY, WILDCARD, ABSENT, MISSING
 
 _T = TypeVar("_T", covariant=True)
 _V = TypeVar("_V")
 
-Bases = Tuple[type, ...]
+Validator = Callable[[_T], Optional[Exception]]
 
 
 class Field(Generic[_T], Descriptor[Any, _T]):
@@ -44,9 +45,17 @@ class Field(Generic[_T], Descriptor[Any, _T]):
         Field descriptor class.
     """
 
-    __slots__ = ("_default", "_optional", "_name")
+    __slots__ = ("_validator", "_default", "_optional", "_name")
 
-    def __init__(self, *, default: Maybe[_T] = MISSING, optional: bool = False) -> None:
+    def __init__(
+        self,
+        validator: Optional[Validator] = None,
+        /,
+        *,
+        default: Maybe[_T] = MISSING,
+        optional: bool = False,
+    ) -> None:
+        self._validator = validator
         self._default = default
         self._optional = optional
 
@@ -107,6 +116,16 @@ class Field(Generic[_T], Descriptor[Any, _T]):
         return self._name
 
     @property
+    def validator(self) -> Optional[Validator]:
+
+        """
+            Returns field validator function
+            or None if no validator was provided.
+        """
+
+        return self._validator
+
+    @property
     def default(self) -> Maybe[_T]:
 
         """
@@ -135,14 +154,20 @@ class Field(Generic[_T], Descriptor[Any, _T]):
             :param value: value to be validated
         """
 
-        if value is MISSING and self.default is MISSING:
+        if value is ANY:
+            pass
+
+        elif value is MISSING and self.default is MISSING:
             raise MissingValueError(self)
 
-        if (value is ABSENT or self.default is ABSENT) and not self.is_optional:
+        elif (value is ABSENT or self.default is ABSENT) and not self.is_optional:
             raise ProhibitedValueError(self, value)
 
-        if (value is WILDCARD or self.default is WILDCARD) and not self.is_optional:
+        elif (value is WILDCARD or self.default is WILDCARD) and not self.is_optional:
             raise ProhibitedValueError(self, value)
+
+        elif is_value(value) and self.validator and (error := self.validator(value)) is not None:
+            raise error
 
 
 class _StructureDict(Generic[_T, _V], Dict[str, _V]):
@@ -176,14 +201,16 @@ class StructureMeta(Generic[_T], abc.ABCMeta):
     _fields_: Dict[str, Field[_T]]
 
     @classmethod
-    def __prepare__(mcs, __name: str, __bases: Bases, **kwargs: Any) -> _StructureDict[_T, Any]:
+    def __prepare__(
+        mcs, __name: str, __bases: Tuple[type, ...], **kwargs: Any
+    ) -> _StructureDict[_T, Any]:
         return _StructureDict()
 
     def __repr__(self) -> str:
         return f"{testplates.__name__}.{type(self).__name__}({format_like_dict(self._fields_)})"
 
     def __new__(
-        mcs, name: str, bases: Bases, namespace: _StructureDict[_T, Any]
+        mcs, name: str, bases: Tuple[type, ...], namespace: _StructureDict[_T, Any]
     ) -> StructureMeta[_T]:
         instance = cast(StructureMeta[_T], super().__new__(mcs, name, bases, namespace))
         instance._fields_ = namespace.fields

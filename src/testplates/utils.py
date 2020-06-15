@@ -1,10 +1,22 @@
-__all__ = ["matches", "format_like_tuple", "format_like_dict"]
+__all__ = ["is_value", "matches", "format_like_tuple", "format_like_dict"]
 
 from typing import Any, TypeVar, Iterable, Mapping
 
 from testplates.base.value import Value, Maybe, ANY, WILDCARD, ABSENT, MISSING
 
 _T = TypeVar("_T")
+
+
+def is_value(value: Maybe[Value[Any]]) -> bool:
+
+    """
+        Returns True if value is not missing
+        or a special value, otherwise False.
+
+        :param value: template value
+    """
+
+    return value not in [MISSING, ANY, ABSENT, WILDCARD]
 
 
 def matches(self_value: Maybe[Value[_T]], other_value: Maybe[Value[_T]], /) -> bool:
