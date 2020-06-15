@@ -1,5 +1,5 @@
-from enum import Enum
-from typing import TypeVar, Dict, Callable, Final
+from enum import Enum, EnumMeta
+from typing import cast, TypeVar, Dict, Final
 
 import pytest
 
@@ -12,20 +12,11 @@ from tests.conftest import sample, Draw
 
 _T = TypeVar("_T")
 
-EnumFactory = Callable[[Dict[str, _T]], Enum]
-
 uint8: Final = integer_validator(minimum_value=0, maximum_value=255)
 
-# TODO(kprzybyla): Refactor strategies into composites
 
-
-@pytest.fixture
-def enum_factory() -> EnumFactory:
-    # noinspection PyArgumentList
-    def create(members: Dict[str, _T]) -> Enum:
-        return Enum("Example", members)
-
-    return create
+def create_enum(members: Dict[str, _T]) -> EnumMeta:
+    return cast(EnumMeta, Enum("Enum", members))
 
 
 @st.composite
@@ -39,40 +30,35 @@ def st_negative_integer(draw: Draw[int]) -> int:
 
 
 @given(members=st.dictionaries(st.text(min_size=1), st_uint8(), min_size=1))
-def test_validation_success(enum_factory: EnumFactory, members: Dict[str, _T]) -> None:
-    enum_type = enum_factory(members)
+def test_validation_success(members: Dict[str, _T]) -> None:
+    enum = create_enum(members)
+    validate = enum_validator(enum, uint8)
 
-    data = sample(enum_type)
-
-    validate = enum_validator(enum_type, uint8)
-    error = validate(data)
+    member: Enum = sample(enum)
+    error = validate(member)
 
     assert error is None
 
 
 @given(members=st.dictionaries(st.text(min_size=1), st_negative_integer(), min_size=1))
-def test_validation_failure_due_to_member_validation_error(
-    enum_factory: EnumFactory, members: Dict[str, _T]
-) -> None:
-    enum_type = enum_factory(members)
+def test_validation_failure_due_to_member_validation_error(members: Dict[str, _T]) -> None:
+    enum = create_enum(members)
 
     with pytest.raises(Exception):
-        enum_validator(enum_type, uint8)
+        enum_validator(enum, uint8)
 
 
 @given(members=st.dictionaries(st.text(min_size=1), st_uint8(), min_size=1))
-def test_validation_failure_due_to_data_validation_error(
-    enum_factory: EnumFactory, members: Dict[str, _T]
-) -> None:
-    enum_type = enum_factory(members)
-    data = sample(enum_type).value
+def test_validation_failure_due_to_data_validation_error(members: Dict[str, _T]) -> None:
+    enum = create_enum(members)
+    validate = enum_validator(enum)
 
-    validate = enum_validator(enum_type)
-    error = validate(data)
+    member: Enum = sample(enum)
+    error = validate(member.value)
 
     assert isinstance(error, InvalidTypeError)
-    assert error.data == data
-    assert error.allowed_types == enum_type
+    assert error.data == member.value
+    assert error.allowed_types == enum
 
 
 def test_enum_instance_otherness_for_sanity() -> None:
