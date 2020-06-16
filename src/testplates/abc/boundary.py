@@ -1,8 +1,8 @@
-__all__ = ["Boundary"]
+__all__ = ["Boundary", "LiteralBoundary"]
 
 import abc
 
-from typing import TypeVar, Generic, Union
+from typing import TypeVar, Generic, Union, Literal
 
 _T = TypeVar("_T", bound=Union[int, float])
 
@@ -13,20 +13,34 @@ class Boundary(Generic[_T], abc.ABC):
         Abstract boundary class.
     """
 
-    __slots__ = ("_name", "_value")
+    __slots__ = ()
 
-    def __init__(self, name: str, value: _T) -> None:
-        self._name = name
+    def __repr__(self) -> str:
+        return type(self).__name__
+
+    @abc.abstractmethod
+    def fits(self, value: _T, /) -> bool:
+
+        """
+            Returns True if value fits within boundary, otherwise False.
+
+            :param value: value to be validated
+        """
+
+
+class LiteralBoundary(Boundary[_T], Generic[_T], abc.ABC):
+
+    """
+        Abstract literal boundary class.
+    """
+
+    __slots__ = ("_value",)
+
+    def __init__(self, value: _T) -> None:
         self._value: _T = value
 
-    @property
-    def name(self) -> str:
-
-        """
-            Returns boundary name.
-        """
-
-        return self._name
+    def __repr__(self) -> str:
+        return f"{self.type}_{self.name}={self.value}"
 
     @property
     def value(self) -> _T:
@@ -39,6 +53,14 @@ class Boundary(Generic[_T], abc.ABC):
 
     @property
     @abc.abstractmethod
+    def name(self) -> str:
+
+        """
+            Returns boundary name.
+        """
+
+    @property
+    @abc.abstractmethod
     def type(self) -> str:
 
         """
@@ -47,7 +69,7 @@ class Boundary(Generic[_T], abc.ABC):
 
     @property
     @abc.abstractmethod
-    def alignment(self) -> int:
+    def alignment(self) -> Literal[0, 1]:
 
         """
             Returns boundary alignment.
@@ -57,13 +79,4 @@ class Boundary(Generic[_T], abc.ABC):
 
             If alignment is equal to 0, value equal to boundary is accepted.
             If alignment is equal to 1, value equal to boundary is not accepted.
-        """
-
-    @abc.abstractmethod
-    def fits(self, value: _T, /) -> bool:
-
-        """
-            Returns True if value fits within boundary, otherwise False.
-
-            :param value: value to be validated
         """

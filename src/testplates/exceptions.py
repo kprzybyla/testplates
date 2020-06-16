@@ -125,10 +125,8 @@ class MissingBoundaryError(TestplatesValueError):
         for given template with minimum and maximum constraints.
     """
 
-    def __init__(self, name: str) -> None:
-        self.name = name
-
-        super().__init__(f"Missing value for mandatory boundary {name!r}")
+    def __init__(self) -> None:
+        super().__init__(f"Missing value for mandatory boundary")
 
 
 class InvalidLengthError(TestplatesValueError):
@@ -155,10 +153,11 @@ class MutuallyExclusiveBoundariesError(TestplatesValueError):
         boundaries at the same time with value.
     """
 
-    def __init__(self, name: str) -> None:
-        self.name = name
+    def __init__(self, inclusive: _B, exclusive: _B) -> None:
+        self.inclusive = inclusive
+        self.exclusive = exclusive
 
-        super().__init__(f"Mutually exclusive {name!r} boundaries set at the same time")
+        super().__init__(f"Mutually exclusive boundaries set at the same time")
 
 
 class OverlappingBoundariesError(Generic[_B], TestplatesValueError):
