@@ -4,7 +4,7 @@ import typing
 
 from typing import TypeVar, Callable, Optional
 
-from testplates.boundaries import get_length_boundaries
+from testplates.boundaries import get_minimum, get_maximum, check_length_boundaries
 
 from .type import type_validator
 from .utils import validate_any, has_unique_items, Result, Validator
@@ -31,9 +31,20 @@ def sequence_validator(
     maximum_size: Optional[int] = None,
     unique_items: bool = False,
 ) -> Result[Validator[typing.Sequence[_T]]]:
-    minimum, maximum = get_length_boundaries(
-        inclusive_minimum=minimum_size, inclusive_maximum=maximum_size
-    )
+    minimum = get_minimum(inclusive=minimum_size)
+
+    if isinstance(minimum, Exception):
+        return minimum
+
+    maximum = get_maximum(inclusive=maximum_size)
+
+    if isinstance(maximum, Exception):
+        return maximum
+
+    outcome = check_length_boundaries(minimum=minimum, maximum=maximum)
+
+    if outcome is not None:
+        return outcome
 
     def validate(data: typing.Sequence[_T]) -> Optional[Exception]:
         if (error := validate_sequence_type(data)) is not None:

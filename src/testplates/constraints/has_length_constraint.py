@@ -7,7 +7,13 @@ from typing import overload, Any, Sized, Optional
 import testplates
 
 from testplates.abc import Constraint
-from testplates.boundaries import get_length_boundaries, fits_minimum, fits_maximum
+from testplates.boundaries import (
+    get_minimum,
+    get_maximum,
+    check_length_boundaries,
+    fits_minimum,
+    fits_maximum,
+)
 
 
 class AnyHasLength(Constraint, abc.ABC):
@@ -39,16 +45,31 @@ class HasLengthBetween(AnyHasLength):
 
     __slots__ = ("_minimum", "_maximum")
 
-    def __init__(self, *, minimum: Optional[int] = None, maximum: Optional[int] = None) -> None:
-        minimum, maximum = get_length_boundaries(minimum_length=minimum, maximum_length=maximum)
+    def __init__(
+        self, *, minimum_length: Optional[int] = None, maximum_length: Optional[int] = None
+    ) -> None:
+        minimum = get_minimum(inclusive=minimum_length)
+
+        if isinstance(minimum, Exception):
+            raise minimum
+
+        maximum = get_maximum(inclusive=maximum_length)
+
+        if isinstance(maximum, Exception):
+            raise maximum
+
+        error = check_length_boundaries(minimum=minimum, maximum=maximum)
+
+        if error is not None:
+            raise error
 
         self._minimum = minimum
         self._maximum = maximum
 
     def __repr__(self) -> str:
         boundaries = [
-            f"minimum={self._minimum!r}",
-            f"maximum={self._maximum!r}",
+            repr(self._minimum),
+            repr(self._maximum),
         ]
 
         return f"{testplates.__name__}.{has_length.__name__}({', '.join(boundaries)})"
@@ -97,6 +118,6 @@ def has_length(
         return HasLength(length)
 
     if minimum is not None or maximum is not None:
-        return HasLengthBetween(minimum=minimum, maximum=maximum)
+        return HasLengthBetween(minimum_length=minimum, maximum_length=maximum)
 
     raise TypeError("function is missing 1 positional argument or 2 keyword-only arguments")

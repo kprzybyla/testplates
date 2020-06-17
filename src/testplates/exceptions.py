@@ -125,8 +125,10 @@ class MissingBoundaryError(TestplatesValueError):
         for given template with minimum and maximum constraints.
     """
 
-    def __init__(self) -> None:
-        super().__init__(f"Missing value for mandatory boundary")
+    def __init__(self, name: str) -> None:
+        self.name = name
+
+        super().__init__(f"Missing value for mandatory boundary {self.name!r}")
 
 
 class InvalidLengthError(TestplatesValueError):
@@ -138,7 +140,7 @@ class InvalidLengthError(TestplatesValueError):
         that does not meet length boundary requirements.
     """
 
-    def __init__(self, boundary: abc.Boundary[int]) -> None:
+    def __init__(self, boundary: Any) -> None:
         self.boundary = boundary
 
         super().__init__(f"Invalid value for length boundary {boundary!r}")
@@ -153,11 +155,10 @@ class MutuallyExclusiveBoundariesError(TestplatesValueError):
         boundaries at the same time with value.
     """
 
-    def __init__(self, inclusive: _B, exclusive: _B) -> None:
-        self.inclusive = inclusive
-        self.exclusive = exclusive
+    def __init__(self, name: str) -> None:
+        self.name = name
 
-        super().__init__(f"Mutually exclusive boundaries set at the same time")
+        super().__init__(f"Mutually exclusive {name!r} boundaries set at the same time")
 
 
 class OverlappingBoundariesError(Generic[_B], TestplatesValueError):
@@ -169,9 +170,9 @@ class OverlappingBoundariesError(Generic[_B], TestplatesValueError):
         boundaries with values the overlap over each other.
     """
 
-    def __init__(self, minimum: abc.Boundary[_B], maximum: abc.Boundary[_B]) -> None:
-        self.minimum: abc.Boundary[_B] = minimum
-        self.maximum: abc.Boundary[_B] = maximum
+    def __init__(self, minimum: Any, maximum: Any) -> None:
+        self.minimum = minimum
+        self.maximum = maximum
 
         super().__init__(f"Overlapping minimum {minimum!r} and maximum {maximum!r} boundaries")
 
@@ -185,9 +186,9 @@ class SingleMatchBoundariesError(Generic[_B], TestplatesValueError):
         creates range which matches only single value.
     """
 
-    def __init__(self, minimum: abc.Boundary[_B], maximum: abc.Boundary[_B]) -> None:
-        self.minimum: abc.Boundary[_B] = minimum
-        self.maximum: abc.Boundary[_B] = maximum
+    def __init__(self, minimum: Any, maximum: Any) -> None:
+        self.minimum = minimum
+        self.maximum = maximum
 
         super().__init__(f"Single match minimum {minimum!r} and maximum {maximum!r} boundaries")
 

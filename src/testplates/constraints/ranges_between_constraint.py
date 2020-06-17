@@ -4,8 +4,14 @@ from typing import overload, Any, TypeVar, Generic, Optional
 
 import testplates
 
-from testplates.abc import Boundary, Constraint
-from testplates.boundaries import get_boundaries
+from testplates.abc import Constraint
+from testplates.boundaries import (
+    get_minimum,
+    get_maximum,
+    fits_minimum,
+    fits_maximum,
+    check_boundaries,
+)
 
 _T = TypeVar("_T", int, float)
 
@@ -22,15 +28,23 @@ class RangesBetween(Generic[_T], Constraint):
         exclusive_minimum: Optional[_T] = None,
         exclusive_maximum: Optional[_T] = None,
     ) -> None:
-        minimum, maximum = get_boundaries(
-            inclusive_minimum=inclusive_minimum,
-            inclusive_maximum=inclusive_maximum,
-            exclusive_minimum=exclusive_minimum,
-            exclusive_maximum=exclusive_maximum,
-        )
+        minimum = get_minimum(inclusive=inclusive_minimum, exclusive=exclusive_minimum)
 
-        self._minimum: Boundary[_T] = minimum
-        self._maximum: Boundary[_T] = maximum
+        if isinstance(minimum, Exception):
+            raise minimum
+
+        maximum = get_maximum(inclusive=inclusive_maximum, exclusive=exclusive_maximum)
+
+        if isinstance(maximum, Exception):
+            raise maximum
+
+        error = check_boundaries(minimum=minimum, maximum=maximum,)
+
+        if error is not None:
+            raise error
+
+        self._minimum = minimum
+        self._maximum = maximum
 
     def __repr__(self) -> str:
         boundaries = [
@@ -41,7 +55,10 @@ class RangesBetween(Generic[_T], Constraint):
         return f"{testplates.__name__}.{ranges_between.__name__}({', '.join(boundaries)})"
 
     def __eq__(self, other: Any) -> bool:
-        return self._minimum.fits(other) and self._maximum.fits(other)
+        minimum_fits = fits_minimum(other, self._minimum)
+        maximum_fits = fits_maximum(other, self._maximum)
+
+        return minimum_fits and maximum_fits
 
 
 @overload

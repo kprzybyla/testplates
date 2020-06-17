@@ -1,6 +1,5 @@
-__all__ = ["Boundary", "LiteralBoundary", "Template", "Constraint", "Descriptor"]
+__all__ = ["Template", "Constraint", "Descriptor"]
 
-from .boundary import Boundary, LiteralBoundary
 from .template import Template
 from .constraint import Constraint
 from .descriptor import Descriptor

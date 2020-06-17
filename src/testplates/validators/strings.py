@@ -4,8 +4,7 @@ import re
 
 from typing import overload, TypeVar, Union, Pattern as Regex, Callable, Optional, Final
 
-from testplates.abc import Boundary
-from testplates.boundaries import get_length_boundaries
+from testplates.boundaries import get_minimum, get_maximum, check_length_boundaries, Boundary
 
 from .type import type_validator
 from .utils import Result, Validator
@@ -54,7 +53,21 @@ def any_string_validator(
     maximum_length: Optional[int] = None,
     pattern: Optional[_T] = None,
 ) -> Result[Validator[_T]]:
-    maximum, minimum = get_length_boundaries(length, minimum_length, maximum_length)
+    minimum = get_minimum(inclusive=minimum_length)
+
+    if isinstance(minimum, Exception):
+        return minimum
+
+    maximum = get_maximum(inclusive=maximum_length)
+
+    if isinstance(maximum, Exception):
+        return maximum
+
+    outcome = check_length_boundaries(minimum=minimum, maximum=maximum)
+
+    if outcome is not None:
+        return outcome
+
     regex = get_regex(pattern)
 
     def validate(data: _T) -> Optional[Exception]:
@@ -96,7 +109,21 @@ def string_validator(
     maximum_length: Optional[int] = None,
     pattern: Optional[str] = None,
 ) -> Result[Validator[str]]:
-    maximum, minimum = get_length_boundaries(length, minimum_length, maximum_length)
+    minimum = get_minimum(inclusive=minimum_length)
+
+    if isinstance(minimum, Exception):
+        return minimum
+
+    maximum = get_maximum(inclusive=maximum_length)
+
+    if isinstance(maximum, Exception):
+        return maximum
+
+    outcome = check_length_boundaries(minimum=minimum, maximum=maximum)
+
+    if outcome is not None:
+        return outcome
+
     regex = get_regex(pattern)
 
     def validate(data: str) -> Optional[Exception]:
@@ -138,7 +165,21 @@ def bytes_validator(
     maximum_length: Optional[int] = None,
     pattern: Optional[bytes] = None,
 ) -> Result[Callable[[bytes], Optional[Exception]]]:
-    maximum, minimum = get_length_boundaries(length, minimum_length, maximum_length)
+    minimum = get_minimum(inclusive=minimum_length)
+
+    if isinstance(minimum, Exception):
+        return minimum
+
+    maximum = get_maximum(inclusive=maximum_length)
+
+    if isinstance(maximum, Exception):
+        return maximum
+
+    outcome = check_length_boundaries(minimum=minimum, maximum=maximum)
+
+    if outcome is not None:
+        return outcome
+
     regex = get_regex(pattern)
 
     def validate(data: bytes) -> Optional[Exception]:

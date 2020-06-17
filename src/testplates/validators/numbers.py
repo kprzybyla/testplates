@@ -2,8 +2,15 @@ __all__ = ["any_number_validator", "integer_validator", "float_validator"]
 
 from typing import overload, TypeVar, Union, Callable, Optional, Final
 
-from testplates.abc import Boundary
-from testplates.boundaries import get_boundaries
+from testplates.boundaries import (
+    get_minimum,
+    get_maximum,
+    fits_minimum,
+    fits_maximum,
+    check_boundaries,
+    Boundary,
+    UNLIMITED,
+)
 
 from .type import type_validator
 from .utils import Result, Validator
@@ -68,12 +75,20 @@ def any_number_validator(
     exclusive_maximum_value: Optional[_T] = None,
     allow_boolean: bool = False,
 ) -> Result[Validator[_T]]:
-    minimum, maximum = get_boundaries(
-        inclusive_minimum=minimum_value,
-        inclusive_maximum=maximum_value,
-        exclusive_minimum=exclusive_minimum_value,
-        exclusive_maximum=exclusive_maximum_value,
-    )
+    minimum = get_minimum(inclusive=minimum_value, exclusive=exclusive_minimum_value)
+
+    if isinstance(minimum, Exception):
+        return minimum
+
+    maximum = get_maximum(inclusive=maximum_value, exclusive=exclusive_maximum_value)
+
+    if isinstance(maximum, Exception):
+        return maximum
+
+    outcome = check_boundaries(minimum=minimum, maximum=maximum)
+
+    if outcome is not None:
+        return outcome
 
     def validate(data: _T) -> Optional[Exception]:
         if (error := validate_any_number_type(data)) is not None:
@@ -138,12 +153,20 @@ def integer_validator(
     exclusive_maximum_value: Optional[int] = None,
     allow_boolean: bool = False,
 ) -> Result[Validator[int]]:
-    minimum, maximum = get_boundaries(
-        inclusive_minimum=minimum_value,
-        inclusive_maximum=maximum_value,
-        exclusive_minimum=exclusive_minimum_value,
-        exclusive_maximum=exclusive_maximum_value,
-    )
+    minimum = get_minimum(inclusive=minimum_value, exclusive=exclusive_minimum_value)
+
+    if isinstance(minimum, Exception):
+        return minimum
+
+    maximum = get_maximum(inclusive=maximum_value, exclusive=exclusive_maximum_value)
+
+    if isinstance(maximum, Exception):
+        return maximum
+
+    outcome = check_boundaries(minimum=minimum, maximum=maximum,)
+
+    if outcome is not None:
+        return outcome
 
     def validate(data: int) -> Optional[Exception]:
         if (error := validate_integer_type(data)) is not None:
@@ -197,12 +220,20 @@ def float_validator(
     exclusive_minimum_value: Optional[float] = None,
     exclusive_maximum_value: Optional[float] = None,
 ) -> Result[Validator[float]]:
-    minimum, maximum = get_boundaries(
-        inclusive_minimum=minimum_value,
-        inclusive_maximum=maximum_value,
-        exclusive_minimum=exclusive_minimum_value,
-        exclusive_maximum=exclusive_maximum_value,
-    )
+    minimum = get_minimum(inclusive=minimum_value, exclusive=exclusive_minimum_value)
+
+    if isinstance(minimum, Exception):
+        return minimum
+
+    maximum = get_maximum(inclusive=maximum_value, exclusive=exclusive_maximum_value)
+
+    if isinstance(maximum, Exception):
+        return maximum
+
+    outcome = check_boundaries(minimum=minimum, maximum=maximum,)
+
+    if outcome is not None:
+        return outcome
 
     def validate(data: float) -> Optional[Exception]:
         if (error := validate_float_type(data)) is not None:
@@ -228,10 +259,10 @@ def validate_any_number_boolean_type(
 def validate_any_number_boundaries(
     data: _T, minimum: Boundary[_T], maximum: Boundary[_T], /
 ) -> Optional[Exception]:
-    if not minimum.fits(data):
+    if minimum is not UNLIMITED and not fits_minimum(data, minimum):
         return InvalidMinimumValueError(data, minimum)
 
-    if not maximum.fits(data):
+    if maximum is not UNLIMITED and not fits_maximum(data, maximum):
         return InvalidMaximumValueError(data, maximum)
 
     return None
