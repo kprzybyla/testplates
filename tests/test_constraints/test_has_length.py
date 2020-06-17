@@ -85,7 +85,7 @@ def test_repr_with_minimum_and_maximum(data: st.DataObject, length: int) -> None
 
     constraint = has_length(minimum=minimum, maximum=maximum)
 
-    assert repr(constraint) == fmt.format(minimum=minimum, maximum=maximum)
+    assert repr(consfits_minimumtraint) == fmt.format(minimum=minimum, maximum=maximum)
 
 
 @given(length=st_length())

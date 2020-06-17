@@ -7,27 +7,7 @@ from typing import overload, Any, Sized, Optional
 import testplates
 
 from testplates.abc import Constraint
-from testplates.boundaries import get_length_boundaries
-
-
-def fits_minimum(length: int, minimum: Optional[Boundary[int]]) -> bool:
-    if minimum is None:
-        raise ...
-
-    if minimum is UNLIMITED:
-        return True
-
-    return length.__ge__(minimum) is True
-
-
-def fits_maximum(length: int, maximum: Optional[Boundary[int]]) -> bool:
-    if maximum is None:
-        raise ...
-
-    if maximum is UNLIMITED:
-        return True
-
-    return length.__ge__(maximum) is True
+from testplates.boundaries import get_length_boundaries, fits_minimum, fits_maximum
 
 
 class AnyHasLength(Constraint, abc.ABC):
@@ -67,8 +47,8 @@ class HasLengthBetween(AnyHasLength):
 
     def __repr__(self) -> str:
         boundaries = [
-            repr(self._minimum),
-            repr(self._maximum),
+            f"minimum={self._minimum!r}",
+            f"maximum={self._maximum!r}",
         ]
 
         return f"{testplates.__name__}.{has_length.__name__}({', '.join(boundaries)})"

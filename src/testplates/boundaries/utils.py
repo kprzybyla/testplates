@@ -1,6 +1,7 @@
 __all__ = [
-    "get_minimum",
-    "get_maximum",
+    "fits_minimum",
+    "fits_maximum",
+    "get_boundary",
     "get_boundaries",
     "get_length_boundaries",
 ]
@@ -9,7 +10,6 @@ import sys
 
 from typing import TypeVar, Tuple, Union, Optional, Final
 
-from testplates.abc import Boundary, LiteralBoundary
 from testplates.exceptions import (
     MissingBoundaryError,
     InvalidLengthError,
@@ -19,84 +19,71 @@ from testplates.exceptions import (
 )
 
 from .unlimited import LiteralUnlimited, UNLIMITED
-from .boundaries import (
-    Unlimited,
-    InclusiveMinimum,
-    InclusiveMaximum,
-    ExclusiveMinimum,
-    ExclusiveMaximum,
-)
 
 _T = TypeVar("_T", int, float)
 
-BoundaryValue = Union[LiteralUnlimited, _T]
+Result = Union[_T, Exception]
+Boundary = Union[LiteralUnlimited, _T]
 
 LENGTH_MINIMUM: Final[int] = 0
 LENGTH_MAXIMUM: Final[int] = sys.maxsize
 
 
-def get_minimum(
-    *,
-    inclusive: Optional[BoundaryValue[_T]] = None,
-    exclusive: Optional[BoundaryValue[_T]] = None,
-) -> Boundary[_T]:
+class Type(enum.Enum):
+
+    INCLUSIVE = enum.auto()
+    EXCLUSIVE = enum.auto()
+    UNLIMITED = enum.auto()
+
+
+class Boundary(Generic[_T]):
+
+    __slots__ = ()
+
+    def __init__(self, name: str, type: Type, value: Union[LiteralUnlimited, _T]) -> None:
+        self._name = name
+        self._type = type
+        self._value = value
+
+
+def fits_minimum_length(length: int, minimum: Boundary[int]) -> bool:
+    if minimum.type is Type.UNLIMITED:
+        return True
+
+    return length.__ge__(minimum) is True
+
+
+def fits_maximum_length(length: int, maximum: Boundary[int]) -> bool:
+    if maximum.type is Type.UNLIMITED:
+        return True
+
+    return length.__ge__(maximum) is True
+
+
+def check_boundary(
+    *, inclusive: Optional[Boundary[_T]] = None, exclusive: Optional[Boundary[_T]] = None
+) -> Result[Boundary[_T]]:
 
     """
-        Gets minimum boundary.
+        Checks boundary.
 
         :param inclusive: inclusive boundary value or None
         :param exclusive: exclusive boundary value or None
     """
 
-    if inclusive is not None and exclusive is not None:
-        raise MutuallyExclusiveBoundariesError(inclusive, exclusive)
-
-    if (inclusive or exclusive) is UNLIMITED:
-        return Unlimited()
-
-    if inclusive is not None:
-        return InclusiveMinimum(inclusive)
-
-    if exclusive is not None:
-        return ExclusiveMinimum(exclusive)
-
-    raise MissingBoundaryError()
-
-
-def get_maximum(
-    *,
-    inclusive: Optional[BoundaryValue[_T]] = None,
-    exclusive: Optional[BoundaryValue[_T]] = None,
-) -> Boundary[_T]:
-
-    """
-        Gets maximum boundary.
-
-        :param inclusive: inclusive boundary value or None
-        :param exclusive: exclusive boundary value or None
-    """
+    if inclusive is None and exclusive is None:
+        return MissingBoundaryError()
 
     if inclusive is not None and exclusive is not None:
-        raise MutuallyExclusiveBoundariesError(inclusive, exclusive)
-
-    if (inclusive or exclusive) is UNLIMITED:
-        return Unlimited()
-
-    if inclusive is not None:
-        return InclusiveMaximum(inclusive)
-
-    if exclusive is not None:
-        return ExclusiveMaximum(exclusive)
-
-    raise MissingBoundaryError()
+        return MutuallyExclusiveBoundariesError(inclusive, exclusive)
 
 
 def get_boundaries(
     *,
-    inclusive_minimum: Optional[BoundaryValue[_T]] = None,
-    inclusive_maximum: Optional[BoundaryValue[_T]] = None,
-    exclusive_minimum: Optional[BoundaryValue[_T]] = None,
-    exclusive_maximum: Optional[BoundaryValue[_T]] = None,
+    inclusive_minimum: Optional[Boundary[_T]] = None,
+    inclusive_maximum: Optional[Boundary[_T]] = None,
+    exclusive_minimum: Optional[Boundary[_T]] = None,
+    exclusive_maximum: Optional[Boundary[_T]] = None,
 ) -> Tuple[Boundary[_T], Boundary[_T]]:
 
     """
@@ -108,14 +95,14 @@ def get_boundaries(
         :param exclusive_maximum: exclusive maximum boundary value or None
     """
 
-    minimum = get_minimum(inclusive=inclusive_minimum, exclusive=exclusive_minimum)
-    maximum = get_maximum(inclusive=inclusive_maximum, exclusive=exclusive_maximum)
+    check_boundary(inclusive=inclusive_minimum, exclusive=exclusive_minimum)
+    check_boundary(inclusive=inclusive_maximum, exclusive=exclusive_maximum)
 
-    if is_unlimited(minimum) or is_unlimited(maximum):
-        return minimum, maximum
+    is_minimum_inclusive = (inclusive_minimum or exclusive_minimum) is inclusive_minimum
+    is_maximum_inclusive = (inclusive_maximum or exclusive_maximum) is inclusive_maximum
 
-    assert isinstance(minimum, LiteralBoundary)
-    assert isinstance(maximum, LiteralBoundary)
+    if minimum + minimum.alignment > maximum - maximum.alignment:
+        pass
 
     if is_overlapping(minimum, maximum):
         raise OverlappingBoundariesError(minimum, maximum)
@@ -123,12 +110,11 @@ def get_boundaries(
     if is_single_match(minimum, maximum):
         raise SingleMatchBoundariesError(minimum, maximum)
 
-    return minimum, maximum
+    return inclusive_minimum or exclusive_minimum, inclusive_maximum or exclusive_maximum
 
 
 def get_length_boundaries(
-    minimum_length: Optional[BoundaryValue[int]] = None,
-    maximum_length: Optional[BoundaryValue[int]] = None,
+    minimum_length: Optional[Boundary[int]] = None, maximum_length: Optional[Boundary[int]] = None,
 ) -> Tuple[Boundary[int], Boundary[int]]:
 
     """
@@ -138,14 +124,11 @@ def get_length_boundaries(
         :param maximum_length: length maximum value
     """
 
-    minimum = get_minimum(inclusive=minimum_length)
-    maximum = get_maximum(inclusive=maximum_length)
+    minimum = get_boundary(inclusive=minimum_length)
+    maximum = get_boundary(inclusive=maximum_length)
 
-    if is_unlimited(minimum) or is_unlimited(maximum):
+    if minimum is UNLIMITED or maximum is UNLIMITED:
         return minimum, maximum
-
-    assert isinstance(minimum, LiteralBoundary)
-    assert isinstance(maximum, LiteralBoundary)
 
     if is_outside_length_range(minimum):
         raise InvalidLengthError(minimum)
@@ -162,17 +145,13 @@ def get_length_boundaries(
     return minimum, maximum
 
 
-def is_unlimited(boundary: Boundary[_T]) -> bool:
-    return isinstance(boundary, Unlimited)
+def is_outside_length_range(boundary: _T) -> bool:
+    return boundary < LENGTH_MINIMUM or boundary > LENGTH_MAXIMUM
 
 
-def is_outside_length_range(boundary: LiteralBoundary[_T]) -> bool:
-    return boundary.value < LENGTH_MINIMUM or boundary.value > LENGTH_MAXIMUM
+def is_overlapping(minimum: _T, maximum: _T) -> bool:
+    return minimum + minimum.alignment > maximum - maximum.alignment
 
 
-def is_overlapping(minimum: LiteralBoundary[_T], maximum: LiteralBoundary[_T]) -> bool:
-    return minimum.value + minimum.alignment > maximum.value - maximum.alignment
-
-
-def is_single_match(minimum: LiteralBoundary[_T], maximum: LiteralBoundary[_T]) -> bool:
-    return minimum.value + minimum.alignment == maximum.value - maximum.alignment
+def is_single_match(minimum: _T, maximum: _T) -> bool:
+    return minimum + minimum.alignment == maximum - maximum.alignment
