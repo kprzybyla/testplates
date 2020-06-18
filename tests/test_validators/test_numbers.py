@@ -1,9 +1,10 @@
-from typing import TypeVar, Tuple, Union, Callable, Optional
+from typing import TypeVar, Tuple, Union, Callable
 
 import pytest
 
 from hypothesis import assume, given, strategies as st
 
+from testplates.result import Result
 from testplates.boundaries import UNLIMITED
 from testplates.validators import any_number_validator, integer_validator, float_validator
 from testplates.validators.exceptions import (
@@ -17,8 +18,8 @@ from tests.conftest import st_anything_except, st_floats_without_nan
 
 _T = TypeVar("_T")
 
-Validator = Callable[..., Callable[[_T], Optional[Exception]]]
 Strategy = Callable[..., st.SearchStrategy[_T]]
+Validator = Callable[..., Result[Callable[[_T], Result[None]]]]
 
 validators_and_strategies_parameters = pytest.mark.parametrize(
     "validator, strategy",
@@ -64,9 +65,10 @@ def test_validation_success(
     data = st_data.draw(strategy())
 
     validate = validator(minimum_value=UNLIMITED, maximum_value=UNLIMITED)
-    error = validate(data)
+    assert not validate.is_error
 
-    assert error is None
+    result = validate.value(data)
+    assert not result.is_error
 
 
 @given(st_data=st.data())
@@ -78,9 +80,10 @@ def test_validation_success_with_minimum(
     minimum_value = st_data.draw(strategy(max_value=data))
 
     validate = validator(minimum_value=minimum_value, maximum_value=UNLIMITED)
-    error = validate(data)
+    assert not validate.is_error
 
-    assert error is None
+    result = validate.value(data)
+    assert not result.is_error
 
 
 @given(st_data=st.data())
@@ -92,9 +95,10 @@ def test_validation_success_with_maximum(
     maximum_value = st_data.draw(strategy(min_value=data))
 
     validate = validator(minimum_value=UNLIMITED, maximum_value=maximum_value)
-    error = validate(data)
+    assert not validate.is_error
 
-    assert error is None
+    result = validate.value(data)
+    assert not result.is_error
 
 
 @given(st_data=st.data())
@@ -110,9 +114,10 @@ def test_validation_success_with_minimum_and_maximum(
     assume(minimum_value != maximum_value)
 
     validate = validator(minimum_value=minimum_value, maximum_value=maximum_value)
-    error = validate(data)
+    assert not validate.is_error
 
-    assert error is None
+    result = validate.value(data)
+    assert not result.is_error
 
 
 @given(st_data=st.data())
@@ -126,8 +131,12 @@ def test_validation_failure_with_minimum(
     assume(minimum_value != data)
 
     validate = validator(minimum_value=minimum_value, maximum_value=UNLIMITED)
-    error = validate(data)
+    assert not validate.is_error
 
+    result = validate.value(data)
+    assert result.is_error
+
+    error = result.error
     assert isinstance(error, InvalidMinimumValueError)
     assert error.data == data
     assert error.minimum.value == minimum_value
@@ -144,8 +153,12 @@ def test_validation_failure_with_maximum(
     assume(maximum_value != data)
 
     validate = validator(minimum_value=UNLIMITED, maximum_value=maximum_value)
-    error = validate(data)
+    assert not validate.is_error
 
+    result = validate.value(data)
+    assert result.is_error
+
+    error = result.error
     assert isinstance(error, InvalidMaximumValueError)
     assert error.data == data
     assert error.maximum.value == maximum_value
@@ -160,8 +173,12 @@ def test_validation_failure_with_exclusive_minimum(
     minimum_value = st_data.draw(strategy(min_value=data))
 
     validate = validator(exclusive_minimum_value=minimum_value, maximum_value=UNLIMITED)
-    error = validate(data)
+    assert not validate.is_error
 
+    result = validate.value(data)
+    assert result.is_error
+
+    error = result.error
     assert isinstance(error, InvalidMinimumValueError)
     assert error.data == data
     assert error.minimum.value == minimum_value
@@ -176,8 +193,12 @@ def test_validation_failure_with_exclusive_maximum(
     maximum_value = st_data.draw(strategy(max_value=data))
 
     validate = validator(minimum_value=UNLIMITED, exclusive_maximum_value=maximum_value)
-    error = validate(data)
+    assert not validate.is_error
 
+    result = validate.value(data)
+    assert result.is_error
+
+    error = result.error
     assert isinstance(error, InvalidMaximumValueError)
     assert error.data == data
     assert error.maximum.value == maximum_value
@@ -191,8 +212,12 @@ def test_validation_failure_due_to_invalid_type(
     data = st_data.draw(st_anything_except(types))
 
     validate = validator(minimum_value=UNLIMITED, maximum_value=UNLIMITED)
-    error = validate(data)
+    assert not validate.is_error
 
+    result = validate.value(data)
+    assert result.is_error
+
+    error = result.error
     assert isinstance(error, InvalidTypeError)
     assert error.data == data
     assert error.allowed_types == types
@@ -202,16 +227,21 @@ def test_validation_failure_due_to_invalid_type(
 @integer_validators_parameters
 def test_integer_validation_success_with_boolean_data(validator: Validator, data: bool) -> None:
     validate = validator(minimum_value=UNLIMITED, maximum_value=UNLIMITED, allow_boolean=True)
-    error = validate(data)
+    assert not validate.is_error
 
-    assert error is None
+    result = validate.value(data)
+    assert not result.is_error
 
 
 @given(data=st.booleans())
 @integer_validators_parameters
 def test_integer_validation_failure_due_to_boolean_data(validator: Validator, data: bool) -> None:
     validate = validator(minimum_value=UNLIMITED, maximum_value=UNLIMITED)
-    error = validate(data)
+    assert not validate.is_error
 
+    result = validate.value(data)
+    assert result.is_error
+
+    error = result.error
     assert isinstance(error, ProhibitedBooleanValueError)
     assert error.data == data

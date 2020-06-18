@@ -13,9 +13,10 @@ _T = TypeVar("_T")
 @given(data=st_anything_comparable())
 def test_validation_success(data: _T) -> None:
     validate = type_validator(allowed_types=type(data))
-    error = validate(data)
+    assert not validate.is_error
 
-    assert error is None
+    result = validate.value(data)
+    assert not result.is_error
 
 
 @given(st_data=st.data(), data=st_anything_comparable())
@@ -23,8 +24,12 @@ def test_validation_failure(st_data: st.DataObject, data: _T) -> None:
     any_type_except_data = st_data.draw(st_anytype_except_type_of(data))
 
     validate = type_validator(allowed_types=any_type_except_data)
-    error = validate(data)
+    assert not validate.is_error
 
+    result = validate.value(data)
+    assert result.is_error
+
+    error = result.error
     assert isinstance(error, InvalidTypeError)
     assert error.data == data
     assert error.allowed_types == any_type_except_data

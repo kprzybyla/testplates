@@ -13,16 +13,21 @@ _T = TypeVar("_T")
 @given(data=st.booleans())
 def test_validation_success(data: bool) -> None:
     validate = boolean_validator()
-    error = validate(data)
+    assert not validate.is_error
 
-    assert error is None
+    result = validate.value(data)
+    assert not result.is_error
 
 
 @given(data=st_anything_except(bool))
 def test_validation_failure(data: _T) -> None:
     validate = boolean_validator()
-    error = validate(data)  # type: ignore
+    assert not validate.is_error
 
+    result = validate.value(data)  # type: ignore
+    assert result.is_error
+
+    error = result.error
     assert isinstance(error, InvalidTypeError)
     assert error.data == data
     assert error.allowed_types == bool

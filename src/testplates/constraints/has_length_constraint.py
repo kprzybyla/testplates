@@ -7,13 +7,7 @@ from typing import overload, Any, Sized, Optional
 import testplates
 
 from testplates.abc import Constraint
-from testplates.boundaries import (
-    get_minimum,
-    get_maximum,
-    check_length_boundaries,
-    fits_minimum,
-    fits_maximum,
-)
+from testplates.boundaries import get_length_boundaries, fits_minimum, fits_maximum
 
 
 class AnyHasLength(Constraint, abc.ABC):
@@ -48,23 +42,12 @@ class HasLengthBetween(AnyHasLength):
     def __init__(
         self, *, minimum_length: Optional[int] = None, maximum_length: Optional[int] = None
     ) -> None:
-        minimum = get_minimum(inclusive=minimum_length)
+        result = get_length_boundaries(minimum_value=minimum_length, maximum_value=maximum_length)
 
-        if isinstance(minimum, Exception):
-            raise minimum
+        if result.is_error:
+            raise result.error
 
-        maximum = get_maximum(inclusive=maximum_length)
-
-        if isinstance(maximum, Exception):
-            raise maximum
-
-        error = check_length_boundaries(minimum=minimum, maximum=maximum)
-
-        if error is not None:
-            raise error
-
-        self._minimum = minimum
-        self._maximum = maximum
+        self._minimum, self._maximum = result.value
 
     def __repr__(self) -> str:
         boundaries = [

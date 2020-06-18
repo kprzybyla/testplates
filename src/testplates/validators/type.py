@@ -1,16 +1,18 @@
 __all__ = ["type_validator"]
 
-from typing import Any, Tuple, Union, Optional
+from typing import Any, Tuple, Union
 
-from .utils import Result, Validator
+from testplates.result import Result, Success, Failure
+
+from .utils import Validator
 from .exceptions import InvalidTypeError
 
 
 def type_validator(*, allowed_types: Union[type, Tuple[type, ...]]) -> Result[Validator[Any]]:
-    def validate(data: Any) -> Optional[Exception]:
+    def validate(data: Any) -> Result[None]:
         if not isinstance(data, allowed_types):
-            return InvalidTypeError(data, allowed_types)
+            return Failure(InvalidTypeError(data, allowed_types))
 
-        return None
+        return Success(None)
 
-    return validate
+    return Success(validate)

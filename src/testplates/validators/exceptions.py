@@ -1,5 +1,5 @@
 from enum import Enum, EnumMeta
-from typing import Any, TypeVar
+from typing import TypeVar
 
 _T = TypeVar("_T")
 
