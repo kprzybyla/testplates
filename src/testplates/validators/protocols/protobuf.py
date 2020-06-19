@@ -1,5 +1,5 @@
 __all__ = [
-    "bool",
+    "bool_",
     "int32",
     "int64",
     "uint32",
@@ -10,20 +10,23 @@ __all__ = [
     "fixed64",
     "sfixed32",
     "sfixed64",
-    "float",
+    "float_",
     "double",
     "string",
-    "bytes",
+    "bytes_",
     "enum",
     "repeated",
-    "map",
+    "map_",
     "message",
-    "one_of",
+    "oneof",
 ]
 
-from typing import TypeVar, Tuple, Sequence, Mapping, Callable, Optional, Final
+from enum import Enum, EnumMeta
+from typing import TypeVar, Tuple, Sequence, Mapping, Final
 
 from testplates import validators
+from testplates.result import Result, Failure
+from testplates.validators.utils import Validator
 
 _T = TypeVar("_T")
 
@@ -39,196 +42,147 @@ UINT32_MAXIMUM: Final[int] = (2 ** 32) - 1
 UINT64_MINIMUM: Final[int] = 0
 UINT64_MAXIMUM: Final[int] = (2 ** 64) - 1
 
+FLOAT_MINIMUM: Final[float] = 0.0
+FLOAT_MAXIMUM: Final[float] = 0.0
+
+DOUBLE_MINIMUM: Final[float] = 0.0
+DOUBLE_MAXIMUM: Final[float] = 0.0
+
 STRING_MAXIMUM_LENGTH: Final[int] = 2 ** 32
 BYTES_MAXIMUM_LENGTH: Final[int] = 2 ** 32
 
+bool_validator = validators.boolean_validator()
 
-bool_ = validators.boolean_validator
-enum = validators.enum_validator
+int32_validator = validators.integer_validator(
+    minimum_value=INT32_MINIMUM, maximum_value=INT32_MAXIMUM
+)
 
+int64_validator = validators.integer_validator(
+    minimum_value=INT64_MINIMUM, maximum_value=INT64_MAXIMUM
+)
 
-def int32() -> Callable[[int], Optional[Exception]]:
-    validate_int32 = validators.integer_validator(
-        minimum_value=INT32_MINIMUM, maximum_value=INT32_MAXIMUM
-    )
+uint32_validator = validators.integer_validator(
+    minimum_value=UINT32_MINIMUM, maximum_value=UINT32_MAXIMUM
+)
 
-    def validate(data: int) -> Optional[Exception]:
-        return validate_int32(data)
+uint64_validator = validators.integer_validator(
+    minimum_value=UINT64_MINIMUM, maximum_value=UINT64_MAXIMUM
+)
 
-    return validate
+sint32_validator = validators.integer_validator(
+    minimum_value=INT32_MINIMUM, maximum_value=INT32_MAXIMUM
+)
 
+sint64_validator = validators.integer_validator(
+    minimum_value=INT64_MINIMUM, maximum_value=INT64_MAXIMUM
+)
 
-def int64() -> Callable[[int], Optional[Exception]]:
-    validate_int64 = validators.integer_validator(
-        minimum_value=INT64_MINIMUM, maximum_value=INT64_MAXIMUM
-    )
+fixed32_validator = validators.integer_validator(
+    minimum_value=UINT32_MINIMUM, maximum_value=UINT32_MAXIMUM
+)
 
-    def validate(data: int) -> Optional[Exception]:
-        return validate_int64(data)
+fixed64_validator = validators.integer_validator(
+    minimum_value=UINT64_MINIMUM, maximum_value=UINT64_MAXIMUM
+)
 
-    return validate
+sfixed32_validator = validators.integer_validator(
+    minimum_value=INT32_MINIMUM, maximum_value=INT32_MAXIMUM
+)
 
+sfixed64_validator = validators.integer_validator(
+    minimum_value=INT64_MINIMUM, maximum_value=INT64_MAXIMUM
+)
 
-def uint32() -> Callable[[int], Optional[Exception]]:
-    validate_uint32 = validators.integer_validator(
-        minimum_value=UINT32_MINIMUM, maximum_value=UINT32_MAXIMUM
-    )
+float_validator = validators.float_validator(
+    minimum_value=FLOAT_MINIMUM, maximum_value=FLOAT_MAXIMUM
+)
 
-    def validate(data: int) -> Optional[Exception]:
-        return validate_uint32(data)
+double_validator = validators.float_validator(
+    minimum_value=DOUBLE_MINIMUM, maximum_value=DOUBLE_MAXIMUM
+)
 
-    return validate
-
-
-def uint64() -> Callable[[int], Optional[Exception]]:
-    validate_uint64 = validators.integer_validator(
-        minimum_value=UINT64_MINIMUM, maximum_value=UINT64_MAXIMUM
-    )
-
-    def validate(data: int) -> Optional[Exception]:
-        return validate_uint64(data)
-
-    return validate
-
-
-def sint32() -> Callable[[int], Optional[Exception]]:
-    validate_sint32 = validators.integer_validator(
-        minimum_value=INT32_MINIMUM, maximum_value=INT32_MAXIMUM
-    )
-
-    def validate(data: int) -> Optional[Exception]:
-        return validate_sint32(data)
-
-    return validate
+string_validator = validators.string_validator(maximum_length=STRING_MAXIMUM_LENGTH)
+bytes_validator = validators.bytes_validator(maximum_length=BYTES_MAXIMUM_LENGTH)
 
 
-def sint64() -> Callable[[int], Optional[Exception]]:
-    validate_sint64 = validators.integer_validator(
-        minimum_value=INT64_MINIMUM, maximum_value=INT64_MAXIMUM
-    )
-
-    def validate(data: int) -> Optional[Exception]:
-        return validate_sint64(data)
-
-    return validate
+def bool_() -> Result[Validator[bool]]:
+    return bool_validator
 
 
-def fixed32() -> Callable[[int], Optional[Exception]]:
-    validate_fixed32 = validators.integer_validator(
-        minimum_value=UINT32_MINIMUM, maximum_value=UINT32_MAXIMUM
-    )
-
-    def validate(data: int) -> Optional[Exception]:
-        return validate_fixed32(data)
-
-    return validate
+def int32() -> Result[Validator[int]]:
+    return int32_validator
 
 
-def fixed64() -> Callable[[int], Optional[Exception]]:
-    validate_fixed64 = validators.integer_validator(
-        minimum_value=UINT64_MINIMUM, maximum_value=UINT64_MAXIMUM
-    )
-
-    def validate(data: int) -> Optional[Exception]:
-        return validate_fixed64(data)
-
-    return validate
+def int64() -> Result[Validator[int]]:
+    return int64_validator
 
 
-def sfixed32() -> Callable[[int], Optional[Exception]]:
-    validate_sfixed32 = validators.integer_validator(
-        minimum_value=INT32_MINIMUM, maximum_value=INT32_MAXIMUM
-    )
-
-    def validate(data: int) -> Optional[Exception]:
-        return validate_sfixed32(data)
-
-    return validate
+def uint32() -> Result[Validator[int]]:
+    return uint32_validator
 
 
-def sfixed64() -> Callable[[int], Optional[Exception]]:
-    validate_sfixed64 = validators.integer_validator(
-        minimum_value=INT64_MINIMUM, maximum_value=INT64_MAXIMUM
-    )
-
-    def validate(data: int) -> Optional[Exception]:
-        return validate_sfixed64(data)
-
-    return validate
+def uint64() -> Result[Validator[int]]:
+    return uint64_validator
 
 
-def float_() -> Callable[[float], Optional[Exception]]:
-    validate_float = validators.float_validator(
-        minimum_value=..., maximum_value=...  # type: ignore
-    )
-
-    def validate(data: float) -> Optional[Exception]:
-        return validate_float(data)
-
-    return validate
+def sint32() -> Result[Validator[int]]:
+    return sint32_validator
 
 
-def double() -> Callable[[float], Optional[Exception]]:
-    validate_double = validators.float_validator(
-        minimum_value=..., maximum_value=...  # type: ignore
-    )
-
-    def validate(data: float) -> Optional[Exception]:
-        return validate_double(data)
-
-    return validate
+def sint64() -> Result[Validator[int]]:
+    return sint64_validator
 
 
-def string() -> Callable[[str], Optional[Exception]]:
-    validate_string = validators.string_validator(maximum_length=STRING_MAXIMUM_LENGTH)
-
-    def validate(data: str) -> Optional[Exception]:
-        return validate_string(data)
-
-    return validate
+def fixed32() -> Result[Validator[int]]:
+    return fixed32_validator
 
 
-def bytes_() -> Callable[[bytes], Optional[Exception]]:
-    validate_bytes = validators.bytes_validator(maximum_length=BYTES_MAXIMUM_LENGTH)
+def fixed64() -> Result[Validator[int]]:
+    return fixed64_validator
 
-    def validate(data: bytes) -> Optional[Exception]:
-        return validate_bytes(data)
 
-    return validate
+def sfixed32() -> Result[Validator[int]]:
+    return sfixed32_validator
+
+
+def sfixed64() -> Result[Validator[int]]:
+    return sfixed64_validator
+
+
+def float_() -> Result[Validator[float]]:
+    return float_validator
+
+
+def double() -> Result[Validator[float]]:
+    return double_validator
+
+
+def string() -> Result[Validator[str]]:
+    return string_validator
+
+
+def bytes_() -> Result[Validator[bytes]]:
+    return bytes_validator
+
+
+def enum(enum_type: EnumMeta, validator: Validator, /) -> Result[Validator[Enum]]:
+    return validators.enum_validator(enum_type, validator)
 
 
 # TODO(kprzybyla): Implement below types validators
 
 
-def repeated() -> Callable[[Sequence[_T]], Optional[Exception]]:
-    def validate(data: Sequence[_T]) -> Optional[Exception]:
-        raise NotImplementedError(data)
-
-    return validate
+def repeated() -> Result[Validator[Sequence[_T]]]:
+    return Failure(NotImplementedError())
 
 
-def map_() -> Callable[[Mapping[str, _T]], Optional[Exception]]:
-    def validate(data: Mapping[str, _T]) -> Optional[Exception]:
-        raise NotImplementedError(data)
-
-    return validate
+def map_() -> Result[Validator[Mapping[str, _T]]]:
+    return Failure(NotImplementedError())
 
 
-def message() -> Callable[[Mapping[str, _T]], Optional[Exception]]:
-    def validate(data: Mapping[str, _T]) -> Optional[Exception]:
-        raise NotImplementedError(data)
-
-    return validate
+def message() -> Result[Validator[Mapping[str, _T]]]:
+    return Failure(NotImplementedError())
 
 
-def one_of() -> Callable[[Tuple[str, _T]], Optional[Exception]]:
-    def validate(data: Tuple[str, _T]) -> Optional[Exception]:
-        raise NotImplementedError(data)
-
-    return validate
-
-
-bool = bool_
-float = float_
-bytes = bytes_
-map = map_
+def oneof() -> Result[Validator[Tuple[str, _T]]]:
+    return Failure(NotImplementedError())

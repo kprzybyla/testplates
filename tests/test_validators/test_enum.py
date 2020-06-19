@@ -10,6 +10,8 @@ from tests.conftest import sample, Draw
 
 _T = TypeVar("_T")
 
+# TODO(kprzybyla): Think about replacing uint8 with mock?
+
 uint8: Final = integer_validator(minimum_value=0, maximum_value=255).value
 
 
@@ -72,14 +74,13 @@ def test_validation_failure_due_to_data_validation_error(members: Dict[str, _T])
 
 def test_enum_instance_otherness_for_sanity() -> None:
     class Example(Enum):
-
         VALUE = 0
 
     class DifferentExample(Enum):
-
         VALUE = 0
 
     validate = enum_validator(Example)
     assert not validate.is_error
+
     assert validate.value(Example.VALUE).is_error is False
     assert validate.value(DifferentExample.VALUE).is_error is True

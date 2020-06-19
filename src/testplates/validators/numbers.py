@@ -81,14 +81,14 @@ def any_number_validator(
     minimum, maximum = boundaries.value
 
     def validate(data: _T) -> Result[None]:
-        if (error := validate_any_number_type(data)).is_error:
-            return Failure.from_failure(error)
+        if (result := validate_any_number_type(data)).is_error:
+            return Failure.from_failure(result)
 
-        if (error := validate_any_number_boolean_type(data, allow_boolean)).is_error:
-            return Failure.from_failure(error)
+        if (result := validate_any_number_boolean_type(data, allow_boolean)).is_error:
+            return Failure.from_failure(result)
 
-        if (error := validate_any_number_boundaries(data, minimum, maximum)).is_error:
-            return Failure.from_failure(error)
+        if (result := validate_any_number_boundaries(data, minimum, maximum)).is_error:
+            return Failure.from_failure(result)
 
         return Success(None)
 
@@ -156,14 +156,14 @@ def integer_validator(
     minimum, maximum = boundaries.value
 
     def validate(data: int) -> Result[None]:
-        if (error := validate_integer_type(data)).is_error:
-            return Failure.from_failure(error)
+        if (result := validate_integer_type(data)).is_error:
+            return Failure.from_failure(result)
 
-        if (error := validate_any_number_boolean_type(data, allow_boolean)).is_error:
-            return Failure.from_failure(error)
+        if (result := validate_any_number_boolean_type(data, allow_boolean)).is_error:
+            return Failure.from_failure(result)
 
-        if (error := validate_any_number_boundaries(data, minimum, maximum)).is_error:
-            return Failure.from_failure(error)
+        if (result := validate_any_number_boundaries(data, minimum, maximum)).is_error:
+            return Failure.from_failure(result)
 
         return Success(None)
 
@@ -220,11 +220,11 @@ def float_validator(
     minimum, maximum = boundaries.value
 
     def validate(data: float) -> Result[None]:
-        if (error := validate_float_type(data)).is_error:
-            return Failure.from_failure(error)
+        if (result := validate_float_type(data)).is_error:
+            return Failure.from_failure(result)
 
-        if (error := validate_any_number_boundaries(data, minimum, maximum)).is_error:
-            return Failure.from_failure(error)
+        if (result := validate_any_number_boundaries(data, minimum, maximum)).is_error:
+            return Failure.from_failure(result)
 
         return Success(None)
 

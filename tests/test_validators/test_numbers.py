@@ -52,15 +52,11 @@ integer_validators_parameters = pytest.mark.parametrize(
 # TODO(kprzybyla): Think about test where any_number_validator is used and maximum
 #                  value is float and data type is int. Should we allow such things?
 
-# TODO(kprzybyla): Add tests with exclusive boundaries mixed with other boundaries etc?
-
-# TODO(kprzybyla): Verify that everything is tested
-
 
 @given(st_data=st.data())
 @validators_and_strategies_parameters
 def test_validation_success(
-    validator: Validator, strategy: Strategy, st_data: st.DataObject
+    validator: Validator[_T], strategy: Strategy[_T], st_data: st.DataObject
 ) -> None:
     data = st_data.draw(strategy())
 
@@ -74,7 +70,7 @@ def test_validation_success(
 @given(st_data=st.data())
 @validators_and_strategies_parameters
 def test_validation_success_with_minimum(
-    validator: Validator, strategy: Strategy, st_data: st.DataObject
+    validator: Validator[_T], strategy: Strategy[_T], st_data: st.DataObject
 ) -> None:
     data = st_data.draw(strategy())
     minimum_value = st_data.draw(strategy(max_value=data))
@@ -89,7 +85,7 @@ def test_validation_success_with_minimum(
 @given(st_data=st.data())
 @validators_and_strategies_parameters
 def test_validation_success_with_maximum(
-    validator: Validator, strategy: Strategy, st_data: st.DataObject
+    validator: Validator[_T], strategy: Strategy[_T], st_data: st.DataObject
 ) -> None:
     data = st_data.draw(strategy())
     maximum_value = st_data.draw(strategy(min_value=data))
@@ -103,8 +99,42 @@ def test_validation_success_with_maximum(
 
 @given(st_data=st.data())
 @validators_and_strategies_parameters
+def test_validation_success_with_exclusive_minimum(
+    validator: Validator[_T], strategy: Strategy[_T], st_data: st.DataObject
+) -> None:
+    data = st_data.draw(strategy())
+    minimum_value = st_data.draw(strategy(max_value=data))
+
+    assume(minimum_value != data)
+
+    validate = validator(exclusive_minimum_value=minimum_value, maximum_value=UNLIMITED)
+    assert not validate.is_error
+
+    result = validate.value(data)
+    assert not result.is_error
+
+
+@given(st_data=st.data())
+@validators_and_strategies_parameters
+def test_validation_success_with_exclusive_maximum(
+    validator: Validator[_T], strategy: Strategy[_T], st_data: st.DataObject
+) -> None:
+    data = st_data.draw(strategy())
+    maximum_value = st_data.draw(strategy(min_value=data))
+
+    assume(maximum_value != data)
+
+    validate = validator(minimum_value=UNLIMITED, exclusive_maximum_value=maximum_value)
+    assert not validate.is_error
+
+    result = validate.value(data)
+    assert not result.is_error
+
+
+@given(st_data=st.data())
+@validators_and_strategies_parameters
 def test_validation_success_with_minimum_and_maximum(
-    validator: Validator, strategy: Strategy, st_data: st.DataObject
+    validator: Validator[_T], strategy: Strategy[_T], st_data: st.DataObject
 ) -> None:
     data = st_data.draw(strategy())
 
@@ -120,10 +150,22 @@ def test_validation_success_with_minimum_and_maximum(
     assert not result.is_error
 
 
+def test_validation_success_with_minimum_and_exclusive_maximum() -> None:
+    pass
+
+
+def test_validation_success_with_exclusive_minimum_and_maximum() -> None:
+    pass
+
+
+def test_validation_success_with_exclusive_minimum_and_exclusive_maximum() -> None:
+    pass
+
+
 @given(st_data=st.data())
 @validators_and_strategies_parameters
 def test_validation_failure_with_minimum(
-    validator: Validator, strategy: Strategy, st_data: st.DataObject
+    validator: Validator[_T], strategy: Strategy[_T], st_data: st.DataObject
 ) -> None:
     data = st_data.draw(strategy())
     minimum_value = st_data.draw(strategy(min_value=data))
@@ -145,7 +187,7 @@ def test_validation_failure_with_minimum(
 @given(st_data=st.data())
 @validators_and_strategies_parameters
 def test_validation_failure_with_maximum(
-    validator: Validator, strategy: Strategy, st_data: st.DataObject
+    validator: Validator[_T], strategy: Strategy[_T], st_data: st.DataObject
 ) -> None:
     data = st_data.draw(strategy())
     maximum_value = st_data.draw(strategy(max_value=data))
@@ -167,7 +209,7 @@ def test_validation_failure_with_maximum(
 @given(st_data=st.data())
 @validators_and_strategies_parameters
 def test_validation_failure_with_exclusive_minimum(
-    validator: Validator, strategy: Strategy, st_data: st.DataObject
+    validator: Validator[_T], strategy: Strategy[_T], st_data: st.DataObject
 ) -> None:
     data = st_data.draw(strategy())
     minimum_value = st_data.draw(strategy(min_value=data))
@@ -187,7 +229,7 @@ def test_validation_failure_with_exclusive_minimum(
 @given(st_data=st.data())
 @validators_and_strategies_parameters
 def test_validation_failure_with_exclusive_maximum(
-    validator: Validator, strategy: Strategy, st_data: st.DataObject
+    validator: Validator[_T], strategy: Strategy[_T], st_data: st.DataObject
 ) -> None:
     data = st_data.draw(strategy())
     maximum_value = st_data.draw(strategy(max_value=data))
@@ -204,10 +246,42 @@ def test_validation_failure_with_exclusive_maximum(
     assert error.maximum.value == maximum_value
 
 
+def test_validation_failure_with_upper_minimum_and_maximum() -> None:
+    pass
+
+
+def test_validation_failure_with_lower_minimum_and_maximum() -> None:
+    pass
+
+
+def test_validation_failure_with_upper_minimum_and_exclusive_maximum() -> None:
+    pass
+
+
+def test_validation_failure_with_lower_minimum_and_exclusive_maximum() -> None:
+    pass
+
+
+def test_validation_failure_with_upper_exclusive_minimum_and_maximum() -> None:
+    pass
+
+
+def test_validation_failure_with_lower_exclusive_minimum_and_maximum() -> None:
+    pass
+
+
+def test_validation_failure_with_upper_exclusive_minimum_and_exclusive_maximum() -> None:
+    pass
+
+
+def test_validation_failure_with_lower_exclusive_minimum_and_exclusive_maximum() -> None:
+    pass
+
+
 @given(st_data=st.data())
 @validators_and_types_parameters
 def test_validation_failure_due_to_invalid_type(
-    validator: Validator, types: Union[type, Tuple[type, ...]], st_data: st.DataObject
+    validator: Validator[_T], types: Union[type, Tuple[type, ...]], st_data: st.DataObject
 ) -> None:
     data = st_data.draw(st_anything_except(types))
 
@@ -225,7 +299,9 @@ def test_validation_failure_due_to_invalid_type(
 
 @given(data=st.booleans())
 @integer_validators_parameters
-def test_integer_validation_success_with_boolean_data(validator: Validator, data: bool) -> None:
+def test_integer_validation_success_with_boolean_data(
+    validator: Validator[bool], data: bool
+) -> None:
     validate = validator(minimum_value=UNLIMITED, maximum_value=UNLIMITED, allow_boolean=True)
     assert not validate.is_error
 
@@ -235,7 +311,9 @@ def test_integer_validation_success_with_boolean_data(validator: Validator, data
 
 @given(data=st.booleans())
 @integer_validators_parameters
-def test_integer_validation_failure_due_to_boolean_data(validator: Validator, data: bool) -> None:
+def test_integer_validation_failure_due_to_boolean_data(
+    validator: Validator[bool], data: bool
+) -> None:
     validate = validator(minimum_value=UNLIMITED, maximum_value=UNLIMITED)
     assert not validate.is_error
 
@@ -245,3 +323,59 @@ def test_integer_validation_failure_due_to_boolean_data(validator: Validator, da
     error = result.error
     assert isinstance(error, ProhibitedBooleanValueError)
     assert error.data == data
+
+
+def test_validation_failure_when_value_does_not_implement_boundaries_with_inclusive_boundaries() -> None:
+    pass
+
+
+def test_validation_failure_when_value_does_not_implement_boundaries_with_exclusive_boundaries() -> None:
+    pass
+
+
+def test_validation_failure_on_missing_boundaries() -> None:
+    pass
+
+
+def test_validation_failure_on_missing_minimum_boundary() -> None:
+    pass
+
+
+def test_validation_failure_on_missing_maximum_boundary() -> None:
+    pass
+
+
+def test_validation_failure_on_mutually_exclusive_boundaries() -> None:
+    pass
+
+
+def test_validation_failure_on_inclusive_minimum_and_inclusive_maximum_overlapping() -> None:
+    pass
+
+
+def test_validation_failure_on_inclusive_minimum_and_exclusive_maximum_overlapping() -> None:
+    pass
+
+
+def test_validation_failure_on_exclusive_minimum_and_inclusive_maximum_overlapping() -> None:
+    pass
+
+
+def test_validation_failure_on_exclusive_minimum_and_exclusive_maximum_overlapping() -> None:
+    pass
+
+
+def test_validation_failure_on_single_match_with_inclusive_minimum_and_inclusive_maximum() -> None:
+    pass
+
+
+def test_validation_failure_on_single_match_with_inclusive_minimum_and_exclusive_maximum() -> None:
+    pass
+
+
+def test_validation_failure_on_single_match_with_exclusive_minimum_and_inclusive_maximum() -> None:
+    pass
+
+
+def test_validation_failure_on_single_match_with_exclusive_minimum_and_exclusive_maximum() -> None:
+    pass

@@ -6,7 +6,7 @@ from testplates.result import Result, Success
 
 _T = TypeVar("_T")
 
-Validator = Callable[[_T], Result[Exception]]
+Validator = Callable[[_T], Result[None]]
 
 
 # noinspection PyUnusedLocal
