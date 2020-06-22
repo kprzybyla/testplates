@@ -246,38 +246,6 @@ def test_validation_failure_with_exclusive_maximum(
     assert error.maximum.value == maximum_value
 
 
-def test_validation_failure_with_upper_minimum_and_maximum() -> None:
-    pass
-
-
-def test_validation_failure_with_lower_minimum_and_maximum() -> None:
-    pass
-
-
-def test_validation_failure_with_upper_minimum_and_exclusive_maximum() -> None:
-    pass
-
-
-def test_validation_failure_with_lower_minimum_and_exclusive_maximum() -> None:
-    pass
-
-
-def test_validation_failure_with_upper_exclusive_minimum_and_maximum() -> None:
-    pass
-
-
-def test_validation_failure_with_lower_exclusive_minimum_and_maximum() -> None:
-    pass
-
-
-def test_validation_failure_with_upper_exclusive_minimum_and_exclusive_maximum() -> None:
-    pass
-
-
-def test_validation_failure_with_lower_exclusive_minimum_and_exclusive_maximum() -> None:
-    pass
-
-
 @given(st_data=st.data())
 @validators_and_types_parameters
 def test_validation_failure_due_to_invalid_type(
@@ -323,59 +291,3 @@ def test_integer_validation_failure_due_to_boolean_data(
     error = result.error
     assert isinstance(error, ProhibitedBooleanValueError)
     assert error.data == data
-
-
-def test_validation_failure_when_value_does_not_implement_boundaries_with_inclusive_boundaries() -> None:
-    pass
-
-
-def test_validation_failure_when_value_does_not_implement_boundaries_with_exclusive_boundaries() -> None:
-    pass
-
-
-def test_validation_failure_on_missing_boundaries() -> None:
-    pass
-
-
-def test_validation_failure_on_missing_minimum_boundary() -> None:
-    pass
-
-
-def test_validation_failure_on_missing_maximum_boundary() -> None:
-    pass
-
-
-def test_validation_failure_on_mutually_exclusive_boundaries() -> None:
-    pass
-
-
-def test_validation_failure_on_inclusive_minimum_and_inclusive_maximum_overlapping() -> None:
-    pass
-
-
-def test_validation_failure_on_inclusive_minimum_and_exclusive_maximum_overlapping() -> None:
-    pass
-
-
-def test_validation_failure_on_exclusive_minimum_and_inclusive_maximum_overlapping() -> None:
-    pass
-
-
-def test_validation_failure_on_exclusive_minimum_and_exclusive_maximum_overlapping() -> None:
-    pass
-
-
-def test_validation_failure_on_single_match_with_inclusive_minimum_and_inclusive_maximum() -> None:
-    pass
-
-
-def test_validation_failure_on_single_match_with_inclusive_minimum_and_exclusive_maximum() -> None:
-    pass
-
-
-def test_validation_failure_on_single_match_with_exclusive_minimum_and_inclusive_maximum() -> None:
-    pass
-
-
-def test_validation_failure_on_single_match_with_exclusive_minimum_and_exclusive_maximum() -> None:
-    pass
