@@ -5,7 +5,7 @@ from typing import overload, Any, TypeVar, Generic, Optional
 import testplates
 
 from testplates.abc import Constraint
-from testplates.boundaries import fits_minimum, fits_maximum, get_boundaries
+from testplates.boundaries import get_value_boundaries, fits_minimum, fits_maximum
 
 _T = TypeVar("_T", int, float)
 
@@ -22,11 +22,11 @@ class RangesBetween(Generic[_T], Constraint):
         exclusive_minimum: Optional[_T] = None,
         exclusive_maximum: Optional[_T] = None,
     ) -> None:
-        result = get_boundaries(
-            minimum_value=inclusive_minimum,
-            maximum_value=inclusive_maximum,
-            exclusive_minimum_value=exclusive_minimum,
-            exclusive_maximum_value=exclusive_maximum,
+        result = get_value_boundaries(
+            inclusive_minimum=inclusive_minimum,
+            inclusive_maximum=inclusive_maximum,
+            exclusive_minimum=exclusive_minimum,
+            exclusive_maximum=exclusive_maximum,
         )
 
         if result.is_error:
@@ -89,17 +89,9 @@ def ranges_between(
         :param exclusive_maximum: exclusive maximum boundary value
     """
 
-    if (
-        minimum is not None
-        or maximum is not None
-        or exclusive_minimum is not None
-        or exclusive_maximum is not None
-    ):
-        return RangesBetween(
-            inclusive_minimum=minimum,
-            inclusive_maximum=maximum,
-            exclusive_minimum=exclusive_minimum,
-            exclusive_maximum=exclusive_maximum,
-        )
-
-    raise TypeError("ranges_between() missing 2 required keyword-only arguments")
+    return RangesBetween(
+        inclusive_minimum=minimum,
+        inclusive_maximum=maximum,
+        exclusive_minimum=exclusive_minimum,
+        exclusive_maximum=exclusive_maximum,
+    )

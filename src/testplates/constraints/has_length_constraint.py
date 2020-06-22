@@ -42,7 +42,9 @@ class HasLengthBetween(AnyHasLength):
     def __init__(
         self, *, minimum_length: Optional[int] = None, maximum_length: Optional[int] = None
     ) -> None:
-        result = get_length_boundaries(minimum_value=minimum_length, maximum_value=maximum_length)
+        result = get_length_boundaries(
+            inclusive_minimum=minimum_length, inclusive_maximum=maximum_length
+        )
 
         if result.is_error:
             raise result.error

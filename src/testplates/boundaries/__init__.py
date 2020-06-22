@@ -1,14 +1,20 @@
 __all__ = [
+    "get_value_boundaries",
+    "get_length_boundaries",
     "fits_minimum",
     "fits_maximum",
-    "get_boundaries",
-    "get_length_boundaries",
-    "Boundary",
     "Limit",
+    "Boundary",
     "LiteralUnlimited",
     "UNLIMITED",
 ]
 
 from .limit import Limit
 from .unlimited import LiteralUnlimited, UNLIMITED
-from .utils import fits_minimum, fits_maximum, get_boundaries, get_length_boundaries, Boundary
+from .utils import (
+    get_value_boundaries,
+    get_length_boundaries,
+    fits_minimum,
+    fits_maximum,
+    Boundary,
+)

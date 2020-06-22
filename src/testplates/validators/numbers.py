@@ -3,7 +3,13 @@ __all__ = ["any_number_validator", "integer_validator", "float_validator"]
 from typing import overload, TypeVar, Union, Callable, Optional, Final
 
 from testplates.result import Result, Success, Failure
-from testplates.boundaries import get_boundaries, fits_minimum, fits_maximum, Boundary, UNLIMITED
+from testplates.boundaries import (
+    get_value_boundaries,
+    fits_minimum,
+    fits_maximum,
+    Boundary,
+    UNLIMITED,
+)
 
 from .type import type_validator
 from .utils import Validator
@@ -68,11 +74,11 @@ def any_number_validator(
     exclusive_maximum_value: Optional[_T] = None,
     allow_boolean: bool = False,
 ) -> Result[Validator[_T]]:
-    boundaries = get_boundaries(
-        minimum_value=minimum_value,
-        maximum_value=maximum_value,
-        exclusive_minimum_value=exclusive_minimum_value,
-        exclusive_maximum_value=exclusive_maximum_value,
+    boundaries = get_value_boundaries(
+        inclusive_minimum=minimum_value,
+        inclusive_maximum=maximum_value,
+        exclusive_minimum=exclusive_minimum_value,
+        exclusive_maximum=exclusive_maximum_value,
     )
 
     if boundaries.is_error:
@@ -143,11 +149,11 @@ def integer_validator(
     exclusive_maximum_value: Optional[int] = None,
     allow_boolean: bool = False,
 ) -> Result[Validator[int]]:
-    boundaries = get_boundaries(
-        minimum_value=minimum_value,
-        maximum_value=maximum_value,
-        exclusive_minimum_value=exclusive_minimum_value,
-        exclusive_maximum_value=exclusive_maximum_value,
+    boundaries = get_value_boundaries(
+        inclusive_minimum=minimum_value,
+        inclusive_maximum=maximum_value,
+        exclusive_minimum=exclusive_minimum_value,
+        exclusive_maximum=exclusive_maximum_value,
     )
 
     if boundaries.is_error:
@@ -207,11 +213,11 @@ def float_validator(
     exclusive_minimum_value: Optional[float] = None,
     exclusive_maximum_value: Optional[float] = None,
 ) -> Result[Validator[float]]:
-    boundaries = get_boundaries(
-        minimum_value=minimum_value,
-        maximum_value=maximum_value,
-        exclusive_minimum_value=exclusive_minimum_value,
-        exclusive_maximum_value=exclusive_maximum_value,
+    boundaries = get_value_boundaries(
+        inclusive_minimum=minimum_value,
+        inclusive_maximum=maximum_value,
+        exclusive_minimum=exclusive_minimum_value,
+        exclusive_maximum=exclusive_maximum_value,
     )
 
     if boundaries.is_error:
