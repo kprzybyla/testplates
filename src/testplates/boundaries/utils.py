@@ -1,4 +1,12 @@
-__all__ = ["fits_minimum", "fits_maximum", "get_boundaries", "get_length_boundaries", "Boundary"]
+__all__ = [
+    "fits_minimum",
+    "fits_maximum",
+    "get_minimum",
+    "get_maximum",
+    "get_boundaries",
+    "get_length_boundaries",
+    "Boundary",
+]
 
 import sys
 
@@ -13,16 +21,13 @@ from testplates.exceptions import (
     SingleMatchBoundariesError,
 )
 
-from .limit import Limit
+from .limit import Extremum, Limit, MINIMUM_EXTREMUM, MAXIMUM_EXTREMUM
 from .unlimited import LiteralUnlimited, UNLIMITED
 
 _T = TypeVar("_T", int, float)
 
 Edge = Union[LiteralUnlimited, _T]
 Boundary = Union[LiteralUnlimited, Limit[_T]]
-
-MINIMUM_NAME: Final[str] = "minimum"
-MAXIMUM_NAME: Final[str] = "maximum"
 
 LENGTH_MINIMUM: Final[int] = 0
 LENGTH_MAXIMUM: Final[int] = sys.maxsize
@@ -39,7 +44,7 @@ def get_minimum(
         :param exclusive: exclusive boundary value or None
     """
 
-    return get_boundary(MINIMUM_NAME, inclusive=inclusive, exclusive=exclusive)
+    return get_boundary(MINIMUM_EXTREMUM, inclusive=inclusive, exclusive=exclusive)
 
 
 def get_maximum(
@@ -53,7 +58,7 @@ def get_maximum(
         :param exclusive: exclusive boundary value or None
     """
 
-    return get_boundary(MAXIMUM_NAME, inclusive=inclusive, exclusive=exclusive)
+    return get_boundary(MAXIMUM_EXTREMUM, inclusive=inclusive, exclusive=exclusive)
 
 
 def fits_minimum(value: _T, minimum: Boundary[_T]) -> bool:
@@ -93,13 +98,13 @@ def fits_maximum(value: _T, maximum: Boundary[_T]) -> bool:
 
 
 def get_boundary(
-    name: str, *, inclusive: Optional[Edge[_T]] = None, exclusive: Optional[Edge[_T]] = None
+    name: Extremum, *, inclusive: Optional[Edge[_T]] = None, exclusive: Optional[Edge[_T]] = None
 ) -> Result[Boundary[_T]]:
 
     """
         Gets boundary.
 
-        :param name: boundary name
+        :param name: extremum name
         :param inclusive: inclusive boundary value or None
         :param exclusive: exclusive boundary value or None
     """

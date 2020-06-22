@@ -1,8 +1,13 @@
-__all__ = ["Limit"]
+__all__ = ["Extremum", "Limit", "MINIMUM_EXTREMUM", "MAXIMUM_EXTREMUM"]
 
 from typing import TypeVar, Generic, Literal, Final
 
 _T = TypeVar("_T", int, float)
+
+Extremum = Literal["minimum", "maximum"]
+
+MINIMUM_EXTREMUM: Final[Literal["minimum"]] = "minimum"
+MAXIMUM_EXTREMUM: Final[Literal["maximum"]] = "maximum"
 
 INCLUSIVE_ALIGNMENT: Final[Literal[0]] = 0
 EXCLUSIVE_ALIGNMENT: Final[Literal[1]] = 1
@@ -12,7 +17,7 @@ class Limit(Generic[_T]):
 
     __slots__ = ("_name", "_value", "_is_inclusive")
 
-    def __init__(self, name: str, value: _T, *, is_inclusive: bool) -> None:
+    def __init__(self, name: Extremum, value: _T, *, is_inclusive: bool) -> None:
         self._name = name
         self._value = value
         self._is_inclusive = is_inclusive
