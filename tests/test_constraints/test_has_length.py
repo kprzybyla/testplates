@@ -3,18 +3,10 @@ import sys
 from dataclasses import dataclass
 from typing import Sized, Final
 
-import pytest
-
 from hypothesis import assume, given
 from hypothesis import strategies as st
 
-from testplates import (
-    has_length,
-    MissingBoundaryError,
-    InvalidLengthError,
-    OverlappingBoundariesError,
-    SingleMatchBoundariesError,
-)
+from testplates import has_length
 
 from tests.conftest import Draw
 
@@ -161,70 +153,3 @@ def test_returns_false_when_value_is_not_sized_with_minimum_and_maximum(
     constraint = has_length(minimum=minimum, maximum=maximum)
 
     assert constraint != NotSized()
-
-
-# noinspection PyArgumentList
-def test_raises_error_on_no_parameters() -> None:
-    with pytest.raises(TypeError):
-        has_length()  # type: ignore
-
-
-# noinspection PyArgumentList
-@given(data=st.data(), length=st_length())
-def test_raises_error_on_missing_minimum_boundary(data: st.DataObject, length: int) -> None:
-    maximum = data.draw(st_maximum(length))
-
-    with pytest.raises(MissingBoundaryError):
-        has_length(maximum=maximum)  # type: ignore
-
-
-# noinspection PyArgumentList
-@given(data=st.data(), length=st_length())
-def test_raises_error_on_missing_maximum_boundary(data: st.DataObject, length: int) -> None:
-    minimum = data.draw(st_minimum(length))
-
-    with pytest.raises(MissingBoundaryError):
-        has_length(minimum=minimum)  # type: ignore
-
-
-@given(data=st.data(), length=st_length())
-def test_raises_error_on_boundaries_below_zero(data: st.DataObject, length: int) -> None:
-    below_minimum = data.draw(st_length_below_minimum())
-
-    assume(below_minimum != MINIMUM_LENGTH)
-
-    with pytest.raises(InvalidLengthError):
-        has_length(minimum=below_minimum, maximum=length)
-
-    with pytest.raises(InvalidLengthError):
-        has_length(minimum=length, maximum=below_minimum)
-
-
-@given(data=st.data(), length=st_length())
-def test_raises_error_on_boundaries_above_max_size(data: st.DataObject, length: int) -> None:
-    above_maximum = data.draw(st_length_above_maximum())
-
-    assume(above_maximum != MAXIMUM_LENGTH)
-
-    with pytest.raises(InvalidLengthError):
-        has_length(minimum=above_maximum, maximum=length)
-
-    with pytest.raises(InvalidLengthError):
-        has_length(minimum=length, maximum=above_maximum)
-
-
-@given(data=st.data())
-def test_raises_error_on_boundaries_overlapping(data: st.DataObject) -> None:
-    minimum = data.draw(st_length())
-    maximum = data.draw(st_length(max_value=minimum))
-
-    assume(minimum != maximum)
-
-    with pytest.raises(OverlappingBoundariesError):
-        has_length(minimum=minimum, maximum=maximum)
-
-
-@given(length=st_length())
-def test_raises_error_on_single_match_boundaries(length: int) -> None:
-    with pytest.raises(SingleMatchBoundariesError):
-        has_length(minimum=length, maximum=length)
