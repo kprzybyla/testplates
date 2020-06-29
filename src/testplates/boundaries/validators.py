@@ -5,6 +5,7 @@ __all__ = [
     "fits_maximum",
     "fits_minimum_length",
     "fits_maximum_length",
+    "Boundary",
 ]
 
 import sys
@@ -123,7 +124,7 @@ def get_value_boundaries(
     if maximum.is_error:
         return Failure.from_failure(maximum)
 
-    result = check_value_boundaries(minimum=minimum.value, maximum=maximum.value)
+    result = validate_value_boundaries(minimum=minimum.value, maximum=maximum.value)
 
     if result.is_error:
         return Failure.from_failure(result)
@@ -131,7 +132,7 @@ def get_value_boundaries(
     return Success((minimum.value, maximum.value))
 
 
-def check_value_boundaries(*, minimum: Boundary[_T], maximum: Boundary[_T]) -> Result[None]:
+def validate_value_boundaries(*, minimum: Boundary[_T], maximum: Boundary[_T]) -> Result[None]:
 
     """
         Checks minimum and maximum value boundaries.
@@ -176,7 +177,7 @@ def get_length_boundaries(
     if maximum.is_error:
         return Failure.from_failure(maximum)
 
-    result = check_length_boundaries(minimum=minimum.value, maximum=maximum.value)
+    result = validate_length_boundaries(minimum=minimum.value, maximum=maximum.value)
 
     if result.is_error:
         return Failure.from_failure(result)
@@ -184,7 +185,7 @@ def get_length_boundaries(
     return Success((minimum.value, maximum.value))
 
 
-def check_length_boundaries(minimum: Boundary[int], maximum: Boundary[int]) -> Result[None]:
+def validate_length_boundaries(minimum: Boundary[int], maximum: Boundary[int]) -> Result[None]:
 
     """
         Checks minimum and maximum length boundaries.

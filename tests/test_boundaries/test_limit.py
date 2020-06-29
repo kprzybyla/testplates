@@ -1,22 +1,27 @@
 from typing import TypeVar, Final
 
-from hypothesis import given, strategies as st
+from hypothesis import given
+from hypothesis import strategies as st
 
-from testplates.boundaries import Limit
+from testplates.boundaries import Limit, Extremum
 
-from tests.conftest import st_anything_comparable
+from tests.conftest import st_anything_comparable, Draw
 
 _T = TypeVar("_T", int, float)
 
-INCLUSIVE_NAME: Final[str] = "inclusive"
 EXCLUSIVE_NAME: Final[str] = "exclusive"
 
 INCLUSIVE_ALIGNMENT: Final[int] = 0
 EXCLUSIVE_ALIGNMENT: Final[int] = 1
 
 
-@given(name=st.text(), value=st_anything_comparable())
-def test_inclusive_repr(name: str, value: _T) -> None:
+@st.composite
+def st_extremum(draw: Draw[Extremum]) -> Extremum:
+    return draw(st.one_of(st.just("minimum"), st.just("maximum")))
+
+
+@given(name=st_extremum(), value=st_anything_comparable())
+def test_inclusive_repr(name: Extremum, value: _T) -> None:
     fmt = "{name}={value}"
 
     inclusive = Limit(name, value, is_inclusive=True)
@@ -24,8 +29,8 @@ def test_inclusive_repr(name: str, value: _T) -> None:
     assert repr(inclusive) == fmt.format(name=name, value=value)
 
 
-@given(name=st.text(), value=st_anything_comparable())
-def test_inclusive_properties(name: str, value: _T) -> None:
+@given(name=st_extremum(), value=st_anything_comparable())
+def test_inclusive_properties(name: Extremum, value: _T) -> None:
     inclusive = Limit(name, value, is_inclusive=True)
 
     assert inclusive.name == name
@@ -34,8 +39,8 @@ def test_inclusive_properties(name: str, value: _T) -> None:
     assert inclusive.is_inclusive
 
 
-@given(name=st.text(), value=st_anything_comparable())
-def test_exclusive_repr(name: str, value: _T) -> None:
+@given(name=st_extremum(), value=st_anything_comparable())
+def test_exclusive_repr(name: Extremum, value: _T) -> None:
     fmt = "{type}_{name}={value}"
 
     inclusive = Limit(name, value, is_inclusive=False)
@@ -43,8 +48,8 @@ def test_exclusive_repr(name: str, value: _T) -> None:
     assert repr(inclusive) == fmt.format(name=name, value=value, type=EXCLUSIVE_NAME)
 
 
-@given(name=st.text(), value=st_anything_comparable())
-def test_exclusive_properties(name: str, value: _T) -> None:
+@given(name=st_extremum(), value=st_anything_comparable())
+def test_exclusive_properties(name: Extremum, value: _T) -> None:
     exclusive = Limit(name, value, is_inclusive=False)
 
     assert exclusive.name == name
