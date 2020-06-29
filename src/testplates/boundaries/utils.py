@@ -3,12 +3,13 @@ __all__ = [
     "get_length_boundaries",
     "fits_minimum",
     "fits_maximum",
-    "Boundary",
+    "fits_minimum_length",
+    "fits_maximum_length",
 ]
 
 import sys
 
-from typing import TypeVar, Tuple, Union, Optional, Final
+from typing import TypeVar, Sized, Tuple, Union, Optional, Final
 
 from testplates.result import Result, Success, Failure
 from testplates.exceptions import (
@@ -19,7 +20,7 @@ from testplates.exceptions import (
     SingleMatchBoundariesError,
 )
 
-from .limit import Extremum, Limit, MINIMUM_EXTREMUM, MAXIMUM_EXTREMUM
+from .limit import Limit, Extremum, MINIMUM_EXTREMUM, MAXIMUM_EXTREMUM
 from .unlimited import LiteralUnlimited, UNLIMITED
 
 _T = TypeVar("_T", int, float)
@@ -29,6 +30,8 @@ Boundary = Union[LiteralUnlimited, Limit[_T]]
 
 LENGTH_MINIMUM: Final[int] = 0
 LENGTH_MAXIMUM: Final[int] = sys.maxsize
+
+LENGTH_SPECIAL_METHOD_NAME: Final[str] = "__len__"
 
 
 def get_minimum(
@@ -277,3 +280,37 @@ def fits_maximum(value: _T, maximum: Boundary[_T]) -> bool:
         return value.__le__(maximum.value) is True
     else:
         return value.__lt__(maximum.value) is True
+
+
+def fits_minimum_length(value: Sized, minimum: Boundary[int]) -> bool:
+
+    """
+        Checks whether value size fits the minimum boundary.
+
+        :param value: value to be checked against boundary
+        :param minimum: minimum boundary
+    """
+
+    __len__ = getattr(value, LENGTH_SPECIAL_METHOD_NAME)
+
+    if __len__ is None:
+        return False
+
+    return fits_minimum(__len__(), minimum)
+
+
+def fits_maximum_length(value: Sized, maximum: Boundary[int]) -> bool:
+
+    """
+        Checks whether value size fits the maximum boundary.
+
+        :param value: value to be checked against boundary
+        :param maximum: maximum boundary
+    """
+
+    __len__ = getattr(value, LENGTH_SPECIAL_METHOD_NAME)
+
+    if __len__ is None:
+        return False
+
+    return fits_maximum(__len__(), maximum)

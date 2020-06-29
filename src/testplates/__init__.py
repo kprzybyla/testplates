@@ -8,6 +8,7 @@ __all__ = [
     "WILDCARD",
     "ABSENT",
     "MISSING",
+    "UNLIMITED",
     "contains",
     "has_length",
     "ranges_between",
@@ -40,6 +41,8 @@ from testplates.base import (
     ABSENT,
     MISSING,
 )
+
+from testplates.boundaries import UNLIMITED
 
 from testplates.constraints import (
     contains,

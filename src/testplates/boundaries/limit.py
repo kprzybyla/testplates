@@ -1,4 +1,4 @@
-__all__ = ["Extremum", "Limit", "MINIMUM_EXTREMUM", "MAXIMUM_EXTREMUM"]
+__all__ = ["Limit", "Extremum", "MINIMUM_EXTREMUM", "MAXIMUM_EXTREMUM"]
 
 from typing import TypeVar, Generic, Literal, Final
 
