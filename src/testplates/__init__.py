@@ -11,6 +11,7 @@ __all__ = [
     "UNLIMITED",
     "contains",
     "has_length",
+    "has_length_between",
     "ranges_between",
     "matches_pattern",
     "is_one_of",
@@ -47,6 +48,7 @@ from testplates.boundaries import UNLIMITED
 from testplates.constraints import (
     contains,
     has_length,
+    has_length_between,
     ranges_between,
     matches_pattern,
     is_one_of,
