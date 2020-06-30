@@ -5,6 +5,7 @@ __all__ = [
     "fits_maximum",
     "fits_minimum_length",
     "fits_maximum_length",
+    "Edge",
     "Boundary",
 ]
 

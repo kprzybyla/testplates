@@ -44,6 +44,18 @@ def st_anything_except(*types: type) -> st.SearchStrategy[_Ex]:
     return st.from_type(type).flatmap(st.from_type).filter(filter_anything_except)
 
 
+def st_anything_except_classinfo() -> st.SearchStrategy[_Ex]:
+    def filter_classinfo(value: _T) -> bool:
+        try:
+            isinstance(object, value)
+        except TypeError:
+            return value == value
+        else:
+            return False
+
+    return st.from_type(type).flatmap(st.from_type).filter(filter_classinfo)
+
+
 def st_anytype_except_type_of(value: _T) -> st.SearchStrategy[_Ex]:
     def filter_anytype_except(type_: type) -> bool:
         return not issubclass(type(value), type_)

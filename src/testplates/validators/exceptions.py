@@ -8,6 +8,11 @@ class ValidationError(Exception):
     pass
 
 
+class InvalidTypeValueError(ValidationError):
+    def __init__(self, given_type) -> None:
+        self.given_type = given_type
+
+
 class InvalidTypeError(ValidationError):
     def __init__(self, data, allowed_types) -> None:
         self.data = data

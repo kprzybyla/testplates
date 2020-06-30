@@ -3,33 +3,63 @@ from typing import TypeVar
 from hypothesis import given, strategies as st
 
 from testplates.validators import type_validator
-from testplates.validators.exceptions import InvalidTypeError
+from testplates.validators.exceptions import InvalidTypeValueError, InvalidTypeError
 
-from tests.conftest import st_anything_comparable, st_anytype_except_type_of
+from tests.conftest import (
+    st_anything_comparable,
+    st_anything_except_classinfo,
+    st_anytype_except_type_of,
+)
 
 _T = TypeVar("_T")
 
 
 @given(data=st_anything_comparable())
-def test_validation_success(data: _T) -> None:
-    validate = type_validator(allowed_types=type(data))
-    assert not validate.is_error
+def test_repr(data: _T) -> None:
+    fmt = "testplates.type_validator({type})"
 
-    result = validate.value(data)
+    validator = type_validator(type(data))
+
+    assert repr(validator.value) == fmt.format(type=type(data))
+
+
+@given(data=st_anything_comparable())
+def test_success(data: _T) -> None:
+    validator = type_validator(type(data))
+
+    assert not validator.is_error
+
+    result = validator.value(data)
+
     assert not result.is_error
 
 
+@given(data=st_anything_except_classinfo())
+def test_failure_when_type_is_not_a_classinfo(data: _T) -> None:
+    validator = type_validator(data)
+
+    assert validator.is_error, validator
+
+    error = validator.error
+
+    assert isinstance(error, InvalidTypeValueError)
+    assert error.given_type == data
+
+
 @given(st_data=st.data(), data=st_anything_comparable())
-def test_validation_failure(st_data: st.DataObject, data: _T) -> None:
+def test_failure_when_data_validation_fails(st_data: st.DataObject, data: _T) -> None:
     any_type_except_data = st_data.draw(st_anytype_except_type_of(data))
 
-    validate = type_validator(allowed_types=any_type_except_data)
-    assert not validate.is_error
+    validator = type_validator(any_type_except_data)
 
-    result = validate.value(data)
+    assert not validator.is_error
+
+    result = validator.value(data)
+
     assert result.is_error
 
     error = result.error
+
     assert isinstance(error, InvalidTypeError)
     assert error.data == data
-    assert error.allowed_types == any_type_except_data
+    assert error.allowed_types == (any_type_except_data,)

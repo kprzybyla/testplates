@@ -1,17 +1,12 @@
-__all__ = ["validate_any", "has_unique_items", "Validator"]
+__all__ = ["has_unique_items", "Validator"]
 
-from typing import Any, TypeVar, Iterable, Hashable, Callable
+from typing import TypeVar, Iterable, Hashable, Callable
 
-from testplates.result import Result, Success
+from testplates.result import Result
 
 _T = TypeVar("_T")
 
 Validator = Callable[[_T], Result[None]]
-
-
-# noinspection PyUnusedLocal
-def validate_any(data: Any) -> Result[None]:
-    return Success(None)
 
 
 def has_unique_items(items: Iterable[Hashable]) -> bool:

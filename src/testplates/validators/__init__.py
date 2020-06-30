@@ -1,4 +1,5 @@
 __all__ = [
+    "passthrough_validator",
     "type_validator",
     "boolean_validator",
     "any_number_validator",
@@ -13,6 +14,7 @@ __all__ = [
     "union_validator",
 ]
 
+from .passthrough import passthrough_validator
 from .type import type_validator
 from .boolean import boolean_validator
 from .numbers import any_number_validator, integer_validator, float_validator

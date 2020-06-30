@@ -1,18 +1,50 @@
 __all__ = ["type_validator"]
 
-from typing import Any, Tuple, Union
+from typing import Any, Tuple
+
+import testplates
 
 from testplates.result import Result, Success, Failure
+from testplates.utils import format_like_tuple
 
 from .utils import Validator
-from .exceptions import InvalidTypeError
+from .exceptions import InvalidTypeValueError, InvalidTypeError
 
 
-def type_validator(*, allowed_types: Union[type, Tuple[type, ...]]) -> Result[Validator[Any]]:
-    def validate(data: Any) -> Result[None]:
+class TypeValidator:
+
+    __slots__ = ("allowed_types",)
+
+    def __init__(self, allowed_types: Tuple[type, ...], /) -> None:
+        self.allowed_types = allowed_types
+
+    def __repr__(self) -> str:
+        allowed_types = format_like_tuple(self.allowed_types)
+
+        return f"{testplates.__name__}.{type_validator.__name__}({allowed_types})"
+
+    def __call__(self, data: Any) -> Result[None]:
+        allowed_types = self.allowed_types
+
         if not isinstance(data, allowed_types):
             return Failure(InvalidTypeError(data, allowed_types))
 
         return Success(None)
 
-    return Success(validate)
+
+# @lru_cache(maxsize=128, typed=True)
+def type_validator(*allowed_types: type) -> Result[Validator[Any]]:
+    for allowed_type in allowed_types:
+        if (result := validate_type(allowed_type)).is_error:
+            return Failure.from_failure(result)
+
+    return Success(TypeValidator(allowed_types))
+
+
+def validate_type(allowed_type: type) -> Result[None]:
+    try:
+        isinstance(object, allowed_type)
+    except TypeError:
+        return Failure(InvalidTypeValueError(allowed_type))
+    else:
+        return Success(None)

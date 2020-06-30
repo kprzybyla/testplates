@@ -6,6 +6,7 @@ __all__ = [
     "fits_minimum_length",
     "fits_maximum_length",
     "Limit",
+    "Edge",
     "Boundary",
     "Extremum",
     "LiteralUnlimited",
@@ -21,5 +22,6 @@ from .validators import (
     fits_maximum,
     fits_minimum_length,
     fits_maximum_length,
+    Edge,
     Boundary,
 )
