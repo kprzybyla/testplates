@@ -5,7 +5,12 @@ import re
 from typing import overload, Any, TypeVar, Generic, Union, Pattern as Regex, Optional, Final
 
 from testplates.result import Result, Success, Failure
-from testplates.boundaries import get_length_boundaries, Boundary
+from testplates.boundaries import (
+    get_length_boundaries,
+    fits_minimum_length,
+    fits_maximum_length,
+    Boundary,
+)
 
 from .type import type_validator
 from .utils import Validator
@@ -32,7 +37,11 @@ class AnyStringValidator(Generic[_T]):
     __slots__ = ("length", "minimum", "maximum", "regex")
 
     def __init__(
-        self, length: int, minimum: Boundary[int], maximum: Boundary[int], regex: Regex[_T]
+        self,
+        length: Optional[int],
+        minimum: Boundary[int],
+        maximum: Boundary[int],
+        regex: Optional[Regex[_T]],
     ) -> None:
         self.length = length
         self.minimum = minimum
@@ -44,13 +53,13 @@ class AnyStringValidator(Generic[_T]):
 
     def __call__(self, data: Any) -> Result[None, ValidationError]:
         if (error := any_string_type_validator(data)) is not None:
-            return Failure.from_failure(error)
+            return Failure.from_result(error)
 
         if (error := validate_length(data, self.length, self.minimum, self.maximum)) is not None:
-            return Failure.from_failure(error)
+            return Failure.from_result(error)
 
         if (error := validate_regex(data, self.regex)) is not None:
-            return Failure.from_failure(error)
+            return Failure.from_result(error)
 
         return Success(None)
 
@@ -60,7 +69,11 @@ class StringValidator:
     __slots__ = ("type_validator", "length", "minimum", "maximum", "regex")
 
     def __init__(
-        self, length: int, minimum: Boundary[int], maximum: Boundary[int], regex: Regex[str]
+        self,
+        length: Optional[int],
+        minimum: Boundary[int],
+        maximum: Boundary[int],
+        regex: Optional[Regex[str]],
     ) -> None:
         self.type_validator = type_validator
         self.length = length
@@ -73,13 +86,13 @@ class StringValidator:
 
     def __call__(self, data: Any) -> Result[None, ValidationError]:
         if (error := string_type_validator(data)) is not None:
-            return Failure.from_failure(error)
+            return Failure.from_result(error)
 
         if (error := validate_length(data, self.length, self.minimum, self.maximum)) is not None:
-            return Failure.from_failure(error)
+            return Failure.from_result(error)
 
         if (error := validate_regex(data, self.regex)) is not None:
-            return Failure.from_failure(error)
+            return Failure.from_result(error)
 
         return Success(None)
 
@@ -89,7 +102,11 @@ class BytesValidator:
     __slots__ = ("length", "minimum", "maximum", "regex")
 
     def __init__(
-        self, length: int, minimum: Boundary[int], maximum: Boundary[int], regex: Regex[bytes]
+        self,
+        length: Optional[int],
+        minimum: Boundary[int],
+        maximum: Boundary[int],
+        regex: Optional[Regex[bytes]],
     ) -> None:
         self.length = length
         self.minimum = minimum
@@ -101,13 +118,13 @@ class BytesValidator:
 
     def __call__(self, data: Any) -> Result[None, ValidationError]:
         if (error := bytes_type_validator(data)) is not None:
-            return Failure.from_failure(error)
+            return Failure.from_result(error)
 
         if (error := validate_length(data, self.length, self.minimum, self.maximum)) is not None:
-            return Failure.from_failure(error)
+            return Failure.from_result(error)
 
         if (error := validate_regex(data, self.regex)) is not None:
-            return Failure.from_failure(error)
+            return Failure.from_result(error)
 
         return Success(None)
 
@@ -141,7 +158,7 @@ def any_string_validator(
     )
 
     if result.is_error:
-        return Failure.from_failure(result)
+        return Failure.from_result(result)
 
     minimum, maximum = result.value
     regex = get_regex(pattern)
@@ -178,7 +195,7 @@ def string_validator(
     )
 
     if result.is_error:
-        return Failure.from_failure(result)
+        return Failure.from_result(result)
 
     minimum, maximum = result.value
     regex = get_regex(pattern)
@@ -215,7 +232,7 @@ def bytes_validator(
     )
 
     if result.is_error:
-        return Failure.from_failure(result)
+        return Failure.from_result(result)
 
     minimum, maximum = result.value
     regex = get_regex(pattern)
@@ -233,10 +250,10 @@ def validate_length(
     if length is not None and len(data) != length:
         return Failure(InvalidLengthError(data, length))
 
-    if minimum.fits(len(data)):
+    if fits_minimum_length(data, minimum):
         return Failure(InvalidMinimumLengthError(data, minimum))
 
-    if maximum.fits(len(data)):
+    if fits_maximum_length(data, maximum):
         return Failure(InvalidMaximumLengthError(data, maximum))
 
     return Success(None)

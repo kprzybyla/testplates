@@ -44,7 +44,7 @@ class SequenceValidator:
 
     def __call__(self, data: Any) -> Result[None, ValidationError]:
         if (error := sequence_type_validator(data)) is not None:
-            return Failure.from_failure(error)
+            return Failure.from_result(error)
 
         item_validator = self.item_validator
 
@@ -104,7 +104,7 @@ def sequence_validator(
     result = get_length_boundaries(inclusive_minimum=minimum_size, inclusive_maximum=maximum_size)
 
     if result.is_error:
-        return Failure.from_failure(result)
+        return Failure.from_result(result)
 
     minimum, maximum = result.value
 

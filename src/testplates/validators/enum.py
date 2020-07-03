@@ -1,7 +1,7 @@
 __all__ = ["enum_validator"]
 
-from enum import EnumMeta
-from typing import Any
+from enum import Enum, EnumMeta
+from typing import Any, Iterable
 
 import testplates
 
@@ -40,7 +40,7 @@ class EnumValidator:
 def enum_validator(
     enum_type: EnumMeta, enum_member_validator: Validator = passthrough_validator, /
 ) -> Result[Validator, ValidationError]:
-    members = enum_type.__members__.values()
+    members: Iterable[Enum] = enum_type.__members__.values()
 
     for member in members:
         result = enum_member_validator(member.value)
@@ -51,6 +51,6 @@ def enum_validator(
     enum_type_validator = type_validator(enum_type)
 
     if enum_type_validator.is_error:
-        return Failure.from_failure(enum_type_validator)
+        return Failure.from_result(enum_type_validator)
 
     return Success(EnumValidator(enum_type, enum_type_validator.value, enum_member_validator))

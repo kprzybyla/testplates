@@ -70,11 +70,11 @@ def test_missing_value_error(field: str) -> None:
 
 @given(boundary=st.integers())
 def test_invalid_length_error(boundary: int) -> None:
-    error = InvalidLengthError(boundary)  # type: ignore
+    error = InvalidLengthError(boundary)
 
     assert is_direct_instance(error, TestplatesValueError)
 
-    assert boundary == error.boundary  # type: ignore
+    assert boundary == error.boundary
     assert repr(boundary) in error.message
 
 
@@ -126,12 +126,12 @@ def test_mutually_exclusive_boundaries_error(name: str) -> None:
 
 @given(minimum=st.integers(), maximum=st.integers())
 def test_overlapping_boundaries_error(minimum: int, maximum: int) -> None:
-    error = OverlappingBoundariesError(minimum, maximum)  # type: ignore
+    error = OverlappingBoundariesError(minimum, maximum)
 
     assert is_direct_instance(error, (TestplatesValueError, Generic))
 
-    assert minimum == error.minimum  # type: ignore
-    assert maximum == error.maximum  # type: ignore
+    assert minimum == error.minimum
+    assert maximum == error.maximum
 
     assert repr(minimum) in error.message
     assert repr(maximum) in error.message
@@ -139,12 +139,12 @@ def test_overlapping_boundaries_error(minimum: int, maximum: int) -> None:
 
 @given(minimum=st.integers(), maximum=st.integers())
 def test_single_match_boundaries_error(minimum: int, maximum: int) -> None:
-    error = SingleMatchBoundariesError(minimum, maximum)  # type: ignore
+    error = SingleMatchBoundariesError(minimum, maximum)
 
     assert is_direct_instance(error, (TestplatesValueError, Generic))
 
-    assert minimum == error.minimum  # type: ignore
-    assert maximum == error.maximum  # type: ignore
+    assert minimum == error.minimum
+    assert maximum == error.maximum
 
     assert repr(minimum) in error.message
     assert repr(maximum) in error.message

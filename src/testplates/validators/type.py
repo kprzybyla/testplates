@@ -36,7 +36,7 @@ class TypeValidator:
 def type_validator(*allowed_types: type) -> Result[Validator, ValidationError]:
     for allowed_type in allowed_types:
         if (result := validate_type(allowed_type)).is_error:
-            return Failure.from_failure(result)
+            return Failure.from_result(result)
 
     return Success(TypeValidator(allowed_types))
 

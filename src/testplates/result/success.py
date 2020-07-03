@@ -9,7 +9,7 @@ from .result import Result
 _T = TypeVar("_T")
 
 
-class Success(Generic[_T], Result[_T, Any]):
+class Success(Result[_T, Any], Generic[_T]):
 
     __slots__ = ()
 

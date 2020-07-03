@@ -21,14 +21,13 @@ __all__ = [
     "oneof",
 ]
 
-from enum import Enum, EnumMeta
-from typing import TypeVar, Tuple, Sequence, Mapping, Final
+from enum import EnumMeta
+from typing import Final
 
 from testplates import validators
 from testplates.result import Result, Failure
 from testplates.validators.utils import Validator
-
-_T = TypeVar("_T")
+from testplates.validators.exceptions import ValidationError
 
 INT32_MINIMUM: Final[int] = -(2 ** 31)
 INT32_MAXIMUM: Final[int] = (2 ** 31) - 1
@@ -105,84 +104,86 @@ string_validator = validators.string_validator(maximum_length=STRING_MAXIMUM_LEN
 bytes_validator = validators.bytes_validator(maximum_length=BYTES_MAXIMUM_LENGTH)
 
 
-def bool_() -> Result[Validator[bool]]:
+def bool_() -> Result[Validator, ValidationError]:
     return bool_validator
 
 
-def int32() -> Result[Validator[int]]:
+def int32() -> Result[Validator, ValidationError]:
     return int32_validator
 
 
-def int64() -> Result[Validator[int]]:
+def int64() -> Result[Validator, ValidationError]:
     return int64_validator
 
 
-def uint32() -> Result[Validator[int]]:
+def uint32() -> Result[Validator, ValidationError]:
     return uint32_validator
 
 
-def uint64() -> Result[Validator[int]]:
+def uint64() -> Result[Validator, ValidationError]:
     return uint64_validator
 
 
-def sint32() -> Result[Validator[int]]:
+def sint32() -> Result[Validator, ValidationError]:
     return sint32_validator
 
 
-def sint64() -> Result[Validator[int]]:
+def sint64() -> Result[Validator, ValidationError]:
     return sint64_validator
 
 
-def fixed32() -> Result[Validator[int]]:
+def fixed32() -> Result[Validator, ValidationError]:
     return fixed32_validator
 
 
-def fixed64() -> Result[Validator[int]]:
+def fixed64() -> Result[Validator, ValidationError]:
     return fixed64_validator
 
 
-def sfixed32() -> Result[Validator[int]]:
+def sfixed32() -> Result[Validator, ValidationError]:
     return sfixed32_validator
 
 
-def sfixed64() -> Result[Validator[int]]:
+def sfixed64() -> Result[Validator, ValidationError]:
     return sfixed64_validator
 
 
-def float_() -> Result[Validator[float]]:
+def float_() -> Result[Validator, ValidationError]:
     return float_validator
 
 
-def double() -> Result[Validator[float]]:
+def double() -> Result[Validator, ValidationError]:
     return double_validator
 
 
-def string() -> Result[Validator[str]]:
+def string() -> Result[Validator, ValidationError]:
     return string_validator
 
 
-def bytes_() -> Result[Validator[bytes]]:
+def bytes_() -> Result[Validator, ValidationError]:
     return bytes_validator
 
 
-def enum(enum_type: EnumMeta, validator: Validator, /) -> Result[Validator[Enum]]:
-    return validators.enum_validator(enum_type, validator)
+def enum(
+    enum_type: EnumMeta, enum_member_validator: Validator, /
+) -> Result[Validator, ValidationError]:
+    return validators.enum_validator(enum_type, enum_member_validator)
 
 
 # TODO(kprzybyla): Implement below types validators
 
 
-def repeated() -> Result[Validator[Sequence[_T]]]:
-    return Failure(NotImplementedError())
+def repeated() -> Result[Validator, ValidationError]:
+    return Failure(NotImplementedError())  # type: ignore
 
 
-def map_() -> Result[Validator[Mapping[str, _T]]]:
-    return Failure(NotImplementedError())
+def map_() -> Result[Validator, ValidationError]:
+    return Failure(NotImplementedError())  # type: ignore
 
 
-def message() -> Result[Validator[Mapping[str, _T]]]:
-    return Failure(NotImplementedError())
+def message() -> Result[Validator, ValidationError]:
+    return Failure(NotImplementedError())  # type: ignore
 
 
-def oneof() -> Result[Validator[Tuple[str, _T]]]:
-    return Failure(NotImplementedError())
+def oneof() -> Result[Validator, ValidationError]:
+    return Failure(NotImplementedError())  # type: ignore

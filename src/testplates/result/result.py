@@ -1,5 +1,7 @@
 __all__ = ["Result"]
 
+import abc
+
 from typing import TypeVar, Generic, Optional
 
 from testplates import result
@@ -8,7 +10,7 @@ _T = TypeVar("_T")
 _E = TypeVar("_E", bound=Exception)
 
 
-class Result(Generic[_T, _E]):
+class Result(Generic[_T, _E], abc.ABC):
 
     __slots__ = ("_value", "_error")
 
@@ -25,9 +27,17 @@ class Result(Generic[_T, _E]):
         return isinstance(self, result.Failure)
 
     @property
-    def value(self) -> Optional[_T]:
-        return self._value
+    @abc.abstractmethod
+    def value(self) -> _T:
+
+        """
+            ...
+        """
 
     @property
-    def error(self) -> Optional[_E]:
-        return self._error
+    @abc.abstractmethod
+    def error(self) -> _E:
+
+        """
+            ...
+        """

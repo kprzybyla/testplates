@@ -82,10 +82,10 @@ def test_success_with_unlimited_minimum_and_unlimited_maximum(length: int) -> No
 
     assert not result.is_error
 
-    minimum, maximum = result.value
+    minimum_boundary, maximum_boundary = result.value
 
-    assert fits_minimum_length(SizedWrapper(length), minimum)
-    assert fits_maximum_length(SizedWrapper(length), maximum)
+    assert fits_minimum_length(SizedWrapper(length), minimum_boundary)
+    assert fits_maximum_length(SizedWrapper(length), maximum_boundary)
 
 
 # noinspection PyTypeChecker
@@ -100,10 +100,10 @@ def test_success_with_minimum_and_maximum(data: st.DataObject, length: int) -> N
 
     assert not result.is_error
 
-    minimum, maximum = result.value
+    minimum_boundary, maximum_boundary = result.value
 
-    assert fits_minimum_length(SizedWrapper(length), minimum)
-    assert fits_maximum_length(SizedWrapper(length), maximum)
+    assert fits_minimum_length(SizedWrapper(length), minimum_boundary)
+    assert fits_maximum_length(SizedWrapper(length), maximum_boundary)
 
 
 # noinspection PyTypeChecker
@@ -119,10 +119,10 @@ def test_failure_when_value_is_above_minimum_and_maximum(data: st.DataObject, le
 
     assert not result.is_error
 
-    minimum, maximum = result.value
+    minimum_boundary, maximum_boundary = result.value
 
-    assert not fits_minimum_length(SizedWrapper(length), minimum)
-    assert fits_maximum_length(SizedWrapper(length), maximum)
+    assert not fits_minimum_length(SizedWrapper(length), minimum_boundary)
+    assert fits_maximum_length(SizedWrapper(length), maximum_boundary)
 
 
 # noinspection PyTypeChecker
@@ -138,10 +138,10 @@ def test_failure_when_value_is_below_minimum_and_maximum(data: st.DataObject, le
 
     assert not result.is_error
 
-    minimum, maximum = result.value
+    minimum_boundary, maximum_boundary = result.value
 
-    assert fits_minimum_length(SizedWrapper(length), minimum)
-    assert not fits_maximum_length(SizedWrapper(length), maximum)
+    assert fits_minimum_length(SizedWrapper(length), minimum_boundary)
+    assert not fits_maximum_length(SizedWrapper(length), maximum_boundary)
 
 
 # noinspection PyTypeChecker
@@ -156,15 +156,15 @@ def test_failure_when_value_is_not_sized(data: st.DataObject, length: int) -> No
 
     assert not result.is_error
 
-    minimum, maximum = result.value
+    minimum_boundary, maximum_boundary = result.value
 
-    assert not fits_minimum_length(NotSized(), minimum)  # type: ignore
-    assert not fits_maximum_length(NotSized(), maximum)  # type: ignore
+    assert not fits_minimum_length(NotSized(), minimum_boundary)  # type: ignore
+    assert not fits_maximum_length(NotSized(), maximum_boundary)  # type: ignore
 
 
 # noinspection PyArgumentList
 def test_failure_when_boundaries_are_missing() -> None:
-    result = get_length_boundaries()  # type: ignore
+    result = get_length_boundaries()
 
     assert result.is_error
     assert isinstance(result.error, TypeError)
@@ -176,7 +176,7 @@ def test_failure_when_boundaries_are_missing() -> None:
 def test_failure_when_minimum_boundary_is_missing(data: st.DataObject, length: int) -> None:
     maximum = data.draw(st_maximum(length))
 
-    result = get_length_boundaries(inclusive_maximum=maximum)  # type: ignore
+    result = get_length_boundaries(inclusive_maximum=maximum)
 
     assert result.is_error
     assert isinstance(result.error, MissingBoundaryError)
@@ -188,7 +188,7 @@ def test_failure_when_minimum_boundary_is_missing(data: st.DataObject, length: i
 def test_failure_when_maximum_boundary_is_missing(data: st.DataObject, length: int) -> None:
     minimum = data.draw(st_minimum(length))
 
-    result = get_length_boundaries(inclusive_minimum=minimum)  # type: ignore
+    result = get_length_boundaries(inclusive_minimum=minimum)
 
     assert result.is_error
     assert isinstance(result.error, MissingBoundaryError)

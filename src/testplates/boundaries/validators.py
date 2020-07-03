@@ -25,7 +25,7 @@ from testplates.exceptions import (
 from .limit import Limit, Extremum, MINIMUM_EXTREMUM, MAXIMUM_EXTREMUM
 from .unlimited import LiteralUnlimited, UNLIMITED
 
-_T = TypeVar("_T", int, float)
+_T = TypeVar("_T", bound=Union[int, float])
 
 Edge = Union[LiteralUnlimited, _T]
 Boundary = Union[LiteralUnlimited, Limit[_T]]
@@ -38,7 +38,7 @@ LENGTH_SPECIAL_METHOD_NAME: Final[str] = "__len__"
 
 def get_minimum(
     inclusive: Optional[Edge[_T]] = None, exclusive: Optional[Edge[_T]] = None
-) -> Result[Boundary[_T]]:
+) -> Result[Boundary[_T], Exception]:
 
     """
         Gets minimum boundary.
@@ -52,7 +52,7 @@ def get_minimum(
 
 def get_maximum(
     inclusive: Optional[Edge[_T]] = None, exclusive: Optional[Edge[_T]] = None
-) -> Result[Boundary[_T]]:
+) -> Result[Boundary[_T], Exception]:
 
     """
         Gets maximum boundary.
@@ -66,7 +66,7 @@ def get_maximum(
 
 def get_boundary(
     name: Extremum, *, inclusive: Optional[Edge[_T]] = None, exclusive: Optional[Edge[_T]] = None
-) -> Result[Boundary[_T]]:
+) -> Result[Boundary[_T], Exception]:
 
     """
         Gets boundary.
@@ -92,11 +92,11 @@ def get_boundary(
 
 
 def get_value_boundaries(
-    inclusive_minimum: Optional[_T] = None,
-    inclusive_maximum: Optional[_T] = None,
-    exclusive_minimum: Optional[_T] = None,
-    exclusive_maximum: Optional[_T] = None,
-) -> Result[Tuple[Boundary[_T], Boundary[_T]]]:
+    inclusive_minimum: Optional[Edge[_T]] = None,
+    inclusive_maximum: Optional[Edge[_T]] = None,
+    exclusive_minimum: Optional[Edge[_T]] = None,
+    exclusive_maximum: Optional[Edge[_T]] = None,
+) -> Result[Tuple[Boundary[_T], Boundary[_T]], Exception]:
 
     """
         Gets minimum and maximum value boundaries.
@@ -118,22 +118,24 @@ def get_value_boundaries(
     minimum = get_minimum(inclusive=inclusive_minimum, exclusive=exclusive_minimum)
 
     if minimum.is_error:
-        return Failure.from_failure(minimum)
+        return Failure.from_result(minimum)
 
     maximum = get_maximum(inclusive=inclusive_maximum, exclusive=exclusive_maximum)
 
     if maximum.is_error:
-        return Failure.from_failure(maximum)
+        return Failure.from_result(maximum)
 
     result = validate_value_boundaries(minimum=minimum.value, maximum=maximum.value)
 
     if result.is_error:
-        return Failure.from_failure(result)
+        return Failure.from_result(result)
 
     return Success((minimum.value, maximum.value))
 
 
-def validate_value_boundaries(*, minimum: Boundary[_T], maximum: Boundary[_T]) -> Result[None]:
+def validate_value_boundaries(
+    *, minimum: Boundary[_T], maximum: Boundary[_T]
+) -> Result[None, Exception]:
 
     """
         Checks minimum and maximum value boundaries.
@@ -155,8 +157,8 @@ def validate_value_boundaries(*, minimum: Boundary[_T], maximum: Boundary[_T]) -
 
 
 def get_length_boundaries(
-    inclusive_minimum: Optional[_T] = None, inclusive_maximum: Optional[_T] = None
-) -> Result[Tuple[Boundary[_T], Boundary[_T]]]:
+    inclusive_minimum: Optional[Edge[int]] = None, inclusive_maximum: Optional[Edge[int]] = None
+) -> Result[Tuple[Boundary[int], Boundary[int]], Exception]:
 
     """
         Gets minimum and maximum length boundaries.
@@ -171,22 +173,24 @@ def get_length_boundaries(
     minimum = get_minimum(inclusive=inclusive_minimum)
 
     if minimum.is_error:
-        return Failure.from_failure(minimum)
+        return Failure.from_result(minimum)
 
     maximum = get_maximum(inclusive=inclusive_maximum)
 
     if maximum.is_error:
-        return Failure.from_failure(maximum)
+        return Failure.from_result(maximum)
 
     result = validate_length_boundaries(minimum=minimum.value, maximum=maximum.value)
 
     if result.is_error:
-        return Failure.from_failure(result)
+        return Failure.from_result(result)
 
     return Success((minimum.value, maximum.value))
 
 
-def validate_length_boundaries(minimum: Boundary[int], maximum: Boundary[int]) -> Result[None]:
+def validate_length_boundaries(
+    minimum: Boundary[int], maximum: Boundary[int]
+) -> Result[None, Exception]:
 
     """
         Checks minimum and maximum length boundaries.

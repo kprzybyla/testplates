@@ -5,7 +5,7 @@ from typing import overload, Any, TypeVar, Generic, Optional
 import testplates
 
 from testplates.abc import Constraint
-from testplates.boundaries import get_value_boundaries, fits_minimum, fits_maximum
+from testplates.boundaries import get_value_boundaries, fits_minimum, fits_maximum, Edge
 
 _T = TypeVar("_T", int, float)
 
@@ -17,10 +17,10 @@ class RangesBetween(Generic[_T], Constraint):
     def __init__(
         self,
         *,
-        inclusive_minimum: Optional[_T] = None,
-        inclusive_maximum: Optional[_T] = None,
-        exclusive_minimum: Optional[_T] = None,
-        exclusive_maximum: Optional[_T] = None,
+        inclusive_minimum: Optional[Edge[_T]] = None,
+        inclusive_maximum: Optional[Edge[_T]] = None,
+        exclusive_minimum: Optional[Edge[_T]] = None,
+        exclusive_maximum: Optional[Edge[_T]] = None,
     ) -> None:
         result = get_value_boundaries(
             inclusive_minimum=inclusive_minimum,
@@ -50,33 +50,39 @@ class RangesBetween(Generic[_T], Constraint):
 
 
 @overload
-def ranges_between(*, minimum: Optional[_T], maximum: Optional[_T]) -> RangesBetween[_T]:
-    ...
-
-
-@overload
-def ranges_between(*, minimum: Optional[_T], exclusive_maximum: Optional[_T]) -> RangesBetween[_T]:
-    ...
-
-
-@overload
-def ranges_between(*, exclusive_minimum: Optional[_T], maximum: Optional[_T]) -> RangesBetween[_T]:
+def ranges_between(
+    *, minimum: Optional[Edge[_T]], maximum: Optional[Edge[_T]]
+) -> RangesBetween[_T]:
     ...
 
 
 @overload
 def ranges_between(
-    *, exclusive_minimum: Optional[_T], exclusive_maximum: Optional[_T]
+    *, minimum: Optional[Edge[_T]], exclusive_maximum: Optional[Edge[_T]]
+) -> RangesBetween[_T]:
+    ...
+
+
+@overload
+def ranges_between(
+    *, exclusive_minimum: Optional[Edge[_T]], maximum: Optional[Edge[_T]]
+) -> RangesBetween[_T]:
+    ...
+
+
+@overload
+def ranges_between(
+    *, exclusive_minimum: Optional[Edge[_T]], exclusive_maximum: Optional[Edge[_T]]
 ) -> RangesBetween[_T]:
     ...
 
 
 def ranges_between(
     *,
-    minimum: Optional[_T] = None,
-    maximum: Optional[_T] = None,
-    exclusive_minimum: Optional[_T] = None,
-    exclusive_maximum: Optional[_T] = None,
+    minimum: Optional[Edge[_T]] = None,
+    maximum: Optional[Edge[_T]] = None,
+    exclusive_minimum: Optional[Edge[_T]] = None,
+    exclusive_maximum: Optional[Edge[_T]] = None,
 ) -> RangesBetween[_T]:
 
     """

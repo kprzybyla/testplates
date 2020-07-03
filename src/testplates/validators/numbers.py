@@ -42,13 +42,13 @@ class AnyNumberValidator(Generic[_T]):
 
     def __call__(self, data: Any) -> Result[None, ValidationError]:
         if (result := validate_any_number_type(data)).is_error:
-            return Failure.from_failure(result)
+            return Failure.from_result(result)
 
         if (result := validate_boolean_type(data, self.allow_boolean)).is_error:
-            return Failure.from_failure(result)
+            return Failure.from_result(result)
 
         if (result := validate_boundaries(data, self.minimum, self.maximum)).is_error:
-            return Failure.from_failure(result)
+            return Failure.from_result(result)
 
         return Success(None)
 
@@ -69,13 +69,13 @@ class IntegerValidator:
 
     def __call__(self, data: Any) -> Result[None, ValidationError]:
         if (result := validate_integer_type(data)).is_error:
-            return Failure.from_failure(result)
+            return Failure.from_result(result)
 
         if (result := validate_boolean_type(data, self.allow_boolean)).is_error:
-            return Failure.from_failure(result)
+            return Failure.from_result(result)
 
         if (result := validate_boundaries(data, self.minimum, self.maximum)).is_error:
-            return Failure.from_failure(result)
+            return Failure.from_result(result)
 
         return Success(None)
 
@@ -93,10 +93,10 @@ class FloatValidator:
 
     def __call__(self, data: Any) -> Result[None, ValidationError]:
         if (result := validate_float_type(data)).is_error:
-            return Failure.from_failure(result)
+            return Failure.from_result(result)
 
         if (result := validate_boundaries(data, self.minimum, self.maximum)).is_error:
-            return Failure.from_failure(result)
+            return Failure.from_result(result)
 
         return Success(None)
 
@@ -157,7 +157,7 @@ def any_number_validator(
     )
 
     if boundaries.is_error:
-        return Failure.from_failure(boundaries)
+        return Failure.from_result(boundaries)
 
     minimum, maximum = boundaries.value
 
@@ -170,7 +170,7 @@ def integer_validator(
     minimum_value: Optional[Edge[int]] = None,
     maximum_value: Optional[Edge[int]] = None,
     allow_boolean: bool = False,
-) -> Result[Validator[int]]:
+) -> Result[Validator, ValidationError]:
     ...
 
 
@@ -220,7 +220,7 @@ def integer_validator(
     )
 
     if boundaries.is_error:
-        return Failure.from_failure(boundaries)
+        return Failure.from_result(boundaries)
 
     minimum, maximum = boundaries.value
 
@@ -248,7 +248,7 @@ def float_validator(
     *,
     exclusive_minimum_value: Optional[Edge[float]] = None,
     maximum_value: Optional[Edge[float]] = None,
-) -> Result[Validator[float]]:
+) -> Result[Validator, ValidationError]:
     ...
 
 
@@ -276,7 +276,7 @@ def float_validator(
     )
 
     if boundaries.is_error:
-        return Failure.from_failure(boundaries)
+        return Failure.from_result(boundaries)
 
     minimum, maximum = boundaries.value
 

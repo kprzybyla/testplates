@@ -35,7 +35,7 @@ def test_failure_when_data_validation_fails(data: _T) -> None:
 
     assert not validator.is_error
 
-    result = validator.value(data)  # type: ignore
+    result = validator.value(data)
 
     assert result.is_error
 

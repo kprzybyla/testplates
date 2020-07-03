@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from hypothesis import given
 from hypothesis import strategies as st
 
+# from testplates.base.structure import Structure
 from testplates.result import Success, Failure
 from testplates.validators import mapping_validator
 from testplates.validators.exceptions import (
@@ -125,7 +126,7 @@ def test_failure_when_data_field_validation_fails(key: str) -> None:
     failure = Failure(...)
     data = {key: value}
 
-    def validator(v) -> Failure:
+    def validator(v) -> Failure[Exception]:
         assert v is value
         return failure
 

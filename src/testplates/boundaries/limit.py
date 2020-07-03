@@ -1,8 +1,8 @@
 __all__ = ["Limit", "Extremum", "MINIMUM_EXTREMUM", "MAXIMUM_EXTREMUM"]
 
-from typing import TypeVar, Generic, Literal, Final
+from typing import TypeVar, Generic, Union, Literal, Final
 
-_T = TypeVar("_T", int, float)
+_T = TypeVar("_T", bound=Union[int, float])
 
 Extremum = Literal["minimum", "maximum"]
 
@@ -19,7 +19,7 @@ class Limit(Generic[_T]):
 
     def __init__(self, name: Extremum, value: _T, *, is_inclusive: bool) -> None:
         self._name = name
-        self._value = value
+        self._value: _T = value
         self._is_inclusive = is_inclusive
 
     def __repr__(self) -> str:

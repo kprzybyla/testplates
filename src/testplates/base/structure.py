@@ -15,12 +15,12 @@ from typing import (
     Union,
     Tuple,
     Dict,
-    Callable,
     Optional,
 )
 
 import testplates
 
+from testplates.validators.utils import Validator
 from testplates.abc import Template, Descriptor
 from testplates.utils import is_value, matches, format_like_dict
 from testplates.exceptions import (
@@ -36,8 +36,6 @@ from .value import Maybe, ANY, WILDCARD, ABSENT, MISSING
 _T = TypeVar("_T", covariant=True)
 _V = TypeVar("_V")
 
-Validator = Callable[[_T], Optional[Exception]]
-
 
 class Field(Generic[_T], Descriptor[Any, _T]):
 
@@ -48,12 +46,7 @@ class Field(Generic[_T], Descriptor[Any, _T]):
     __slots__ = ("_validator", "_default", "_optional", "_name")
 
     def __init__(
-        self,
-        validator: Optional[Validator[_T]] = None,
-        /,
-        *,
-        default: Maybe[_T] = MISSING,
-        optional: bool = False,
+        self, validator: Validator, /, *, default: Maybe[_T] = MISSING, optional: bool = False
     ) -> None:
         self._validator = validator
         self._default = default
@@ -116,11 +109,10 @@ class Field(Generic[_T], Descriptor[Any, _T]):
         return self._name
 
     @property
-    def validator(self) -> Optional[Validator[_T]]:
+    def validator(self) -> Validator:
 
         """
-            Returns field validator function
-            or None if no validator was provided.
+            Returns field validator function.
         """
 
         return self._validator
@@ -166,7 +158,7 @@ class Field(Generic[_T], Descriptor[Any, _T]):
         elif (value is WILDCARD or self.default is WILDCARD) and not self.is_optional:
             raise ProhibitedValueError(self, value)
 
-        elif is_value(value) and self.validator and (error := self.validator(value)) is not None:
+        elif is_value(value) and (error := self.validator(value)) is not None:
             raise error
 
 

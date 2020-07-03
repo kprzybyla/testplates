@@ -9,7 +9,7 @@ from .result import Result
 _E = TypeVar("_E", bound=Exception)
 
 
-class Failure(Generic[_E], Result[Any, _E]):
+class Failure(Result[Any, _E], Generic[_E]):
 
     __slots__ = ()
 
