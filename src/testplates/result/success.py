@@ -2,7 +2,7 @@ from __future__ import annotations
 
 __all__ = ["Success"]
 
-from typing import Any, TypeVar, Generic, NoReturn
+from typing import Any, TypeVar, Generic
 
 import testplates
 
@@ -16,8 +16,6 @@ class Success(Result[ValueType, Any], Generic[ValueType]):
     __slots__ = ("_value",)
 
     def __init__(self, value: ValueType) -> None:
-        super().__init__()
-
         self._value = value
 
     def __repr__(self) -> str:
@@ -32,13 +30,17 @@ class Success(Result[ValueType, Any], Generic[ValueType]):
             :param result: result from which success is created
         """
 
-        assert isinstance(result, Success)
+        assert isinstance(result, Success), result
         return result
+
+    @property
+    def is_success(self) -> bool:
+        return True
+
+    @property
+    def is_failure(self) -> bool:
+        return False
 
     @property
     def value(self) -> ValueType:
         return self._value
-
-    @property
-    def error(self) -> NoReturn:
-        raise NotImplementedError()

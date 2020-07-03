@@ -2,38 +2,28 @@ __all__ = ["Result"]
 
 import abc
 
-from typing import TypeVar, Generic
-
-from testplates import result
+from typing import TypeVar, Protocol
 
 ValueType = TypeVar("ValueType")
 ErrorType = TypeVar("ErrorType", bound=Exception)
 
 
-class Result(abc.ABC, Generic[ValueType, ErrorType]):
+class Result(Protocol[ValueType, ErrorType]):
 
     __slots__ = ()
 
     @property
+    @abc.abstractmethod
     def is_success(self) -> bool:
-        return isinstance(self, result.Success)
+
+        """
+            Returns True if result is a success, otherwise False.
+        """
 
     @property
+    @abc.abstractmethod
     def is_failure(self) -> bool:
-        return isinstance(self, result.Failure)
-
-    @property
-    @abc.abstractmethod
-    def value(self) -> ValueType:
 
         """
-            Returns value.
-        """
-
-    @property
-    @abc.abstractmethod
-    def error(self) -> ErrorType:
-
-        """
-            Returns error.
+            Returns True if result is a failure, otherwise False.
         """

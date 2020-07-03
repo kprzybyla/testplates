@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from hypothesis import assume, given
 from hypothesis import strategies as st
 
+from testplates import Success, Failure
 from testplates.boundaries import (
     get_length_boundaries,
     fits_minimum_length,
@@ -80,9 +81,7 @@ def st_length_above_maximum(draw: Draw[int]) -> int:
 def test_success_with_unlimited_minimum_and_unlimited_maximum(length: int) -> None:
     result = get_length_boundaries(inclusive_minimum=UNLIMITED, inclusive_maximum=UNLIMITED)
 
-    assert not result.is_failure
-
-    minimum_boundary, maximum_boundary = result.value
+    minimum_boundary, maximum_boundary = Success.from_result(result).value
 
     assert fits_minimum_length(SizedWrapper(length), minimum_boundary)
     assert fits_maximum_length(SizedWrapper(length), maximum_boundary)
@@ -98,9 +97,7 @@ def test_success_with_minimum_and_maximum(data: st.DataObject, length: int) -> N
 
     result = get_length_boundaries(inclusive_minimum=minimum, inclusive_maximum=maximum)
 
-    assert not result.is_failure
-
-    minimum_boundary, maximum_boundary = result.value
+    minimum_boundary, maximum_boundary = Success.from_result(result).value
 
     assert fits_minimum_length(SizedWrapper(length), minimum_boundary)
     assert fits_maximum_length(SizedWrapper(length), maximum_boundary)
@@ -117,9 +114,7 @@ def test_failure_when_value_is_above_minimum_and_maximum(data: st.DataObject, le
 
     result = get_length_boundaries(inclusive_minimum=minimum, inclusive_maximum=maximum)
 
-    assert not result.is_failure
-
-    minimum_boundary, maximum_boundary = result.value
+    minimum_boundary, maximum_boundary = Success.from_result(result).value
 
     assert not fits_minimum_length(SizedWrapper(length), minimum_boundary)
     assert fits_maximum_length(SizedWrapper(length), maximum_boundary)
@@ -136,9 +131,7 @@ def test_failure_when_value_is_below_minimum_and_maximum(data: st.DataObject, le
 
     result = get_length_boundaries(inclusive_minimum=minimum, inclusive_maximum=maximum)
 
-    assert not result.is_failure
-
-    minimum_boundary, maximum_boundary = result.value
+    minimum_boundary, maximum_boundary = Success.from_result(result).value
 
     assert fits_minimum_length(SizedWrapper(length), minimum_boundary)
     assert not fits_maximum_length(SizedWrapper(length), maximum_boundary)
@@ -154,9 +147,7 @@ def test_failure_when_value_is_not_sized(data: st.DataObject, length: int) -> No
 
     result = get_length_boundaries(inclusive_minimum=minimum, inclusive_maximum=maximum)
 
-    assert not result.is_failure
-
-    minimum_boundary, maximum_boundary = result.value
+    minimum_boundary, maximum_boundary = Success.from_result(result).value
 
     assert not fits_minimum_length(NotSized(), minimum_boundary)  # type: ignore
     assert not fits_maximum_length(NotSized(), maximum_boundary)  # type: ignore
@@ -166,8 +157,9 @@ def test_failure_when_value_is_not_sized(data: st.DataObject, length: int) -> No
 def test_failure_when_boundaries_are_missing() -> None:
     result = get_length_boundaries()
 
-    assert result.is_failure
-    assert isinstance(result.error, TypeError)
+    error = Failure.from_result(result).error
+
+    assert isinstance(error, TypeError)
 
 
 # noinspection PyTypeChecker
@@ -178,8 +170,9 @@ def test_failure_when_minimum_boundary_is_missing(data: st.DataObject, length: i
 
     result = get_length_boundaries(inclusive_maximum=maximum)
 
-    assert result.is_failure
-    assert isinstance(result.error, MissingBoundaryError)
+    error = Failure.from_result(result).error
+
+    assert isinstance(error, MissingBoundaryError)
 
 
 # noinspection PyTypeChecker
@@ -190,8 +183,9 @@ def test_failure_when_maximum_boundary_is_missing(data: st.DataObject, length: i
 
     result = get_length_boundaries(inclusive_minimum=minimum)
 
-    assert result.is_failure
-    assert isinstance(result.error, MissingBoundaryError)
+    error = Failure.from_result(result).error
+
+    assert isinstance(error, MissingBoundaryError)
 
 
 # noinspection PyTypeChecker
@@ -201,13 +195,15 @@ def test_failure_when_boundaries_are_below_zero(data: st.DataObject, length: int
 
     result = get_length_boundaries(inclusive_minimum=below_minimum, inclusive_maximum=length)
 
-    assert result.is_failure
-    assert isinstance(result.error, InvalidLengthError)
+    error = Failure.from_result(result).error
+
+    assert isinstance(error, InvalidLengthError)
 
     result = get_length_boundaries(inclusive_minimum=length, inclusive_maximum=below_minimum)
 
-    assert result.is_failure
-    assert isinstance(result.error, InvalidLengthError)
+    error = Failure.from_result(result).error
+
+    assert isinstance(error, InvalidLengthError)
 
 
 # noinspection PyTypeChecker
@@ -217,13 +213,15 @@ def test_failure_when_boundaries_are_above_max_size(data: st.DataObject, length:
 
     result = get_length_boundaries(inclusive_minimum=above_maximum, inclusive_maximum=length)
 
-    assert result.is_failure
-    assert isinstance(result.error, InvalidLengthError)
+    error = Failure.from_result(result).error
+
+    assert isinstance(error, InvalidLengthError)
 
     result = get_length_boundaries(inclusive_minimum=length, inclusive_maximum=above_maximum)
 
-    assert result.is_failure
-    assert isinstance(result.error, InvalidLengthError)
+    error = Failure.from_result(result).error
+
+    assert isinstance(error, InvalidLengthError)
 
 
 # noinspection PyTypeChecker
@@ -236,13 +234,15 @@ def test_failure_when_boundaries_are_overlapping(data: st.DataObject) -> None:
 
     result = get_length_boundaries(inclusive_minimum=minimum, inclusive_maximum=maximum)
 
-    assert result.is_failure
-    assert isinstance(result.error, OverlappingBoundariesError)
+    error = Failure.from_result(result).error
+
+    assert isinstance(error, OverlappingBoundariesError)
 
 
 @given(length=st_length())
 def test_failure_when_boundaries_match_single_value(length: int) -> None:
     result = get_length_boundaries(inclusive_minimum=length, inclusive_maximum=length)
 
-    assert result.is_failure
-    assert isinstance(result.error, SingleMatchBoundariesError)
+    error = Failure.from_result(result).error
+
+    assert isinstance(error, SingleMatchBoundariesError)

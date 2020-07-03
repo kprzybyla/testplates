@@ -19,10 +19,11 @@ def test_repr(error: Any) -> None:
 
 @given(error=st_anything_comparable())
 def test_from_result(error: Any) -> None:
-    success = Failure.from_result(Failure(error))
+    failure = Failure.from_result(Failure(error))
 
-    assert success.is_failure
-    assert success.error == error
+    assert not failure.is_success
+    assert failure.is_failure
+    assert failure.error == error
 
 
 @given(value=st_anything_comparable())
@@ -31,17 +32,10 @@ def test_from_result_success(value: Any) -> None:
         Failure.from_result(Success(value))
 
 
-# noinspection PyStatementEffect
-@given(error=st_anything_comparable())
-def test_value(error: Any) -> None:
-    failure = Failure(error)
-
-    with pytest.raises(NotImplementedError):
-        failure.value
-
-
 @given(error=st_anything_comparable())
 def test_error(error: Any) -> None:
     failure = Failure(error)
 
+    assert not failure.is_success
+    assert failure.is_failure
     assert failure.error == error

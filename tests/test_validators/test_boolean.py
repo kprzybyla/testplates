@@ -2,6 +2,7 @@ from typing import TypeVar
 
 from hypothesis import given, strategies as st
 
+from testplates import Success, Failure
 from testplates.validators import boolean_validator
 from testplates.validators.exceptions import InvalidTypeError
 
@@ -13,33 +14,30 @@ _T = TypeVar("_T")
 def test_repr() -> None:
     fmt = "testplates.boolean_validator()"
 
-    validator = boolean_validator()
+    validator_result = boolean_validator()
+    validator = Success.from_result(validator_result).value
 
-    assert repr(validator.value) == fmt
+    assert repr(validator) == fmt
 
 
 @given(data=st.booleans())
 def test_success(data: bool) -> None:
-    validator = boolean_validator()
+    validator_result = boolean_validator()
+    validator = Success.from_result(validator_result).value
 
-    assert not validator.is_failure
+    validation_result = validator(data)
+    value = Success.from_result(validation_result).value
 
-    result = validator.value(data)
-
-    assert not result.is_failure
+    assert value is None
 
 
 @given(data=st_anything_except(bool))
 def test_failure_when_data_validation_fails(data: _T) -> None:
-    validator = boolean_validator()
+    validator_result = boolean_validator()
+    validator = Success.from_result(validator_result).value
 
-    assert not validator.is_failure
-
-    result = validator.value(data)
-
-    assert result.is_failure
-
-    error = result.error
+    validation_result = validator(data)
+    error = Failure.from_result(validation_result).error
 
     assert isinstance(error, InvalidTypeError)
     assert error.data == data

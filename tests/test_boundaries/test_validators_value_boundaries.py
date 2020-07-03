@@ -3,6 +3,7 @@ from typing import Any, Optional, Final
 from hypothesis import assume, given
 from hypothesis import strategies as st
 
+from testplates import Success, Failure
 from testplates.boundaries import get_value_boundaries, fits_minimum, fits_maximum, UNLIMITED
 from testplates import (
     MissingBoundaryError,
@@ -71,9 +72,7 @@ def st_exclusive_maximum(draw: Draw[int], value: int) -> int:
 def test_success_with_unlimited_minimum_and_unlimited_maximum(value: int) -> None:
     result = get_value_boundaries(inclusive_minimum=UNLIMITED, inclusive_maximum=UNLIMITED)
 
-    assert not result.is_failure
-
-    minimum, maximum = result.value
+    minimum, maximum = Success.from_result(result).value
 
     assert fits_minimum(value, minimum)
     assert fits_maximum(value, maximum)
@@ -93,9 +92,7 @@ def test_success_with_inclusive_minimum_and_inclusive_maximum(
         inclusive_minimum=inclusive_minimum, inclusive_maximum=inclusive_maximum
     )
 
-    assert not result.is_failure
-
-    minimum, maximum = result.value
+    minimum, maximum = Success.from_result(result).value
 
     assert fits_minimum(value, minimum)
     assert fits_maximum(value, maximum)
@@ -115,9 +112,7 @@ def test_success_with_inclusive_minimum_and_exclusive_maximum(
         inclusive_minimum=inclusive_minimum, exclusive_maximum=exclusive_maximum
     )
 
-    assert not result.is_failure
-
-    minimum, maximum = result.value
+    minimum, maximum = Success.from_result(result).value
 
     assert fits_minimum(value, minimum)
     assert fits_maximum(value, maximum)
@@ -137,9 +132,7 @@ def test_success_with_exclusive_minimum_and_inclusive_maximum(
         exclusive_minimum=exclusive_minimum, inclusive_maximum=inclusive_maximum
     )
 
-    assert not result.is_failure
-
-    minimum, maximum = result.value
+    minimum, maximum = Success.from_result(result).value
 
     assert fits_minimum(value, minimum)
     assert fits_maximum(value, maximum)
@@ -159,9 +152,7 @@ def test_success_with_exclusive_minimum_and_exclusive_maximum(
         exclusive_minimum=exclusive_minimum, exclusive_maximum=exclusive_maximum
     )
 
-    assert not result.is_failure
-
-    minimum, maximum = result.value
+    minimum, maximum = Success.from_result(result).value
 
     assert fits_minimum(value, minimum)
     assert fits_maximum(value, maximum)
@@ -182,9 +173,7 @@ def test_failure_when_value_is_above_inclusive_minimum_and_inclusive_maximum(
         inclusive_minimum=inclusive_minimum, inclusive_maximum=inclusive_maximum
     )
 
-    assert not result.is_failure
-
-    minimum, maximum = result.value
+    minimum, maximum = Success.from_result(result).value
 
     assert fits_minimum(value, minimum)
     assert not fits_maximum(value, maximum)
@@ -205,9 +194,7 @@ def test_failure_when_value_is_below_inclusive_minimum_and_inclusive_maximum(
         inclusive_minimum=inclusive_minimum, inclusive_maximum=inclusive_maximum
     )
 
-    assert not result.is_failure
-
-    minimum, maximum = result.value
+    minimum, maximum = Success.from_result(result).value
 
     assert not fits_minimum(value, minimum)
     assert fits_maximum(value, maximum)
@@ -227,9 +214,7 @@ def test_failure_when_value_is_above_inclusive_minimum_and_exclusive_maximum(
         inclusive_minimum=inclusive_minimum, exclusive_maximum=exclusive_maximum
     )
 
-    assert not result.is_failure
-
-    minimum, maximum = result.value
+    minimum, maximum = Success.from_result(result).value
 
     assert fits_minimum(value, minimum)
     assert not fits_maximum(value, maximum)
@@ -250,9 +235,7 @@ def test_failure_when_value_is_below_inclusive_minimum_and_exclusive_maximum(
         inclusive_minimum=inclusive_minimum, exclusive_maximum=exclusive_maximum
     )
 
-    assert not result.is_failure
-
-    minimum, maximum = result.value
+    minimum, maximum = Success.from_result(result).value
 
     assert not fits_minimum(value, minimum)
     assert fits_maximum(value, maximum)
@@ -273,9 +256,7 @@ def test_failure_when_value_is_above_exclusive_minimum_and_inclusive_maximum(
         exclusive_minimum=exclusive_minimum, inclusive_maximum=inclusive_maximum
     )
 
-    assert not result.is_failure
-
-    minimum, maximum = result.value
+    minimum, maximum = Success.from_result(result).value
 
     assert fits_minimum(value, minimum)
     assert not fits_maximum(value, maximum)
@@ -295,9 +276,7 @@ def test_failure_when_value_is_below_exclusive_minimum_and_inclusive_maximum(
         exclusive_minimum=exclusive_minimum, inclusive_maximum=inclusive_maximum
     )
 
-    assert not result.is_failure
-
-    minimum, maximum = result.value
+    minimum, maximum = Success.from_result(result).value
 
     assert not fits_minimum(value, minimum)
     assert fits_maximum(value, maximum)
@@ -317,9 +296,7 @@ def test_failure_when_value_is_above_exclusive_minimum_and_exclusive_maximum(
         exclusive_minimum=exclusive_minimum, exclusive_maximum=exclusive_maximum
     )
 
-    assert not result.is_failure
-
-    minimum, maximum = result.value
+    minimum, maximum = Success.from_result(result).value
 
     assert fits_minimum(value, minimum)
     assert not fits_maximum(value, maximum)
@@ -339,9 +316,7 @@ def test_failure_when_value_is_below_exclusive_minimum_and_exclusive_maximum(
         exclusive_minimum=exclusive_minimum, exclusive_maximum=exclusive_maximum
     )
 
-    assert not result.is_failure
-
-    minimum, maximum = result.value
+    minimum, maximum = Success.from_result(result).value
 
     assert not fits_minimum(value, minimum)
     assert fits_maximum(value, maximum)
@@ -361,9 +336,7 @@ def test_failure_when_value_is_not_comparable_with_inclusive_boundaries(
         inclusive_minimum=inclusive_minimum, inclusive_maximum=inclusive_maximum
     )
 
-    assert not result.is_failure
-
-    minimum, maximum = result.value
+    minimum, maximum = Success.from_result(result).value
 
     assert not fits_minimum(NotComparable(), minimum)  # type: ignore
     assert not fits_maximum(NotComparable(), maximum)  # type: ignore
@@ -383,9 +356,7 @@ def test_failure_when_value_is_not_comparable_with_exclusive_boundaries(
         exclusive_minimum=exclusive_minimum, exclusive_maximum=exclusive_maximum
     )
 
-    assert not result.is_failure
-
-    minimum, maximum = result.value
+    minimum, maximum = Success.from_result(result).value
 
     assert not fits_minimum(NotComparable(), minimum)  # type: ignore
     assert not fits_maximum(NotComparable(), maximum)  # type: ignore
@@ -395,8 +366,9 @@ def test_failure_when_value_is_not_comparable_with_exclusive_boundaries(
 def test_failure_when_boundaries_are_missing() -> None:
     result = get_value_boundaries()  # type: ignore
 
-    assert result.is_failure
-    assert isinstance(result.error, TypeError)
+    error = Failure.from_result(result).error
+
+    assert isinstance(error, TypeError)
 
 
 # noinspection PyTypeChecker
@@ -408,13 +380,15 @@ def test_failure_when_minimum_boundary_is_missing(data: st.DataObject, value: in
 
     result = get_value_boundaries(inclusive_maximum=inclusive_maximum)
 
-    assert result.is_failure
-    assert isinstance(result.error, MissingBoundaryError)
+    error = Failure.from_result(result).error
+
+    assert isinstance(error, MissingBoundaryError)
 
     result = get_value_boundaries(exclusive_maximum=exclusive_maximum)
 
-    assert result.is_failure
-    assert isinstance(result.error, MissingBoundaryError)
+    error = Failure.from_result(result).error
+
+    assert isinstance(error, MissingBoundaryError)
 
 
 # noinspection PyTypeChecker
@@ -426,13 +400,15 @@ def test_failure_when_maximum_boundary_is_missing(data: st.DataObject, value: in
 
     result = get_value_boundaries(inclusive_minimum=inclusive_minimum)
 
-    assert result.is_failure
-    assert isinstance(result.error, MissingBoundaryError)
+    error = Failure.from_result(result).error
+
+    assert isinstance(error, MissingBoundaryError)
 
     result = get_value_boundaries(exclusive_minimum=exclusive_minimum)
 
-    assert result.is_failure
-    assert isinstance(result.error, MissingBoundaryError)
+    error = Failure.from_result(result).error
+
+    assert isinstance(error, MissingBoundaryError)
 
 
 # noinspection PyTypeChecker
@@ -454,8 +430,9 @@ def test_failure_when_mutually_exclusive_boundaries_are_set(
         exclusive_maximum=exclusive_maximum,
     )
 
-    assert result.is_failure
-    assert isinstance(result.error, MutuallyExclusiveBoundariesError)
+    error = Failure.from_result(result).error
+
+    assert isinstance(error, MutuallyExclusiveBoundariesError)
 
 
 # noinspection PyTypeChecker
@@ -476,8 +453,9 @@ def test_failure_when_mutually_exclusive_minimum_boundaries_are_set(
         exclusive_minimum=exclusive_minimum,
     )
 
-    assert result.is_failure
-    assert isinstance(result.error, MutuallyExclusiveBoundariesError)
+    error = Failure.from_result(result).error
+
+    assert isinstance(error, MutuallyExclusiveBoundariesError)
 
     result = get_value_boundaries(
         inclusive_minimum=inclusive_minimum,
@@ -485,8 +463,9 @@ def test_failure_when_mutually_exclusive_minimum_boundaries_are_set(
         exclusive_maximum=exclusive_maximum,
     )
 
-    assert result.is_failure
-    assert isinstance(result.error, MutuallyExclusiveBoundariesError)
+    error = Failure.from_result(result).error
+
+    assert isinstance(error, MutuallyExclusiveBoundariesError)
 
 
 # noinspection PyTypeChecker
@@ -507,8 +486,9 @@ def test_failure_when_mutually_exclusive_maximum_boundaries_are_set(
         exclusive_maximum=exclusive_maximum,
     )
 
-    assert result.is_failure
-    assert isinstance(result.error, MutuallyExclusiveBoundariesError)
+    error = Failure.from_result(result).error
+
+    assert isinstance(error, MutuallyExclusiveBoundariesError)
 
     result = get_value_boundaries(
         inclusive_maximum=inclusive_maximum,
@@ -516,8 +496,9 @@ def test_failure_when_mutually_exclusive_maximum_boundaries_are_set(
         exclusive_maximum=exclusive_maximum,
     )
 
-    assert result.is_failure
-    assert isinstance(result.error, MutuallyExclusiveBoundariesError)
+    error = Failure.from_result(result).error
+
+    assert isinstance(error, MutuallyExclusiveBoundariesError)
 
 
 # noinspection PyTypeChecker
@@ -534,8 +515,9 @@ def test_failure_when_inclusive_minimum_and_inclusive_maximum_are_overlapping(
         inclusive_minimum=inclusive_minimum, inclusive_maximum=inclusive_maximum
     )
 
-    assert result.is_failure
-    assert isinstance(result.error, OverlappingBoundariesError)
+    error = Failure.from_result(result).error
+
+    assert isinstance(error, OverlappingBoundariesError)
 
 
 # noinspection PyTypeChecker
@@ -550,8 +532,9 @@ def test_failure_when_inclusive_minimum_and_exclusive_maximum_are_overlapping(
         inclusive_minimum=inclusive_minimum, exclusive_maximum=exclusive_maximum
     )
 
-    assert result.is_failure
-    assert isinstance(result.error, OverlappingBoundariesError)
+    error = Failure.from_result(result).error
+
+    assert isinstance(error, OverlappingBoundariesError)
 
 
 # noinspection PyTypeChecker
@@ -566,8 +549,9 @@ def test_failure_when_exclusive_minimum_and_inclusive_maximum_are_overlapping(
         exclusive_minimum=exclusive_minimum, inclusive_maximum=inclusive_maximum
     )
 
-    assert result.is_failure
-    assert isinstance(result.error, OverlappingBoundariesError)
+    error = Failure.from_result(result).error
+
+    assert isinstance(error, OverlappingBoundariesError)
 
 
 # noinspection PyTypeChecker
@@ -582,8 +566,9 @@ def test_failure_when_exclusive_minimum_and_exclusive_maximum_are_overlapping(
         exclusive_minimum=exclusive_minimum, exclusive_maximum=exclusive_maximum
     )
 
-    assert result.is_failure
-    assert isinstance(result.error, OverlappingBoundariesError)
+    error = Failure.from_result(result).error
+
+    assert isinstance(error, OverlappingBoundariesError)
 
 
 @given(value=st_value())
@@ -597,8 +582,9 @@ def test_failure_when_inclusive_minimum_and_inclusive_maximum_match_single_value
         inclusive_minimum=inclusive_minimum, inclusive_maximum=inclusive_maximum
     )
 
-    assert result.is_failure
-    assert isinstance(result.error, SingleMatchBoundariesError)
+    error = Failure.from_result(result).error
+
+    assert isinstance(error, SingleMatchBoundariesError)
 
 
 @given(value=st_value())
@@ -612,8 +598,9 @@ def test_failure_when_inclusive_minimum_and_exclusive_maximum_match_single_value
         inclusive_minimum=inclusive_minimum, exclusive_maximum=exclusive_maximum
     )
 
-    assert result.is_failure
-    assert isinstance(result.error, SingleMatchBoundariesError)
+    error = Failure.from_result(result).error
+
+    assert isinstance(error, SingleMatchBoundariesError)
 
 
 @given(value=st_value())
@@ -627,8 +614,9 @@ def test_failure_when_exclusive_minimum_and_inclusive_maximum_match_single_value
         exclusive_minimum=exclusive_minimum, inclusive_maximum=inclusive_maximum
     )
 
-    assert result.is_failure
-    assert isinstance(result.error, SingleMatchBoundariesError)
+    error = Failure.from_result(result).error
+
+    assert isinstance(error, SingleMatchBoundariesError)
 
 
 @given(value=st_value())
@@ -642,5 +630,6 @@ def test_failure_when_exclusive_minimum_and_exclusive_maximum_match_single_value
         exclusive_minimum=exclusive_minimum, exclusive_maximum=exclusive_maximum
     )
 
-    assert result.is_failure
-    assert isinstance(result.error, SingleMatchBoundariesError)
+    error = Failure.from_result(result).error
+
+    assert isinstance(error, SingleMatchBoundariesError)

@@ -22,6 +22,7 @@ def test_from_result(value: Any) -> None:
     success = Success.from_result(Success(value))
 
     assert success.is_success
+    assert not success.is_failure
     assert success.value == value
 
 
@@ -35,13 +36,6 @@ def test_from_result_failure(error: Any) -> None:
 def test_value(value: Any) -> None:
     success = Success(value)
 
+    assert success.is_success
+    assert not success.is_failure
     assert success.value == value
-
-
-# noinspection PyStatementEffect
-@given(value=st_anything_comparable())
-def test_error(value: Any) -> None:
-    success = Success(value)
-
-    with pytest.raises(NotImplementedError):
-        success.error
