@@ -2,20 +2,18 @@ __all__ = ["mapping_validator"]
 
 import typing
 
-from typing import Any, TypeVar, Final
+from typing import Any, Final
 
 import testplates
 
 from testplates.result import Result, Success, Failure
 from testplates.base.structure import Structure
 
-from .type import type_validator
 from .utils import Validator
-from .exceptions import RequiredKeyMissingError, FieldValidationError
+from .type import type_validator
+from .exceptions import ValidationError, RequiredKeyMissingError, FieldValidationError
 
-_T = TypeVar("_T")
-
-mapping_type_validator: Final[Validator[typing.Mapping]] = type_validator(typing.Mapping).value
+mapping_type_validator: Final[Validator] = type_validator(typing.Mapping).value
 
 
 class MappingValidator:
@@ -29,9 +27,9 @@ class MappingValidator:
         return f"{testplates.__name__}.{mapping_validator.__name__}({self.structure})"
 
     # noinspection PyProtectedMember
-    def __call__(self, data: Any) -> Result[None]:
+    def __call__(self, data: Any) -> Result[None, ValidationError]:
         if (result := mapping_type_validator(data)).is_error:
-            return Failure.from_failure(result)
+            return Failure.from_result(result)
 
         structure = self.structure
 
@@ -49,5 +47,5 @@ class MappingValidator:
 
 
 # @lru_cache(maxsize=128, typed=True)
-def mapping_validator(structure: Structure) -> Result[Validator[typing.Mapping[str, _T]]]:
+def mapping_validator(structure: Structure) -> Result[Validator, ValidationError]:
     return Success(MappingValidator(structure))

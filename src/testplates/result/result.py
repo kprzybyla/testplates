@@ -5,13 +5,14 @@ from typing import TypeVar, Generic, Optional
 from testplates import result
 
 _T = TypeVar("_T")
+_E = TypeVar("_E", bound=Exception)
 
 
-class Result(Generic[_T]):
+class Result(Generic[_T, _E]):
 
     __slots__ = ("_value", "_error")
 
-    def __init__(self, value: Optional[_T], error: Optional[Exception]) -> None:
+    def __init__(self, value: Optional[_T], error: Optional[_E]) -> None:
         self._value = value
         self._error = error
 
@@ -24,19 +25,9 @@ class Result(Generic[_T]):
         return isinstance(self, result.Failure)
 
     @property
-    def value(self) -> _T:
-        value = self.value
-
-        if value is None:
-            raise TypeError(...)
-
-        return value
+    def value(self) -> Optional[_T]:
+        return self._value
 
     @property
-    def error(self) -> Exception:
-        error = self.error
-
-        if error is None:
-            raise TypeError(...)
-
-        return error
+    def error(self) -> Optional[_E]:
+        return self._error

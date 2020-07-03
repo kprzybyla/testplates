@@ -2,32 +2,35 @@ from __future__ import annotations
 
 __all__ = ["Failure"]
 
-from typing import Any, TypeVar, NoReturn
+from typing import Any, TypeVar, Generic
 
 from .result import Result
 
-_T = TypeVar("_T")
+_E = TypeVar("_E", bound=Exception)
 
 
-class Failure(Result[Any]):
+class Failure(Generic[_E], Result[Any, _E]):
 
     __slots__ = ()
 
-    def __init__(self, error: Exception) -> None:
+    def __init__(self, error: _E) -> None:
         super().__init__(None, error)
 
-    # TODO(kprzybyla): Below method 'from_failure' is a workaround for mypy
-    #                  that forces correct type hint using assert isinstance
-
     @classmethod
-    def from_failure(cls, failure: Result[Any]) -> Failure:
-        assert isinstance(failure, Failure)
-        return failure
+    def from_result(cls, result: Result[Any, _E]) -> Failure[_E]:
+        assert isinstance(result, Failure)
+        return result
 
     @property
-    def value(self) -> NoReturn:
-        raise TypeError(...)
+    def value(self) -> None:
+        value = self._value
+
+        assert value is None
+        return value
 
     @property
-    def error(self) -> Exception:
-        return self._error
+    def error(self) -> _E:
+        error = self._error
+
+        assert error is not None
+        return error

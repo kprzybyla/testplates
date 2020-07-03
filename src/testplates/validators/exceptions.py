@@ -80,7 +80,10 @@ class MemberValidationError(ValidationError):
 
 
 class FieldValidationError(ValidationError):
-    pass
+    def __init__(self, data, key, error):
+        self.data = data
+        self.key = key
+        self.error = error
 
 
 class ProhibitedValueError(ValidationError):
@@ -88,7 +91,9 @@ class ProhibitedValueError(ValidationError):
 
 
 class RequiredKeyMissingError(ValidationError):
-    pass
+    def __init__(self, data, field) -> None:
+        self.data = data
+        self.field = field
 
 
 class RequiredKeyValidatorMissingError(ValidationError):
@@ -100,7 +105,10 @@ class InvalidKeyError(ValidationError):
 
 
 class ChoiceValidationError(ValidationError):
-    pass
+    def __init__(self, data, key, error):
+        self.data = data
+        self.key = key
+        self.error = error
 
 
 class EnumAliasesNotAllowed(ValidationError):

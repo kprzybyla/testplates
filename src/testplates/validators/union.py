@@ -1,26 +1,24 @@
 __all__ = ["union_validator"]
 
-from typing import TypeVar, Tuple, Mapping, Final
+from typing import Any, Mapping, Final
 
 import testplates
 
 from testplates.result import Result, Success, Failure
 from testplates.utils import format_like_dict
 
-from .type import type_validator
 from .utils import Validator
-from .exceptions import InvalidKeyError, ChoiceValidationError
+from .type import type_validator
+from .exceptions import ValidationError, InvalidKeyError, ChoiceValidationError
 
-_T = TypeVar("_T")
-
-union_type_validator: Final[Validator[tuple]] = type_validator(tuple).value
+union_type_validator: Final[Validator] = type_validator(tuple).value
 
 
 class UnionValidator:
 
     __slots__ = ("choices",)
 
-    def __init__(self, choices: Mapping[str, Validator[_T]], /) -> None:
+    def __init__(self, choices: Mapping[str, Validator], /) -> None:
         self.choices = choices
 
     def __repr__(self) -> str:
@@ -28,9 +26,9 @@ class UnionValidator:
 
         return f"{testplates.__name__}.{union_validator.__name__}({choices})"
 
-    def __call__(self, data: Tuple[str, _T]) -> Result[None]:
-        if (error := union_type_validator(data)) is not None:
-            return Failure.from_failure(error)
+    def __call__(self, data: Any) -> Result[None, ValidationError]:
+        if (error := union_type_validator(data)).is_error:
+            return Failure.from_result(error)
 
         key, value = data
 
@@ -46,5 +44,5 @@ class UnionValidator:
 
 
 # @lru_cache(maxsize=128, typed=True)
-def union_validator(choices: Mapping[str, Validator[_T]], /) -> Result[Validator[Tuple[str, _T]]]:
+def union_validator(choices: Mapping[str, Validator], /) -> Result[Validator, ValidationError]:
     return Success(UnionValidator(choices))

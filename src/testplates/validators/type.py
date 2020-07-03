@@ -8,7 +8,7 @@ from testplates.result import Result, Success, Failure
 from testplates.utils import format_like_tuple
 
 from .utils import Validator
-from .exceptions import InvalidTypeValueError, InvalidTypeError
+from .exceptions import ValidationError, InvalidTypeValueError, InvalidTypeError
 
 
 class TypeValidator:
@@ -23,7 +23,7 @@ class TypeValidator:
 
         return f"{testplates.__name__}.{type_validator.__name__}({allowed_types})"
 
-    def __call__(self, data: Any) -> Result[None]:
+    def __call__(self, data: Any) -> Result[None, ValidationError]:
         allowed_types = self.allowed_types
 
         if not isinstance(data, allowed_types):
@@ -33,7 +33,7 @@ class TypeValidator:
 
 
 # @lru_cache(maxsize=128, typed=True)
-def type_validator(*allowed_types: type) -> Result[Validator[Any]]:
+def type_validator(*allowed_types: type) -> Result[Validator, ValidationError]:
     for allowed_type in allowed_types:
         if (result := validate_type(allowed_type)).is_error:
             return Failure.from_failure(result)
@@ -41,7 +41,7 @@ def type_validator(*allowed_types: type) -> Result[Validator[Any]]:
     return Success(TypeValidator(allowed_types))
 
 
-def validate_type(allowed_type: type) -> Result[None]:
+def validate_type(allowed_type: type) -> Result[None, ValidationError]:
     try:
         isinstance(object, allowed_type)
     except TypeError:
