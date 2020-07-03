@@ -6,18 +6,18 @@ from typing import Any, TypeVar, Generic
 
 from .result import Result
 
-_T = TypeVar("_T")
+ValueType = TypeVar("ValueType")
 
 
-class Success(Result[_T, Any], Generic[_T]):
+class Success(Result[ValueType, Any], Generic[ValueType]):
 
     __slots__ = ()
 
-    def __init__(self, value: _T) -> None:
+    def __init__(self, value: ValueType) -> None:
         super().__init__(value, None)
 
     @classmethod
-    def from_result(cls, result: Result[_T, Any]) -> Success[_T]:
+    def from_result(cls, result: Result[ValueType, Any]) -> Success[ValueType]:
 
         """
             Returns success from result.
@@ -29,7 +29,7 @@ class Success(Result[_T, Any], Generic[_T]):
         return result
 
     @property
-    def value(self) -> _T:
+    def value(self) -> ValueType:
         value = self._value
 
         assert value is not None

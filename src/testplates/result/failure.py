@@ -6,18 +6,18 @@ from typing import Any, TypeVar, Generic
 
 from .result import Result
 
-_E = TypeVar("_E", bound=Exception)
+ErrorType = TypeVar("ErrorType", bound=Exception)
 
 
-class Failure(Result[Any, _E], Generic[_E]):
+class Failure(Result[Any, ErrorType], Generic[ErrorType]):
 
     __slots__ = ()
 
-    def __init__(self, error: _E) -> None:
+    def __init__(self, error: ErrorType) -> None:
         super().__init__(None, error)
 
     @classmethod
-    def from_result(cls, result: Result[Any, _E]) -> Failure[_E]:
+    def from_result(cls, result: Result[Any, ErrorType]) -> Failure[ErrorType]:
 
         """
             Returns failure from result.
@@ -36,7 +36,7 @@ class Failure(Result[Any, _E], Generic[_E]):
         return value
 
     @property
-    def error(self) -> _E:
+    def error(self) -> ErrorType:
         error = self._error
 
         assert error is not None

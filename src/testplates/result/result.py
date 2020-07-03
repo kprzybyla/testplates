@@ -6,15 +6,15 @@ from typing import TypeVar, Generic, Optional
 
 from testplates import result
 
-_T = TypeVar("_T")
-_E = TypeVar("_E", bound=Exception)
+ValueType = TypeVar("ValueType")
+ErrorType = TypeVar("ErrorType", bound=Exception)
 
 
-class Result(abc.ABC, Generic[_T, _E]):
+class Result(abc.ABC, Generic[ValueType, ErrorType]):
 
     __slots__ = ("_value", "_error")
 
-    def __init__(self, value: Optional[_T], error: Optional[_E]) -> None:
+    def __init__(self, value: Optional[ValueType], error: Optional[ErrorType]) -> None:
         self._value = value
         self._error = error
 
@@ -28,7 +28,7 @@ class Result(abc.ABC, Generic[_T, _E]):
 
     @property
     @abc.abstractmethod
-    def value(self) -> _T:
+    def value(self) -> ValueType:
 
         """
             Returns value.
@@ -36,7 +36,7 @@ class Result(abc.ABC, Generic[_T, _E]):
 
     @property
     @abc.abstractmethod
-    def error(self) -> _E:
+    def error(self) -> ErrorType:
 
         """
             Returns error.
