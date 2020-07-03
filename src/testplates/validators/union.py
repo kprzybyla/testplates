@@ -1,33 +1,50 @@
 __all__ = ["union_validator"]
 
-from typing import TypeVar, Tuple, Mapping, Callable, Optional
+from typing import TypeVar, Tuple, Mapping, Final
+
+import testplates
+
+from testplates.result import Result, Success, Failure
+from testplates.utils import format_like_dict
 
 from .type import type_validator
-from .utils import Result, Validator
+from .utils import Validator
 from .exceptions import InvalidKeyError, ChoiceValidationError
 
 _T = TypeVar("_T")
 
-validate_union_type = type_validator(allowed_types=tuple)
+union_type_validator: Final[Validator[tuple]] = type_validator(tuple).value
 
 
-def union_validator(
-    choices: Mapping[str, Callable[[_T], Optional[Exception]]], /
-) -> Result[Validator[Tuple[str, _T]]]:
-    def validate(data: Tuple[str, _T]) -> Optional[Exception]:
-        if (error := validate_union_type(data)) is not None:
-            return error
+class UnionValidator:
+
+    __slots__ = ("choices",)
+
+    def __init__(self, choices: Mapping[str, Validator[_T]], /) -> None:
+        self.choices = choices
+
+    def __repr__(self) -> str:
+        choices = format_like_dict(self.choices)
+
+        return f"{testplates.__name__}.{union_validator.__name__}({choices})"
+
+    def __call__(self, data: Tuple[str, _T]) -> Result[None]:
+        if (error := union_type_validator(data)) is not None:
+            return Failure.from_failure(error)
 
         key, value = data
 
-        validate_choice = choices.get(key, None)
+        choice_validator = self.choices.get(key, None)
 
-        if validate_choice is None:
-            return InvalidKeyError(data, key)
+        if choice_validator is None:
+            return Failure(InvalidKeyError(data, key))
 
-        if (error := validate_choice(value)) is not None:
-            return ChoiceValidationError(data, key, error)
+        if (error := choice_validator(value)) is not None:
+            return Failure(ChoiceValidationError(data, key, error))
 
-        return None
+        return Success(None)
 
-    return validate
+
+# @lru_cache(maxsize=128, typed=True)
+def union_validator(choices: Mapping[str, Validator[_T]], /) -> Result[Validator[Tuple[str, _T]]]:
+    return Success(UnionValidator(choices))

@@ -2,35 +2,52 @@ __all__ = ["mapping_validator"]
 
 import typing
 
-from typing import TypeVar, Optional
+from typing import Any, TypeVar, Final
 
+import testplates
+
+from testplates.result import Result, Success, Failure
 from testplates.base.structure import Structure
 
 from .type import type_validator
-from .utils import Result, Validator
+from .utils import Validator
 from .exceptions import RequiredKeyMissingError, FieldValidationError
 
 _T = TypeVar("_T")
 
-validate_mapping_type = type_validator(allowed_types=typing.Mapping)
+mapping_type_validator: Final[Validator[typing.Mapping]] = type_validator(typing.Mapping).value
 
 
-def mapping_validator(structure: Structure) -> Result[Validator[typing.Mapping[str, _T]]]:
+class MappingValidator:
+
+    __slots__ = ("structure",)
+
+    def __init__(self, structure: Structure) -> None:
+        self.structure = structure
+
+    def __repr__(self) -> str:
+        return f"{testplates.__name__}.{mapping_validator.__name__}({self.structure})"
+
     # noinspection PyProtectedMember
-    def validate(data: typing.Mapping[str, _T]) -> Optional[Exception]:
-        if (error := validate_mapping_type(data)) is not None:
-            return error
+    def __call__(self, data: Any) -> Result[None]:
+        if (result := mapping_type_validator(data)).is_error:
+            return Failure.from_failure(result)
 
-        for field in structure._fields_:
-            if field.is_optional and field.name not in data.keys():
-                return RequiredKeyMissingError(data, field)
+        structure = self.structure
+
+        for field in structure._fields_.values():
+            if not field.is_optional and field.name not in data.keys():
+                return Failure(RequiredKeyMissingError(data, field))
 
         for key, value in data.items():
-            validate_field = structure._fields_[key].validator
+            field_validator = structure._fields_[key].validator
 
-            if (error := validate_field(value)) is not None:
-                return FieldValidationError(data, key, error)
+            if (result := field_validator(value)).is_error:
+                return Failure(FieldValidationError(data, key, result))
 
-        return None
+        return Success(None)
 
-    return validate
+
+# @lru_cache(maxsize=128, typed=True)
+def mapping_validator(structure: Structure) -> Result[Validator[typing.Mapping[str, _T]]]:
+    return Success(MappingValidator(structure))
