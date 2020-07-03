@@ -2,7 +2,9 @@ from __future__ import annotations
 
 __all__ = ["Success"]
 
-from typing import Any, TypeVar, Generic
+from typing import Any, TypeVar, Generic, NoReturn
+
+import testplates
 
 from .result import Result
 
@@ -11,10 +13,15 @@ ValueType = TypeVar("ValueType")
 
 class Success(Result[ValueType, Any], Generic[ValueType]):
 
-    __slots__ = ()
+    __slots__ = ("_value",)
 
     def __init__(self, value: ValueType) -> None:
-        super().__init__(value, None)
+        super().__init__()
+
+        self._value = value
+
+    def __repr__(self) -> str:
+        return f"{testplates.__name__}.{type(self).__name__}({self.value})"
 
     @classmethod
     def from_result(cls, result: Result[ValueType, Any]) -> Success[ValueType]:
@@ -30,14 +37,8 @@ class Success(Result[ValueType, Any], Generic[ValueType]):
 
     @property
     def value(self) -> ValueType:
-        value = self._value
-
-        assert value is not None
-        return value
+        return self._value
 
     @property
-    def error(self) -> None:
-        error = self._error
-
-        assert error is None
-        return error
+    def error(self) -> NoReturn:
+        raise NotImplementedError()

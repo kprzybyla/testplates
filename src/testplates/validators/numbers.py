@@ -41,13 +41,13 @@ class AnyNumberValidator(Generic[_T]):
         return f"{any_number_validator.__name__}()"
 
     def __call__(self, data: Any) -> Result[None, ValidationError]:
-        if (result := validate_any_number_type(data)).is_error:
+        if (result := validate_any_number_type(data)).is_failure:
             return Failure.from_result(result)
 
-        if (result := validate_boolean_type(data, self.allow_boolean)).is_error:
+        if (result := validate_boolean_type(data, self.allow_boolean)).is_failure:
             return Failure.from_result(result)
 
-        if (result := validate_boundaries(data, self.minimum, self.maximum)).is_error:
+        if (result := validate_boundaries(data, self.minimum, self.maximum)).is_failure:
             return Failure.from_result(result)
 
         return Success(None)
@@ -68,13 +68,13 @@ class IntegerValidator:
         return f"{integer_validator.__name__}()"
 
     def __call__(self, data: Any) -> Result[None, ValidationError]:
-        if (result := validate_integer_type(data)).is_error:
+        if (result := validate_integer_type(data)).is_failure:
             return Failure.from_result(result)
 
-        if (result := validate_boolean_type(data, self.allow_boolean)).is_error:
+        if (result := validate_boolean_type(data, self.allow_boolean)).is_failure:
             return Failure.from_result(result)
 
-        if (result := validate_boundaries(data, self.minimum, self.maximum)).is_error:
+        if (result := validate_boundaries(data, self.minimum, self.maximum)).is_failure:
             return Failure.from_result(result)
 
         return Success(None)
@@ -92,10 +92,10 @@ class FloatValidator:
         return f"{float_validator.__name__}()"
 
     def __call__(self, data: Any) -> Result[None, ValidationError]:
-        if (result := validate_float_type(data)).is_error:
+        if (result := validate_float_type(data)).is_failure:
             return Failure.from_result(result)
 
-        if (result := validate_boundaries(data, self.minimum, self.maximum)).is_error:
+        if (result := validate_boundaries(data, self.minimum, self.maximum)).is_failure:
             return Failure.from_result(result)
 
         return Success(None)
@@ -156,7 +156,7 @@ def any_number_validator(
         exclusive_maximum=exclusive_maximum_value,
     )
 
-    if boundaries.is_error:
+    if boundaries.is_failure:
         return Failure.from_result(boundaries)
 
     minimum, maximum = boundaries.value
@@ -219,7 +219,7 @@ def integer_validator(
         exclusive_maximum=exclusive_maximum_value,
     )
 
-    if boundaries.is_error:
+    if boundaries.is_failure:
         return Failure.from_result(boundaries)
 
     minimum, maximum = boundaries.value
@@ -275,7 +275,7 @@ def float_validator(
         exclusive_maximum=exclusive_maximum_value,
     )
 
-    if boundaries.is_error:
+    if boundaries.is_failure:
         return Failure.from_result(boundaries)
 
     minimum, maximum = boundaries.value

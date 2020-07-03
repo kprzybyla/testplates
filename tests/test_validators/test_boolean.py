@@ -22,22 +22,22 @@ def test_repr() -> None:
 def test_success(data: bool) -> None:
     validator = boolean_validator()
 
-    assert not validator.is_error
+    assert not validator.is_failure
 
     result = validator.value(data)
 
-    assert not result.is_error
+    assert not result.is_failure
 
 
 @given(data=st_anything_except(bool))
 def test_failure_when_data_validation_fails(data: _T) -> None:
     validator = boolean_validator()
 
-    assert not validator.is_error
+    assert not validator.is_failure
 
     result = validator.value(data)
 
-    assert result.is_error
+    assert result.is_failure
 
     error = result.error
 

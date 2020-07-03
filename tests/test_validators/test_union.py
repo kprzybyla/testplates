@@ -34,11 +34,11 @@ def test_failure_when_data_type_validation_fails(data: _T) -> None:
     choices = {}
     validator = union_validator(choices)
 
-    assert not validator.is_error
+    assert not validator.is_failure
 
     result = validator.value(data)
 
-    assert result.is_error
+    assert result.is_failure
 
     error = result.error
 
@@ -59,11 +59,11 @@ def test_failure_when_data_field_validation_fails(key: str) -> None:
 
     validator = union_validator({key: validator})
 
-    assert not validator.is_error
+    assert not validator.is_failure
 
     result = validator.value(data)
 
-    assert result.is_error
+    assert result.is_failure
 
     error = result.error
 

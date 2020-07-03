@@ -59,11 +59,11 @@ def test_success(key: str) -> None:
     structure = create_structure(field)
     validator = mapping_validator(structure)
 
-    assert not validator.is_error
+    assert not validator.is_failure
 
     result = validator.value(data)
 
-    assert not result.is_error
+    assert not result.is_failure
 
 
 @given(key=st.text())
@@ -74,11 +74,11 @@ def test_success_with_optional_field(key: str) -> None:
     structure = create_structure(field)
     validator = mapping_validator(structure)
 
-    assert not validator.is_error
+    assert not validator.is_failure
 
     result = validator.value(data)
 
-    assert not result.is_error
+    assert not result.is_failure
 
 
 @given(data=st_anything_except(Mapping))
@@ -86,11 +86,11 @@ def test_failure_when_data_type_validation_fails(data: _T) -> None:
     structure = create_structure()
     validator = mapping_validator(structure)
 
-    assert not validator.is_error
+    assert not validator.is_failure
 
     result = validator.value(data)
 
-    assert result.is_error
+    assert result.is_failure
 
     error = result.error
 
@@ -107,11 +107,11 @@ def test_failure_when_data_required_key_is_missing(key: str) -> None:
     structure = create_structure(field)
     validator = mapping_validator(structure)
 
-    assert not validator.is_error
+    assert not validator.is_failure
 
     result = validator.value(data)
 
-    assert result.is_error
+    assert result.is_failure
 
     error = result.error
 
@@ -135,11 +135,11 @@ def test_failure_when_data_field_validation_fails(key: str) -> None:
     structure = create_structure(field)
     validator = mapping_validator(structure)
 
-    assert not validator.is_error
+    assert not validator.is_failure
 
     result = validator.value(data)
 
-    assert result.is_error
+    assert result.is_failure
 
     error = result.error
 

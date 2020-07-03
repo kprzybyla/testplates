@@ -2,7 +2,7 @@ __all__ = ["Result"]
 
 import abc
 
-from typing import TypeVar, Generic, Optional
+from typing import TypeVar, Generic
 
 from testplates import result
 
@@ -12,18 +12,14 @@ ErrorType = TypeVar("ErrorType", bound=Exception)
 
 class Result(abc.ABC, Generic[ValueType, ErrorType]):
 
-    __slots__ = ("_value", "_error")
-
-    def __init__(self, value: Optional[ValueType], error: Optional[ErrorType]) -> None:
-        self._value = value
-        self._error = error
+    __slots__ = ()
 
     @property
-    def is_value(self) -> bool:
+    def is_success(self) -> bool:
         return isinstance(self, result.Success)
 
     @property
-    def is_error(self) -> bool:
+    def is_failure(self) -> bool:
         return isinstance(self, result.Failure)
 
     @property

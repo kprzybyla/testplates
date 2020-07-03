@@ -28,7 +28,7 @@ class MappingValidator:
 
     # noinspection PyProtectedMember
     def __call__(self, data: Any) -> Result[None, ValidationError]:
-        if (result := mapping_type_validator(data)).is_error:
+        if (result := mapping_type_validator(data)).is_failure:
             return Failure.from_result(result)
 
         structure = self.structure
@@ -40,7 +40,7 @@ class MappingValidator:
         for key, value in data.items():
             field_validator = structure._fields_[key].validator
 
-            if (result := field_validator(value)).is_error:
+            if (result := field_validator(value)).is_failure:
                 return Failure(FieldValidationError(data, key, result))
 
         return Success(None)

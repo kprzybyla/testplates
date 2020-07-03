@@ -27,7 +27,7 @@ class UnionValidator:
         return f"{testplates.__name__}.{union_validator.__name__}({choices})"
 
     def __call__(self, data: Any) -> Result[None, ValidationError]:
-        if (error := union_type_validator(data)).is_error:
+        if (error := union_type_validator(data)).is_failure:
             return Failure.from_result(error)
 
         key, value = data

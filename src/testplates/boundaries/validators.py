@@ -117,17 +117,17 @@ def get_value_boundaries(
 
     minimum = get_minimum(inclusive=inclusive_minimum, exclusive=exclusive_minimum)
 
-    if minimum.is_error:
+    if minimum.is_failure:
         return Failure.from_result(minimum)
 
     maximum = get_maximum(inclusive=inclusive_maximum, exclusive=exclusive_maximum)
 
-    if maximum.is_error:
+    if maximum.is_failure:
         return Failure.from_result(maximum)
 
     result = validate_value_boundaries(minimum=minimum.value, maximum=maximum.value)
 
-    if result.is_error:
+    if result.is_failure:
         return Failure.from_result(result)
 
     return Success((minimum.value, maximum.value))
@@ -172,17 +172,17 @@ def get_length_boundaries(
 
     minimum = get_minimum(inclusive=inclusive_minimum)
 
-    if minimum.is_error:
+    if minimum.is_failure:
         return Failure.from_result(minimum)
 
     maximum = get_maximum(inclusive=inclusive_maximum)
 
-    if maximum.is_error:
+    if maximum.is_failure:
         return Failure.from_result(maximum)
 
     result = validate_length_boundaries(minimum=minimum.value, maximum=maximum.value)
 
-    if result.is_error:
+    if result.is_failure:
         return Failure.from_result(result)
 
     return Success((minimum.value, maximum.value))

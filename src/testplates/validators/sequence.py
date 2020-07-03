@@ -103,7 +103,7 @@ def sequence_validator(
 ) -> Result[Validator, ValidationError]:
     result = get_length_boundaries(inclusive_minimum=minimum_size, inclusive_maximum=maximum_size)
 
-    if result.is_error:
+    if result.is_failure:
         return Failure.from_result(result)
 
     minimum, maximum = result.value

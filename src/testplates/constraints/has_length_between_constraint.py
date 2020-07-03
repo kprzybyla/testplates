@@ -17,7 +17,7 @@ class HasLengthBetween(Constraint):
             inclusive_minimum=minimum_length, inclusive_maximum=maximum_length
         )
 
-        if result.is_error:
+        if result.is_failure:
             raise result.error
 
         self._minimum, self._maximum = result.value

@@ -4,6 +4,9 @@ __all__ = [
     "Optional",
     "Object",
     "Mapping",
+    "Result",
+    "Success",
+    "Failure",
     "ANY",
     "WILDCARD",
     "ABSENT",
@@ -43,6 +46,7 @@ from testplates.base import (
     MISSING,
 )
 
+from testplates.result import Result, Success, Failure
 from testplates.boundaries import UNLIMITED
 
 from testplates.constraints import (

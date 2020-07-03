@@ -2,7 +2,9 @@ from __future__ import annotations
 
 __all__ = ["Failure"]
 
-from typing import Any, TypeVar, Generic
+from typing import Any, TypeVar, Generic, NoReturn
+
+import testplates
 
 from .result import Result
 
@@ -11,10 +13,15 @@ ErrorType = TypeVar("ErrorType", bound=Exception)
 
 class Failure(Result[Any, ErrorType], Generic[ErrorType]):
 
-    __slots__ = ()
+    __slots__ = ("_error",)
 
     def __init__(self, error: ErrorType) -> None:
-        super().__init__(None, error)
+        super().__init__()
+
+        self._error = error
+
+    def __repr__(self) -> str:
+        return f"{testplates.__name__}.{type(self).__name__}({self.error})"
 
     @classmethod
     def from_result(cls, result: Result[Any, ErrorType]) -> Failure[ErrorType]:
@@ -29,15 +36,9 @@ class Failure(Result[Any, ErrorType], Generic[ErrorType]):
         return result
 
     @property
-    def value(self) -> None:
-        value = self._value
-
-        assert value is None
-        return value
+    def value(self) -> NoReturn:
+        raise NotImplementedError()
 
     @property
     def error(self) -> ErrorType:
-        error = self._error
-
-        assert error is not None
-        return error
+        return self._error

@@ -45,12 +45,12 @@ def enum_validator(
     for member in members:
         result = enum_member_validator(member.value)
 
-        if result.is_error:
+        if result.is_failure:
             return Failure(MemberValidationError(enum_type, member, result.error))
 
     enum_type_validator = type_validator(enum_type)
 
-    if enum_type_validator.is_error:
+    if enum_type_validator.is_failure:
         return Failure.from_result(enum_type_validator)
 
     return Success(EnumValidator(enum_type, enum_type_validator.value, enum_member_validator))

@@ -157,7 +157,7 @@ def any_string_validator(
         inclusive_minimum=minimum_length, inclusive_maximum=maximum_length
     )
 
-    if result.is_error:
+    if result.is_failure:
         return Failure.from_result(result)
 
     minimum, maximum = result.value
@@ -194,7 +194,7 @@ def string_validator(
         inclusive_minimum=minimum_length, inclusive_maximum=maximum_length
     )
 
-    if result.is_error:
+    if result.is_failure:
         return Failure.from_result(result)
 
     minimum, maximum = result.value
@@ -231,7 +231,7 @@ def bytes_validator(
         inclusive_minimum=minimum_length, inclusive_maximum=maximum_length
     )
 
-    if result.is_error:
+    if result.is_failure:
         return Failure.from_result(result)
 
     minimum, maximum = result.value

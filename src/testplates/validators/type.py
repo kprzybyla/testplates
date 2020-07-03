@@ -35,7 +35,7 @@ class TypeValidator:
 # @lru_cache(maxsize=128, typed=True)
 def type_validator(*allowed_types: type) -> Result[Validator, ValidationError]:
     for allowed_type in allowed_types:
-        if (result := validate_type(allowed_type)).is_error:
+        if (result := validate_type(allowed_type)).is_failure:
             return Failure.from_result(result)
 
     return Success(TypeValidator(allowed_types))

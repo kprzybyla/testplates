@@ -59,12 +59,12 @@ def test_success(members: Dict[str, _T]) -> None:
     enum_type = create_enum_type(members)
     validator = enum_validator(enum_type, uint8)
 
-    assert not validator.is_error
+    assert not validator.is_failure
 
     member: Enum = sample(enum_type)
     result = validator.value(member)
 
-    assert not result.is_error
+    assert not result.is_failure
 
 
 # noinspection PyTypeChecker
@@ -73,7 +73,7 @@ def test_failure_when_member_validation_fails(members: Dict[str, _T]) -> None:
     enum_type = create_enum_type(members)
     validator = enum_validator(enum_type, uint8)
 
-    assert validator.is_error
+    assert validator.is_failure
 
     error = validator.error
 
@@ -89,12 +89,12 @@ def test_failure_when_data_validation_fails(members: Dict[str, _T]) -> None:
     enum_type = create_enum_type(members)
     validator = enum_validator(enum_type)
 
-    assert not validator.is_error
+    assert not validator.is_failure
 
     member: Enum = sample(enum_type)
     result = validator.value(member.value)
 
-    assert result.is_error
+    assert result.is_failure
 
     error = result.error
 
@@ -112,7 +112,7 @@ def test_failure_when_enum_type_is_not_a_classinfo() -> None:
     enum_type = Example()
     validator = enum_validator(enum_type)  # type: ignore
 
-    assert validator.is_error
+    assert validator.is_failure
 
     error = validator.error
 
@@ -129,6 +129,6 @@ def test_enum_instance_otherness_sanity() -> None:
 
     validator = enum_validator(Example)
 
-    assert not validator.is_error
-    assert validator.value(Example.VALUE).is_error is False
-    assert validator.value(DifferentExample.VALUE).is_error is True
+    assert not validator.is_failure
+    assert validator.value(Example.VALUE).is_failure is False
+    assert validator.value(DifferentExample.VALUE).is_failure is True

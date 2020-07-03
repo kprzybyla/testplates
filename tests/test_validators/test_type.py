@@ -27,18 +27,18 @@ def test_repr(data: _T) -> None:
 def test_success(data: _T) -> None:
     validator = type_validator(type(data))
 
-    assert not validator.is_error
+    assert not validator.is_failure
 
     result = validator.value(data)
 
-    assert not result.is_error
+    assert not result.is_failure
 
 
 @given(data=st_anything_except_classinfo())
 def test_failure_when_type_is_not_a_classinfo(data: _T) -> None:
     validator = type_validator(data)
 
-    assert validator.is_error, validator
+    assert validator.is_failure, validator
 
     error = validator.error
 
@@ -52,11 +52,11 @@ def test_failure_when_data_validation_fails(st_data: st.DataObject, data: _T) ->
 
     validator = type_validator(any_type_except_data)
 
-    assert not validator.is_error
+    assert not validator.is_failure
 
     result = validator.value(data)
 
-    assert result.is_error
+    assert result.is_failure
 
     error = result.error
 

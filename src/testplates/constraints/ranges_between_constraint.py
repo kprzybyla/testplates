@@ -29,7 +29,7 @@ class RangesBetween(Generic[_T], Constraint):
             exclusive_maximum=exclusive_maximum,
         )
 
-        if result.is_error:
+        if result.is_failure:
             raise result.error
 
         self._minimum, self._maximum = result.value
