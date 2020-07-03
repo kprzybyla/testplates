@@ -18,6 +18,13 @@ class Success(Result[_T, Any], Generic[_T]):
 
     @classmethod
     def from_result(cls, result: Result[_T, Any]) -> Success[_T]:
+
+        """
+            Returns success from result.
+
+            :param result: result from which success is created
+        """
+
         assert isinstance(result, Success)
         return result
 

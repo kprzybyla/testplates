@@ -10,7 +10,7 @@ _T = TypeVar("_T")
 _E = TypeVar("_E", bound=Exception)
 
 
-class Result(Generic[_T, _E], abc.ABC):
+class Result(abc.ABC, Generic[_T, _E]):
 
     __slots__ = ("_value", "_error")
 
@@ -31,7 +31,7 @@ class Result(Generic[_T, _E], abc.ABC):
     def value(self) -> _T:
 
         """
-            ...
+            Returns value.
         """
 
     @property
@@ -39,5 +39,5 @@ class Result(Generic[_T, _E], abc.ABC):
     def error(self) -> _E:
 
         """
-            ...
+            Returns error.
         """

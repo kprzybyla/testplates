@@ -18,6 +18,13 @@ class Failure(Result[Any, _E], Generic[_E]):
 
     @classmethod
     def from_result(cls, result: Result[Any, _E]) -> Failure[_E]:
+
+        """
+            Returns failure from result.
+
+            :param result: result from which failure is created
+        """
+
         assert isinstance(result, Failure)
         return result
 
