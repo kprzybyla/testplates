@@ -15,7 +15,7 @@ from tests.conftest import sample, Draw
 
 _T = TypeVar("_T")
 
-uint8: Final = Success.from_result(integer_validator(minimum_value=0, maximum_value=255)).value
+uint8: Final = Success.get_value(integer_validator(minimum_value=0, maximum_value=255))
 
 
 def create_enum_type(members: Dict[str, _T]) -> EnumMeta:
@@ -39,7 +39,7 @@ def test_repr(members: Dict[str, _T]) -> None:
 
     enum_type = create_enum_type(members)
     validator_result = enum_validator(enum_type)
-    validator = Success.from_result(validator_result).value
+    validator = Success.get_value(validator_result)
 
     assert repr(validator) == fmt.format(type=enum_type, validator=passthrough_validator)
 
@@ -52,7 +52,7 @@ def test_repr_with_member_validator(members: Dict[str, _T]) -> None:
     enum_type = create_enum_type(members)
 
     validator_result = enum_validator(enum_type, uint8)
-    validator = Success.from_result(validator_result).value
+    validator = Success.get_value(validator_result)
 
     assert repr(validator) == fmt.format(type=enum_type, validator=uint8)
 
@@ -64,10 +64,10 @@ def test_success(members: Dict[str, _T]) -> None:
     member: Enum = sample(enum_type)
 
     validator_result = enum_validator(enum_type, uint8)
-    validator = Success.from_result(validator_result).value
+    validator = Success.get_value(validator_result)
 
     validation_result = validator(member)
-    value = Success.from_result(validation_result).value
+    value = Success.get_value(validation_result)
 
     assert value is None
 
@@ -78,7 +78,7 @@ def test_failure_when_member_validation_fails(members: Dict[str, _T]) -> None:
     enum_type = create_enum_type(members)
 
     validator_result = enum_validator(enum_type, uint8)
-    error = Failure.from_result(validator_result).error
+    error = Failure.get_error(validator_result)
 
     assert isinstance(error, MemberValidationError)
     assert error.enum_type == enum_type
@@ -93,10 +93,10 @@ def test_failure_when_data_validation_fails(members: Dict[str, _T]) -> None:
     member: Enum = sample(enum_type)
 
     validator_result = enum_validator(enum_type)
-    validator = Success.from_result(validator_result).value
+    validator = Success.get_value(validator_result)
 
     validation_result = validator(member.value)
-    error = Failure.from_result(validation_result).error
+    error = Failure.get_error(validation_result)
 
     assert isinstance(error, InvalidTypeError)
     assert error.data == member.value
@@ -112,7 +112,7 @@ def test_failure_when_enum_type_is_not_a_classinfo() -> None:
     enum_type = Example()
 
     validator_result = enum_validator(enum_type)  # type: ignore
-    error = Failure.from_result(validator_result).error
+    error = Failure.get_error(validator_result)
 
     assert isinstance(error, InvalidTypeValueError)
     assert error.given_type == enum_type
@@ -126,7 +126,7 @@ def test_enum_instance_otherness_sanity() -> None:
         VALUE = 0
 
     validator_result = enum_validator(Example)
-    validator = Success.from_result(validator_result).value
+    validator = Success.get_value(validator_result)
 
     assert validator(Example.VALUE).is_success
     assert validator(DifferentExample.VALUE).is_failure

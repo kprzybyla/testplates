@@ -36,6 +36,7 @@ class EnumValidator:
         return self.enum_type_validator(data)
 
 
+# noinspection PyTypeChecker
 # @lru_cache(maxsize=128, typed=True)
 def enum_validator(
     enum_type: EnumMeta, enum_member_validator: Validator = passthrough_validator, /
@@ -46,11 +47,13 @@ def enum_validator(
         result = enum_member_validator(member.value)
 
         if result.is_failure:
-            return Failure(MemberValidationError(enum_type, member, result.error))
+            return Failure(MemberValidationError(enum_type, member, Failure.get_error(result)))
 
-    enum_type_validator = type_validator(enum_type)
+    enum_type_validator_result = type_validator(enum_type)
 
-    if enum_type_validator.is_failure:
-        return Failure.from_result(enum_type_validator)
+    if enum_type_validator_result.is_failure:
+        return Failure.from_result(enum_type_validator_result)
 
-    return Success(EnumValidator(enum_type, enum_type_validator.value, enum_member_validator))
+    enum_type_validator = Success.get_value(enum_type_validator_result)
+
+    return Success(EnumValidator(enum_type, enum_type_validator, enum_member_validator))

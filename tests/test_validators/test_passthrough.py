@@ -17,6 +17,6 @@ def test_repr() -> None:
 @given(data=st_anything_comparable())
 def test_success(data: Any) -> None:
     validation_result = passthrough_validator(data)
-    value = Success.from_result(validation_result).value
+    value = Success.get_value(validation_result)
 
     assert value is None

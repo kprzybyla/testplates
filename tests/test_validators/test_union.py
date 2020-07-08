@@ -41,7 +41,7 @@ def test_success(choices: Dict[str, Validator], value: Any) -> None:
     data = (key, value)
 
     validator_result = union_validator(choices)
-    validator = Success.from_result(validator_result).value
+    validator = Success.get_value(validator_result)
 
     validation_result = validator(data)
     value = Success.get_value(validation_result)
@@ -58,7 +58,7 @@ def test_failure_when_invalid_key_is_passed(
     data = (key, value)
 
     validator_result = union_validator(choices)
-    validator = Success.from_result(validator_result).value
+    validator = Success.get_value(validator_result)
 
     validation_result = validator(data)
     error = Failure.get_error(validation_result)

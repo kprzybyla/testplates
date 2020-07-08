@@ -10,7 +10,7 @@ from .utils import Validator
 from .type import type_validator
 from .exceptions import ValidationError
 
-boolean_type_validator: Final[Validator] = type_validator(bool).value
+boolean_type_validator: Final[Validator] = Success.get_value(type_validator(bool))
 
 
 class BooleanValidator:

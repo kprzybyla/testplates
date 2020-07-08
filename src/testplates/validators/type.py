@@ -11,6 +11,7 @@ from .utils import Validator
 from .exceptions import ValidationError, InvalidTypeValueError, InvalidTypeError
 
 
+# noinspection PyTypeChecker
 class TypeValidator:
 
     __slots__ = ("allowed_types",)
@@ -32,6 +33,7 @@ class TypeValidator:
         return Success(None)
 
 
+# noinspection PyTypeChecker
 # @lru_cache(maxsize=128, typed=True)
 def type_validator(*allowed_types: type) -> Result[Validator, ValidationError]:
     for allowed_type in allowed_types:
@@ -41,6 +43,7 @@ def type_validator(*allowed_types: type) -> Result[Validator, ValidationError]:
     return Success(TypeValidator(allowed_types))
 
 
+# noinspection PyTypeChecker
 def validate_type(allowed_type: type) -> Result[None, ValidationError]:
     try:
         isinstance(object, allowed_type)

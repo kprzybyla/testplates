@@ -1,12 +1,10 @@
 __all__ = ["has_unique_items", "Validator"]
 
-from typing import Any, TypeVar, Iterable, Hashable, Callable
+from typing import Any, Iterable, Hashable, Callable
 
 from testplates.result import Result
 
 from .exceptions import ValidationError
-
-_T = TypeVar("_T")
 
 Validator = Callable[[Any], Result[None, ValidationError]]
 

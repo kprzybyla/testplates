@@ -15,7 +15,7 @@ def test_repr() -> None:
     fmt = "testplates.boolean_validator()"
 
     validator_result = boolean_validator()
-    validator = Success.from_result(validator_result).value
+    validator = Success.get_value(validator_result)
 
     assert repr(validator) == fmt
 
@@ -23,10 +23,10 @@ def test_repr() -> None:
 @given(data=st.booleans())
 def test_success(data: bool) -> None:
     validator_result = boolean_validator()
-    validator = Success.from_result(validator_result).value
+    validator = Success.get_value(validator_result)
 
     validation_result = validator(data)
-    value = Success.from_result(validation_result).value
+    value = Success.get_value(validation_result)
 
     assert value is None
 
@@ -34,10 +34,10 @@ def test_success(data: bool) -> None:
 @given(data=st_anything_except(bool))
 def test_failure_when_data_validation_fails(data: _T) -> None:
     validator_result = boolean_validator()
-    validator = Success.from_result(validator_result).value
+    validator = Success.get_value(validator_result)
 
     validation_result = validator(data)
-    error = Failure.from_result(validation_result).error
+    error = Failure.get_error(validation_result)
 
     assert isinstance(error, InvalidTypeError)
     assert error.data == data
