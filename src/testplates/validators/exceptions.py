@@ -101,13 +101,13 @@ class RequiredKeyValidatorMissingError(ValidationError):
 
 
 class InvalidKeyError(ValidationError):
-    pass
+    def __init__(self, data):
+        self.data = data
 
 
 class ChoiceValidationError(ValidationError):
-    def __init__(self, data, key, error):
+    def __init__(self, data, error):
         self.data = data
-        self.key = key
         self.error = error
 
 

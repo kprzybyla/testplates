@@ -33,6 +33,17 @@ class Success(Result[ValueType, Any], Generic[ValueType]):
         assert isinstance(result, Success), result
         return result
 
+    @classmethod
+    def get_value(cls, result: Result[ValueType, Any]) -> ValueType:
+
+        """
+            Returns value from result.
+
+            :param result: result from which value is extracted
+        """
+
+        return cls.from_result(result).value
+
     @property
     def is_success(self) -> bool:
         return True

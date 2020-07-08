@@ -5,13 +5,12 @@ from typing import Any, Mapping, Final
 import testplates
 
 from testplates.result import Result, Success, Failure
-from testplates.utils import format_like_dict
 
 from .utils import Validator
 from .type import type_validator
 from .exceptions import ValidationError, InvalidKeyError, ChoiceValidationError
 
-union_type_validator: Final[Validator] = type_validator(tuple).value
+union_type_validator: Final[Validator] = Success.get_value(type_validator(tuple))
 
 
 class UnionValidator:
@@ -22,10 +21,9 @@ class UnionValidator:
         self.choices = choices
 
     def __repr__(self) -> str:
-        choices = format_like_dict(self.choices)
+        return f"{testplates.__name__}.{union_validator.__name__}({self.choices})"
 
-        return f"{testplates.__name__}.{union_validator.__name__}({choices})"
-
+    # noinspection PyTypeChecker
     def __call__(self, data: Any) -> Result[None, ValidationError]:
         if (error := union_type_validator(data)).is_failure:
             return Failure.from_result(error)
@@ -35,10 +33,10 @@ class UnionValidator:
         choice_validator = self.choices.get(key, None)
 
         if choice_validator is None:
-            return Failure(InvalidKeyError(data, key))
+            return Failure(InvalidKeyError(data))
 
-        if (error := choice_validator(value)) is not None:
-            return Failure(ChoiceValidationError(data, key, error))
+        if (error := choice_validator(value)).is_failure:
+            return Failure(ChoiceValidationError(data, error))
 
         return Success(None)
 

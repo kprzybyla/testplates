@@ -2,13 +2,13 @@ __all__ = ["Result"]
 
 import abc
 
-from typing import TypeVar, Protocol
+from typing import TypeVar, Generic
 
 ValueType = TypeVar("ValueType")
 ErrorType = TypeVar("ErrorType", bound=Exception)
 
 
-class Result(Protocol[ValueType, ErrorType]):
+class Result(Generic[ValueType, ErrorType], abc.ABC):
 
     __slots__ = ()
 

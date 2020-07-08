@@ -12,6 +12,7 @@ __all__ = [
     "sequence_validator",
     "mapping_validator",
     "union_validator",
+    "Validator",
 ]
 
 from .passthrough import passthrough_validator
@@ -23,3 +24,4 @@ from .enum import enum_validator
 from .sequence import sequence_validator
 from .mapping import mapping_validator
 from .union import union_validator
+from .utils import Validator

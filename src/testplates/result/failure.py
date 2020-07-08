@@ -33,6 +33,17 @@ class Failure(Result[Any, ErrorType], Generic[ErrorType]):
         assert isinstance(result, Failure), result
         return result
 
+    @classmethod
+    def get_error(cls, result: Result[Any, ErrorType]) -> ErrorType:
+
+        """
+            Returns error from result.
+
+            :param result: result from which error is extracted
+        """
+
+        return cls.from_result(result).error
+
     @property
     def is_success(self) -> bool:
         return False
