@@ -64,7 +64,7 @@ def test_failure_when_invalid_key_is_passed(
     error = Failure.get_error(validation_result)
 
     assert isinstance(error, InvalidKeyError)
-    assert error.data is data
+    assert error.data == data
 
 
 @given(choices=st_choices(min_size=1), data=st_anything_except(tuple))
@@ -88,7 +88,7 @@ def test_failure_when_data_field_validation_fails(
     failure = Failure(ValidationError(message))
 
     def validator(this_value: Any) -> Failure[ValidationError]:
-        assert this_value is value
+        assert this_value == value
         return failure
 
     key = sample(choices)
@@ -103,5 +103,5 @@ def test_failure_when_data_field_validation_fails(
     error = Failure.get_error(validation_result)
 
     assert isinstance(error, ChoiceValidationError)
-    assert error.data is data
-    assert error.error is failure
+    assert error.data == data
+    assert error.error == failure

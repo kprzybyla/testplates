@@ -7,31 +7,32 @@ from typing import Any, Final
 import testplates
 
 from testplates.result import Result, Success, Failure
-from testplates.base.structure import Structure
+from testplates.base.structure import StructureMeta
 
 from .utils import Validator
 from .type import type_validator
 from .exceptions import ValidationError, RequiredKeyMissingError, FieldValidationError
 
-mapping_type_validator: Final[Validator] = type_validator(typing.Mapping).value
+mapping_type_validator: Final[Validator] = Success.get_value(type_validator(typing.Mapping))
 
 
 class MappingValidator:
 
-    __slots__ = ("structure",)
+    __slots__ = ("structure_type",)
 
-    def __init__(self, structure: Structure) -> None:
-        self.structure = structure
+    def __init__(self, structure_type: StructureMeta) -> None:
+        self.structure_type = structure_type
 
     def __repr__(self) -> str:
-        return f"{testplates.__name__}.{mapping_validator.__name__}({self.structure})"
+        return f"{testplates.__name__}.{mapping_validator.__name__}({self.structure_type})"
 
+    # noinspection PyTypeChecker
     # noinspection PyProtectedMember
     def __call__(self, data: Any) -> Result[None, ValidationError]:
         if (result := mapping_type_validator(data)).is_failure:
             return Failure.from_result(result)
 
-        structure = self.structure
+        structure = self.structure_type
 
         for field in structure._fields_.values():
             if not field.is_optional and field.name not in data.keys():
@@ -47,5 +48,5 @@ class MappingValidator:
 
 
 # @lru_cache(maxsize=128, typed=True)
-def mapping_validator(structure: Structure) -> Result[Validator, ValidationError]:
-    return Success(MappingValidator(structure))
+def mapping_validator(structure_type: StructureMeta) -> Result[Validator, ValidationError]:
+    return Success(MappingValidator(structure_type))

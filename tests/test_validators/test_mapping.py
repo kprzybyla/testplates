@@ -1,98 +1,77 @@
-from typing import TypeVar, Mapping, Callable
-from dataclasses import dataclass
+from typing import Any, Mapping
 
 from hypothesis import given
 from hypothesis import strategies as st
 
-# from testplates.base.structure import Structure
+from testplates.base.structure import create_structure, Field
 from testplates.result import Success, Failure
-from testplates.validators import mapping_validator
+from testplates.validators import mapping_validator, passthrough_validator
 from testplates.validators.exceptions import (
+    ValidationError,
     InvalidTypeError,
     RequiredKeyMissingError,
     FieldValidationError,
 )
 
-from tests.conftest import st_anything_except
-
-_T = TypeVar("_T")
-
-
-@dataclass
-class FakeField:
-
-    name: str
-    is_optional: bool
-    validator: Callable = None
-
-
-def create_structure(*fields):
-    _fake_fields_ = {field.name: field for field in fields}
-
-    class Structure:
-
-        _fields_ = _fake_fields_
-
-    return Structure()
+from tests.conftest import st_anything_except, st_anything_comparable
 
 
 def test_repr() -> None:
     fmt = "testplates.mapping_validator({structure})"
 
-    structure = create_structure()
-    validator = mapping_validator(structure)
+    structure = create_structure("Structure")
 
-    assert repr(validator.value) == fmt.format(structure=structure)
+    validator_result = mapping_validator(structure)
+    validator = Success.get_value(validator_result)
+
+    assert repr(validator) == fmt.format(structure=structure)
 
 
-@given(key=st.text())
-def test_success(key: str) -> None:
-    value = 0
+@given(key=st.text(), value=st_anything_comparable())
+def test_success(key: str, value: Any) -> None:
     data = {key: value}
 
-    def validator(v) -> Success[None]:
-        assert v is value
+    def validator(this_value: Any) -> Success[None]:
+        assert this_value == value
         return Success(None)
 
-    field = FakeField(key, is_optional=True, validator=validator)
+    field = Field(validator, optional=True)
+    structure = create_structure("Structure", {key: field})
 
-    structure = create_structure(field)
-    validator = mapping_validator(structure)
+    validator_result = mapping_validator(structure)
+    validator = Success.get_value(validator_result)
 
-    assert not validator.is_failure
+    validation_result = validator(data)
+    value = Success.get_value(validation_result)
 
-    result = validator.value(data)
-
-    assert not result.is_failure
+    assert value is None
 
 
 @given(key=st.text())
 def test_success_with_optional_field(key: str) -> None:
     data = {}
-    field = FakeField(key, is_optional=True)
 
-    structure = create_structure(field)
-    validator = mapping_validator(structure)
+    field = Field(passthrough_validator, optional=True)
+    structure = create_structure("Structure", {key: field})
 
-    assert not validator.is_failure
+    validator_result = mapping_validator(structure)
+    validator = Success.get_value(validator_result)
 
-    result = validator.value(data)
+    validation_result = validator(data)
+    value = Success.get_value(validation_result)
 
-    assert not result.is_failure
+    assert value is None
 
 
 @given(data=st_anything_except(Mapping))
-def test_failure_when_data_type_validation_fails(data: _T) -> None:
-    structure = create_structure()
-    validator = mapping_validator(structure)
+def test_failure_when_data_type_validation_fails(data: Any) -> None:
+    structure = create_structure("Structure")
 
-    assert not validator.is_failure
+    validator_result = mapping_validator(structure)
+    validator = Success.get_value(validator_result)
 
-    result = validator.value(data)
-
-    assert result.is_failure
-
-    error = result.error
+    validation_result = validator(data)
+    error = Failure.get_error(validation_result)
 
     assert isinstance(error, InvalidTypeError)
     assert error.data == data
@@ -102,46 +81,40 @@ def test_failure_when_data_type_validation_fails(data: _T) -> None:
 @given(key=st.text())
 def test_failure_when_data_required_key_is_missing(key: str) -> None:
     data = {}
-    field = FakeField(key, is_optional=False)
 
-    structure = create_structure(field)
-    validator = mapping_validator(structure)
+    field = Field(passthrough_validator)
+    structure = create_structure("Structure", {key: field})
 
-    assert not validator.is_failure
+    validator_result = mapping_validator(structure)
+    validator = Success.get_value(validator_result)
 
-    result = validator.value(data)
-
-    assert result.is_failure
-
-    error = result.error
+    validation_result = validator(data)
+    error = Failure.get_error(validation_result)
 
     assert isinstance(error, RequiredKeyMissingError)
     assert error.data == data
     assert error.field == field
 
 
-@given(key=st.text())
-def test_failure_when_data_field_validation_fails(key: str) -> None:
-    value = 0
-    failure = Failure(...)
-    data = {key: value}
+# noinspection PyTypeChecker
+@given(key=st.text(), value=st_anything_comparable(), message=st.text())
+def test_failure_when_data_field_validation_fails(key: str, value: Any, message: str) -> None:
+    failure = Failure(ValidationError(message))
 
-    def validator(v) -> Failure[Exception]:
-        assert v is value
+    def validator(this_value: Any) -> Failure[Exception]:
+        assert this_value == value
         return failure
 
-    field = FakeField(key, is_optional=True, validator=validator)
+    field = Field(validator, optional=True)
+    structure = create_structure("Structure", {key: field})
 
-    structure = create_structure(field)
-    validator = mapping_validator(structure)
+    validator_result = mapping_validator(structure)
+    validator = Success.get_value(validator_result)
 
-    assert not validator.is_failure
+    data = {key: value}
 
-    result = validator.value(data)
-
-    assert result.is_failure
-
-    error = result.error
+    validation_result = validator(data)
+    error = Failure.get_error(validation_result)
 
     assert isinstance(error, FieldValidationError)
     assert error.data == data

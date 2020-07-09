@@ -1,22 +1,10 @@
 from __future__ import annotations
 
-__all__ = ["Field", "StructureMeta", "Structure"]
+__all__ = ["create_structure", "Field", "StructureMeta", "Structure"]
 
 import abc
 
-from typing import (
-    cast,
-    overload,
-    Any,
-    Type,
-    TypeVar,
-    Generic,
-    ClassVar,
-    Union,
-    Tuple,
-    Dict,
-    Optional,
-)
+from typing import cast, overload, Any, TypeVar, Generic, ClassVar, Union, Tuple, Dict, Optional
 
 import testplates
 
@@ -35,6 +23,19 @@ from .value import Maybe, ANY, WILDCARD, ABSENT, MISSING
 
 _T = TypeVar("_T", covariant=True)
 _V = TypeVar("_V")
+
+
+# noinspection PyProtectedMember
+def create_structure(name: str, fields: Dict[str, Field[_T]] = None) -> StructureMeta[_T]:
+
+    """
+        Functional API for creating structure.
+
+        :param name: structure type name
+        :param fields: structure fields objects
+    """
+
+    return Structure._create_(name, fields)
 
 
 class Field(Generic[_T], Descriptor[Any, _T]):
@@ -64,19 +65,20 @@ class Field(Generic[_T], Descriptor[Any, _T]):
 
         return f"{testplates.__name__}.{type(self).__name__}({', '.join(parameters)})"
 
-    def __set_name__(self, owner: Type[Structure[_T]], name: str) -> None:
+    def __set_name__(self, owner: StructureMeta[_T], name: str) -> None:
         self._name = name
 
     @overload
-    def __get__(self, instance: None, owner: Type[Structure[_T]]) -> Field[_T]:
+    def __get__(self, instance: None, owner: StructureMeta[_T]) -> Field[_T]:
         ...
 
     @overload
-    def __get__(self, instance: Structure[_T], owner: Type[Structure[_T]]) -> _T:
+    def __get__(self, instance: Structure[_T], owner: StructureMeta[_T]) -> _T:
         ...
 
+    # noinspection PyProtectedMember
     def __get__(
-        self, instance: Optional[Structure[_T]], owner: Type[Structure[_T]]
+        self, instance: Optional[Structure[_T]], owner: StructureMeta[_T]
     ) -> Union[Field[_T], _T]:
 
         """
@@ -138,6 +140,7 @@ class Field(Generic[_T], Descriptor[Any, _T]):
 
         return self._optional
 
+    # noinspection PyUnboundLocalVariable
     def validate(self, value: Maybe[_T], /) -> None:
 
         """
@@ -164,22 +167,18 @@ class Field(Generic[_T], Descriptor[Any, _T]):
 
 class _StructureDict(Generic[_T, _V], Dict[str, _V]):
 
-    __slots__ = ("_fields_",)
+    __slots__ = ("fields",)
 
     def __init__(self, **kwargs: _V) -> None:
         super().__init__(**kwargs)
 
-        self._fields_: Dict[str, Field[_T]] = {}
+        self.fields: Dict[str, Field[_T]] = {}
 
     def __setitem__(self, key: str, value: _V) -> None:
         if isinstance(value, Field):
             self.fields[key] = value
 
         super().__setitem__(key, value)
-
-    @property
-    def fields(self) -> Dict[str, Field[_T]]:
-        return self._fields_
 
 
 class StructureMeta(Generic[_T], abc.ABCMeta):
@@ -206,6 +205,21 @@ class StructureMeta(Generic[_T], abc.ABCMeta):
     ) -> StructureMeta[_T]:
         instance = cast(StructureMeta[_T], super().__new__(mcs, name, bases, namespace))
         instance._fields_ = namespace.fields
+
+        return instance
+
+    def _create_(cls, name: str, fields: Dict[str, Field[_T]] = None) -> StructureMeta[_T]:
+        bases = (cls,)
+        fields = fields or {}
+
+        metaclass = cls.__class__
+        namespace = metaclass.__prepare__(name, bases)
+
+        instance = metaclass.__new__(metaclass, name, bases, namespace)
+        instance._fields_ = fields
+
+        for name, field in fields.items():
+            field.__set_name__(instance, name)
 
         return instance
 
