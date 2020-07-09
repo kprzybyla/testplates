@@ -22,10 +22,11 @@ __all__ = [
 ]
 
 from enum import EnumMeta
-from typing import Final
+from typing import Mapping, Final
 
-from testplates import validators
-from testplates.result import Result, Failure
+from testplates import validators, UNLIMITED
+from testplates.result import Result
+from testplates.base.structure import StructureMeta
 from testplates.validators.utils import Validator
 from testplates.validators.exceptions import ValidationError
 
@@ -170,20 +171,19 @@ def enum(
     return validators.enum_validator(enum_type, enum_member_validator)
 
 
-# TODO(kprzybyla): Implement below types validators
+def repeated(item_validator: Validator, /) -> Result[Validator, ValidationError]:
+    return validators.sequence_validator(
+        item_validator, minimum_size=UNLIMITED, maximum_size=UNLIMITED
+    )
 
 
-def repeated() -> Result[Validator, ValidationError]:
-    return Failure(NotImplementedError())  # type: ignore
+def map_(structure_type: StructureMeta) -> Result[Validator, ValidationError]:
+    return validators.mapping_validator(structure_type)
 
 
-def map_() -> Result[Validator, ValidationError]:
-    return Failure(NotImplementedError())  # type: ignore
+def message(structure_type: StructureMeta) -> Result[Validator, ValidationError]:
+    return validators.mapping_validator(structure_type)
 
 
-def message() -> Result[Validator, ValidationError]:
-    return Failure(NotImplementedError())  # type: ignore
-
-
-def oneof() -> Result[Validator, ValidationError]:
-    return Failure(NotImplementedError())  # type: ignore
+def oneof(choices: Mapping[str, Validator], /) -> Result[Validator, ValidationError]:
+    return validators.union_validator(choices)
