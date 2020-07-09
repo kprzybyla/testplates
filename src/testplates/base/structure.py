@@ -8,9 +8,10 @@ from typing import cast, overload, Any, TypeVar, Generic, ClassVar, Union, Tuple
 
 import testplates
 
-from testplates.validators.utils import Validator
 from testplates.abc import Template, Descriptor
 from testplates.utils import is_value, matches, format_like_dict
+from testplates.result import Failure
+from testplates.validators.utils import Validator
 from testplates.exceptions import (
     DanglingDescriptorError,
     MissingValueError,
@@ -161,8 +162,8 @@ class Field(Generic[_T], Descriptor[Any, _T]):
         elif (value is WILDCARD or self.default is WILDCARD) and not self.is_optional:
             raise ProhibitedValueError(self, value)
 
-        elif is_value(value) and (error := self.validator(value)) is not None:
-            raise error
+        elif is_value(value) and (result := self.validator(value)).is_failure:
+            raise Failure.get_error(result)
 
 
 class _StructureDict(Generic[_T, _V], Dict[str, _V]):
