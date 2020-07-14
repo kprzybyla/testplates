@@ -5,22 +5,17 @@ from typing import Any, Sized
 import testplates
 
 from testplates.abc import Constraint
-from testplates.boundaries import get_length_boundaries, fits_minimum, fits_maximum, Edge
+from testplates.result import Success, Failure
+from testplates.boundaries import get_length_boundaries, fits_minimum, fits_maximum, Edge, Boundary
 
 
 class HasLengthBetween(Constraint):
 
     __slots__ = ("_minimum", "_maximum")
 
-    def __init__(self, *, minimum_length: Edge[int], maximum_length: Edge[int]) -> None:
-        result = get_length_boundaries(
-            inclusive_minimum=minimum_length, inclusive_maximum=maximum_length
-        )
-
-        if result.is_failure:
-            raise result.error
-
-        self._minimum, self._maximum = result.value
+    def __init__(self, *, minimum: Boundary[int], maximum: Boundary[int]) -> None:
+        self._minimum = minimum
+        self._maximum = maximum
 
     def __repr__(self) -> str:
         boundaries = [
@@ -52,4 +47,11 @@ def has_length_between(*, minimum: Edge[int], maximum: Edge[int]) -> HasLengthBe
         :param maximum: maximum length boundary value
     """
 
-    return HasLengthBetween(minimum_length=minimum, maximum_length=maximum)
+    result = get_length_boundaries(inclusive_minimum=minimum, inclusive_maximum=maximum)
+
+    if result.is_failure:
+        raise Failure.get_error(result)
+
+    minimum_boundary, maximum_boundary = Success.get_value(result)
+
+    return HasLengthBetween(minimum=minimum_boundary, maximum=maximum_boundary)

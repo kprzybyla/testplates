@@ -1,13 +1,23 @@
 import pytest
 
-from typing import Any, TypeVar
-from hypothesis import given
+from typing import Any, NoReturn
+from hypothesis import given, strategies as st
 
-from testplates import field, Required, Optional, Object, DanglingDescriptorError
+from testplates import (
+    field,
+    Required,
+    Optional,
+    Object,
+    Failure,
+    DanglingDescriptorError,
+    ANY,
+    WILDCARD,
+    ABSENT,
+)
+
+from testplates.validators.exceptions import ValidationError
 
 from tests.conftest import st_anything_comparable
-
-_T = TypeVar("_T")
 
 
 def test_repr_for_required_field_without_default_value() -> None:
@@ -21,7 +31,7 @@ def test_repr_for_required_field_without_default_value() -> None:
 
 
 @given(value=st_anything_comparable())
-def test_repr_for_required_field_with_default_value(value: _T) -> None:
+def test_repr_for_required_field_with_default_value(value: Any) -> None:
     fmt = "testplates.Field('key', default={value}, optional=False)"
 
     class Template(Object):
@@ -42,7 +52,7 @@ def test_repr_for_optional_field_without_default_value() -> None:
 
 
 @given(value=st_anything_comparable())
-def test_repr_for_optional_field_with_default_value(value: _T) -> None:
+def test_repr_for_optional_field_with_default_value(value: Any) -> None:
     fmt = "testplates.Field('key', default={value}, optional=True)"
 
     class Template(Object):
@@ -50,6 +60,49 @@ def test_repr_for_optional_field_with_default_value(value: _T) -> None:
         key: Optional[Any] = field(default=value, optional=True)
 
     assert repr(Template.key) == fmt.format(value=repr(value))
+
+
+def test_validator_is_not_called_on_special_value_for_required_field() -> None:
+    def validator(*args, **kwargs) -> NoReturn:
+        raise NotImplementedError(args, kwargs)
+
+    class Template(Object):
+
+        key: Required[Any] = field(validator)
+
+    Template(key=ANY)
+
+
+def test_validator_is_not_called_on_special_value_for_optional_field() -> None:
+    def validator(*args, **kwargs) -> NoReturn:
+        raise NotImplementedError(args, kwargs)
+
+    class Template(Object):
+
+        key: Optional[Any] = field(validator, optional=True)
+
+    Template(key=ANY)
+    Template(key=WILDCARD)
+    Template(key=ABSENT)
+
+
+# noinspection PyTypeChecker
+@given(value=st_anything_comparable(), message=st.text())
+def test_validator_failure(value: Any, message: str) -> None:
+    failure = Failure(ValidationError(message))
+
+    def validator(this_value: Any) -> Failure[ValidationError]:
+        assert this_value is value
+        return failure
+
+    class Template(Object):
+
+        key: Required[Any] = field(validator)
+
+    with pytest.raises(ValidationError) as error:
+        Template(key=value)
+
+    assert error.value.message == message
 
 
 def test_name_raises_dangling_descriptor_error_when_specified_outside_the_class() -> None:

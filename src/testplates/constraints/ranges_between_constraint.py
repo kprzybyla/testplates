@@ -5,7 +5,8 @@ from typing import overload, Any, TypeVar, Generic, Optional
 import testplates
 
 from testplates.abc import Constraint
-from testplates.boundaries import get_value_boundaries, fits_minimum, fits_maximum, Edge
+from testplates.result import Success, Failure
+from testplates.boundaries import get_value_boundaries, fits_minimum, fits_maximum, Edge, Boundary
 
 _T = TypeVar("_T", int, float)
 
@@ -14,25 +15,9 @@ class RangesBetween(Generic[_T], Constraint):
 
     __slots__ = ("_minimum", "_maximum")
 
-    def __init__(
-        self,
-        *,
-        inclusive_minimum: Optional[Edge[_T]] = None,
-        inclusive_maximum: Optional[Edge[_T]] = None,
-        exclusive_minimum: Optional[Edge[_T]] = None,
-        exclusive_maximum: Optional[Edge[_T]] = None,
-    ) -> None:
-        result = get_value_boundaries(
-            inclusive_minimum=inclusive_minimum,
-            inclusive_maximum=inclusive_maximum,
-            exclusive_minimum=exclusive_minimum,
-            exclusive_maximum=exclusive_maximum,
-        )
-
-        if result.is_failure:
-            raise result.error
-
-        self._minimum, self._maximum = result.value
+    def __init__(self, *, minimum: Boundary[_T], maximum: Boundary[_T]) -> None:
+        self._minimum = minimum
+        self._maximum = maximum
 
     def __repr__(self) -> str:
         boundaries = [
@@ -95,9 +80,16 @@ def ranges_between(
         :param exclusive_maximum: exclusive maximum boundary value
     """
 
-    return RangesBetween(
+    result = get_value_boundaries(
         inclusive_minimum=minimum,
         inclusive_maximum=maximum,
         exclusive_minimum=exclusive_minimum,
         exclusive_maximum=exclusive_maximum,
     )
+
+    if result.is_failure:
+        raise Failure.get_error(result)
+
+    minimum_boundary, maximum_boundary = Success.get_value(result)
+
+    return RangesBetween(minimum=minimum_boundary, maximum=maximum_boundary)

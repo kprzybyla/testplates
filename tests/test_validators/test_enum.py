@@ -15,7 +15,7 @@ from tests.conftest import sample, Draw
 
 _T = TypeVar("_T")
 
-uint8: Final = Success.get_value(integer_validator(minimum_value=0, maximum_value=255))
+uint8: Final = Success.get_value(integer_validator(minimum=0, maximum=255))
 
 
 def create_enum_type(members: Dict[str, _T]) -> EnumMeta:
