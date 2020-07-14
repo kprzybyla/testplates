@@ -13,7 +13,7 @@ class HasLengthBetween(Constraint):
 
     __slots__ = ("_minimum", "_maximum")
 
-    def __init__(self, *, minimum: Boundary[int], maximum: Boundary[int]) -> None:
+    def __init__(self, *, minimum: Boundary, maximum: Boundary) -> None:
         self._minimum = minimum
         self._maximum = maximum
 
@@ -37,7 +37,7 @@ class HasLengthBetween(Constraint):
         return minimum_fits and maximum_fits
 
 
-def has_length_between(*, minimum: Edge[int], maximum: Edge[int]) -> HasLengthBetween:
+def has_length_between(*, minimum: Edge, maximum: Edge) -> HasLengthBetween:
 
     """
         Returns constraint object that matches any sized object

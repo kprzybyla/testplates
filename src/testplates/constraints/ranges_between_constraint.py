@@ -1,6 +1,6 @@
 __all__ = ["ranges_between"]
 
-from typing import overload, Any, TypeVar, Generic, Optional
+from typing import overload, Any, Optional
 
 import testplates
 
@@ -8,14 +8,12 @@ from testplates.abc import Constraint
 from testplates.result import Success, Failure
 from testplates.boundaries import get_value_boundaries, fits_minimum, fits_maximum, Edge, Boundary
 
-_T = TypeVar("_T", int, float)
 
-
-class RangesBetween(Generic[_T], Constraint):
+class RangesBetween(Constraint):
 
     __slots__ = ("_minimum", "_maximum")
 
-    def __init__(self, *, minimum: Boundary[_T], maximum: Boundary[_T]) -> None:
+    def __init__(self, *, minimum: Boundary, maximum: Boundary) -> None:
         self._minimum = minimum
         self._maximum = maximum
 
@@ -35,40 +33,34 @@ class RangesBetween(Generic[_T], Constraint):
 
 
 @overload
-def ranges_between(
-    *, minimum: Optional[Edge[_T]], maximum: Optional[Edge[_T]]
-) -> RangesBetween[_T]:
+def ranges_between(*, minimum: Optional[Edge], maximum: Optional[Edge]) -> RangesBetween:
+    ...
+
+
+@overload
+def ranges_between(*, minimum: Optional[Edge], exclusive_maximum: Optional[Edge]) -> RangesBetween:
+    ...
+
+
+@overload
+def ranges_between(*, exclusive_minimum: Optional[Edge], maximum: Optional[Edge]) -> RangesBetween:
     ...
 
 
 @overload
 def ranges_between(
-    *, minimum: Optional[Edge[_T]], exclusive_maximum: Optional[Edge[_T]]
-) -> RangesBetween[_T]:
-    ...
-
-
-@overload
-def ranges_between(
-    *, exclusive_minimum: Optional[Edge[_T]], maximum: Optional[Edge[_T]]
-) -> RangesBetween[_T]:
-    ...
-
-
-@overload
-def ranges_between(
-    *, exclusive_minimum: Optional[Edge[_T]], exclusive_maximum: Optional[Edge[_T]]
-) -> RangesBetween[_T]:
+    *, exclusive_minimum: Optional[Edge], exclusive_maximum: Optional[Edge]
+) -> RangesBetween:
     ...
 
 
 def ranges_between(
     *,
-    minimum: Optional[Edge[_T]] = None,
-    maximum: Optional[Edge[_T]] = None,
-    exclusive_minimum: Optional[Edge[_T]] = None,
-    exclusive_maximum: Optional[Edge[_T]] = None,
-) -> RangesBetween[_T]:
+    minimum: Optional[Edge] = None,
+    maximum: Optional[Edge] = None,
+    exclusive_minimum: Optional[Edge] = None,
+    exclusive_maximum: Optional[Edge] = None,
+) -> RangesBetween:
 
     """
         Returns constraint object that matches any object with boundaries

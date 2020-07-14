@@ -39,8 +39,8 @@ class AnyStringValidator(Generic[_T]):
     def __init__(
         self,
         length: Optional[int],
-        minimum: Boundary[int],
-        maximum: Boundary[int],
+        minimum: Boundary,
+        maximum: Boundary,
         regex: Optional[Regex[_T]],
     ) -> None:
         self.length = length
@@ -71,8 +71,8 @@ class StringValidator:
     def __init__(
         self,
         length: Optional[int],
-        minimum: Boundary[int],
-        maximum: Boundary[int],
+        minimum: Boundary,
+        maximum: Boundary,
         regex: Optional[Regex[str]],
     ) -> None:
         self.type_validator = type_validator
@@ -104,8 +104,8 @@ class BytesValidator:
     def __init__(
         self,
         length: Optional[int],
-        minimum: Boundary[int],
-        maximum: Boundary[int],
+        minimum: Boundary,
+        maximum: Boundary,
         regex: Optional[Regex[bytes]],
     ) -> None:
         self.length = length
@@ -245,7 +245,7 @@ def get_regex(pattern: Optional[_T]) -> Optional[Regex[_T]]:
 
 
 def validate_length(
-    data: AnyString, length: Optional[int], minimum: Boundary[int], maximum: Boundary[int], /
+    data: AnyString, length: Optional[int], minimum: Boundary, maximum: Boundary, /
 ) -> Result[None, ValidationError]:
     if length is not None and len(data) != length:
         return Failure(InvalidLengthError(data, length))

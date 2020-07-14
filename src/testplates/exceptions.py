@@ -22,7 +22,6 @@ from testplates import abc
 
 _C = TypeVar("_C")
 _T = TypeVar("_T")
-_B = TypeVar("_B", int, float)
 
 ISSUE_TRACKER: Final[str] = "https://github.com/kprzybyla/testplates/issues"
 
@@ -161,7 +160,7 @@ class MutuallyExclusiveBoundariesError(TestplatesValueError):
         super().__init__(f"Mutually exclusive {name!r} boundaries set at the same time")
 
 
-class OverlappingBoundariesError(Generic[_B], TestplatesValueError):
+class OverlappingBoundariesError(TestplatesValueError):
 
     """
         Error indicating overlapping boundaries.
@@ -177,7 +176,7 @@ class OverlappingBoundariesError(Generic[_B], TestplatesValueError):
         super().__init__(f"Overlapping minimum {minimum!r} and maximum {maximum!r} boundaries")
 
 
-class SingleMatchBoundariesError(Generic[_B], TestplatesValueError):
+class SingleMatchBoundariesError(TestplatesValueError):
 
     """
         Error indicating single match boundaries range.

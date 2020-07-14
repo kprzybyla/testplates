@@ -29,8 +29,8 @@ class SequenceValidator:
         self,
         item_validator: Validator,
         size: Optional[int],
-        minimum: Optional[Boundary[int]],
-        maximum: Optional[Boundary[int]],
+        minimum: Optional[Boundary],
+        maximum: Optional[Boundary],
         unique_items: bool,
     ) -> None:
         self.item_validator = item_validator
@@ -85,8 +85,8 @@ def sequence_validator(
     item_validator: Validator = ...,
     /,
     *,
-    minimum_size: Optional[Edge[int]] = None,
-    maximum_size: Optional[Edge[int]] = None,
+    minimum_size: Optional[Edge] = None,
+    maximum_size: Optional[Edge] = None,
     unique_items: bool = ...,
 ) -> Result[Validator, ValidationError]:
     ...
@@ -97,8 +97,8 @@ def sequence_validator(
     /,
     *,
     size: Optional[int] = None,
-    minimum_size: Optional[Edge[int]] = None,
-    maximum_size: Optional[Edge[int]] = None,
+    minimum_size: Optional[Edge] = None,
+    maximum_size: Optional[Edge] = None,
     unique_items: bool = False,
 ) -> Result[Validator, ValidationError]:
     result = get_length_boundaries(inclusive_minimum=minimum_size, inclusive_maximum=maximum_size)

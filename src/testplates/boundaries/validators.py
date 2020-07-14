@@ -11,7 +11,7 @@ __all__ = [
 
 import sys
 
-from typing import TypeVar, Sized, Tuple, Union, Optional, Final
+from typing import Sized, Tuple, Union, Optional, Final
 
 from testplates.result import Result, Success, Failure
 from testplates.exceptions import (
@@ -25,10 +25,8 @@ from testplates.exceptions import (
 from .limit import Limit, Extremum, MINIMUM_EXTREMUM, MAXIMUM_EXTREMUM
 from .unlimited import LiteralUnlimited, UNLIMITED
 
-_T = TypeVar("_T", bound=Union[int, float])
-
-Edge = Union[LiteralUnlimited, _T]
-Boundary = Union[LiteralUnlimited, Limit[_T]]
+Edge = Union[LiteralUnlimited, int]
+Boundary = Union[LiteralUnlimited, Limit]
 
 LENGTH_MINIMUM: Final[int] = 0
 LENGTH_MAXIMUM: Final[int] = sys.maxsize
@@ -37,8 +35,8 @@ LENGTH_SPECIAL_METHOD_NAME: Final[str] = "__len__"
 
 
 def get_minimum(
-    inclusive: Optional[Edge[_T]] = None, exclusive: Optional[Edge[_T]] = None
-) -> Result[Boundary[_T], Exception]:
+    inclusive: Optional[Edge] = None, exclusive: Optional[Edge] = None
+) -> Result[Boundary, Exception]:
 
     """
         Gets minimum boundary.
@@ -51,8 +49,8 @@ def get_minimum(
 
 
 def get_maximum(
-    inclusive: Optional[Edge[_T]] = None, exclusive: Optional[Edge[_T]] = None
-) -> Result[Boundary[_T], Exception]:
+    inclusive: Optional[Edge] = None, exclusive: Optional[Edge] = None
+) -> Result[Boundary, Exception]:
 
     """
         Gets maximum boundary.
@@ -64,9 +62,10 @@ def get_maximum(
     return get_boundary(MAXIMUM_EXTREMUM, inclusive=inclusive, exclusive=exclusive)
 
 
+# noinspection PyTypeChecker
 def get_boundary(
-    name: Extremum, *, inclusive: Optional[Edge[_T]] = None, exclusive: Optional[Edge[_T]] = None
-) -> Result[Boundary[_T], Exception]:
+    name: Extremum, *, inclusive: Optional[Edge] = None, exclusive: Optional[Edge] = None
+) -> Result[Boundary, Exception]:
 
     """
         Gets boundary.
@@ -91,12 +90,13 @@ def get_boundary(
     return Success(UNLIMITED)
 
 
+# noinspection PyTypeChecker
 def get_value_boundaries(
-    inclusive_minimum: Optional[Edge[_T]] = None,
-    inclusive_maximum: Optional[Edge[_T]] = None,
-    exclusive_minimum: Optional[Edge[_T]] = None,
-    exclusive_maximum: Optional[Edge[_T]] = None,
-) -> Result[Tuple[Boundary[_T], Boundary[_T]], Exception]:
+    inclusive_minimum: Optional[Edge] = None,
+    inclusive_maximum: Optional[Edge] = None,
+    exclusive_minimum: Optional[Edge] = None,
+    exclusive_maximum: Optional[Edge] = None,
+) -> Result[Tuple[Boundary, Boundary], Exception]:
 
     """
         Gets minimum and maximum value boundaries.
@@ -133,9 +133,8 @@ def get_value_boundaries(
     return Success((minimum.value, maximum.value))
 
 
-def validate_value_boundaries(
-    *, minimum: Boundary[_T], maximum: Boundary[_T]
-) -> Result[None, Exception]:
+# noinspection PyTypeChecker
+def validate_value_boundaries(*, minimum: Boundary, maximum: Boundary) -> Result[None, Exception]:
 
     """
         Checks minimum and maximum value boundaries.
@@ -156,9 +155,10 @@ def validate_value_boundaries(
     return Success(None)
 
 
+# noinspection PyTypeChecker
 def get_length_boundaries(
-    inclusive_minimum: Optional[Edge[int]] = None, inclusive_maximum: Optional[Edge[int]] = None
-) -> Result[Tuple[Boundary[int], Boundary[int]], Exception]:
+    inclusive_minimum: Optional[Edge] = None, inclusive_maximum: Optional[Edge] = None
+) -> Result[Tuple[Boundary, Boundary], Exception]:
 
     """
         Gets minimum and maximum length boundaries.
@@ -188,9 +188,8 @@ def get_length_boundaries(
     return Success((minimum.value, maximum.value))
 
 
-def validate_length_boundaries(
-    minimum: Boundary[int], maximum: Boundary[int]
-) -> Result[None, Exception]:
+# noinspection PyTypeChecker
+def validate_length_boundaries(minimum: Boundary, maximum: Boundary) -> Result[None, Exception]:
 
     """
         Checks minimum and maximum length boundaries.
@@ -217,7 +216,7 @@ def validate_length_boundaries(
     return Success(None)
 
 
-def is_outside_length_range(boundary: Limit[_T]) -> bool:
+def is_outside_length_range(boundary: Limit) -> bool:
 
     """
         Returns True if boundary is outside of length range, otherwise False.
@@ -228,7 +227,7 @@ def is_outside_length_range(boundary: Limit[_T]) -> bool:
     return boundary.value < LENGTH_MINIMUM or boundary.value > LENGTH_MAXIMUM
 
 
-def is_overlapping(minimum: Limit[_T], maximum: Limit[_T]) -> bool:
+def is_overlapping(minimum: Limit, maximum: Limit) -> bool:
 
     """
         Returns True if boundaries are overlapping each other, otherwise False.
@@ -240,7 +239,7 @@ def is_overlapping(minimum: Limit[_T], maximum: Limit[_T]) -> bool:
     return minimum.value + minimum.alignment > maximum.value - maximum.alignment
 
 
-def is_single_match(minimum: Limit[_T], maximum: Limit[_T]) -> bool:
+def is_single_match(minimum: Limit, maximum: Limit) -> bool:
 
     """
         Returns True if boundaries will match only single value, otherwise False.
@@ -252,7 +251,7 @@ def is_single_match(minimum: Limit[_T], maximum: Limit[_T]) -> bool:
     return minimum.value + minimum.alignment == maximum.value - maximum.alignment
 
 
-def fits_minimum(value: _T, minimum: Boundary[_T]) -> bool:
+def fits_minimum(value: int, minimum: Boundary) -> bool:
 
     """
         Checks whether value fits the minimum boundary.
@@ -270,7 +269,7 @@ def fits_minimum(value: _T, minimum: Boundary[_T]) -> bool:
         return value.__gt__(minimum.value) is True
 
 
-def fits_maximum(value: _T, maximum: Boundary[_T]) -> bool:
+def fits_maximum(value: int, maximum: Boundary) -> bool:
 
     """
         Checks whether value fits the maximum boundary.
@@ -288,7 +287,7 @@ def fits_maximum(value: _T, maximum: Boundary[_T]) -> bool:
         return value.__lt__(maximum.value) is True
 
 
-def fits_minimum_length(value: Sized, minimum: Boundary[int]) -> bool:
+def fits_minimum_length(value: Sized, minimum: Boundary) -> bool:
 
     """
         Checks whether value size fits the minimum boundary.
@@ -305,7 +304,7 @@ def fits_minimum_length(value: Sized, minimum: Boundary[int]) -> bool:
     return fits_minimum(__len__(), minimum)
 
 
-def fits_maximum_length(value: Sized, maximum: Boundary[int]) -> bool:
+def fits_maximum_length(value: Sized, maximum: Boundary) -> bool:
 
     """
         Checks whether value size fits the maximum boundary.

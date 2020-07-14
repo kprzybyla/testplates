@@ -128,7 +128,7 @@ def test_mutually_exclusive_boundaries_error(name: str) -> None:
 def test_overlapping_boundaries_error(minimum: int, maximum: int) -> None:
     error = OverlappingBoundariesError(minimum, maximum)
 
-    assert is_direct_instance(error, (TestplatesValueError, Generic))
+    assert is_direct_instance(error, TestplatesValueError)
 
     assert minimum == error.minimum
     assert maximum == error.maximum
@@ -141,7 +141,7 @@ def test_overlapping_boundaries_error(minimum: int, maximum: int) -> None:
 def test_single_match_boundaries_error(minimum: int, maximum: int) -> None:
     error = SingleMatchBoundariesError(minimum, maximum)
 
-    assert is_direct_instance(error, (TestplatesValueError, Generic))
+    assert is_direct_instance(error, TestplatesValueError)
 
     assert minimum == error.minimum
     assert maximum == error.maximum

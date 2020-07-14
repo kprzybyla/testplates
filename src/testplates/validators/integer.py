@@ -1,6 +1,6 @@
 __all__ = ["integer_validator"]
 
-from typing import overload, Any, Union, Optional, Final
+from typing import overload, Any, Optional, Final
 
 from testplates.result import Result, Success, Failure
 from testplates.boundaries import (
@@ -28,9 +28,7 @@ class IntegerValidator:
 
     __slots__ = ("minimum", "maximum", "allow_boolean")
 
-    def __init__(
-        self, minimum: Boundary[int], maximum: Boundary[int], allow_boolean: bool
-    ) -> None:
+    def __init__(self, minimum: Boundary, maximum: Boundary, allow_boolean: bool) -> None:
         self.minimum = minimum
         self.maximum = maximum
         self.allow_boolean = allow_boolean
@@ -54,9 +52,16 @@ class IntegerValidator:
 
 @overload
 def integer_validator(
+    *, minimum: Optional[Edge] = None, maximum: Optional[Edge] = None, allow_boolean: bool = False,
+) -> Result[Validator, ValidationError]:
+    ...
+
+
+@overload
+def integer_validator(
     *,
-    minimum: Optional[Edge[int]] = None,
-    maximum: Optional[Edge[int]] = None,
+    minimum: Optional[Edge] = None,
+    exclusive_maximum: Optional[Edge] = None,
     allow_boolean: bool = False,
 ) -> Result[Validator, ValidationError]:
     ...
@@ -65,8 +70,8 @@ def integer_validator(
 @overload
 def integer_validator(
     *,
-    minimum: Optional[Edge[int]] = None,
-    exclusive_maximum: Optional[Edge[int]] = None,
+    exclusive_minimum: Optional[Edge] = None,
+    maximum: Optional[Edge] = None,
     allow_boolean: bool = False,
 ) -> Result[Validator, ValidationError]:
     ...
@@ -75,18 +80,8 @@ def integer_validator(
 @overload
 def integer_validator(
     *,
-    exclusive_minimum: Optional[Edge[int]] = None,
-    maximum: Optional[Edge[int]] = None,
-    allow_boolean: bool = False,
-) -> Result[Validator, ValidationError]:
-    ...
-
-
-@overload
-def integer_validator(
-    *,
-    exclusive_minimum: Optional[Edge[int]] = None,
-    exclusive_maximum: Optional[Edge[int]] = None,
+    exclusive_minimum: Optional[Edge] = None,
+    exclusive_maximum: Optional[Edge] = None,
     allow_boolean: bool = False,
 ) -> Result[Validator, ValidationError]:
     ...
@@ -95,10 +90,10 @@ def integer_validator(
 # noinspection PyTypeChecker
 def integer_validator(
     *,
-    minimum: Optional[Edge[int]] = None,
-    maximum: Optional[Edge[int]] = None,
-    exclusive_minimum: Optional[Edge[int]] = None,
-    exclusive_maximum: Optional[Edge[int]] = None,
+    minimum: Optional[Edge] = None,
+    maximum: Optional[Edge] = None,
+    exclusive_minimum: Optional[Edge] = None,
+    exclusive_maximum: Optional[Edge] = None,
     allow_boolean: bool = False,
 ) -> Result[Validator, ValidationError]:
     result = get_value_boundaries(
@@ -117,9 +112,7 @@ def integer_validator(
 
 
 # noinspection PyTypeChecker
-def validate_boolean_type(
-    data: Union[int, float], allow_boolean: bool, /
-) -> Result[None, ValidationError]:
+def validate_boolean_type(data: int, allow_boolean: bool, /) -> Result[None, ValidationError]:
     if not allow_boolean and isinstance(data, bool):
         return Failure(ProhibitedBooleanValueError(data))
 
@@ -128,7 +121,7 @@ def validate_boolean_type(
 
 # noinspection PyTypeChecker
 def validate_boundaries(
-    data: int, minimum: Boundary[int], maximum: Boundary[int], /
+    data: int, minimum: Boundary, maximum: Boundary, /
 ) -> Result[None, ValidationError]:
     if minimum is not UNLIMITED and not fits_minimum(data, minimum):
         return Failure(InvalidMinimumValueError(data, minimum))
