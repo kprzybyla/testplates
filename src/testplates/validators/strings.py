@@ -27,9 +27,9 @@ _T = TypeVar("_T", str, bytes)
 
 AnyString = Union[str, bytes]
 
-any_string_type_validator: Final = type_validator(str, bytes).value
-string_type_validator: Final = type_validator(str).value
-bytes_type_validator: Final = type_validator(bytes).value
+any_string_type_validator: Final = Success.get_value(type_validator(str, bytes))
+string_type_validator: Final = Success.get_value(type_validator(str))
+bytes_type_validator: Final = Success.get_value(type_validator(bytes))
 
 
 class AnyStringValidator(Generic[_T]):
@@ -51,6 +51,7 @@ class AnyStringValidator(Generic[_T]):
     def __repr__(self) -> str:
         return f"{any_string_validator.__name__}()"
 
+    # noinspection PyTypeChecker
     def __call__(self, data: Any) -> Result[None, ValidationError]:
         if (error := any_string_type_validator(data)) is not None:
             return Failure.from_result(error)
@@ -84,6 +85,7 @@ class StringValidator:
     def __repr__(self) -> str:
         return f"{string_validator.__name__}()"
 
+    # noinspection PyTypeChecker
     def __call__(self, data: Any) -> Result[None, ValidationError]:
         if (error := string_type_validator(data)) is not None:
             return Failure.from_result(error)
@@ -116,6 +118,7 @@ class BytesValidator:
     def __repr__(self) -> str:
         return f"{bytes_validator.__name__}()"
 
+    # noinspection PyTypeChecker
     def __call__(self, data: Any) -> Result[None, ValidationError]:
         if (error := bytes_type_validator(data)) is not None:
             return Failure.from_result(error)
@@ -146,6 +149,7 @@ def any_string_validator(
     ...
 
 
+# noinspection PyTypeChecker
 def any_string_validator(
     *,
     length: Optional[int] = None,
@@ -160,7 +164,7 @@ def any_string_validator(
     if result.is_failure:
         return Failure.from_result(result)
 
-    minimum, maximum = result.value
+    minimum, maximum = Success.get_value(result)
     regex = get_regex(pattern)
 
     return Success(AnyStringValidator(length, minimum, maximum, regex))
@@ -183,6 +187,7 @@ def string_validator(
     ...
 
 
+# noinspection PyTypeChecker
 def string_validator(
     *,
     length: Optional[int] = None,
@@ -197,7 +202,7 @@ def string_validator(
     if result.is_failure:
         return Failure.from_result(result)
 
-    minimum, maximum = result.value
+    minimum, maximum = Success.get_value(result)
     regex = get_regex(pattern)
 
     return Success(StringValidator(length, minimum, maximum, regex))
@@ -220,6 +225,7 @@ def bytes_validator(
     ...
 
 
+# noinspection PyTypeChecker
 def bytes_validator(
     *,
     length: Optional[int] = None,
@@ -234,7 +240,7 @@ def bytes_validator(
     if result.is_failure:
         return Failure.from_result(result)
 
-    minimum, maximum = result.value
+    minimum, maximum = Success.get_value(result)
     regex = get_regex(pattern)
 
     return Success(BytesValidator(length, minimum, maximum, regex))
@@ -244,6 +250,7 @@ def get_regex(pattern: Optional[_T]) -> Optional[Regex[_T]]:
     return re.compile(pattern) if pattern is not None else None
 
 
+# noinspection PyTypeChecker
 def validate_length(
     data: AnyString, length: Optional[int], minimum: Boundary, maximum: Boundary, /
 ) -> Result[None, ValidationError]:
@@ -259,6 +266,7 @@ def validate_length(
     return Success(None)
 
 
+# noinspection PyTypeChecker
 def validate_regex(data: _T, regex: Optional[Regex[_T]], /) -> Result[None, ValidationError]:
     if regex is not None:
         if not isinstance(regex.pattern, type(data)):

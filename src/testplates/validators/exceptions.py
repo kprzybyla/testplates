@@ -40,39 +40,55 @@ class InvalidMaximumValueError(ValidationError):
 
 
 class InvalidLengthError(ValidationError):
-    pass
+    def __init__(self, data, length):
+        self.data = data
+        self.length = length
 
 
 class InvalidMinimumLengthError(ValidationError):
-    pass
+    def __init__(self, data, minimum):
+        self.data = data
+        self.minimum = minimum
 
 
 class InvalidMaximumLengthError(ValidationError):
-    pass
+    def __init__(self, data, maximum):
+        self.data = data
+        self.maximum = maximum
 
 
 class InvalidPatternTypeError(ValidationError):
-    pass
+    def __init__(self, data, regex):
+        self.data = data
+        self.regex = regex
 
 
 class InvalidFormatError(ValidationError):
-    pass
+    def __init__(self, data, regex):
+        self.data = data
+        self.regex = regex
 
 
 class ItemValidationError(ValidationError):
-    pass
+    def __init__(self, error):
+        self.error = error
 
 
 class InvalidMinimumSizeError(ValidationError):
-    pass
+    def __init__(self, data, minimum):
+        self.data = data
+        self.minimum = minimum
 
 
 class InvalidMaximumSizeError(ValidationError):
-    pass
+    def __init__(self, data, maximum):
+        self.data = data
+        self.maximum = maximum
 
 
 class UniquenessError(ValidationError):
-    pass
+    def __init__(self, data):
+        self.data = data
 
 
 class MemberValidationError(ValidationError):
@@ -89,18 +105,10 @@ class FieldValidationError(ValidationError):
         self.error = error
 
 
-class ProhibitedValueError(ValidationError):
-    pass
-
-
 class RequiredKeyMissingError(ValidationError):
     def __init__(self, data, field) -> None:
         self.data = data
         self.field = field
-
-
-class RequiredKeyValidatorMissingError(ValidationError):
-    pass
 
 
 class InvalidKeyError(ValidationError):
@@ -112,7 +120,3 @@ class ChoiceValidationError(ValidationError):
     def __init__(self, data, error):
         self.data = data
         self.error = error
-
-
-class EnumAliasesNotAllowed(ValidationError):
-    pass
