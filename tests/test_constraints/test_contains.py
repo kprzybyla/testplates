@@ -49,7 +49,7 @@ def st_values_without(draw: Draw[List[_T]], value: _T) -> List[_T]:
 
 @given(values=st_values())
 def test_repr(values: List[_T]) -> None:
-    fmt = "testplates.contains({values})"
+    fmt = "testplates.Contains({values})"
 
     constraint = contains(*values)
 

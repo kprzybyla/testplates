@@ -1,17 +1,32 @@
 __all__ = [
-    "field",
+    "Result",
+    "Maybe",
+    "Value",
+    "Boundary",
     "Required",
     "Optional",
+    "LiteralMissing",
+    "LiteralAny",
+    "LiteralWildcard",
+    "LiteralAbsent",
+    "LiteralUnlimited",
+    "Validator",
+    "success",
+    "failure",
+    "unwrap_success",
+    "unwrap_failure",
+    "field",
+    "create_object",
+    "create_mapping",
     "Object",
     "Mapping",
-    "Result",
-    "Success",
-    "Failure",
+    "MISSING",
     "ANY",
     "WILDCARD",
     "ABSENT",
-    "MISSING",
     "UNLIMITED",
+    "TestplatesError",
+    "TestplatesValueError",
     "contains",
     "has_length",
     "has_length_between",
@@ -19,9 +34,6 @@ __all__ = [
     "matches_pattern",
     "is_one_of",
     "is_permutation_of",
-    "exceptions",
-    "TestplatesError",
-    "TestplatesValueError",
     "DanglingDescriptorError",
     "MissingValueError",
     "UnexpectedValueError",
@@ -32,24 +44,87 @@ __all__ = [
     "OverlappingBoundariesError",
     "SingleMatchBoundariesError",
     "InsufficientValuesError",
+    "passthrough_validator",
+    "type_validator",
+    "boolean_validator",
+    "integer_validator",
+    "any_string_validator",
+    "string_validator",
+    "bytes_validator",
+    "enum_validator",
+    "sequence_validator",
+    "mapping_validator",
+    "union_validator",
+    "ValidationError",
+    "InvalidTypeValueError",
+    "InvalidTypeError",
+    "ProhibitedBooleanValueError",
+    "InvalidMinimumValueError",
+    "InvalidMaximumValueError",
+    "InvalidLengthError",
+    "InvalidMinimumLengthError",
+    "InvalidMaximumLengthError",
+    "InvalidPatternTypeError",
+    "InvalidFormatError",
+    "ItemValidationError",
+    "InvalidMinimumSizeError",
+    "InvalidMaximumSizeError",
+    "UniquenessError",
+    "MemberValidationError",
+    "FieldValidationError",
+    "RequiredKeyMissingError",
+    "InvalidKeyError",
+    "ChoiceValidationError",
 ]
 
-from testplates.base import (
-    field,
+# Annotations
+
+from testplates.ux import (
+    Result,
+    Maybe,
+    Value,
+    Boundary,
     Required,
     Optional,
+    LiteralMissing,
+    LiteralAny,
+    LiteralWildcard,
+    LiteralAbsent,
+    LiteralUnlimited,
+    Validator,
+)
+
+# Concretes
+
+from testplates.ux import (
+    success,
+    failure,
+    unwrap_success,
+    unwrap_failure,
+)
+
+from testplates.ux import (
+    field,
+    create_object,
+    create_mapping,
     Object,
     Mapping,
+)
+
+from testplates.ux import (
+    MISSING,
     ANY,
     WILDCARD,
     ABSENT,
-    MISSING,
+    UNLIMITED,
 )
 
-from testplates.result import Result, Success, Failure
-from testplates.boundaries import UNLIMITED
+from testplates.ux import (
+    TestplatesError,
+    TestplatesValueError,
+)
 
-from testplates.constraints import (
+from testplates.ux import (
     contains,
     has_length,
     has_length_between,
@@ -59,11 +134,7 @@ from testplates.constraints import (
     is_permutation_of,
 )
 
-from testplates import exceptions
-
-from testplates.exceptions import (
-    TestplatesError,
-    TestplatesValueError,
+from testplates.ux import (
     DanglingDescriptorError,
     MissingValueError,
     UnexpectedValueError,
@@ -74,4 +145,42 @@ from testplates.exceptions import (
     OverlappingBoundariesError,
     SingleMatchBoundariesError,
     InsufficientValuesError,
+)
+
+from testplates.ux import (
+    passthrough_validator,
+    type_validator,
+    boolean_validator,
+    integer_validator,
+    any_string_validator,
+    string_validator,
+    bytes_validator,
+    enum_validator,
+    sequence_validator,
+    mapping_validator,
+    union_validator,
+    Validator,
+)
+
+from testplates.ux import (
+    ValidationError,
+    InvalidTypeValueError,
+    InvalidTypeError,
+    ProhibitedBooleanValueError,
+    InvalidMinimumValueError,
+    InvalidMaximumValueError,
+    InvalidLengthError,
+    InvalidMinimumLengthError,
+    InvalidMaximumLengthError,
+    InvalidPatternTypeError,
+    InvalidFormatError,
+    ItemValidationError,
+    InvalidMinimumSizeError,
+    InvalidMaximumSizeError,
+    UniquenessError,
+    MemberValidationError,
+    FieldValidationError,
+    RequiredKeyMissingError,
+    InvalidKeyError,
+    ChoiceValidationError,
 )

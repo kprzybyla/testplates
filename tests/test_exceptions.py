@@ -1,7 +1,7 @@
-from typing import Any, Generic, Tuple, Union
+from typing import Any, Tuple, Union
 from collections import Counter
 
-from testplates.exceptions import (
+from testplates import (
     TestplatesError,
     TestplatesValueError,
     DanglingDescriptorError,
@@ -14,20 +14,17 @@ from testplates.exceptions import (
     OverlappingBoundariesError,
     SingleMatchBoundariesError,
     InsufficientValuesError,
-    InternalError,
-    MissingValueInternalError,
-    UnreachableCodeExecutionInternalError,
 )
 
 from hypothesis import given
 from hypothesis import strategies as st
 
 
-def is_direct_instance(object: Any, bases: Union[Any, Tuple[Any, ...]]) -> bool:
+def is_direct_instance(error: Any, bases: Union[Any, Tuple[Any, ...]]) -> bool:
     if not isinstance(bases, tuple):
         bases = (bases,)
 
-    return Counter(type(object).__bases__) == Counter(bases)
+    return Counter(type(error).__bases__) == Counter(bases)
 
 
 @given(message=st.text())
@@ -48,6 +45,7 @@ def test_testplates_value_error(message: str) -> None:
     assert message in error.message
 
 
+# noinspection PyTypeChecker
 @given(descriptor=st.text())
 def test_dangling_descriptor_error(descriptor: str) -> None:
     error = DanglingDescriptorError(descriptor)  # type: ignore
@@ -58,6 +56,7 @@ def test_dangling_descriptor_error(descriptor: str) -> None:
     assert repr(descriptor) in error.message
 
 
+# noinspection PyTypeChecker
 @given(field=st.text())
 def test_missing_value_error(field: str) -> None:
     error = MissingValueError(field)  # type: ignore
@@ -91,6 +90,7 @@ def test_unexpected_value_error(key: str, value: int) -> None:
     assert repr(value) in error.message
 
 
+# noinspection PyTypeChecker
 @given(field=st.text(), value=st.integers())
 def test_prohibited_value_error(field: str, value: int) -> None:
     error = ProhibitedValueError(field, value)  # type: ignore
@@ -158,28 +158,3 @@ def test_insufficient_values_error(required: int) -> None:
 
     assert required == error.required
     assert repr(required) in error.message
-
-
-@given(message=st.text())
-def test_internal_error(message: str) -> None:
-    error = InternalError(message)
-
-    assert is_direct_instance(error, TestplatesError)
-
-    assert message in error.message
-
-
-@given(field=st.text())
-def test_missing_value_internal_error(field: str) -> None:
-    error = MissingValueInternalError(field)  # type: ignore
-
-    assert is_direct_instance(error, InternalError)
-
-    assert field == error.field  # type: ignore
-    assert repr(field) in error.message
-
-
-def test_unreachable_code_internal_error() -> None:
-    error = UnreachableCodeExecutionInternalError()
-
-    assert is_direct_instance(error, InternalError)

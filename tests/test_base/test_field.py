@@ -4,18 +4,24 @@ from typing import Any, NoReturn
 from hypothesis import given, strategies as st
 
 from testplates import (
+    failure,
+    Result,
+)
+
+from testplates import (
     field,
     Required,
     Optional,
     Object,
-    Failure,
-    DanglingDescriptorError,
     ANY,
     WILDCARD,
     ABSENT,
 )
 
-from testplates.validators.exceptions import ValidationError
+from testplates import (
+    ValidationError,
+    DanglingDescriptorError,
+)
 
 from tests.conftest import st_anything_comparable
 
@@ -89,20 +95,21 @@ def test_validator_is_not_called_on_special_value_for_optional_field() -> None:
 # noinspection PyTypeChecker
 @given(value=st_anything_comparable(), message=st.text())
 def test_validator_failure(value: Any, message: str) -> None:
-    failure = Failure(ValidationError(message))
+    failure_object = failure(ValidationError(message))
 
-    def validator(this_value: Any) -> Failure[ValidationError]:
+    # noinspection PyTypeChecker
+    def validator(this_value: Any) -> Result[None, ValidationError]:
         assert this_value is value
-        return failure
+        return failure_object
 
     class Template(Object):
 
         key: Required[Any] = field(validator)
 
-    with pytest.raises(ValidationError) as error:
+    with pytest.raises(ValidationError) as exception:
         Template(key=value)
 
-    assert error.value.message == message
+    assert exception.value.message == message
 
 
 def test_name_raises_dangling_descriptor_error_when_specified_outside_the_class() -> None:

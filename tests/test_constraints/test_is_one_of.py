@@ -44,7 +44,7 @@ def st_inverse_values(draw: Draw[List[_T]]) -> List[_T]:
 
 @given(values=st_values())
 def test_repr(values: List[_T]) -> None:
-    fmt = "testplates.is_one_of({values})"
+    fmt = "testplates.IsOneOf({values})"
 
     constraint = is_one_of(*values)
 

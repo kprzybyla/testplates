@@ -3,9 +3,11 @@ from typing import cast, TypeVar, Dict, Final
 
 from hypothesis import given, strategies as st
 
-from testplates import Success, Failure
-from testplates.validators import enum_validator, passthrough_validator, integer_validator
-from testplates.validators.exceptions import (
+from testplates import unwrap_success, unwrap_failure
+from testplates import (
+    enum_validator,
+    passthrough_validator,
+    integer_validator,
     InvalidTypeValueError,
     InvalidTypeError,
     MemberValidationError,
@@ -15,7 +17,7 @@ from tests.conftest import sample, Draw
 
 _T = TypeVar("_T")
 
-uint8: Final = Success.get_value(integer_validator(minimum=0, maximum=255))
+uint8: Final = unwrap_success(integer_validator(minimum=0, maximum=255))
 
 
 def create_enum_type(members: Dict[str, _T]) -> EnumMeta:
@@ -35,11 +37,11 @@ def st_negative_integer(draw: Draw[int]) -> int:
 # noinspection PyTypeChecker
 @given(members=st.dictionaries(st.text(min_size=1), st_uint8(), min_size=1))
 def test_repr(members: Dict[str, _T]) -> None:
-    fmt = "testplates.enum_validator({type}, {validator})"
+    fmt = "testplates.EnumValidator({type}, {validator})"
 
     enum_type = create_enum_type(members)
     validator_result = enum_validator(enum_type)
-    validator = Success.get_value(validator_result)
+    validator = unwrap_success(validator_result)
 
     assert repr(validator) == fmt.format(type=enum_type, validator=passthrough_validator)
 
@@ -47,12 +49,12 @@ def test_repr(members: Dict[str, _T]) -> None:
 # noinspection PyTypeChecker
 @given(members=st.dictionaries(st.text(min_size=1), st_uint8(), min_size=1))
 def test_repr_with_member_validator(members: Dict[str, _T]) -> None:
-    fmt = "testplates.enum_validator({type}, {validator})"
+    fmt = "testplates.EnumValidator({type}, {validator})"
 
     enum_type = create_enum_type(members)
 
     validator_result = enum_validator(enum_type, uint8)
-    validator = Success.get_value(validator_result)
+    validator = unwrap_success(validator_result)
 
     assert repr(validator) == fmt.format(type=enum_type, validator=uint8)
 
@@ -64,10 +66,10 @@ def test_success(members: Dict[str, _T]) -> None:
     member: Enum = sample(enum_type)
 
     validator_result = enum_validator(enum_type, uint8)
-    validator = Success.get_value(validator_result)
+    validator = unwrap_success(validator_result)
 
     validation_result = validator(member)
-    value = Success.get_value(validation_result)
+    value = unwrap_success(validation_result)
 
     assert value is None
 
@@ -78,7 +80,7 @@ def test_failure_when_member_validation_fails(members: Dict[str, _T]) -> None:
     enum_type = create_enum_type(members)
 
     validator_result = enum_validator(enum_type, uint8)
-    error = Failure.get_error(validator_result)
+    error = unwrap_failure(validator_result)
 
     assert isinstance(error, MemberValidationError)
     assert error.enum_type == enum_type
@@ -93,10 +95,10 @@ def test_failure_when_data_validation_fails(members: Dict[str, _T]) -> None:
     member: Enum = sample(enum_type)
 
     validator_result = enum_validator(enum_type)
-    validator = Success.get_value(validator_result)
+    validator = unwrap_success(validator_result)
 
     validation_result = validator(member.value)
-    error = Failure.get_error(validation_result)
+    error = unwrap_failure(validation_result)
 
     assert isinstance(error, InvalidTypeError)
     assert error.data == member.value
@@ -112,7 +114,7 @@ def test_failure_when_enum_type_is_not_a_classinfo() -> None:
     enum_type = Example()
 
     validator_result = enum_validator(enum_type)  # type: ignore
-    error = Failure.get_error(validator_result)
+    error = unwrap_failure(validator_result)
 
     assert isinstance(error, InvalidTypeValueError)
     assert error.given_type == enum_type
@@ -126,7 +128,7 @@ def test_enum_instance_otherness_sanity() -> None:
         VALUE = 0
 
     validator_result = enum_validator(Example)
-    validator = Success.get_value(validator_result)
+    validator = unwrap_success(validator_result)
 
-    assert validator(Example.VALUE).is_success
+    assert not validator(Example.VALUE).is_failure
     assert validator(DifferentExample.VALUE).is_failure

@@ -3,9 +3,11 @@ from typing import Any, Dict, NoReturn
 from hypothesis import assume, given
 from hypothesis import strategies as st
 
-from testplates.result import Success, Failure
-from testplates.validators import union_validator, passthrough_validator, Validator
-from testplates.validators.exceptions import (
+from testplates import failure, unwrap_success, unwrap_failure, Result
+from testplates import (
+    union_validator,
+    passthrough_validator,
+    Validator,
     ValidationError,
     InvalidKeyError,
     InvalidTypeError,
@@ -25,10 +27,10 @@ def st_choices(draw: Draw[Dict[str, Validator]], min_size: int = 0) -> Dict[str,
 
 @given(choices=st_choices())
 def test_repr(choices: Dict[str, Validator]) -> None:
-    fmt = "testplates.union_validator({choices})"
+    fmt = "testplates.UnionValidator({choices})"
 
     validator_result = union_validator(choices)
-    validator = Success.get_value(validator_result)
+    validator = unwrap_success(validator_result)
 
     assert repr(validator) == fmt.format(choices=choices)
 
@@ -41,10 +43,10 @@ def test_success(choices: Dict[str, Validator], value: Any) -> None:
     data = (key, value)
 
     validator_result = union_validator(choices)
-    validator = Success.get_value(validator_result)
+    validator = unwrap_success(validator_result)
 
     validation_result = validator(data)
-    value = Success.get_value(validation_result)
+    value = unwrap_success(validation_result)
 
     assert value is None
 
@@ -58,10 +60,10 @@ def test_failure_when_invalid_key_is_passed(
     data = (key, value)
 
     validator_result = union_validator(choices)
-    validator = Success.get_value(validator_result)
+    validator = unwrap_success(validator_result)
 
     validation_result = validator(data)
-    error = Failure.get_error(validation_result)
+    error = unwrap_failure(validation_result)
 
     assert isinstance(error, InvalidKeyError)
     assert error.data == data
@@ -70,10 +72,10 @@ def test_failure_when_invalid_key_is_passed(
 @given(choices=st_choices(min_size=1), data=st_anything_except(tuple))
 def test_failure_when_data_type_validation_fails(choices: Dict[str, Validator], data: Any) -> None:
     validator_result = union_validator(choices)
-    validator = Success.get_value(validator_result)
+    validator = unwrap_success(validator_result)
 
     validation_result = validator(data)
-    error = Failure.get_error(validation_result)
+    error = unwrap_failure(validation_result)
 
     assert isinstance(error, InvalidTypeError)
     assert error.data == data
@@ -85,11 +87,12 @@ def test_failure_when_data_type_validation_fails(choices: Dict[str, Validator], 
 def test_failure_when_data_field_validation_fails(
     choices: Dict[str, Validator], value: Any, message: str
 ) -> None:
-    failure = Failure(ValidationError(message))
+    failure_object = failure(ValidationError(message))
 
-    def validator(this_value: Any) -> Failure[ValidationError]:
+    # noinspection PyTypeChecker
+    def validator(this_value: Any) -> Result[None, ValidationError]:
         assert this_value == value
-        return failure
+        return failure_object
 
     key = sample(choices)
 
@@ -97,11 +100,11 @@ def test_failure_when_data_field_validation_fails(
     data = (key, value)
 
     validator_result = union_validator(choices)
-    validator = Success.get_value(validator_result)
+    validator = unwrap_success(validator_result)
 
     validation_result = validator(data)
-    error = Failure.get_error(validation_result)
+    error = unwrap_failure(validation_result)
 
     assert isinstance(error, ChoiceValidationError)
     assert error.data == data
-    assert error.error == failure
+    assert error.error == failure_object

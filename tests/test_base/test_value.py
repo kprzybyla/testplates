@@ -1,4 +1,10 @@
-from testplates import ANY, WILDCARD, ABSENT, MISSING
+from testplates import MISSING, ANY, WILDCARD, ABSENT, UNLIMITED
+
+
+def test_repr_missing() -> None:
+    fmt = "testplates.MISSING"
+
+    assert repr(MISSING) == fmt
 
 
 def test_repr_any() -> None:
@@ -19,7 +25,7 @@ def test_repr_absent() -> None:
     assert repr(ABSENT) == fmt
 
 
-def test_repr_missing() -> None:
-    fmt = "testplates.MISSING"
+def test_repr_unlimited() -> None:
+    fmt = "testplates.UNLIMITED"
 
-    assert repr(MISSING) == fmt
+    assert repr(UNLIMITED) == fmt

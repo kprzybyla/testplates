@@ -37,7 +37,7 @@ def st_length(
 
 @given(length=st_length())
 def test_repr(length: int) -> None:
-    fmt = "testplates.has_length({length})"
+    fmt = "testplates.HasLength({length})"
 
     constraint = has_length(length)
 
