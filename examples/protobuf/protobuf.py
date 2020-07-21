@@ -26,7 +26,7 @@ from typing import Mapping, Final
 
 from testplates import validators, UNLIMITED
 from testplates.result import Result
-from testplates.base.structure import StructureMeta
+from testplates.impl.base import StructureMeta
 from testplates.validators.utils import Validator
 from testplates.validators.exceptions import ValidationError
 
