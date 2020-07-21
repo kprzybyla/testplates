@@ -4,10 +4,8 @@ from typing import Any, Sized
 
 import testplates
 
-from testplates.impl.abc import Constraint
 
-
-class HasLength(Constraint):
+class HasLength:
 
     __slots__ = ("_length",)
 

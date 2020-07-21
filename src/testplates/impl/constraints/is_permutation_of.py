@@ -4,7 +4,6 @@ from typing import Any, TypeVar, Generic, List, Collection, Final
 
 import testplates
 
-from testplates.impl.abc import Constraint
 from testplates.impl.exceptions import InsufficientValuesError
 
 T = TypeVar("T")
@@ -12,7 +11,7 @@ T = TypeVar("T")
 MINIMUM_NUMBER_OF_VALUES: Final[int] = 2
 
 
-class IsPermutationOf(Generic[T], Constraint):
+class IsPermutationOf(Generic[T]):
 
     __slots__ = ("_values",)
 

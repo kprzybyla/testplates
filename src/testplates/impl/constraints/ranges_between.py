@@ -4,13 +4,12 @@ from typing import Any, Union
 
 import testplates
 
-from testplates.impl.abc import Constraint
 from testplates.impl.base import fits_minimum, fits_maximum, Limit, UnlimitedType
 
 Boundary = Union[Limit, UnlimitedType]
 
 
-class RangesBetween(Constraint):
+class RangesBetween:
 
     __slots__ = ("_minimum", "_maximum")
 

@@ -4,7 +4,6 @@ from typing import Any, TypeVar, Generic, Container, Final
 
 import testplates
 
-from testplates.impl.abc import Constraint
 from testplates.impl.utils import format_like_tuple
 from testplates.impl.exceptions import InsufficientValuesError
 
@@ -13,7 +12,7 @@ T = TypeVar("T")
 MINIMUM_NUMBER_OF_VALUES: Final[int] = 1
 
 
-class Contains(Generic[T], Constraint):
+class Contains(Generic[T]):
 
     __slots__ = ("_values",)
 

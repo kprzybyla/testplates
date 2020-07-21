@@ -7,10 +7,8 @@ from typing import Any, AnyStr, Type, Generic, Pattern
 
 import testplates
 
-from testplates.impl.abc import Constraint
 
-
-class MatchesPattern(Generic[AnyStr], Constraint, abc.ABC):
+class MatchesPattern(Generic[AnyStr], abc.ABC):
 
     __slots__ = ("_pattern", "_pattern_type")
 

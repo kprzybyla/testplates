@@ -13,12 +13,7 @@ __all__ = [
     "InsufficientValuesError",
 ]
 
-from typing import Any, TypeVar
-
-from testplates.impl import abc
-
-_C = TypeVar("_C")
-_T = TypeVar("_T")
+from typing import Any
 
 
 class TestplatesError(Exception):
@@ -57,7 +52,7 @@ class DanglingDescriptorError(TestplatesError):
         protocol and may cause unexpected behaviour.
     """
 
-    def __init__(self, descriptor: abc.Descriptor[_C, _T]) -> None:
+    def __init__(self, descriptor: Any) -> None:
         self.descriptor = descriptor
 
         super().__init__(f"Descriptor {descriptor!r} defined outside of the class definition")
@@ -72,7 +67,7 @@ class MissingValueError(TestplatesValueError):
         value for given field with actual value.
     """
 
-    def __init__(self, field: abc.Descriptor[_C, _T]) -> None:
+    def __init__(self, field: Any) -> None:
         self.field = field
 
         super().__init__(f"Missing value for required field {field!r}")
@@ -87,7 +82,7 @@ class UnexpectedValueError(TestplatesValueError):
         not defined inside the template definition.
     """
 
-    def __init__(self, key: str, value: _T) -> None:
+    def __init__(self, key: str, value: Any) -> None:
         self.key = key
         self.value = value
 
@@ -103,7 +98,7 @@ class ProhibitedValueError(TestplatesValueError):
         is invalid for given field due to its nature.
     """
 
-    def __init__(self, field: abc.Descriptor[_C, _T], value: Any) -> None:
+    def __init__(self, field: Any, value: Any) -> None:
         self.field = field
         self.value = value
 

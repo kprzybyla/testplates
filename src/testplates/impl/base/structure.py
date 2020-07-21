@@ -20,7 +20,6 @@ from typing import (
 
 import testplates
 
-from testplates.impl.abc import Descriptor, Template
 from testplates.impl.utils import format_like_dict
 from testplates.impl.exceptions import (
     DanglingDescriptorError,
@@ -38,7 +37,7 @@ V = TypeVar("V")
 Validator = Callable[[Any], Result[None, Exception]]
 
 
-class Field(Generic[T], Descriptor[Any, T]):
+class Field(Generic[T]):
 
     """
         Field descriptor class.
@@ -223,7 +222,7 @@ class StructureMeta(Generic[T], abc.ABCMeta):
         return instance
 
 
-class Structure(Generic[T], Template, abc.ABC, metaclass=StructureMeta):
+class Structure(Generic[T], abc.ABC, metaclass=StructureMeta):
 
     """
         Structure template base class.
