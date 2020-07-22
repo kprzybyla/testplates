@@ -3,12 +3,18 @@ __all__ = ["AnyStringValidator", "StringValidator", "BytesValidator"]
 from typing import Any, TypeVar, Generic, Union, Pattern as Regex, Optional, Final
 
 from testplates.impl.base import Result, Success, Failure
-from testplates.impl.base import fits_minimum_length, fits_maximum_length, Limit, UnlimitedType
-from testplates.impl.exceptions import InvalidLengthError
+from testplates.impl.base import (
+    fits_minimum_length,
+    fits_maximum_length,
+    Limit,
+    UnlimitedType,
+    InvalidLengthError,
+)
 
 from .type import TypeValidator
 from .exceptions import (
     ValidationError,
+    # TODO(kprzybyla)
     # InvalidLengthError,
     InvalidMinimumLengthError,
     InvalidMaximumLengthError,
