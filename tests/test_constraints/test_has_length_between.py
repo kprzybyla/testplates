@@ -11,6 +11,7 @@ from hypothesis import strategies as st
 from testplates import UNLIMITED
 from testplates import (
     has_length_between,
+    InvalidSignatureError,
     MissingBoundaryError,
     InvalidLengthError,
     OverlappingBoundariesError,
@@ -149,7 +150,7 @@ def test_failure_when_value_is_not_sized(data: st.DataObject, length: int) -> No
 
 
 def test_failure_when_boundaries_are_missing() -> None:
-    with pytest.raises(TypeError):
+    with pytest.raises(InvalidSignatureError):
         has_length_between()
 
 

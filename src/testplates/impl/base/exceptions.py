@@ -1,6 +1,7 @@
 __all__ = [
     "TestplatesError",
     "TestplatesValueError",
+    "InvalidSignatureError",
     "DanglingDescriptorError",
     "MissingValueError",
     "UnexpectedValueError",
@@ -38,6 +39,13 @@ class TestplatesValueError(ValueError, TestplatesError):
 
     """
         Base testplates value error.
+    """
+
+
+class InvalidSignatureError(TestplatesError):
+
+    """
+        Error indicating invalid signature.
     """
 
 

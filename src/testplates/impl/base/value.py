@@ -126,11 +126,11 @@ class UnlimitedType(enum.Enum):
 
 T = TypeVar("T")
 
-Maybe: Final = Union[T, MissingType]
-Value: Final = Union[T, SpecialValueType]
+Maybe = Union[T, MissingType]
+Value = Union[T, SpecialValueType]
 
 ANY: Final[Literal[SpecialValueType.ANY]] = SpecialValueType.ANY
 WILDCARD: Final[Literal[SpecialValueType.WILDCARD]] = SpecialValueType.WILDCARD
 ABSENT: Final[Literal[SpecialValueType.ABSENT]] = SpecialValueType.ABSENT
 MISSING: Final[Literal[MissingType.MISSING]] = MissingType.MISSING
-UNLIMITED: Final[UnlimitedType.UNLIMITED] = UnlimitedType.UNLIMITED
+UNLIMITED: Final[Literal[UnlimitedType.UNLIMITED]] = UnlimitedType.UNLIMITED

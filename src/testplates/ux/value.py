@@ -20,15 +20,15 @@ from testplates.impl.base import MissingType, SpecialValueType, UnlimitedType
 
 T = TypeVar("T")
 
-Maybe: Final = Union[T, MissingType]
-Value: Final = Union[T, SpecialValueType]
-Boundary: Final = Union[T, UnlimitedType]
+Maybe = Union[T, MissingType]
+Value = Union[T, SpecialValueType]
+Boundary = Union[T, UnlimitedType]
 
-LiteralMissing: Final = Literal[MissingType.MISSING]
-LiteralAny: Final = Literal[SpecialValueType.ANY]
-LiteralWildcard: Final = Literal[SpecialValueType.WILDCARD]
-LiteralAbsent: Final = Literal[SpecialValueType.ABSENT]
-LiteralUnlimited: Final = Literal[UnlimitedType.UNLIMITED]
+LiteralMissing = Literal[MissingType.MISSING]
+LiteralAny = Literal[SpecialValueType.ANY]
+LiteralWildcard = Literal[SpecialValueType.WILDCARD]
+LiteralAbsent = Literal[SpecialValueType.ABSENT]
+LiteralUnlimited = Literal[UnlimitedType.UNLIMITED]
 
 MISSING: Final[LiteralMissing] = MissingType.MISSING
 ANY: Final[LiteralAny] = SpecialValueType.ANY

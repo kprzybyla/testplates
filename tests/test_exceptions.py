@@ -48,22 +48,22 @@ def test_testplates_value_error(message: str) -> None:
 # noinspection PyTypeChecker
 @given(descriptor=st.text())
 def test_dangling_descriptor_error(descriptor: str) -> None:
-    error = DanglingDescriptorError(descriptor)  # type: ignore
+    error = DanglingDescriptorError(descriptor)
 
     assert is_direct_instance(error, TestplatesError)
 
-    assert descriptor == error.descriptor  # type: ignore
+    assert descriptor == error.descriptor
     assert repr(descriptor) in error.message
 
 
 # noinspection PyTypeChecker
 @given(field=st.text())
 def test_missing_value_error(field: str) -> None:
-    error = MissingValueError(field)  # type: ignore
+    error = MissingValueError(field)
 
     assert is_direct_instance(error, TestplatesValueError)
 
-    assert field == error.field  # type: ignore
+    assert field == error.field
     assert repr(field) in error.message
 
 
@@ -93,11 +93,11 @@ def test_unexpected_value_error(key: str, value: int) -> None:
 # noinspection PyTypeChecker
 @given(field=st.text(), value=st.integers())
 def test_prohibited_value_error(field: str, value: int) -> None:
-    error = ProhibitedValueError(field, value)  # type: ignore
+    error = ProhibitedValueError(field, value)
 
     assert is_direct_instance(error, TestplatesValueError)
 
-    assert field == error.field  # type: ignore
+    assert field == error.field
     assert value == error.value
 
     assert repr(field) in error.message

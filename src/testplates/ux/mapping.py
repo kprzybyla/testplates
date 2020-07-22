@@ -1,10 +1,12 @@
+from __future__ import annotations
+
 __all__ = ["create_mapping", "Mapping"]
 
 import typing
 
-from typing import TypeVar, Generic, Iterator
+from typing import Type, TypeVar, Generic, Iterator, Optional
 
-from testplates.impl.base import Field, Structure, StructureMeta
+from testplates.impl.base import Field, Structure
 
 from .value import Maybe, MISSING
 
@@ -12,7 +14,9 @@ T = TypeVar("T", covariant=True)
 
 
 # noinspection PyProtectedMember
-def create_mapping(name: str, fields: typing.Mapping[str, Field[T]] = None) -> StructureMeta[T]:
+def create_mapping(
+    name: str, fields: Optional[typing.Mapping[str, Field[T]]] = None
+) -> Type[Mapping[T]]:
 
     """
         Functional API for creating mapping.

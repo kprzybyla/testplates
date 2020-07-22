@@ -1,6 +1,7 @@
 __all__ = [
     "TestplatesError",
     "TestplatesValueError",
+    "InvalidSignatureError",
     "DanglingDescriptorError",
     "MissingValueError",
     "UnexpectedValueError",
@@ -35,6 +36,7 @@ __all__ = [
 from testplates.impl.base import (
     TestplatesError,
     TestplatesValueError,
+    InvalidSignatureError,
     DanglingDescriptorError,
     MissingValueError,
     UnexpectedValueError,

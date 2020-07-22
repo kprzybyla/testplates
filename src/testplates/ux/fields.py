@@ -1,6 +1,6 @@
 __all__ = ["field", "Required", "Optional"]
 
-from typing import overload, TypeVar, Union, Callable, Literal, Final
+from typing import overload, TypeVar, Union, Callable, Literal
 
 from testplates.impl.base import Field
 
@@ -9,8 +9,8 @@ from .validators import passthrough_validator, Validator
 
 T = TypeVar("T")
 
-Required: Final = Field[Union[T, LiteralAny]]
-Optional: Final = Field[Union[T, LiteralAny, LiteralWildcard, LiteralAbsent]]
+Required = Field[Union[T, LiteralAny]]
+Optional = Field[Union[T, LiteralAny, LiteralWildcard, LiteralAbsent]]
 
 
 @overload

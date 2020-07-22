@@ -14,6 +14,7 @@ from typing import (
     Union,
     Tuple,
     Dict,
+    Mapping,
     Callable,
     Optional,
 )
@@ -196,7 +197,7 @@ class StructureMeta(Generic[T], abc.ABCMeta):
 
     __slots__ = ()
 
-    _fields_: Dict[str, Field[T]]
+    _fields_: Mapping[str, Field[T]]
 
     @classmethod
     def __prepare__(
@@ -215,7 +216,9 @@ class StructureMeta(Generic[T], abc.ABCMeta):
 
         return instance
 
-    def _create_(cls, name: str, fields: Dict[str, Field[T]] = None) -> StructureMeta[T]:
+    def _create_(
+        cls, name: str, fields: Optional[Mapping[str, Field[T]]] = None
+    ) -> StructureMeta[T]:
         bases = (cls,)
         fields = fields or {}
 
@@ -239,7 +242,7 @@ class Structure(Generic[T], abc.ABC, metaclass=StructureMeta):
 
     __slots__ = ("_values_",)
 
-    _fields_: ClassVar[Dict[str, Field[T]]]
+    _fields_: ClassVar[Mapping[str, Field[T]]]
 
     def __init__(self, **values: T) -> None:
         keys = self._fields_.keys()

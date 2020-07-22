@@ -1,10 +1,10 @@
+from __future__ import annotations
+
 __all__ = ["create_object", "Object"]
 
-import typing
+from typing import cast, Generic, Type, TypeVar, Mapping, Optional
 
-from typing import cast, Generic, TypeVar
-
-from testplates.impl.base.structure import Field, Structure, StructureMeta
+from testplates.impl.base.structure import Field, Structure
 
 from .value import Maybe, MISSING
 
@@ -12,7 +12,7 @@ T = TypeVar("T", covariant=True)
 
 
 # noinspection PyProtectedMember
-def create_object(name: str, fields: typing.Mapping[str, Field[T]] = None) -> StructureMeta[T]:
+def create_object(name: str, fields: Optional[Mapping[str, Field[T]]] = None) -> Type[Object[T]]:
 
     """
         Functional API for creating object.

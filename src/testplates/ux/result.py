@@ -6,8 +6,8 @@ from typing import Any, TypeVar, Union, Protocol
 
 from testplates.impl.base import Success, Failure
 
-ValueType = TypeVar("ValueType")
-ErrorType = TypeVar("ErrorType", bound=Exception)
+ValueType = TypeVar("ValueType", covariant=True)
+ErrorType = TypeVar("ErrorType", bound=Exception, covariant=True)
 
 
 class Result(Protocol[ValueType, ErrorType]):
@@ -15,8 +15,6 @@ class Result(Protocol[ValueType, ErrorType]):
     """
         Result protocol class.
     """
-
-    __slots__ = ()
 
     @property
     @abc.abstractmethod
@@ -41,8 +39,6 @@ class SuccessObject(Result[ValueType, Any], Protocol[ValueType]):
         Success object protocol class.
     """
 
-    __slots__ = ()
-
     @property
     @abc.abstractmethod
     def value(self) -> ValueType:
@@ -57,8 +53,6 @@ class FailureObject(Result[Any, ErrorType], Protocol[ErrorType]):
     """
         Failure object protocol class.
     """
-
-    __slots__ = ()
 
     @property
     @abc.abstractmethod

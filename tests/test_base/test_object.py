@@ -1,4 +1,4 @@
-from typing import TypeVar
+from typing import Any, TypeVar
 from hypothesis import given
 
 from testplates import field, Object, Required, Optional
@@ -10,7 +10,7 @@ _T = TypeVar("_T")
 
 @given(value=st_anything_comparable())
 def test_value_access_in_required_field(value: _T) -> None:
-    class Template(Object):
+    class Template(Object[Any]):
 
         key: Required[_T] = field()
 
@@ -21,7 +21,7 @@ def test_value_access_in_required_field(value: _T) -> None:
 
 @given(value=st_anything_comparable(), default=st_anything_comparable())
 def test_value_access_in_required_field_with_default_value(value: _T, default: _T) -> None:
-    class Template(Object):
+    class Template(Object[Any]):
 
         key: Required[_T] = field(default=default)
 
@@ -34,7 +34,7 @@ def test_value_access_in_required_field_with_default_value(value: _T, default: _
 
 @given(value=st_anything_comparable())
 def test_value_access_in_optional_field(value: _T) -> None:
-    class Template(Object):
+    class Template(Object[Any]):
 
         key: Optional[_T] = field(optional=True)
 
@@ -45,7 +45,7 @@ def test_value_access_in_optional_field(value: _T) -> None:
 
 @given(value=st_anything_comparable(), default=st_anything_comparable())
 def test_value_access_in_optional_field_with_default_value(value: _T, default: _T) -> None:
-    class Template(Object):
+    class Template(Object[Any]):
 
         key: Optional[_T] = field(default=default, optional=True)
 

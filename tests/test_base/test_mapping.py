@@ -1,4 +1,4 @@
-from typing import TypeVar, Final
+from typing import Any, TypeVar, Final
 
 from hypothesis import given
 
@@ -13,7 +13,7 @@ KEY: Final[str] = "key"
 
 @given(value=st_anything_comparable())
 def test_value_access_in_required_field(value: _T) -> None:
-    class Template(Mapping):
+    class Template(Mapping[Any]):
 
         key: Required[_T] = field()
 
@@ -24,7 +24,7 @@ def test_value_access_in_required_field(value: _T) -> None:
 
 @given(value=st_anything_comparable(), default=st_anything_comparable())
 def test_value_access_in_required_field_with_default_value(value: _T, default: _T) -> None:
-    class Template(Mapping):
+    class Template(Mapping[Any]):
 
         key: Required[_T] = field(default=default)
 
@@ -37,7 +37,7 @@ def test_value_access_in_required_field_with_default_value(value: _T, default: _
 
 @given(value=st_anything_comparable())
 def test_value_access_in_optional_field(value: _T) -> None:
-    class Template(Mapping):
+    class Template(Mapping[Any]):
 
         key: Optional[_T] = field(optional=True)
 
@@ -48,7 +48,7 @@ def test_value_access_in_optional_field(value: _T) -> None:
 
 @given(value=st_anything_comparable(), default=st_anything_comparable())
 def test_value_access_in_optional_field_with_default_value(value: _T, default: _T) -> None:
-    class Template(Mapping):
+    class Template(Mapping[Any]):
 
         key: Optional[_T] = field(default=default, optional=True)
 
@@ -61,7 +61,7 @@ def test_value_access_in_optional_field_with_default_value(value: _T, default: _
 
 @given(value=st_anything_comparable())
 def test_len(value: _T) -> None:
-    class Template(Mapping):
+    class Template(Mapping[Any]):
 
         key: Required[_T] = field()
 
@@ -72,7 +72,7 @@ def test_len(value: _T) -> None:
 
 @given(value=st_anything_comparable())
 def test_iter(value: _T) -> None:
-    class Template(Mapping):
+    class Template(Mapping[Any]):
 
         key: Required[_T] = field()
 

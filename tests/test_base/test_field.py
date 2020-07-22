@@ -29,7 +29,7 @@ from tests.conftest import st_anything_comparable
 def test_repr_for_required_field_without_default_value() -> None:
     fmt = "testplates.Field('key', optional=False)"
 
-    class Template(Object):
+    class Template(Object[Any]):
 
         key: Required[Any] = field()
 
@@ -40,7 +40,7 @@ def test_repr_for_required_field_without_default_value() -> None:
 def test_repr_for_required_field_with_default_value(value: Any) -> None:
     fmt = "testplates.Field('key', default={value}, optional=False)"
 
-    class Template(Object):
+    class Template(Object[Any]):
 
         key: Required[Any] = field(default=value)
 
@@ -50,7 +50,7 @@ def test_repr_for_required_field_with_default_value(value: Any) -> None:
 def test_repr_for_optional_field_without_default_value() -> None:
     fmt = "testplates.Field('key', optional=True)"
 
-    class Template(Object):
+    class Template(Object[Any]):
 
         key: Optional[Any] = field(optional=True)
 
@@ -61,7 +61,7 @@ def test_repr_for_optional_field_without_default_value() -> None:
 def test_repr_for_optional_field_with_default_value(value: Any) -> None:
     fmt = "testplates.Field('key', default={value}, optional=True)"
 
-    class Template(Object):
+    class Template(Object[Any]):
 
         key: Optional[Any] = field(default=value, optional=True)
 
@@ -69,10 +69,10 @@ def test_repr_for_optional_field_with_default_value(value: Any) -> None:
 
 
 def test_validator_is_not_called_on_special_value_for_required_field() -> None:
-    def validator(*args, **kwargs) -> NoReturn:
+    def validator(*args: Any, **kwargs: Any) -> NoReturn:
         raise NotImplementedError(args, kwargs)
 
-    class Template(Object):
+    class Template(Object[Any]):
 
         key: Required[Any] = field(validator)
 
@@ -80,10 +80,10 @@ def test_validator_is_not_called_on_special_value_for_required_field() -> None:
 
 
 def test_validator_is_not_called_on_special_value_for_optional_field() -> None:
-    def validator(*args, **kwargs) -> NoReturn:
+    def validator(*args: Any, **kwargs: Any) -> NoReturn:
         raise NotImplementedError(args, kwargs)
 
-    class Template(Object):
+    class Template(Object[Any]):
 
         key: Optional[Any] = field(validator, optional=True)
 
@@ -102,7 +102,7 @@ def test_validator_failure(value: Any, message: str) -> None:
         assert this_value is value
         return failure_object
 
-    class Template(Object):
+    class Template(Object[Any]):
 
         key: Required[Any] = field(validator)
 
@@ -119,19 +119,19 @@ def test_name_raises_dangling_descriptor_error_when_specified_outside_the_class(
         print(key.name)
 
 
-def test_default_for_mutable_objects():
+def test_default_for_mutable_objects() -> None:
     key: Required[List[Any]] = field(default=list())
 
     assert key.default is key.default
 
 
-def test_default_factory_for_mutable_objects():
+def test_default_factory_for_mutable_objects() -> None:
     key: Required[List[Any]] = field(default_factory=list)
 
     assert key.default is not key.default
 
 
 # noinspection PyArgumentList
-def test_default_and_default_factory_type_error():
+def test_default_and_default_factory_type_error() -> None:
     with pytest.raises(TypeError):
         field(default=list(), default_factory=list)  # type: ignore

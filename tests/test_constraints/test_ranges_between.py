@@ -8,6 +8,7 @@ from hypothesis import strategies as st
 from testplates import UNLIMITED
 from testplates import (
     ranges_between,
+    InvalidSignatureError,
     MissingBoundaryError,
     MutuallyExclusiveBoundariesError,
     OverlappingBoundariesError,
@@ -371,7 +372,7 @@ def test_failure_when_value_is_not_comparable_with_exclusive_boundaries(
 
 # noinspection PyArgumentList
 def test_failure_when_boundaries_are_missing() -> None:
-    with pytest.raises(TypeError):
+    with pytest.raises(InvalidSignatureError):
         ranges_between()  # type: ignore
 
 
@@ -383,10 +384,10 @@ def test_failure_when_minimum_boundary_is_missing(data: st.DataObject, value: in
     exclusive_maximum = data.draw(st_exclusive_maximum(value))
 
     with pytest.raises(MissingBoundaryError):
-        ranges_between(maximum=inclusive_maximum)
+        ranges_between(maximum=inclusive_maximum)  # type: ignore
 
     with pytest.raises(MissingBoundaryError):
-        ranges_between(exclusive_maximum=exclusive_maximum)
+        ranges_between(exclusive_maximum=exclusive_maximum)  # type: ignore
 
 
 # noinspection PyTypeChecker
@@ -397,10 +398,10 @@ def test_failure_when_maximum_boundary_is_missing(data: st.DataObject, value: in
     exclusive_minimum = data.draw(st_exclusive_minimum(value))
 
     with pytest.raises(MissingBoundaryError):
-        ranges_between(minimum=inclusive_minimum)
+        ranges_between(minimum=inclusive_minimum)  # type: ignore
 
     with pytest.raises(MissingBoundaryError):
-        ranges_between(exclusive_minimum=exclusive_minimum)
+        ranges_between(exclusive_minimum=exclusive_minimum)  # type: ignore
 
 
 # noinspection PyTypeChecker
@@ -421,7 +422,7 @@ def test_failure_when_mutually_exclusive_boundaries_are_set(
             maximum=inclusive_maximum,
             exclusive_minimum=exclusive_minimum,
             exclusive_maximum=exclusive_maximum,
-        )
+        )  # type: ignore
 
 
 # noinspection PyTypeChecker
@@ -441,14 +442,14 @@ def test_failure_when_mutually_exclusive_minimum_boundaries_are_set(
             minimum=inclusive_minimum,
             maximum=inclusive_maximum,
             exclusive_minimum=exclusive_minimum,
-        )
+        )  # type: ignore
 
     with pytest.raises(MutuallyExclusiveBoundariesError):
         ranges_between(
             minimum=inclusive_minimum,
             exclusive_minimum=exclusive_minimum,
             exclusive_maximum=exclusive_maximum,
-        )
+        )  # type: ignore
 
 
 # noinspection PyTypeChecker
@@ -468,14 +469,14 @@ def test_failure_when_mutually_exclusive_maximum_boundaries_are_set(
             minimum=inclusive_minimum,
             maximum=inclusive_maximum,
             exclusive_maximum=exclusive_maximum,
-        )
+        )  # type: ignore
 
     with pytest.raises(MutuallyExclusiveBoundariesError):
         ranges_between(
             maximum=inclusive_maximum,
             exclusive_minimum=exclusive_minimum,
             exclusive_maximum=exclusive_maximum,
-        )
+        )  # type: ignore
 
 
 # noinspection PyTypeChecker

@@ -18,6 +18,7 @@ from .value import UnlimitedType, UNLIMITED
 from .limit import Limit, Extremum, MINIMUM_EXTREMUM, MAXIMUM_EXTREMUM
 from .exceptions import (
     TestplatesError,
+    InvalidSignatureError,
     MissingBoundaryError,
     InvalidLengthError,
     MutuallyExclusiveBoundariesError,
@@ -111,7 +112,7 @@ def get_value_boundaries(
         and exclusive_minimum is None
         and exclusive_maximum is None
     ):
-        return Failure(TypeError("function is missing 2 required keyword-only arguments"))
+        return Failure(InvalidSignatureError("missing 2 required keyword-only arguments"))
 
     minimum_result = get_minimum(inclusive=inclusive_minimum, exclusive=exclusive_minimum)
 
@@ -172,7 +173,7 @@ def get_length_boundaries(
     """
 
     if inclusive_minimum is None and inclusive_maximum is None:
-        return Failure(TypeError("function is missing 2 required keyword-only arguments"))
+        return Failure(InvalidSignatureError("missing 2 required keyword-only arguments"))
 
     minimum_result = get_minimum(inclusive=inclusive_minimum)
 

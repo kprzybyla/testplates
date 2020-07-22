@@ -16,17 +16,7 @@ __all__ = [
 import re
 
 from enum import Enum, EnumMeta
-from typing import (
-    overload,
-    Any,
-    AnyStr,
-    Iterable,
-    Mapping,
-    Optional,
-    Pattern as Regex,
-    Callable,
-    Final,
-)
+from typing import overload, Any, AnyStr, Iterable, Mapping, Optional, Pattern as Regex, Callable
 
 from testplates.impl.base import get_value_boundaries, get_length_boundaries, StructureMeta
 from testplates.impl.validators import (
@@ -47,7 +37,7 @@ from .value import Boundary
 from .result import success, failure, unwrap_success, unwrap_failure, Result
 from .exceptions import ValidationError, InvalidTypeValueError, MemberValidationError
 
-Validator: Final = Callable[[Any], Result[None, ValidationError]]
+Validator = Callable[[Any], Result[None, ValidationError]]
 
 passthrough_validator = PassthroughValidator()
 
