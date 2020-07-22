@@ -21,15 +21,16 @@ from typing import (
 import testplates
 
 from testplates.impl.utils import format_like_dict
-from testplates.impl.exceptions import (
+
+from .result import Result, Failure
+from .value import is_value, values_matches, Maybe, ANY, WILDCARD, ABSENT, MISSING
+
+from .exceptions import (
     DanglingDescriptorError,
     MissingValueError,
     UnexpectedValueError,
     ProhibitedValueError,
 )
-
-from .result import Result, Failure
-from .value import is_value, values_matches, Maybe, ANY, WILDCARD, ABSENT, MISSING
 
 T = TypeVar("T", covariant=True)
 V = TypeVar("V")

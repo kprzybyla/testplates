@@ -15,6 +15,17 @@ __all__ = [
     "SpecialValueType",
     "UnlimitedType",
     "Limit",
+    "TestplatesError",
+    "TestplatesValueError",
+    "DanglingDescriptorError",
+    "MissingValueError",
+    "UnexpectedValueError",
+    "ProhibitedValueError",
+    "MissingBoundaryError",
+    "InvalidLengthError",
+    "MutuallyExclusiveBoundariesError",
+    "OverlappingBoundariesError",
+    "SingleMatchBoundariesError",
 ]
 
 from .result import Result, Success, Failure
@@ -30,4 +41,18 @@ from .boundaries import (
     fits_maximum,
     fits_minimum_length,
     fits_maximum_length,
+)
+
+from .exceptions import (
+    TestplatesError,
+    TestplatesValueError,
+    DanglingDescriptorError,
+    MissingValueError,
+    UnexpectedValueError,
+    ProhibitedValueError,
+    MissingBoundaryError,
+    InvalidLengthError,
+    MutuallyExclusiveBoundariesError,
+    OverlappingBoundariesError,
+    SingleMatchBoundariesError,
 )

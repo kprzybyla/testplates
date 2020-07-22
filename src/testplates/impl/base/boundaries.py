@@ -13,17 +13,17 @@ import sys
 
 from typing import Sized, Tuple, Union, Optional, Final
 
-from testplates.impl.exceptions import (
+from .result import Result, Success, Failure
+from .value import UnlimitedType, UNLIMITED
+from .limit import Limit, Extremum, MINIMUM_EXTREMUM, MAXIMUM_EXTREMUM
+from .exceptions import (
+    TestplatesError,
     MissingBoundaryError,
     InvalidLengthError,
     MutuallyExclusiveBoundariesError,
     OverlappingBoundariesError,
     SingleMatchBoundariesError,
 )
-
-from .result import Result, Success, Failure
-from .value import UnlimitedType, UNLIMITED
-from .limit import Limit, Extremum, MINIMUM_EXTREMUM, MAXIMUM_EXTREMUM
 
 Edge = Union[int, UnlimitedType]
 Boundary = Union[Limit, UnlimitedType]
@@ -34,7 +34,7 @@ LENGTH_MAXIMUM: Final[int] = sys.maxsize
 
 def get_minimum(
     inclusive: Optional[Edge] = None, exclusive: Optional[Edge] = None
-) -> Result[Boundary, Exception]:
+) -> Result[Boundary, TestplatesError]:
 
     """
         Gets minimum boundary.
@@ -48,7 +48,7 @@ def get_minimum(
 
 def get_maximum(
     inclusive: Optional[Edge] = None, exclusive: Optional[Edge] = None
-) -> Result[Boundary, Exception]:
+) -> Result[Boundary, TestplatesError]:
 
     """
         Gets maximum boundary.
@@ -63,7 +63,7 @@ def get_maximum(
 # noinspection PyTypeChecker
 def get_boundary(
     name: Extremum, *, inclusive: Optional[Edge] = None, exclusive: Optional[Edge] = None
-) -> Result[Boundary, Exception]:
+) -> Result[Boundary, TestplatesError]:
 
     """
         Gets boundary.
@@ -94,7 +94,7 @@ def get_value_boundaries(
     inclusive_maximum: Optional[Edge] = None,
     exclusive_minimum: Optional[Edge] = None,
     exclusive_maximum: Optional[Edge] = None,
-) -> Result[Tuple[Boundary, Boundary], Exception]:
+) -> Result[Tuple[Boundary, Boundary], TestplatesError]:
 
     """
         Gets minimum and maximum value boundaries.
@@ -136,7 +136,9 @@ def get_value_boundaries(
 
 
 # noinspection PyTypeChecker
-def validate_value_boundaries(*, minimum: Boundary, maximum: Boundary) -> Result[None, Exception]:
+def validate_value_boundaries(
+    *, minimum: Boundary, maximum: Boundary
+) -> Result[None, TestplatesError]:
 
     """
         Checks minimum and maximum value boundaries.
@@ -160,7 +162,7 @@ def validate_value_boundaries(*, minimum: Boundary, maximum: Boundary) -> Result
 # noinspection PyTypeChecker
 def get_length_boundaries(
     inclusive_minimum: Optional[Edge] = None, inclusive_maximum: Optional[Edge] = None
-) -> Result[Tuple[Boundary, Boundary], Exception]:
+) -> Result[Tuple[Boundary, Boundary], TestplatesError]:
 
     """
         Gets minimum and maximum length boundaries.
@@ -195,7 +197,9 @@ def get_length_boundaries(
 
 
 # noinspection PyTypeChecker
-def validate_length_boundaries(minimum: Boundary, maximum: Boundary) -> Result[None, Exception]:
+def validate_length_boundaries(
+    minimum: Boundary, maximum: Boundary
+) -> Result[None, TestplatesError]:
 
     """
         Checks minimum and maximum length boundaries.

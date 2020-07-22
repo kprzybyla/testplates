@@ -32,7 +32,7 @@ __all__ = [
     "ChoiceValidationError",
 ]
 
-from testplates.impl.exceptions import (
+from testplates.impl.base import (
     TestplatesError,
     TestplatesValueError,
     DanglingDescriptorError,
@@ -44,10 +44,11 @@ from testplates.impl.exceptions import (
     MutuallyExclusiveBoundariesError,
     OverlappingBoundariesError,
     SingleMatchBoundariesError,
-    InsufficientValuesError,
 )
 
-from testplates.impl.validators.exceptions import (
+from testplates.impl.constraints import InsufficientValuesError
+
+from testplates.impl.validators import (
     ValidationError,
     InvalidTypeValueError,
     InvalidTypeError,

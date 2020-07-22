@@ -10,7 +10,6 @@ __all__ = [
     "MutuallyExclusiveBoundariesError",
     "OverlappingBoundariesError",
     "SingleMatchBoundariesError",
-    "InsufficientValuesError",
 ]
 
 from typing import Any
@@ -180,19 +179,3 @@ class SingleMatchBoundariesError(TestplatesValueError):
         self.maximum = maximum
 
         super().__init__(f"Single match minimum {minimum!r} and maximum {maximum!r} boundaries")
-
-
-class InsufficientValuesError(TestplatesValueError):
-
-    """
-        Error indicating insufficient amount of values.
-
-        Raised when user passes not enough values for template
-        that accepts infinite number of values but requires at
-        least a specific number of values to be provided.
-    """
-
-    def __init__(self, required: int) -> None:
-        self.required = required
-
-        super().__init__(f"Expected at least {required!r} value(s) to be provided")

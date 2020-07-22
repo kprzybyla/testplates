@@ -130,6 +130,15 @@ from .value import (
 from .exceptions import (
     TestplatesError,
     TestplatesValueError,
+    DanglingDescriptorError,
+    MissingValueError,
+    UnexpectedValueError,
+    ProhibitedValueError,
+    MissingBoundaryError,
+    InvalidLengthError,
+    MutuallyExclusiveBoundariesError,
+    OverlappingBoundariesError,
+    SingleMatchBoundariesError,
 )
 
 from .constraints import (
@@ -142,18 +151,7 @@ from .constraints import (
     is_permutation_of,
 )
 
-from .exceptions import (
-    DanglingDescriptorError,
-    MissingValueError,
-    UnexpectedValueError,
-    ProhibitedValueError,
-    MissingBoundaryError,
-    InvalidLengthError,
-    MutuallyExclusiveBoundariesError,
-    OverlappingBoundariesError,
-    SingleMatchBoundariesError,
-    InsufficientValuesError,
-)
+from .exceptions import InsufficientValuesError
 
 from .validators import (
     passthrough_validator,

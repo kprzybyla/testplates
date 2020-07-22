@@ -4,7 +4,7 @@ from typing import Any, TypeVar, Generic, List, Collection, Final
 
 import testplates
 
-from testplates.impl.exceptions import InsufficientValuesError
+from .exceptions import InsufficientValuesError
 
 T = TypeVar("T")
 
