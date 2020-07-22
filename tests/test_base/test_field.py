@@ -1,6 +1,6 @@
 import pytest
 
-from typing import Any, NoReturn
+from typing import Any, List, NoReturn
 from hypothesis import given, strategies as st
 
 from testplates import (
@@ -117,3 +117,21 @@ def test_name_raises_dangling_descriptor_error_when_specified_outside_the_class(
 
     with pytest.raises(DanglingDescriptorError):
         print(key.name)
+
+
+def test_default_for_mutable_objects():
+    key: Required[List[Any]] = field(default=list())
+
+    assert key.default is key.default
+
+
+def test_default_factory_for_mutable_objects():
+    key: Required[List[Any]] = field(default_factory=list)
+
+    assert key.default is not key.default
+
+
+# noinspection PyArgumentList
+def test_default_and_default_factory_type_error():
+    with pytest.raises(TypeError):
+        field(default=list(), default_factory=list)  # type: ignore

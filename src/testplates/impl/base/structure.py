@@ -43,13 +43,20 @@ class Field(Generic[T]):
         Field descriptor class.
     """
 
-    __slots__ = ("_validator", "_default", "_optional", "_name")
+    __slots__ = ("_validator", "_default", "_default_factory", "_optional", "_name")
 
     def __init__(
-        self, validator: Validator, /, *, default: Maybe[T] = MISSING, optional: bool = False
+        self,
+        validator: Validator,
+        /,
+        *,
+        default: Maybe[T] = MISSING,
+        default_factory: Maybe[Callable[[], T]],
+        optional: bool = False,
     ) -> None:
         self._validator = validator
         self._default = default
+        self._default_factory = default_factory
         self._optional = optional
 
         self._name: Optional[str] = None
@@ -57,8 +64,8 @@ class Field(Generic[T]):
     def __repr__(self) -> str:
         parameters = [f"{self._name!r}"]
 
-        if self.default is not MISSING:
-            parameters.append(f"default={self.default!r}")
+        if (default := self.default) is not MISSING:
+            parameters.append(f"default={default!r}")
 
         parameters.append(f"optional={self.is_optional!r}")
 
@@ -88,18 +95,12 @@ class Field(Generic[T]):
 
             :param instance: :class:`Structure` class instance to which field is attached or None
             :param owner: :class:`Structure` class object to which field is attached
-
-            :raises AttributeError: When field value is missing upon access
         """
 
         if instance is None:
             return self
 
-        value: Maybe[T] = instance._values_.get(self.name, MISSING)
-
-        assert value is not MISSING, (self, instance._values_)
-
-        return value
+        return instance._values_[self.name]
 
     @property
     def name(self) -> str:
@@ -127,6 +128,11 @@ class Field(Generic[T]):
             missing value indicator is returned instead.
         """
 
+        default_factory = self._default_factory
+
+        if default_factory is not MISSING:
+            return default_factory()
+
         return self._default
 
     @property
@@ -147,16 +153,18 @@ class Field(Generic[T]):
             :param value: value to be validated
         """
 
+        default = self.default
+
         if value is ANY:
             pass
 
-        elif value is MISSING and self.default is MISSING:
+        elif value is MISSING and default is MISSING:
             raise MissingValueError(self)
 
-        elif (value is ABSENT or self.default is ABSENT) and not self.is_optional:
+        elif (value is ABSENT or default is ABSENT) and not self.is_optional:
             raise ProhibitedValueError(self, value)
 
-        elif (value is WILDCARD or self.default is WILDCARD) and not self.is_optional:
+        elif (value is WILDCARD or default is WILDCARD) and not self.is_optional:
             raise ProhibitedValueError(self, value)
 
         elif is_value(value) and (result := self.validator(value)).is_failure:

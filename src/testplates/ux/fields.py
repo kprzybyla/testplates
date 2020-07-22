@@ -1,6 +1,6 @@
 __all__ = ["field", "Required", "Optional"]
 
-from typing import overload, TypeVar, Union, Literal, Final
+from typing import overload, TypeVar, Union, Callable, Literal, Final
 
 from testplates.impl.base import Field
 
@@ -20,7 +20,25 @@ def field(validator: Validator = ..., /, *, default: Maybe[T] = ...) -> Required
 
 @overload
 def field(
+    validator: Validator = ..., /, *, default_factory: Maybe[Callable[[], T]] = ...
+) -> Required[T]:
+    ...
+
+
+@overload
+def field(
     validator: Validator = ..., /, *, default: Maybe[T] = ..., optional: Literal[False]
+) -> Required[T]:
+    ...
+
+
+@overload
+def field(
+    validator: Validator = ...,
+    /,
+    *,
+    default_factory: Maybe[Callable[[], T]] = ...,
+    optional: Literal[False],
 ) -> Required[T]:
     ...
 
@@ -34,7 +52,29 @@ def field(
 
 @overload
 def field(
+    validator: Validator = ...,
+    /,
+    *,
+    default_factory: Maybe[Callable[[], T]] = ...,
+    optional: Literal[True],
+) -> Optional[T]:
+    ...
+
+
+@overload
+def field(
     validator: Validator = ..., /, *, default: Maybe[T] = ..., optional: bool = ...
+) -> Field[Value[T]]:
+    ...
+
+
+@overload
+def field(
+    validator: Validator = ...,
+    /,
+    *,
+    default_factory: Maybe[Callable[[], T]] = ...,
+    optional: bool = ...,
 ) -> Field[Value[T]]:
     ...
 
@@ -44,6 +84,7 @@ def field(
     /,
     *,
     default: Maybe[T] = MISSING,
+    default_factory: Maybe[Callable[[], T]] = MISSING,
     optional: bool = False,
 ) -> Union[Required[T], Optional[T], Field[Value[T]]]:
 
@@ -55,7 +96,11 @@ def field(
 
         :param validator: field validator function or None
         :param default: field default value
+        :param default_factory: field default value factory
         :param optional: indication whether field is optional or not
     """
 
-    return Field(validator, default=default, optional=optional)
+    if default is not MISSING and default_factory is not MISSING:
+        raise TypeError("Cannot use default and default_factory together")
+
+    return Field(validator, default=default, default_factory=default_factory, optional=optional)
