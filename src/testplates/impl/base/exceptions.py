@@ -1,6 +1,5 @@
 __all__ = [
     "TestplatesError",
-    "TestplatesValueError",
     "InvalidSignatureError",
     "DanglingDescriptorError",
     "MissingValueError",
@@ -35,13 +34,6 @@ class TestplatesError(Exception):
         return "".join(self.args)
 
 
-class TestplatesValueError(ValueError, TestplatesError):
-
-    """
-        Base testplates value error.
-    """
-
-
 class InvalidSignatureError(TestplatesError):
 
     """
@@ -65,7 +57,7 @@ class DanglingDescriptorError(TestplatesError):
         super().__init__(f"Descriptor {descriptor!r} defined outside of the class definition")
 
 
-class MissingValueError(TestplatesValueError):
+class MissingValueError(TestplatesError):
 
     """
         Error indicating missing value.
@@ -80,7 +72,7 @@ class MissingValueError(TestplatesValueError):
         super().__init__(f"Missing value for required field {field!r}")
 
 
-class UnexpectedValueError(TestplatesValueError):
+class UnexpectedValueError(TestplatesError):
 
     """
         Error indicating unexpected value.
@@ -96,7 +88,7 @@ class UnexpectedValueError(TestplatesValueError):
         super().__init__(f"Unexpected key {key!r} with value {value!r}")
 
 
-class ProhibitedValueError(TestplatesValueError):
+class ProhibitedValueError(TestplatesError):
 
     """
         Error indicating prohibited value.
@@ -112,7 +104,7 @@ class ProhibitedValueError(TestplatesValueError):
         super().__init__(f"Prohibited value {value!r} for field {field!r}")
 
 
-class MissingBoundaryError(TestplatesValueError):
+class MissingBoundaryError(TestplatesError):
 
     """
         Error indicating missing boundary.
@@ -127,7 +119,7 @@ class MissingBoundaryError(TestplatesValueError):
         super().__init__(f"Missing value for mandatory boundary {self.name!r}")
 
 
-class InvalidLengthError(TestplatesValueError):
+class InvalidLengthError(TestplatesError):
 
     """
         Error indicating invalid length boundary value.
@@ -142,7 +134,7 @@ class InvalidLengthError(TestplatesValueError):
         super().__init__(f"Invalid value for length boundary {boundary!r}")
 
 
-class MutuallyExclusiveBoundariesError(TestplatesValueError):
+class MutuallyExclusiveBoundariesError(TestplatesError):
 
     """
         Error indicating exclusive and inclusive boundaries collision.
@@ -157,7 +149,7 @@ class MutuallyExclusiveBoundariesError(TestplatesValueError):
         super().__init__(f"Mutually exclusive {name!r} boundaries set at the same time")
 
 
-class OverlappingBoundariesError(TestplatesValueError):
+class OverlappingBoundariesError(TestplatesError):
 
     """
         Error indicating overlapping boundaries.
@@ -173,7 +165,7 @@ class OverlappingBoundariesError(TestplatesValueError):
         super().__init__(f"Overlapping minimum {minimum!r} and maximum {maximum!r} boundaries")
 
 
-class SingleMatchBoundariesError(TestplatesValueError):
+class SingleMatchBoundariesError(TestplatesError):
 
     """
         Error indicating single match boundaries range.

@@ -16,7 +16,6 @@ __all__ = [
     "UnlimitedType",
     "Limit",
     "TestplatesError",
-    "TestplatesValueError",
     "InvalidSignatureError",
     "DanglingDescriptorError",
     "MissingValueError",
@@ -46,7 +45,6 @@ from .boundaries import (
 
 from .exceptions import (
     TestplatesError,
-    TestplatesValueError,
     InvalidSignatureError,
     DanglingDescriptorError,
     MissingValueError,

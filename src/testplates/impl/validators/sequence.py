@@ -8,11 +8,11 @@ import testplates
 
 from testplates.impl.base import Result, Success, Failure
 from testplates.impl.base import fits_minimum_length, fits_maximum_length, Limit, UnlimitedType
+from testplates.impl.base import TestplatesError
 
 from .utils import has_unique_items, Validator
 from .type import TypeValidator
 from .exceptions import (
-    ValidationError,
     ItemValidationError,
     InvalidMinimumSizeError,
     InvalidMaximumSizeError,
@@ -40,7 +40,7 @@ class SequenceValidator:
         return f"{testplates.__name__}.{type(self).__name__}()"
 
     # noinspection PyTypeChecker
-    def __call__(self, data: Any) -> Result[None, ValidationError]:
+    def __call__(self, data: Any) -> Result[None, TestplatesError]:
         if (error := sequence_type_validator(data)).is_failure:
             return Failure.from_result(error)
 
@@ -48,7 +48,7 @@ class SequenceValidator:
 
         for item in data:
             if (error := item_validator(item)).is_failure:
-                return Failure(ItemValidationError(error))
+                return Failure(ItemValidationError(data, item, error))
 
         if not fits_minimum_length(data, self.minimum):
             return Failure(InvalidMinimumSizeError(data, self.minimum))

@@ -19,7 +19,8 @@ from testplates import (
 )
 
 from testplates import (
-    ValidationError,
+    TestplatesError,
+    InvalidSignatureError,
     DanglingDescriptorError,
 )
 
@@ -95,10 +96,10 @@ def test_validator_is_not_called_on_special_value_for_optional_field() -> None:
 # noinspection PyTypeChecker
 @given(value=st_anything_comparable(), message=st.text())
 def test_validator_failure(value: Any, message: str) -> None:
-    failure_object = failure(ValidationError(message))
+    failure_object = failure(TestplatesError(message))
 
     # noinspection PyTypeChecker
-    def validator(this_value: Any) -> Result[None, ValidationError]:
+    def validator(this_value: Any) -> Result[None, TestplatesError]:
         assert this_value is value
         return failure_object
 
@@ -106,32 +107,34 @@ def test_validator_failure(value: Any, message: str) -> None:
 
         key: Required[Any] = field(validator)
 
-    with pytest.raises(ValidationError) as exception:
+    with pytest.raises(TestplatesError) as exception:
         Template(key=value)
 
     assert exception.value.message == message
 
 
 def test_name_raises_dangling_descriptor_error_when_specified_outside_the_class() -> None:
-    key: Required[Any] = field()
+    field_object: Required[Any] = field()
 
-    with pytest.raises(DanglingDescriptorError):
-        print(key.name)
+    with pytest.raises(DanglingDescriptorError) as exception:
+        print(field_object.name)
+
+    assert exception.value.descriptor == field_object
 
 
 def test_default_for_mutable_objects() -> None:
-    key: Required[List[Any]] = field(default=list())
+    field_object: Required[List[Any]] = field(default=list())
 
-    assert key.default is key.default
+    assert field_object.default is field_object.default
 
 
 def test_default_factory_for_mutable_objects() -> None:
-    key: Required[List[Any]] = field(default_factory=list)
+    field_object: Required[List[Any]] = field(default_factory=list)
 
-    assert key.default is not key.default
+    assert field_object.default is not field_object.default
 
 
 # noinspection PyArgumentList
 def test_default_and_default_factory_type_error() -> None:
-    with pytest.raises(TypeError):
+    with pytest.raises(InvalidSignatureError):
         field(default=list(), default_factory=list)  # type: ignore

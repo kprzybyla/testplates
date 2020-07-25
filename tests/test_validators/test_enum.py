@@ -4,14 +4,8 @@ from typing import cast, TypeVar, Dict, Final
 from hypothesis import given, strategies as st
 
 from testplates import unwrap_success, unwrap_failure
-from testplates import (
-    enum_validator,
-    passthrough_validator,
-    integer_validator,
-    InvalidTypeValueError,
-    InvalidTypeError,
-    MemberValidationError,
-)
+from testplates import enum_validator, passthrough_validator, integer_validator
+from testplates import InvalidTypeValueError, InvalidTypeError, MemberValidationError
 
 from tests.conftest import sample, Draw
 

@@ -8,6 +8,7 @@ from hypothesis import assume, given
 from hypothesis import strategies as st
 
 from testplates import matches_pattern
+from testplates import InvalidSignatureError
 
 from tests.conftest import st_anything_except, Draw
 
@@ -124,5 +125,5 @@ def test_returns_false_with_bytes_pattern_and_str_value(
 
 @given(pattern=st_anything_except(str, bytes))
 def test_raises_error_on_invalid_pattern_type(pattern: Any) -> None:
-    with pytest.raises(TypeError):
+    with pytest.raises(InvalidSignatureError):
         matches_pattern(pattern)

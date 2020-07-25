@@ -178,11 +178,11 @@ def test_wildcard_value_raises_value_error_in_required_field(template_type: Temp
 
     template_partial = partial(Template, key=WILDCARD)
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ProhibitedValueError) as exception:
         template_partial()
 
-    with pytest.raises(ProhibitedValueError):
-        template_partial()
+    assert exception.value.field == Template.key
+    assert exception.value.value == WILDCARD
 
 
 @template_and_storage_parameters
@@ -220,11 +220,11 @@ def test_absent_value_raises_value_error_in_required_field(template_type: Templa
 
     template_partial = partial(Template, key=ABSENT)
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ProhibitedValueError) as exception:
         template_partial()
 
-    with pytest.raises(ProhibitedValueError):
-        template_partial()
+    assert exception.value.field == Template.key
+    assert exception.value.value == ABSENT
 
 
 @given(value=st_anything_comparable())
@@ -235,11 +235,11 @@ def test_unexpected_value_raises_value_error(value: _T, template_type: TemplateT
 
     template_partial = partial(Template, key=value)
 
-    with pytest.raises(ValueError):
+    with pytest.raises(UnexpectedValueError) as exception:
         template_partial()
 
-    with pytest.raises(UnexpectedValueError):
-        template_partial()
+    assert exception.value.key == KEY
+    assert exception.value.value == value
 
 
 @template_parameters
@@ -250,11 +250,10 @@ def test_missing_value_in_required_field_raises_value_error(template_type: Templ
 
     template_partial = partial(Template)
 
-    with pytest.raises(ValueError):
+    with pytest.raises(MissingValueError) as exception:
         template_partial()
 
-    with pytest.raises(MissingValueError):
-        template_partial()
+    assert exception.value.field == Template.key
 
 
 @template_parameters
@@ -265,11 +264,10 @@ def test_missing_value_in_optional_field_raises_value_error(template_type: Templ
 
     template_partial = partial(Template)
 
-    with pytest.raises(ValueError):
+    with pytest.raises(MissingValueError) as exception:
         template_partial()
 
-    with pytest.raises(MissingValueError):
-        template_partial()
+    assert exception.value.field == Template.key
 
 
 @given(default=st_anything_comparable())

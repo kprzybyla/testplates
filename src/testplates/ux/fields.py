@@ -6,6 +6,7 @@ from testplates.impl.base import Field
 
 from .value import Value, Maybe, MISSING, LiteralAny, LiteralWildcard, LiteralAbsent
 from .validators import passthrough_validator, Validator
+from .exceptions import InvalidSignatureError
 
 T = TypeVar("T")
 
@@ -101,6 +102,6 @@ def field(
     """
 
     if default is not MISSING and default_factory is not MISSING:
-        raise TypeError("Cannot use default and default_factory together")
+        raise InvalidSignatureError("Cannot use default and default_factory together")
 
     return Field(validator, default=default, default_factory=default_factory, optional=optional)

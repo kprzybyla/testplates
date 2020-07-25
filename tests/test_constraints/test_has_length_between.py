@@ -1,6 +1,6 @@
 import sys
 
-from typing import Sized, Final
+from typing import Sized, Literal, Final
 from dataclasses import dataclass
 
 import pytest
@@ -19,6 +19,9 @@ from testplates import (
 )
 
 from tests.conftest import Draw
+
+MINIMUM_EXTREMUM: Final[Literal["minimum"]] = "minimum"
+MAXIMUM_EXTREMUM: Final[Literal["maximum"]] = "maximum"
 
 MINIMUM_ALLOWED_LENGTH: Final[int] = 0
 MAXIMUM_ALLOWED_LENGTH: Final[int] = sys.maxsize
@@ -159,8 +162,10 @@ def test_failure_when_boundaries_are_missing() -> None:
 def test_failure_when_minimum_boundary_is_missing(data: st.DataObject, length: int) -> None:
     maximum = data.draw(st_maximum(length))
 
-    with pytest.raises(MissingBoundaryError):
+    with pytest.raises(MissingBoundaryError) as exception:
         has_length_between(maximum=maximum)
+
+    assert exception.value.name == MINIMUM_EXTREMUM
 
 
 # noinspection PyTypeChecker
@@ -168,8 +173,10 @@ def test_failure_when_minimum_boundary_is_missing(data: st.DataObject, length: i
 def test_failure_when_maximum_boundary_is_missing(data: st.DataObject, length: int) -> None:
     minimum = data.draw(st_minimum(length))
 
-    with pytest.raises(MissingBoundaryError):
+    with pytest.raises(MissingBoundaryError) as exception:
         has_length_between(minimum=minimum)
+
+    assert exception.value.name == MAXIMUM_EXTREMUM
 
 
 # noinspection PyTypeChecker
@@ -177,11 +184,17 @@ def test_failure_when_maximum_boundary_is_missing(data: st.DataObject, length: i
 def test_failure_when_boundaries_are_below_zero(data: st.DataObject, length: int) -> None:
     below_minimum = data.draw(st_length_below_minimum())
 
-    with pytest.raises(InvalidLengthError):
+    with pytest.raises(InvalidLengthError) as exception:
         has_length_between(minimum=below_minimum, maximum=length)
 
-    with pytest.raises(InvalidLengthError):
+    assert exception.value.boundary.value == below_minimum
+    assert exception.value.boundary.is_inclusive is True
+
+    with pytest.raises(InvalidLengthError) as exception:
         has_length_between(minimum=length, maximum=below_minimum)
+
+    assert exception.value.boundary.value == below_minimum
+    assert exception.value.boundary.is_inclusive is True
 
 
 # noinspection PyTypeChecker
@@ -189,11 +202,17 @@ def test_failure_when_boundaries_are_below_zero(data: st.DataObject, length: int
 def test_failure_when_boundaries_are_above_max_size(data: st.DataObject, length: int) -> None:
     above_maximum = data.draw(st_length_above_maximum())
 
-    with pytest.raises(InvalidLengthError):
+    with pytest.raises(InvalidLengthError) as exception:
         has_length_between(minimum=above_maximum, maximum=length)
 
-    with pytest.raises(InvalidLengthError):
+    assert exception.value.boundary.value == above_maximum
+    assert exception.value.boundary.is_inclusive is True
+
+    with pytest.raises(InvalidLengthError) as exception:
         has_length_between(minimum=length, maximum=above_maximum)
+
+    assert exception.value.boundary.value == above_maximum
+    assert exception.value.boundary.is_inclusive is True
 
 
 # noinspection PyTypeChecker
@@ -204,11 +223,23 @@ def test_failure_when_boundaries_are_overlapping(data: st.DataObject) -> None:
 
     assume(minimum != maximum)
 
-    with pytest.raises(OverlappingBoundariesError):
+    with pytest.raises(OverlappingBoundariesError) as exception:
         has_length_between(minimum=minimum, maximum=maximum)
+
+    assert exception.value.minimum.value == minimum
+    assert exception.value.minimum.is_inclusive is True
+
+    assert exception.value.maximum.value == maximum
+    assert exception.value.maximum.is_inclusive is True
 
 
 @given(length=st_length())
 def test_failure_when_boundaries_match_single_value(length: int) -> None:
-    with pytest.raises(SingleMatchBoundariesError):
+    with pytest.raises(SingleMatchBoundariesError) as exception:
         has_length_between(minimum=length, maximum=length)
+
+    assert exception.value.minimum.value == length
+    assert exception.value.minimum.is_inclusive is True
+
+    assert exception.value.maximum.value == length
+    assert exception.value.maximum.is_inclusive is True

@@ -3,7 +3,8 @@ from typing import TypeVar
 from hypothesis import given, strategies as st
 
 from testplates import unwrap_success, unwrap_failure
-from testplates import boolean_validator, InvalidTypeError
+from testplates import boolean_validator
+from testplates import InvalidTypeError
 
 from tests.conftest import st_anything_except
 

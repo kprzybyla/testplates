@@ -181,5 +181,7 @@ def test_returns_false_when_value_is_not_container(values: List[_T]) -> None:
 
 @given(values=st_inverse_values())
 def test_raises_error_when_less_than_two_values_were_provided(values: List[_T]) -> None:
-    with pytest.raises(InsufficientValuesError):
+    with pytest.raises(InsufficientValuesError) as exception:
         is_permutation_of(values)
+
+    assert exception.value.required == MINIMUM_NUMBER_OF_VALUES

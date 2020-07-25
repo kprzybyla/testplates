@@ -3,10 +3,9 @@ __all__ = ["has_unique_items", "Validator"]
 from typing import Any, Iterable, Hashable, Callable
 
 from testplates.impl.base import Result
+from testplates.impl.base import TestplatesError
 
-from .exceptions import ValidationError
-
-Validator = Callable[[Any], Result[None, ValidationError]]
+Validator = Callable[[Any], Result[None, TestplatesError]]
 
 
 def has_unique_items(items: Iterable[Hashable]) -> bool:

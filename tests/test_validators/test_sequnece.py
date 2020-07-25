@@ -4,7 +4,8 @@ from hypothesis import given, strategies as st
 
 from testplates import UNLIMITED
 from testplates import unwrap_success, unwrap_failure
-from testplates import sequence_validator, InvalidTypeError
+from testplates import sequence_validator
+from testplates import InvalidTypeError
 
 from tests.conftest import st_anything_except, st_anything_comparable
 

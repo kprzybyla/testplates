@@ -7,10 +7,11 @@ from typing import Any, Final
 import testplates
 
 from testplates.impl.base import Result, Success, Failure, StructureMeta
+from testplates.impl.base import TestplatesError
 
 from .utils import Validator
 from .type import TypeValidator
-from .exceptions import ValidationError, RequiredKeyMissingError, FieldValidationError
+from .exceptions import RequiredKeyMissingError, FieldValidationError
 
 mapping_type_validator: Final[Validator] = TypeValidator((typing.Mapping,))
 
@@ -27,7 +28,7 @@ class MappingValidator:
 
     # noinspection PyTypeChecker
     # noinspection PyProtectedMember
-    def __call__(self, data: Any) -> Result[None, ValidationError]:
+    def __call__(self, data: Any) -> Result[None, TestplatesError]:
         if (result := mapping_type_validator(data)).is_failure:
             return Failure.from_result(result)
 
@@ -35,12 +36,12 @@ class MappingValidator:
 
         for field in structure._fields_.values():
             if not field.is_optional and field.name not in data.keys():
-                return Failure(RequiredKeyMissingError(data, field))
+                return Failure(RequiredKeyMissingError(data, field.name, field))
 
         for key, value in data.items():
-            field_validator = structure._fields_[key].validator
+            field = structure._fields_[key]
 
-            if (result := field_validator(value)).is_failure:
-                return Failure(FieldValidationError(data, key, result))
+            if (result := field.validator(value)).is_failure:
+                return Failure(FieldValidationError(data, field, result))
 
         return Success(None)

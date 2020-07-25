@@ -4,15 +4,8 @@ from hypothesis import assume, given
 from hypothesis import strategies as st
 
 from testplates import failure, unwrap_success, unwrap_failure, Result
-from testplates import (
-    union_validator,
-    passthrough_validator,
-    Validator,
-    ValidationError,
-    InvalidKeyError,
-    InvalidTypeError,
-    ChoiceValidationError,
-)
+from testplates import union_validator, passthrough_validator, Validator
+from testplates import TestplatesError, InvalidKeyError, InvalidTypeError, ChoiceValidationError
 
 from tests.conftest import sample, st_anything_except, st_anything_comparable, Draw
 
@@ -87,10 +80,10 @@ def test_failure_when_data_type_validation_fails(choices: Dict[str, Validator], 
 def test_failure_when_data_field_validation_fails(
     choices: Dict[str, Validator], value: Any, message: str
 ) -> None:
-    failure_object = failure(ValidationError(message))
+    failure_object = failure(TestplatesError(message))
 
     # noinspection PyTypeChecker
-    def validator(this_value: Any) -> Result[None, ValidationError]:
+    def validator(this_value: Any) -> Result[None, TestplatesError]:
         assert this_value == value
         return failure_object
 

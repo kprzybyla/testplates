@@ -80,5 +80,7 @@ def test_returns_false_when_value_is_not_container(values: List[_T]) -> None:
 
 
 def test_raises_error_when_less_than_one_value_was_provided() -> None:
-    with pytest.raises(InsufficientValuesError):
+    with pytest.raises(InsufficientValuesError) as exception:
         contains()
+
+    assert exception.value.required == MINIMUM_NUMBER_OF_VALUES

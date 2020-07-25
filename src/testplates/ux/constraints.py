@@ -13,6 +13,7 @@ from testplates.impl.constraints import (
 
 from .value import Boundary
 from .result import unwrap_success, unwrap_failure
+from .exceptions import InvalidSignatureError
 
 T = TypeVar("T")
 
@@ -102,7 +103,7 @@ def matches_pattern(pattern: AnyStr, /) -> MatchesPattern[AnyStr]:
     if isinstance(pattern, bytes):
         return MatchesPattern(pattern, bytes)
 
-    raise TypeError("matches() requires str or bytes as 1st argument")
+    raise InvalidSignatureError("matches() requires str or bytes as 1st argument")
 
 
 @overload

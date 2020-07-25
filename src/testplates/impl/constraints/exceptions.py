@@ -1,9 +1,9 @@
 __all__ = ["InsufficientValuesError"]
 
-from testplates.impl.base import TestplatesValueError
+from testplates.impl.base import TestplatesError
 
 
-class InsufficientValuesError(TestplatesValueError):
+class InsufficientValuesError(TestplatesError):
 
     """
         Error indicating insufficient amount of values.

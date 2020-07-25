@@ -3,7 +3,6 @@ __all__ = [
     "TypeValidator",
     "BooleanValidator",
     "IntegerValidator",
-    "AnyStringValidator",
     "StringValidator",
     "BytesValidator",
     "EnumValidator",
@@ -11,19 +10,17 @@ __all__ = [
     "MappingValidator",
     "UnionValidator",
     "Validator",
-    "ValidationError",
     "InvalidTypeValueError",
     "InvalidTypeError",
-    "ProhibitedBooleanValueError",
+    "ProhibitedBoolValueError",
     "InvalidMinimumValueError",
     "InvalidMaximumValueError",
     "InvalidMinimumLengthError",
     "InvalidMaximumLengthError",
-    "InvalidPatternTypeError",
-    "InvalidFormatError",
-    "ItemValidationError",
     "InvalidMinimumSizeError",
     "InvalidMaximumSizeError",
+    "InvalidFormatError",
+    "ItemValidationError",
     "UniquenessError",
     "MemberValidationError",
     "FieldValidationError",
@@ -36,26 +33,24 @@ from .passthrough import PassthroughValidator
 from .type import TypeValidator
 from .boolean import BooleanValidator
 from .integer import IntegerValidator
-from .strings import AnyStringValidator, StringValidator, BytesValidator
+from .strings import StringValidator, BytesValidator
 from .enum import EnumValidator
 from .sequence import SequenceValidator
 from .mapping import MappingValidator
 from .union import UnionValidator
 from .utils import Validator
 from .exceptions import (
-    ValidationError,
     InvalidTypeValueError,
     InvalidTypeError,
-    ProhibitedBooleanValueError,
+    ProhibitedBoolValueError,
     InvalidMinimumValueError,
     InvalidMaximumValueError,
     InvalidMinimumLengthError,
     InvalidMaximumLengthError,
-    InvalidPatternTypeError,
-    InvalidFormatError,
-    ItemValidationError,
     InvalidMinimumSizeError,
     InvalidMaximumSizeError,
+    InvalidFormatError,
+    ItemValidationError,
     UniquenessError,
     MemberValidationError,
     FieldValidationError,

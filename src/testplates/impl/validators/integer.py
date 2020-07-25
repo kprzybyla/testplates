@@ -4,13 +4,13 @@ from typing import Any, Union, Final
 
 from testplates.impl.base import Result, Success, Failure
 from testplates.impl.base import fits_minimum, fits_maximum, Limit, UnlimitedType
+from testplates.impl.base import TestplatesError
 
 from .type import TypeValidator
 from .exceptions import (
-    ValidationError,
     InvalidMinimumValueError,
     InvalidMaximumValueError,
-    ProhibitedBooleanValueError,
+    ProhibitedBoolValueError,
 )
 
 Boundary = Union[Limit, UnlimitedType]
@@ -22,22 +22,22 @@ UNLIMITED = UnlimitedType.UNLIMITED
 
 class IntegerValidator:
 
-    __slots__ = ("minimum", "maximum", "allow_boolean")
+    __slots__ = ("minimum", "maximum", "allow_bool")
 
-    def __init__(self, minimum: Boundary, maximum: Boundary, allow_boolean: bool) -> None:
+    def __init__(self, minimum: Boundary, maximum: Boundary, allow_bool: bool) -> None:
         self.minimum = minimum
         self.maximum = maximum
-        self.allow_boolean = allow_boolean
+        self.allow_bool = allow_bool
 
     def __repr__(self) -> str:
         return f"{type(self).__name__}()"
 
     # noinspection PyTypeChecker
-    def __call__(self, data: Any) -> Result[None, ValidationError]:
+    def __call__(self, data: Any) -> Result[None, TestplatesError]:
         if (result := validate_integer_type(data)).is_failure:
             return Failure.from_result(result)
 
-        if (result := validate_boolean_type(data, self.allow_boolean)).is_failure:
+        if (result := validate_bool_type(data, self.allow_bool)).is_failure:
             return Failure.from_result(result)
 
         if (result := validate_boundaries(data, self.minimum, self.maximum)).is_failure:
@@ -47,9 +47,9 @@ class IntegerValidator:
 
 
 # noinspection PyTypeChecker
-def validate_boolean_type(data: int, allow_boolean: bool, /) -> Result[None, ValidationError]:
-    if not allow_boolean and isinstance(data, bool):
-        return Failure(ProhibitedBooleanValueError(data))
+def validate_bool_type(data: int, allow_bool: bool, /) -> Result[None, TestplatesError]:
+    if not allow_bool and isinstance(data, bool):
+        return Failure(ProhibitedBoolValueError(data))
 
     return Success(None)
 
@@ -57,7 +57,7 @@ def validate_boolean_type(data: int, allow_boolean: bool, /) -> Result[None, Val
 # noinspection PyTypeChecker
 def validate_boundaries(
     data: int, minimum: Boundary, maximum: Boundary, /
-) -> Result[None, ValidationError]:
+) -> Result[None, TestplatesError]:
     if minimum is not UNLIMITED and not fits_minimum(data, minimum):
         return Failure(InvalidMinimumValueError(data, minimum))
 

@@ -5,10 +5,9 @@ from hypothesis import strategies as st
 
 from testplates import success, failure, unwrap_success, unwrap_failure, Result
 from testplates import field, create_object
+from testplates import mapping_validator, passthrough_validator
 from testplates import (
-    mapping_validator,
-    passthrough_validator,
-    ValidationError,
+    TestplatesError,
     InvalidTypeError,
     RequiredKeyMissingError,
     FieldValidationError,
@@ -34,7 +33,7 @@ def test_repr() -> None:
 def test_success(key: str, value: Any) -> None:
     data = {key: value}
 
-    def validator(this_value: Any) -> Result[None, ValidationError]:
+    def validator(this_value: Any) -> Result[None, TestplatesError]:
         assert this_value == value
         return success(None)
 
@@ -102,10 +101,10 @@ def test_failure_when_data_required_key_is_missing(key: str) -> None:
 # noinspection PyTypeChecker
 @given(key=st.text(), value=st_anything_comparable(), message=st.text())
 def test_failure_when_data_field_validation_fails(key: str, value: Any, message: str) -> None:
-    failure_object = failure(ValidationError(message))
+    failure_object = failure(TestplatesError(message))
 
     # noinspection PyTypeChecker
-    def validator(this_value: Any) -> Result[None, ValidationError]:
+    def validator(this_value: Any) -> Result[None, TestplatesError]:
         assert this_value == value
         return failure_object
 
@@ -122,5 +121,5 @@ def test_failure_when_data_field_validation_fails(key: str, value: Any, message:
 
     assert isinstance(error, FieldValidationError)
     assert error.data == data
-    assert error.key == key
+    assert error.field == field_object
     assert error.error == failure_object

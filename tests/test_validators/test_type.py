@@ -3,7 +3,8 @@ from typing import Any
 from hypothesis import given, strategies as st
 
 from testplates import unwrap_success, unwrap_failure
-from testplates import type_validator, InvalidTypeValueError, InvalidTypeError
+from testplates import type_validator
+from testplates import InvalidTypeValueError, InvalidTypeError
 
 from tests.conftest import (
     st_anything_comparable,

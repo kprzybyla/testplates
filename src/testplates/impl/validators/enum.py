@@ -6,9 +6,9 @@ from typing import Any
 import testplates
 
 from testplates.impl.base import Result
+from testplates.impl.base import TestplatesError
 
 from .utils import Validator
-from .exceptions import ValidationError
 
 
 class EnumValidator:
@@ -30,5 +30,5 @@ class EnumValidator:
 
         return f"{testplates.__name__}.{type(self).__name__}({parameters})"
 
-    def __call__(self, data: Any) -> Result[None, ValidationError]:
+    def __call__(self, data: Any) -> Result[None, TestplatesError]:
         return self.enum_type_validator(data)
