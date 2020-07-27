@@ -129,29 +129,11 @@ def integer_validator(
     return success(IntegerValidator(minimum, maximum, allow_bool))
 
 
-@overload
-def string_validator(
-    *, length: Optional[int] = None, pattern: Optional[str] = None
-) -> Result[Validator, TestplatesError]:
-    ...
-
-
-@overload
-def string_validator(
-    *,
-    minimum_length: Optional[int] = None,
-    maximum_length: Optional[int] = None,
-    pattern: Optional[str] = None,
-) -> Result[Validator, TestplatesError]:
-    ...
-
-
 # noinspection PyTypeChecker
 def string_validator(
     *,
-    length: Optional[int] = None,
-    minimum_length: Optional[int] = None,
-    maximum_length: Optional[int] = None,
+    minimum_length: Optional[Boundary[int]] = None,
+    maximum_length: Optional[Boundary[int]] = None,
     pattern: Optional[str] = None,
 ) -> Result[Validator, TestplatesError]:
     result = get_length_boundaries(
@@ -164,32 +146,14 @@ def string_validator(
     minimum, maximum = unwrap_success(result)
     regex = get_regex(pattern)
 
-    return success(StringValidator(length, minimum, maximum, regex))
-
-
-@overload
-def bytes_validator(
-    *, length: Optional[int] = None, pattern: Optional[bytes] = None
-) -> Result[Validator, TestplatesError]:
-    ...
-
-
-@overload
-def bytes_validator(
-    *,
-    minimum_length: Optional[int] = None,
-    maximum_length: Optional[int] = None,
-    pattern: Optional[bytes] = None,
-) -> Result[Validator, TestplatesError]:
-    ...
+    return success(StringValidator(minimum, maximum, regex))
 
 
 # noinspection PyTypeChecker
 def bytes_validator(
     *,
-    length: Optional[int] = None,
-    minimum_length: Optional[int] = None,
-    maximum_length: Optional[int] = None,
+    minimum_length: Optional[Boundary[int]] = None,
+    maximum_length: Optional[Boundary[int]] = None,
     pattern: Optional[bytes] = None,
 ) -> Result[Validator, TestplatesError]:
     result = get_length_boundaries(
@@ -202,7 +166,7 @@ def bytes_validator(
     minimum, maximum = unwrap_success(result)
     regex = get_regex(pattern)
 
-    return success(BytesValidator(length, minimum, maximum, regex))
+    return success(BytesValidator(minimum, maximum, regex))
 
 
 def get_regex(pattern: Optional[AnyStr]) -> Optional[Regex[AnyStr]]:
