@@ -6,16 +6,16 @@ import testplates
 
 from .exceptions import InsufficientValuesError
 
-T = TypeVar("T")
+_T = TypeVar("_T")
 
 MINIMUM_NUMBER_OF_VALUES: Final[int] = 2
 
 
-class IsPermutationOf(Generic[T]):
+class IsPermutationOf(Generic[_T]):
 
     __slots__ = ("_values",)
 
-    def __init__(self, values: List[T], /) -> None:
+    def __init__(self, values: List[_T], /) -> None:
         if len(values) < MINIMUM_NUMBER_OF_VALUES:
             raise InsufficientValuesError(MINIMUM_NUMBER_OF_VALUES)
 

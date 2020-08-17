@@ -60,9 +60,9 @@ def has_length_between(
     if not result:
         raise unwrap_failure(result)
 
-    minimum_boundary, maximum_boundary = unwrap_success(result)
+    minimum_length, maximum_length = unwrap_success(result)
 
-    return HasLengthBetween(minimum=minimum_boundary, maximum=maximum_boundary)
+    return HasLengthBetween(minimum_length=minimum_length, maximum_length=maximum_length)
 
 
 def is_one_of(*values: _T) -> IsOneOf[_T]:
@@ -163,6 +163,6 @@ def ranges_between(
     if not result:
         raise unwrap_failure(result)
 
-    minimum_boundary, maximum_boundary = unwrap_success(result)
+    minimum_value, maximum_value = unwrap_success(result)
 
-    return RangesBetween(minimum=minimum_boundary, maximum=maximum_boundary)
+    return RangesBetween(minimum_value=minimum_value, maximum_value=maximum_value)

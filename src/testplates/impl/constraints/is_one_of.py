@@ -8,16 +8,16 @@ from testplates.impl.utils import format_like_tuple
 
 from .exceptions import InsufficientValuesError
 
-T = TypeVar("T")
+_T = TypeVar("_T")
 
 MINIMUM_NUMBER_OF_VALUES: Final[int] = 2
 
 
-class IsOneOf(Generic[T]):
+class IsOneOf(Generic[_T]):
 
     __slots__ = ("_values",)
 
-    def __init__(self, *values: T) -> None:
+    def __init__(self, *values: _T) -> None:
         if len(values) < MINIMUM_NUMBER_OF_VALUES:
             raise InsufficientValuesError(MINIMUM_NUMBER_OF_VALUES)
 

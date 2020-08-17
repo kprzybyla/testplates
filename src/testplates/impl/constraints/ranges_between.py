@@ -4,29 +4,29 @@ from typing import Any, Union
 
 import testplates
 
-from testplates.impl.base import fits_minimum, fits_maximum, Limit, UnlimitedType
+from testplates.impl.base import fits_minimum_value, fits_maximum_value, Limit, UnlimitedType
 
 Boundary = Union[Limit, UnlimitedType]
 
 
 class RangesBetween:
 
-    __slots__ = ("_minimum", "_maximum")
+    __slots__ = ("_minimum_value", "_maximum_value")
 
-    def __init__(self, *, minimum: Boundary, maximum: Boundary) -> None:
-        self._minimum = minimum
-        self._maximum = maximum
+    def __init__(self, *, minimum_value: Boundary, maximum_value: Boundary) -> None:
+        self._minimum_value = minimum_value
+        self._maximum_value = maximum_value
 
     def __repr__(self) -> str:
         boundaries = [
-            repr(self._minimum),
-            repr(self._maximum),
+            repr(self._minimum_value),
+            repr(self._maximum_value),
         ]
 
         return f"{testplates.__name__}.{type(self).__name__}({', '.join(boundaries)})"
 
     def __eq__(self, other: Any) -> bool:
-        minimum_fits = fits_minimum(other, self._minimum)
-        maximum_fits = fits_maximum(other, self._maximum)
+        minimum_fits = fits_minimum_value(other, self._minimum_value)
+        maximum_fits = fits_maximum_value(other, self._maximum_value)
 
         return minimum_fits and maximum_fits
