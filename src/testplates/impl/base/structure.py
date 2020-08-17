@@ -19,27 +19,27 @@ from typing import (
     Optional,
 )
 
+from resultful import unwrap_failure, Result
+
 import testplates
 
 from testplates.impl.utils import format_like_dict
 
-from .result import Result, Failure
 from .value import is_value, values_matches, Maybe, ANY, WILDCARD, ABSENT, MISSING
-
 from .exceptions import (
+    TestplatesError,
     DanglingDescriptorError,
     MissingValueError,
     UnexpectedValueError,
     ProhibitedValueError,
 )
 
-T = TypeVar("T", covariant=True)
-V = TypeVar("V")
+_T = TypeVar("_T", covariant=True)
 
-Validator = Callable[[Any], Result[None, Exception]]
+Validator = Callable[[Any], Result[None, TestplatesError]]
 
 
-class Field(Generic[T]):
+class Field(Generic[_T]):
 
     """
         Field descriptor class.
@@ -52,8 +52,8 @@ class Field(Generic[T]):
         validator: Validator,
         /,
         *,
-        default: Maybe[T] = MISSING,
-        default_factory: Maybe[Callable[[], T]],
+        default: Maybe[_T] = MISSING,
+        default_factory: Maybe[Callable[[], _T]],
         optional: bool = False,
     ) -> None:
         self._validator = validator
@@ -73,21 +73,21 @@ class Field(Generic[T]):
 
         return f"{testplates.__name__}.{type(self).__name__}({', '.join(parameters)})"
 
-    def __set_name__(self, owner: StructureMeta[T], name: str) -> None:
+    def __set_name__(self, owner: Callable[..., Structure[_T]], name: str) -> None:
         self._name = name
 
     @overload
-    def __get__(self, instance: None, owner: StructureMeta[T]) -> Field[T]:
+    def __get__(self, instance: None, owner: Callable[..., Structure[_T]]) -> Field[_T]:
         ...
 
     @overload
-    def __get__(self, instance: Structure[T], owner: StructureMeta[T]) -> T:
+    def __get__(self, instance: Structure[_T], owner: Callable[..., Structure[_T]]) -> _T:
         ...
 
     # noinspection PyProtectedMember
     def __get__(
-        self, instance: Optional[Structure[T]], owner: StructureMeta[T]
-    ) -> Union[Field[T], T]:
+        self, instance: Optional[Structure[_T]], owner: Callable[..., Structure[_T]]
+    ) -> Union[Field[_T], _T]:
 
         """
             Returns either field itself or field value.
@@ -121,7 +121,7 @@ class Field(Generic[T]):
         return self._validator
 
     @property
-    def default(self) -> Maybe[T]:
+    def default(self) -> Maybe[_T]:
 
         """
             Returns field default value.
@@ -147,7 +147,7 @@ class Field(Generic[T]):
         return self._optional
 
     # noinspection PyUnboundLocalVariable
-    def validate(self, value: Maybe[T], /) -> None:
+    def validate(self, value: Maybe[_T], /) -> None:
 
         """
             Validates the given value against the field requirements.
@@ -169,27 +169,27 @@ class Field(Generic[T]):
         elif (value is WILDCARD or default is WILDCARD) and not self.is_optional:
             raise ProhibitedValueError(self, value)
 
-        elif is_value(value) and (result := self.validator(value)).is_failure:
-            raise Failure.get_error(result)
+        elif is_value(value) and not (result := self.validator(value)):
+            raise unwrap_failure(result)
 
 
-class StructureDict(Generic[T, V], Dict[str, V]):
+class StructureDict(Generic[_T], Dict[str, Any]):
 
     __slots__ = ("fields",)
 
-    def __init__(self, **kwargs: V) -> None:
+    def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
 
-        self.fields: Dict[str, Field[T]] = {}
+        self.fields: Dict[str, Field[_T]] = {}
 
-    def __setitem__(self, key: str, value: V) -> None:
+    def __setitem__(self, key: str, value: Any) -> None:
         if isinstance(value, Field):
             self.fields[key] = value
 
         super().__setitem__(key, value)
 
 
-class StructureMeta(Generic[T], abc.ABCMeta):
+class StructureMeta(Generic[_T], abc.ABCMeta):
 
     """
         Structure template metaclass.
@@ -197,36 +197,37 @@ class StructureMeta(Generic[T], abc.ABCMeta):
 
     __slots__ = ()
 
-    _fields_: Mapping[str, Field[T]]
+    _fields_: Mapping[str, Field[_T]]
 
-    @classmethod
-    def __prepare__(
-        mcs, __name: str, __bases: Tuple[type, ...], **kwargs: Any
-    ) -> StructureDict[T, Any]:
-        return StructureDict()
+    def __init__(cls, name: str, bases: Tuple[type, ...], attrs: StructureDict[_T]) -> None:
+        super().__init__(name, bases, attrs)
+
+        cls._fields_ = attrs.fields
 
     def __repr__(self) -> str:
         return f"{testplates.__name__}.{type(self).__name__}({format_like_dict(self._fields_)})"
 
-    def __new__(
-        mcs, name: str, bases: Tuple[type, ...], namespace: StructureDict[T, Any]
-    ) -> StructureMeta[T]:
-        instance = cast(StructureMeta[T], super().__new__(mcs, name, bases, namespace))
-        instance._fields_ = namespace.fields
+    @classmethod
+    def __prepare__(
+        mcs, __name: str, __bases: Tuple[type, ...], **kwargs: Any
+    ) -> StructureDict[_T]:
+        return StructureDict()
 
-        return instance
-
+    # noinspection PyTypeChecker
+    # noinspection PyArgumentList
     def _create_(
-        cls, name: str, fields: Optional[Mapping[str, Field[T]]] = None
-    ) -> StructureMeta[T]:
+        cls, name: str, fields: Optional[Mapping[str, Field[_T]]] = None
+    ) -> StructureMeta[_T]:
         bases = (cls,)
+        metaclass = cls.__class__
+
         fields = fields or {}
 
-        metaclass = cls.__class__
-        namespace = metaclass.__prepare__(name, bases)
+        attrs = metaclass.__prepare__(name, bases)
+        attrs.fields = {key: value for key, value in fields.items()}
 
-        instance = metaclass.__new__(metaclass, name, bases, namespace)
-        instance._fields_ = fields
+        instance = cast(StructureMeta[_T], metaclass.__new__(metaclass, name, bases, attrs))
+        metaclass.__init__(instance, name, bases, attrs)
 
         for name, field in fields.items():
             field.__set_name__(instance, name)
@@ -234,7 +235,7 @@ class StructureMeta(Generic[T], abc.ABCMeta):
         return instance
 
 
-class Structure(Generic[T], abc.ABC, metaclass=StructureMeta):
+class Structure(Generic[_T], abc.ABC, metaclass=StructureMeta):
 
     """
         Structure template base class.
@@ -242,9 +243,9 @@ class Structure(Generic[T], abc.ABC, metaclass=StructureMeta):
 
     __slots__ = ("_values_",)
 
-    _fields_: ClassVar[Mapping[str, Field[T]]]
+    _fields_: ClassVar[Mapping[str, Field[_T]]]
 
-    def __init__(self, **values: T) -> None:
+    def __init__(self, **values: _T) -> None:
         keys = self._fields_.keys()
 
         for key, value in values.items():
@@ -274,7 +275,7 @@ class Structure(Generic[T], abc.ABC, metaclass=StructureMeta):
 
     @staticmethod
     @abc.abstractmethod
-    def _get_value_(self: Any, key: str, /, *, default: Maybe[T] = MISSING) -> Maybe[T]:
+    def _get_value_(self: Any, key: str, /, *, default: Maybe[_T] = MISSING) -> Maybe[_T]:
 
         """
             Extracts value by given key using a type specific protocol.

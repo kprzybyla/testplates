@@ -1,8 +1,8 @@
 __all__ = [
     "get_value_boundaries",
     "get_length_boundaries",
-    "fits_minimum",
-    "fits_maximum",
+    "fits_minimum_value",
+    "fits_maximum_value",
     "fits_minimum_length",
     "fits_maximum_length",
     "Edge",
@@ -13,7 +13,8 @@ import sys
 
 from typing import Sized, Tuple, Union, Optional, Final
 
-from .result import Result, Success, Failure
+from resultful import success, failure, unwrap_success, Result
+
 from .value import UnlimitedType, UNLIMITED
 from .limit import Limit, Extremum, MINIMUM_EXTREMUM, MAXIMUM_EXTREMUM
 from .exceptions import (
@@ -61,7 +62,6 @@ def get_maximum(
     return get_boundary(MAXIMUM_EXTREMUM, inclusive=inclusive, exclusive=exclusive)
 
 
-# noinspection PyTypeChecker
 def get_boundary(
     name: Extremum, *, inclusive: Optional[Edge] = None, exclusive: Optional[Edge] = None
 ) -> Result[Boundary, TestplatesError]:
@@ -75,21 +75,20 @@ def get_boundary(
     """
 
     if inclusive is None and exclusive is None:
-        return Failure(MissingBoundaryError(name))
+        return failure(MissingBoundaryError(name))
 
     if inclusive is not None and exclusive is not None:
-        return Failure(MutuallyExclusiveBoundariesError(name))
+        return failure(MutuallyExclusiveBoundariesError(name))
 
     if inclusive is not None and inclusive is not UNLIMITED:
-        return Success(Limit(name, inclusive, is_inclusive=True))
+        return success(Limit(name, inclusive, is_inclusive=True))
 
     if exclusive is not None and exclusive is not UNLIMITED:
-        return Success(Limit(name, exclusive, is_inclusive=False))
+        return success(Limit(name, exclusive, is_inclusive=False))
 
-    return Success(UNLIMITED)
+    return success(UNLIMITED)
 
 
-# noinspection PyTypeChecker
 def get_value_boundaries(
     inclusive_minimum: Optional[Edge] = None,
     inclusive_maximum: Optional[Edge] = None,
@@ -112,31 +111,29 @@ def get_value_boundaries(
         and exclusive_minimum is None
         and exclusive_maximum is None
     ):
-        return Failure(InvalidSignatureError("missing 2 required keyword-only arguments"))
+        return failure(InvalidSignatureError("missing 2 required keyword-only arguments"))
 
     minimum_result = get_minimum(inclusive=inclusive_minimum, exclusive=exclusive_minimum)
 
-    if minimum_result.is_failure:
-        return Failure.from_result(minimum_result)
-
-    minimum = Success.get_value(minimum_result)
+    if not minimum_result:
+        return failure(minimum_result)
 
     maximum_result = get_maximum(inclusive=inclusive_maximum, exclusive=exclusive_maximum)
 
-    if maximum_result.is_failure:
-        return Failure.from_result(maximum_result)
+    if not maximum_result:
+        return failure(maximum_result)
 
-    maximum = Success.get_value(maximum_result)
+    minimum = unwrap_success(minimum_result)
+    maximum = unwrap_success(maximum_result)
 
     result = validate_value_boundaries(minimum=minimum, maximum=maximum)
 
-    if result.is_failure:
-        return Failure.from_result(result)
+    if not result:
+        return failure(result)
 
-    return Success((minimum, maximum))
+    return success((minimum, maximum))
 
 
-# noinspection PyTypeChecker
 def validate_value_boundaries(
     *, minimum: Boundary, maximum: Boundary
 ) -> Result[None, TestplatesError]:
@@ -149,18 +146,17 @@ def validate_value_boundaries(
     """
 
     if minimum is UNLIMITED or maximum is UNLIMITED:
-        return Success(None)
+        return success(None)
 
     if is_overlapping(minimum, maximum):
-        return Failure(OverlappingBoundariesError(minimum, maximum))
+        return failure(OverlappingBoundariesError(minimum, maximum))
 
     if is_single_match(minimum, maximum):
-        return Failure(SingleMatchBoundariesError(minimum, maximum))
+        return failure(SingleMatchBoundariesError(minimum, maximum))
 
-    return Success(None)
+    return success(None)
 
 
-# noinspection PyTypeChecker
 def get_length_boundaries(
     inclusive_minimum: Optional[Edge] = None, inclusive_maximum: Optional[Edge] = None
 ) -> Result[Tuple[Boundary, Boundary], TestplatesError]:
@@ -173,31 +169,29 @@ def get_length_boundaries(
     """
 
     if inclusive_minimum is None and inclusive_maximum is None:
-        return Failure(InvalidSignatureError("missing 2 required keyword-only arguments"))
+        return failure(InvalidSignatureError("missing 2 required keyword-only arguments"))
 
     minimum_result = get_minimum(inclusive=inclusive_minimum)
 
-    if minimum_result.is_failure:
-        return Failure.from_result(minimum_result)
-
-    minimum = Success.get_value(minimum_result)
+    if not minimum_result:
+        return failure(minimum_result)
 
     maximum_result = get_maximum(inclusive=inclusive_maximum)
 
-    if maximum_result.is_failure:
-        return Failure.from_result(maximum_result)
+    if not maximum_result:
+        return failure(maximum_result)
 
-    maximum = Success.get_value(maximum_result)
+    minimum = unwrap_success(minimum_result)
+    maximum = unwrap_success(maximum_result)
 
     result = validate_length_boundaries(minimum=minimum, maximum=maximum)
 
-    if result.is_failure:
-        return Failure.from_result(result)
+    if not result:
+        return failure(result)
 
-    return Success((minimum, maximum))
+    return success((minimum, maximum))
 
 
-# noinspection PyTypeChecker
 def validate_length_boundaries(
     minimum: Boundary, maximum: Boundary
 ) -> Result[None, TestplatesError]:
@@ -210,21 +204,21 @@ def validate_length_boundaries(
     """
 
     if minimum is UNLIMITED or maximum is UNLIMITED:
-        return Success(None)
+        return success(None)
 
     if is_outside_length_range(minimum):
-        return Failure(InvalidLengthError(minimum))
+        return failure(InvalidLengthError(minimum))
 
     if is_outside_length_range(maximum):
-        return Failure(InvalidLengthError(maximum))
+        return failure(InvalidLengthError(maximum))
 
     if is_overlapping(minimum, maximum):
-        return Failure(OverlappingBoundariesError(minimum, maximum))
+        return failure(OverlappingBoundariesError(minimum, maximum))
 
     if is_single_match(minimum, maximum):
-        return Failure(SingleMatchBoundariesError(minimum, maximum))
+        return failure(SingleMatchBoundariesError(minimum, maximum))
 
-    return Success(None)
+    return success(None)
 
 
 def is_outside_length_range(boundary: Limit) -> bool:
@@ -262,7 +256,7 @@ def is_single_match(minimum: Limit, maximum: Limit) -> bool:
     return minimum.value + minimum.alignment == maximum.value - maximum.alignment
 
 
-def fits_minimum(value: int, minimum: Boundary) -> bool:
+def fits_minimum_value(value: int, minimum: Boundary) -> bool:
 
     """
         Checks whether value fits the minimum boundary.
@@ -280,7 +274,7 @@ def fits_minimum(value: int, minimum: Boundary) -> bool:
         return value.__gt__(minimum.value) is True
 
 
-def fits_maximum(value: int, maximum: Boundary) -> bool:
+def fits_maximum_value(value: int, maximum: Boundary) -> bool:
 
     """
         Checks whether value fits the maximum boundary.
@@ -307,7 +301,7 @@ def fits_minimum_length(value: Sized, minimum: Boundary) -> bool:
         :param minimum: minimum boundary
     """
 
-    return fits_minimum(len(value), minimum)
+    return fits_minimum_value(len(value), minimum)
 
 
 def fits_maximum_length(value: Sized, maximum: Boundary) -> bool:
@@ -319,4 +313,4 @@ def fits_maximum_length(value: Sized, maximum: Boundary) -> bool:
         :param maximum: maximum boundary
     """
 
-    return fits_maximum(len(value), maximum)
+    return fits_maximum_value(len(value), maximum)

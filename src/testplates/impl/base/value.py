@@ -21,6 +21,7 @@ from typing import Any, TypeVar, Union, Literal, Final
 import testplates
 
 
+# noinspection PyUnresolvedReferences
 def is_value(value: Maybe[Value[Any]]) -> bool:
 
     """
@@ -33,7 +34,8 @@ def is_value(value: Maybe[Value[Any]]) -> bool:
     return value not in [MISSING, ANY, ABSENT, WILDCARD]
 
 
-def values_matches(self_value: Maybe[Value[T]], other_value: Maybe[Value[T]], /) -> bool:
+# noinspection PyUnresolvedReferences
+def values_matches(self_value: Maybe[Value[_T]], other_value: Maybe[Value[_T]], /) -> bool:
 
     """
         Compares self value and other value and
@@ -124,10 +126,10 @@ class UnlimitedType(enum.Enum):
         return f"{testplates.__name__}.{self.name}"
 
 
-T = TypeVar("T")
+_T = TypeVar("_T")
 
-Maybe = Union[T, MissingType]
-Value = Union[T, SpecialValueType]
+Maybe = Union[_T, MissingType]
+Value = Union[_T, SpecialValueType]
 
 ANY: Final[Literal[SpecialValueType.ANY]] = SpecialValueType.ANY
 WILDCARD: Final[Literal[SpecialValueType.WILDCARD]] = SpecialValueType.WILDCARD
