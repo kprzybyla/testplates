@@ -1,30 +1,15 @@
 import pytest
 
 from typing import Any, List, NoReturn
+
+from resultful import failure, Result
 from hypothesis import given, strategies as st
 
-from testplates import (
-    failure,
-    Result,
-)
+from testplates import ANY, WILDCARD, ABSENT
+from testplates import field, Required, Optional, Object
+from testplates import TestplatesError, InvalidSignatureError, DanglingDescriptorError
 
-from testplates import (
-    field,
-    Required,
-    Optional,
-    Object,
-    ANY,
-    WILDCARD,
-    ABSENT,
-)
-
-from testplates import (
-    TestplatesError,
-    InvalidSignatureError,
-    DanglingDescriptorError,
-)
-
-from tests.conftest import st_anything_comparable
+from tests.strategies import st_anything_comparable
 
 
 def test_repr_for_required_field_without_default_value() -> None:
@@ -93,13 +78,11 @@ def test_validator_is_not_called_on_special_value_for_optional_field() -> None:
     Template(key=ABSENT)
 
 
-# noinspection PyTypeChecker
 @given(value=st_anything_comparable(), message=st.text())
 def test_validator_failure(value: Any, message: str) -> None:
     failure_object = failure(TestplatesError(message))
 
-    # noinspection PyTypeChecker
-    def validator(this_value: Any) -> Result[None, TestplatesError]:
+    def validator(this_value: Any, /) -> Result[None, TestplatesError]:
         assert this_value is value
         return failure_object
 

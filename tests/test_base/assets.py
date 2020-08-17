@@ -6,8 +6,6 @@ from testplates import Object, Mapping
 
 _T = TypeVar("_T")
 
-MappingStorage = dict
-
 
 class ObjectStorage(Dict[str, _T]):
     def __getattr__(self, item: str) -> _T:
@@ -17,5 +15,9 @@ class ObjectStorage(Dict[str, _T]):
             raise AttributeError(item) from None
 
 
-StorageType = Type[Union[ObjectStorage[_T], Dict[str, _T]]]
-TemplateType = Type[Union[Object, Mapping]]
+class MappingStorage(Dict[str, _T]):
+    pass
+
+
+StorageType = Type[Union[ObjectStorage[_T], MappingStorage[_T]]]
+TemplateType = Type[Union[Object[_T], Mapping[_T]]]

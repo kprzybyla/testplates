@@ -9,8 +9,8 @@ from hypothesis import assume, given
 from hypothesis import strategies as st
 
 from testplates import UNLIMITED
+from testplates import has_length_between
 from testplates import (
-    has_length_between,
     InvalidSignatureError,
     MissingBoundaryError,
     InvalidLengthError,
@@ -18,7 +18,7 @@ from testplates import (
     SingleMatchBoundariesError,
 )
 
-from tests.conftest import Draw
+from tests.strategies import Draw
 
 MINIMUM_EXTREMUM: Final[Literal["minimum"]] = "minimum"
 MAXIMUM_EXTREMUM: Final[Literal["maximum"]] = "maximum"
@@ -91,6 +91,7 @@ def test_repr_with_minimum_and_maximum(data: st.DataObject, length: int) -> None
     assert repr(constraint) == fmt.format(minimum=minimum, maximum=maximum)
 
 
+# noinspection PyTypeChecker
 @given(length=st_length())
 def test_success_with_unlimited_minimum_and_unlimited_maximum(length: int) -> None:
     constraint = has_length_between(minimum=UNLIMITED, maximum=UNLIMITED)
@@ -233,6 +234,7 @@ def test_failure_when_boundaries_are_overlapping(data: st.DataObject) -> None:
     assert exception.value.maximum.is_inclusive is True
 
 
+# noinspection PyTypeChecker
 @given(length=st_length())
 def test_failure_when_boundaries_match_single_value(length: int) -> None:
     with pytest.raises(SingleMatchBoundariesError) as exception:

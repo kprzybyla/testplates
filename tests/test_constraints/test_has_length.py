@@ -8,7 +8,7 @@ from hypothesis import strategies as st
 
 from testplates import has_length
 
-from tests.conftest import Draw
+from tests.strategies import Draw
 
 MINIMUM_LENGTH: Final[int] = 0
 MAXIMUM_LENGTH: Final[int] = sys.maxsize
@@ -35,6 +35,7 @@ def st_length(
     return draw(st.integers(min_value=min_value, max_value=max_value))
 
 
+# noinspection PyTypeChecker
 @given(length=st_length())
 def test_repr(length: int) -> None:
     fmt = "testplates.HasLength({length})"
@@ -44,6 +45,7 @@ def test_repr(length: int) -> None:
     assert repr(constraint) == fmt.format(length=length)
 
 
+# noinspection PyTypeChecker
 @given(length=st_length())
 def test_returns_true(length: int) -> None:
     constraint = has_length(length)
@@ -51,6 +53,7 @@ def test_returns_true(length: int) -> None:
     assert constraint == SizedWrapper(length)
 
 
+# noinspection PyTypeChecker
 @given(length=st_length(), other=st_length())
 def test_returns_false(length: int, other: int) -> None:
     assume(length != other)
@@ -60,6 +63,7 @@ def test_returns_false(length: int, other: int) -> None:
     assert constraint != SizedWrapper(other)
 
 
+# noinspection PyTypeChecker
 @given(length=st_length())
 def test_returns_false_when_value_is_not_sized(length: int) -> None:
     constraint = has_length(length)

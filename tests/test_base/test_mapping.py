@@ -4,7 +4,7 @@ from hypothesis import given
 
 from testplates import field, Mapping, Required, Optional
 
-from tests.conftest import st_anything_comparable
+from tests.strategies import st_anything_comparable
 
 _T = TypeVar("_T")
 

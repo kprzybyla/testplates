@@ -8,9 +8,11 @@ import pytest
 from hypothesis import assume, given
 from hypothesis import strategies as st
 
-from testplates import is_permutation_of, InsufficientValuesError
+from testplates import is_permutation_of
+from testplates import InsufficientValuesError
 
-from tests.conftest import samples, st_anything_comparable, Draw
+from tests.utils import samples
+from tests.strategies import st_anything_comparable, Draw
 
 _T = TypeVar("_T")
 
@@ -103,6 +105,7 @@ def st_inverse_values(draw: Draw[List[_T]]) -> List[_T]:
     return values
 
 
+# noinspection PyTypeChecker
 @given(values=st_values())
 def test_repr(values: List[_T]) -> None:
     fmt = "testplates.IsPermutationOf({values})"
@@ -112,6 +115,7 @@ def test_repr(values: List[_T]) -> None:
     assert repr(constraint) == fmt.format(values=repr(values))
 
 
+# noinspection PyTypeChecker
 @given(values=st_values())
 def test_returns_true(values: List[_T]) -> None:
     permutation = shuffle(values)
@@ -121,6 +125,7 @@ def test_returns_true(values: List[_T]) -> None:
     assert constraint == CollectionWrapper(values)
 
 
+# noinspection PyTypeChecker
 @given(values=st_values(), other=st_value())
 def test_returns_false(values: List[_T], other: _T) -> None:
     assume(other not in values)
@@ -135,6 +140,7 @@ def test_returns_false(values: List[_T], other: _T) -> None:
     assert constraint != CollectionWrapper(values)
 
 
+# noinspection PyTypeChecker
 @given(values=st_values())
 def test_returns_false_when_permutation_has_more_values(values: List[_T]) -> None:
     permutation = values.copy()
@@ -147,6 +153,7 @@ def test_returns_false_when_permutation_has_more_values(values: List[_T]) -> Non
     assert constraint != CollectionWrapper(values)
 
 
+# noinspection PyTypeChecker
 @given(values=st_values())
 def test_returns_false_when_permutation_has_fewer_values(values: List[_T]) -> None:
     permutation = samples(values, minimum=MINIMUM_NUMBER_OF_VALUES)
@@ -158,6 +165,7 @@ def test_returns_false_when_permutation_has_fewer_values(values: List[_T]) -> No
     assert constraint != CollectionWrapper(values)
 
 
+# noinspection PyTypeChecker
 @given(values=st_values())
 def test_returns_false_when_value_is_not_sized(values: List[_T]) -> None:
     constraint = is_permutation_of(values)
@@ -165,6 +173,7 @@ def test_returns_false_when_value_is_not_sized(values: List[_T]) -> None:
     assert constraint != NotSized(values)
 
 
+# noinspection PyTypeChecker
 @given(values=st_values())
 def test_returns_false_when_value_is_not_iterable(values: List[_T]) -> None:
     constraint = is_permutation_of(values)
@@ -172,6 +181,7 @@ def test_returns_false_when_value_is_not_iterable(values: List[_T]) -> None:
     assert constraint != NotIterable(values)
 
 
+# noinspection PyTypeChecker
 @given(values=st_values())
 def test_returns_false_when_value_is_not_container(values: List[_T]) -> None:
     constraint = is_permutation_of(values)
@@ -179,6 +189,7 @@ def test_returns_false_when_value_is_not_container(values: List[_T]) -> None:
     assert constraint != NotContainer(values)
 
 
+# noinspection PyTypeChecker
 @given(values=st_inverse_values())
 def test_raises_error_when_less_than_two_values_were_provided(values: List[_T]) -> None:
     with pytest.raises(InsufficientValuesError) as exception:

@@ -10,7 +10,7 @@ from hypothesis import strategies as st
 from testplates import matches_pattern
 from testplates import InvalidSignatureError
 
-from tests.conftest import st_anything_except, Draw
+from tests.strategies import st_anything_except, Draw
 
 ANY_WORD: Final[str] = r"\w+"
 ANY_DIGIT: Final[str] = r"\d+"
@@ -61,6 +61,7 @@ def test_repr(pattern: AnyStr) -> None:
     assert repr(constraint) == fmt.format(pattern=repr(pattern))
 
 
+# noinspection PyTypeChecker
 @given(data=st.data())
 @pytest.mark.parametrize("pattern", STR_PATTERNS)
 def test_returns_true_with_str_pattern(data: st.DataObject, pattern: str) -> None:
@@ -71,6 +72,7 @@ def test_returns_true_with_str_pattern(data: st.DataObject, pattern: str) -> Non
     assert constraint == value
 
 
+# noinspection PyTypeChecker
 @given(data=st.data())
 @pytest.mark.parametrize("pattern", BYTES_PATTERNS)
 def test_returns_true_with_bytes_pattern(data: st.DataObject, pattern: bytes) -> None:
@@ -81,6 +83,7 @@ def test_returns_true_with_bytes_pattern(data: st.DataObject, pattern: bytes) ->
     assert constraint == value
 
 
+# noinspection PyTypeChecker
 @given(data=st.data())
 @pytest.mark.parametrize("pattern", STR_PATTERNS)
 def test_returns_false_with_str_pattern(data: st.DataObject, pattern: str) -> None:
@@ -91,6 +94,7 @@ def test_returns_false_with_str_pattern(data: st.DataObject, pattern: str) -> No
     assert constraint != value
 
 
+# noinspection PyTypeChecker
 @given(data=st.data())
 @pytest.mark.parametrize("pattern", BYTES_PATTERNS)
 def test_returns_false_with_bytes_pattern(data: st.DataObject, pattern: bytes) -> None:
@@ -101,6 +105,7 @@ def test_returns_false_with_bytes_pattern(data: st.DataObject, pattern: bytes) -
     assert constraint != value
 
 
+# noinspection PyTypeChecker
 @given(data=st.data())
 @pytest.mark.parametrize("pattern", STR_PATTERNS)
 def test_returns_false_with_str_pattern_and_bytes_value(data: st.DataObject, pattern: str) -> None:
@@ -111,6 +116,7 @@ def test_returns_false_with_str_pattern_and_bytes_value(data: st.DataObject, pat
     assert constraint != value.encode()
 
 
+# noinspection PyTypeChecker
 @given(data=st.data())
 @pytest.mark.parametrize("pattern", BYTES_PATTERNS)
 def test_returns_false_with_bytes_pattern_and_str_value(

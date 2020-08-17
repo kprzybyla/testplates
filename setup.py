@@ -1,7 +1,25 @@
 import os
 import codecs
 
+from typing import Final
 from setuptools import setup, find_packages
+
+RESULTFUL: Final[str] = "resultful == 1.0.0a0"
+
+BLACK: Final[str] = "black == 19.10b0"
+FLAKE8: Final[str] = "flake8 ~= 3.8.0"
+MYPY: Final[str] = "mypy @ git+https://github.com/kprzybyla/mypy.git@testplates"
+
+PYTEST: Final[str] = "pytest ~= 6.0.1"
+PYTEST_COV: Final[str] = "pytest-cov ~= 2.8.0"
+HYPOTHESIS: Final[str] = "hypothesis ~= 5.6.0"
+
+SPHINX: Final[str] = "sphinx ~= 3.0.0"
+SPHINX_RTD_THEME: Final[str] = "sphinx_rtd_theme ~= 0.4.3"
+SPHINX_AUTODOC_TYPEHINTS: Final[str] = "sphinx_autodoc_typehints ~= 1.10.0"
+
+WHEEL: Final[str] = "wheel"
+TWINE: Final[str] = "twine"
 
 
 def main():
@@ -24,22 +42,14 @@ def main():
             "Topic :: Software Development :: Libraries",
         ],
         python_requires="~= 3.8",
+        install_requires=[RESULTFUL],
         extras_require={
-            "black": ["black == 19.10b0"],
-            "lint": ["flake8 ~= 3.8.0"],
-            "mypy": ["mypy ~= 0.780", "pytest ~= 5.3.0", "hypothesis ~= 5.6.0"],
-            "test": [
-                "pytest ~= 5.3.0",
-                "pytest-cov ~= 2.8.0",
-                "pytest-mock",
-                "hypothesis ~= 5.6.0",
-            ],
-            "docs": [
-                "sphinx ~= 3.0.0",
-                "sphinx_rtd_theme ~= 0.4.3",
-                "sphinx_autodoc_typehints ~= 1.10.0",
-            ],
-            "deploy": ["wheel", "twine"],
+            "black": [BLACK],
+            "lint": [FLAKE8],
+            "mypy": [MYPY, PYTEST, HYPOTHESIS],
+            "test": [PYTEST, PYTEST_COV, HYPOTHESIS],
+            "docs": [SPHINX, SPHINX_RTD_THEME, SPHINX_AUTODOC_TYPEHINTS],
+            "deploy": [WHEEL, TWINE],
         },
         use_scm_version={"write_to": os.path.join("src/testplates/__version__.py")},
         platforms=["linux"],

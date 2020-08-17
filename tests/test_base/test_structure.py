@@ -5,19 +5,11 @@ import pytest
 
 from hypothesis import given, assume
 
-from testplates import (
-    WILDCARD,
-    ANY,
-    ABSENT,
-    field,
-    Required,
-    Optional,
-    MissingValueError,
-    UnexpectedValueError,
-    ProhibitedValueError,
-)
+from testplates import ANY, WILDCARD, ABSENT
+from testplates import field, Required, Optional
+from testplates import MissingValueError, UnexpectedValueError, ProhibitedValueError
 
-from tests.conftest import st_anything_comparable
+from tests.strategies import st_anything_comparable
 
 from .assets import TemplateType, StorageType
 from .conftest import template_parameters, template_and_storage_parameters
@@ -29,7 +21,7 @@ KEY: Final[str] = "key"
 
 @given(value=st_anything_comparable())
 @template_parameters
-def test_repr(value: _T, template_type: TemplateType) -> None:
+def test_repr(value: _T, template_type: TemplateType[_T]) -> None:
     fmt = "Template({key}={value})"
 
     class Template(template_type):  # type: ignore
@@ -43,7 +35,7 @@ def test_repr(value: _T, template_type: TemplateType) -> None:
 
 @given(value=st_anything_comparable())
 @template_parameters
-def test_meta_repr(value: _T, template_type: TemplateType) -> None:
+def test_meta_repr(value: _T, template_type: TemplateType[_T]) -> None:
     fmt = "testplates.StructureMeta({key}={field})"
 
     class Template(template_type):  # type: ignore
@@ -57,7 +49,9 @@ def test_meta_repr(value: _T, template_type: TemplateType) -> None:
 
 @given(value=st_anything_comparable())
 @template_and_storage_parameters
-def test_equality(value: _T, template_type: TemplateType, storage_type: StorageType[_T]) -> None:
+def test_equality(
+    value: _T, template_type: TemplateType[_T], storage_type: StorageType[_T]
+) -> None:
     class Template(template_type):  # type: ignore
 
         key: Required[_T] = field()
@@ -70,7 +64,7 @@ def test_equality(value: _T, template_type: TemplateType, storage_type: StorageT
 @given(value=st_anything_comparable())
 @template_and_storage_parameters
 def test_inequality_due_to_unequal_key(
-    value: _T, template_type: TemplateType, storage_type: StorageType[_T]
+    value: _T, template_type: TemplateType[_T], storage_type: StorageType[_T]
 ) -> None:
     class Template(template_type):  # type: ignore
 
@@ -84,7 +78,7 @@ def test_inequality_due_to_unequal_key(
 @given(value=st_anything_comparable(), other=st_anything_comparable())
 @template_and_storage_parameters
 def test_inequality_due_to_unequal_value(
-    value: _T, other: _T, template_type: TemplateType, storage_type: StorageType[_T]
+    value: _T, other: _T, template_type: TemplateType[_T], storage_type: StorageType[_T]
 ) -> None:
     assume(value != other)
 
@@ -100,7 +94,7 @@ def test_inequality_due_to_unequal_value(
 @given(value=st_anything_comparable())
 @template_and_storage_parameters
 def test_default_value(
-    value: _T, template_type: TemplateType, storage_type: StorageType[_T]
+    value: _T, template_type: TemplateType[_T], storage_type: StorageType[_T]
 ) -> None:
     class Template(template_type):  # type: ignore
 
@@ -114,7 +108,7 @@ def test_default_value(
 @given(value=st_anything_comparable(), default=st_anything_comparable())
 @template_and_storage_parameters
 def test_default_value_override(
-    value: _T, default: _T, template_type: TemplateType, storage_type: StorageType[_T]
+    value: _T, default: _T, template_type: TemplateType[_T], storage_type: StorageType[_T]
 ) -> None:
     assume(value != default)
 
@@ -130,7 +124,7 @@ def test_default_value_override(
 @given(value=st_anything_comparable())
 @template_and_storage_parameters
 def test_any_value_matches_anything_in_required_field(
-    value: _T, template_type: TemplateType, storage_type: StorageType[_T]
+    value: _T, template_type: TemplateType[_T], storage_type: StorageType[_T]
 ) -> None:
     class Template(template_type):  # type: ignore
 
@@ -144,7 +138,7 @@ def test_any_value_matches_anything_in_required_field(
 @given(value=st_anything_comparable())
 @template_and_storage_parameters
 def test_any_value_matches_anything_in_optional_field(
-    value: _T, template_type: TemplateType, storage_type: StorageType[_T]
+    value: _T, template_type: TemplateType[_T], storage_type: StorageType[_T]
 ) -> None:
     class Template(template_type):  # type: ignore
 
@@ -158,7 +152,7 @@ def test_any_value_matches_anything_in_optional_field(
 @given(value=st_anything_comparable())
 @template_and_storage_parameters
 def test_wildcard_value_matches_anything_in_optional_field(
-    value: _T, template_type: TemplateType, storage_type: StorageType[_T]
+    value: _T, template_type: TemplateType[_T], storage_type: StorageType[_T]
 ) -> None:
     class Template(template_type):  # type: ignore
 
@@ -171,7 +165,9 @@ def test_wildcard_value_matches_anything_in_optional_field(
 
 
 @template_parameters
-def test_wildcard_value_raises_value_error_in_required_field(template_type: TemplateType) -> None:
+def test_wildcard_value_raises_value_error_in_required_field(
+    template_type: TemplateType[_T],
+) -> None:
     class Template(template_type):  # type: ignore
 
         key: Required[Any] = field()
@@ -187,7 +183,7 @@ def test_wildcard_value_raises_value_error_in_required_field(template_type: Temp
 
 @template_and_storage_parameters
 def test_absent_value_matches_anything_in_optional_field(
-    template_type: TemplateType, storage_type: StorageType[_T]
+    template_type: TemplateType[_T], storage_type: StorageType[_T]
 ) -> None:
     class Template(template_type):  # type: ignore
 
@@ -201,7 +197,7 @@ def test_absent_value_matches_anything_in_optional_field(
 @given(value=st_anything_comparable())
 @template_and_storage_parameters
 def test_absent_value_mismatches_any_value_in_optional_field(
-    value: _T, template_type: TemplateType, storage_type: StorageType[_T]
+    value: _T, template_type: TemplateType[_T], storage_type: StorageType[_T]
 ) -> None:
     class Template(template_type):  # type: ignore
 
@@ -213,7 +209,9 @@ def test_absent_value_mismatches_any_value_in_optional_field(
 
 
 @template_parameters
-def test_absent_value_raises_value_error_in_required_field(template_type: TemplateType) -> None:
+def test_absent_value_raises_value_error_in_required_field(
+    template_type: TemplateType[_T],
+) -> None:
     class Template(template_type):  # type: ignore
 
         key: Required[Any] = field()
@@ -229,7 +227,7 @@ def test_absent_value_raises_value_error_in_required_field(template_type: Templa
 
 @given(value=st_anything_comparable())
 @template_parameters
-def test_unexpected_value_raises_value_error(value: _T, template_type: TemplateType) -> None:
+def test_unexpected_value_raises_value_error(value: _T, template_type: TemplateType[_T]) -> None:
     class Template(template_type):  # type: ignore
         pass
 
@@ -243,7 +241,9 @@ def test_unexpected_value_raises_value_error(value: _T, template_type: TemplateT
 
 
 @template_parameters
-def test_missing_value_in_required_field_raises_value_error(template_type: TemplateType) -> None:
+def test_missing_value_in_required_field_raises_value_error(
+    template_type: TemplateType[_T],
+) -> None:
     class Template(template_type):  # type: ignore
 
         key: Required[Any] = field()
@@ -257,7 +257,9 @@ def test_missing_value_in_required_field_raises_value_error(template_type: Templ
 
 
 @template_parameters
-def test_missing_value_in_optional_field_raises_value_error(template_type: TemplateType) -> None:
+def test_missing_value_in_optional_field_raises_value_error(
+    template_type: TemplateType[_T],
+) -> None:
     class Template(template_type):  # type: ignore
 
         key: Optional[Any] = field(optional=True)
@@ -273,7 +275,7 @@ def test_missing_value_in_optional_field_raises_value_error(template_type: Templ
 @given(default=st_anything_comparable())
 @template_parameters
 def test_default_value_prevents_value_error_in_required_field_on_missing_value(
-    default: _T, template_type: TemplateType
+    default: _T, template_type: TemplateType[_T]
 ) -> None:
     class Template(template_type):  # type: ignore
 
@@ -285,7 +287,7 @@ def test_default_value_prevents_value_error_in_required_field_on_missing_value(
 @given(default=st_anything_comparable())
 @template_parameters
 def test_default_value_prevents_value_error_in_optional_field_on_missing_value(
-    default: _T, template_type: TemplateType
+    default: _T, template_type: TemplateType[_T]
 ) -> None:
     class Template(template_type):  # type: ignore
 
@@ -296,7 +298,7 @@ def test_default_value_prevents_value_error_in_optional_field_on_missing_value(
 
 @given(default=st_anything_comparable())
 @template_parameters
-def test_required_field_properties_access(default: _T, template_type: TemplateType) -> None:
+def test_required_field_properties_access(default: _T, template_type: TemplateType[_T]) -> None:
     class Template(template_type):  # type: ignore
 
         key: Required[Any] = field(default=default)
@@ -308,7 +310,7 @@ def test_required_field_properties_access(default: _T, template_type: TemplateTy
 
 @given(default=st_anything_comparable())
 @template_parameters
-def test_optional_field_properties_access(default: _T, template_type: TemplateType) -> None:
+def test_optional_field_properties_access(default: _T, template_type: TemplateType[_T]) -> None:
     class Template(template_type):  # type: ignore
 
         key: Optional[Any] = field(default=default, optional=True)
