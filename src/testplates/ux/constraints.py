@@ -1,5 +1,7 @@
 from typing import overload, AnyStr, TypeVar, List, Optional
 
+from resultful import unwrap_success, unwrap_failure
+
 from testplates.impl.base import get_value_boundaries, get_length_boundaries
 from testplates.impl.constraints import (
     Contains,
@@ -12,13 +14,12 @@ from testplates.impl.constraints import (
 )
 
 from .value import Boundary
-from .result import unwrap_success, unwrap_failure
 from .exceptions import InvalidSignatureError
 
-T = TypeVar("T")
+_T = TypeVar("_T")
 
 
-def contains(*values: T) -> Contains[T]:
+def contains(*values: _T) -> Contains[_T]:
 
     """
         Returns constraint object that matches any container object
@@ -56,7 +57,7 @@ def has_length_between(
 
     result = get_length_boundaries(inclusive_minimum=minimum, inclusive_maximum=maximum)
 
-    if result.is_failure:
+    if not result:
         raise unwrap_failure(result)
 
     minimum_boundary, maximum_boundary = unwrap_success(result)
@@ -64,7 +65,7 @@ def has_length_between(
     return HasLengthBetween(minimum=minimum_boundary, maximum=maximum_boundary)
 
 
-def is_one_of(*values: T) -> IsOneOf[T]:
+def is_one_of(*values: _T) -> IsOneOf[_T]:
 
     """
         Returns constraint object that matches any object
@@ -76,7 +77,7 @@ def is_one_of(*values: T) -> IsOneOf[T]:
     return IsOneOf(*values)
 
 
-def is_permutation_of(values: List[T], /) -> IsPermutationOf[T]:
+def is_permutation_of(values: List[_T], /) -> IsPermutationOf[_T]:
 
     """
         Returns constraint object that matches any collection object
@@ -159,7 +160,7 @@ def ranges_between(
         exclusive_maximum=exclusive_maximum,
     )
 
-    if result.is_failure:
+    if not result:
         raise unwrap_failure(result)
 
     minimum_boundary, maximum_boundary = unwrap_success(result)

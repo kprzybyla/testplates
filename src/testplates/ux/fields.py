@@ -4,32 +4,32 @@ from typing import overload, TypeVar, Union, Callable, Literal
 
 from testplates.impl.base import Field
 
-from .value import Value, Maybe, MISSING, LiteralAny, LiteralWildcard, LiteralAbsent
+from .value import Value, Maybe, LiteralAny, LiteralWildcard, LiteralAbsent, MISSING
 from .validators import passthrough_validator, Validator
 from .exceptions import InvalidSignatureError
 
-T = TypeVar("T")
+_T = TypeVar("_T")
 
-Required = Field[Union[T, LiteralAny]]
-Optional = Field[Union[T, LiteralAny, LiteralWildcard, LiteralAbsent]]
+Required = Field[Union[_T, LiteralAny]]
+Optional = Field[Union[_T, LiteralAny, LiteralWildcard, LiteralAbsent]]
 
 
 @overload
-def field(validator: Validator = ..., /, *, default: Maybe[T] = ...) -> Required[T]:
+def field(validator: Validator = ..., /, *, default: Maybe[_T] = ...) -> Required[_T]:
     ...
 
 
 @overload
 def field(
-    validator: Validator = ..., /, *, default_factory: Maybe[Callable[[], T]] = ...
-) -> Required[T]:
+    validator: Validator = ..., /, *, default_factory: Maybe[Callable[[], _T]] = ...
+) -> Required[_T]:
     ...
 
 
 @overload
 def field(
-    validator: Validator = ..., /, *, default: Maybe[T] = ..., optional: Literal[False]
-) -> Required[T]:
+    validator: Validator = ..., /, *, default: Maybe[_T] = ..., optional: Literal[False]
+) -> Required[_T]:
     ...
 
 
@@ -38,16 +38,16 @@ def field(
     validator: Validator = ...,
     /,
     *,
-    default_factory: Maybe[Callable[[], T]] = ...,
+    default_factory: Maybe[Callable[[], _T]] = ...,
     optional: Literal[False],
-) -> Required[T]:
+) -> Required[_T]:
     ...
 
 
 @overload
 def field(
-    validator: Validator = ..., /, *, default: Maybe[T] = ..., optional: Literal[True]
-) -> Optional[T]:
+    validator: Validator = ..., /, *, default: Maybe[_T] = ..., optional: Literal[True]
+) -> Optional[_T]:
     ...
 
 
@@ -56,16 +56,16 @@ def field(
     validator: Validator = ...,
     /,
     *,
-    default_factory: Maybe[Callable[[], T]] = ...,
+    default_factory: Maybe[Callable[[], _T]] = ...,
     optional: Literal[True],
-) -> Optional[T]:
+) -> Optional[_T]:
     ...
 
 
 @overload
 def field(
-    validator: Validator = ..., /, *, default: Maybe[T] = ..., optional: bool = ...
-) -> Field[Value[T]]:
+    validator: Validator = ..., /, *, default: Maybe[_T] = ..., optional: bool = ...
+) -> Field[Value[_T]]:
     ...
 
 
@@ -74,9 +74,9 @@ def field(
     validator: Validator = ...,
     /,
     *,
-    default_factory: Maybe[Callable[[], T]] = ...,
+    default_factory: Maybe[Callable[[], _T]] = ...,
     optional: bool = ...,
-) -> Field[Value[T]]:
+) -> Field[Value[_T]]:
     ...
 
 
@@ -84,10 +84,10 @@ def field(
     validator: Validator = passthrough_validator,
     /,
     *,
-    default: Maybe[T] = MISSING,
-    default_factory: Maybe[Callable[[], T]] = MISSING,
+    default: Maybe[_T] = MISSING,
+    default_factory: Maybe[Callable[[], _T]] = MISSING,
     optional: bool = False,
-) -> Union[Required[T], Optional[T], Field[Value[T]]]:
+) -> Union[Required[_T], Optional[_T], Field[Value[_T]]]:
 
     """
         Creates field for structure template.

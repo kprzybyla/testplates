@@ -18,11 +18,11 @@ from typing import TypeVar, Union, Literal, Final
 
 from testplates.impl.base import MissingType, SpecialValueType, UnlimitedType
 
-T = TypeVar("T")
+_T = TypeVar("_T")
 
-Maybe = Union[T, MissingType]
-Value = Union[T, SpecialValueType]
-Boundary = Union[T, UnlimitedType]
+Maybe = Union[_T, MissingType]
+Value = Union[_T, SpecialValueType]
+Boundary = Union[_T, UnlimitedType]
 
 LiteralMissing = Literal[MissingType.MISSING]
 LiteralAny = Literal[SpecialValueType.ANY]

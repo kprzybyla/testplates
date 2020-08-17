@@ -8,11 +8,12 @@ from testplates.impl.base.structure import Field, Structure
 
 from .value import Maybe, MISSING
 
-T = TypeVar("T", covariant=True)
+_T = TypeVar("_T", covariant=True)
 
 
+# noinspection PyTypeChecker
 # noinspection PyProtectedMember
-def create_object(name: str, fields: Optional[Mapping[str, Field[T]]] = None) -> Type[Object[T]]:
+def create_object(name: str, fields: Optional[Mapping[str, Field[_T]]] = None) -> Type[Object[_T]]:
 
     """
         Functional API for creating object.
@@ -21,10 +22,10 @@ def create_object(name: str, fields: Optional[Mapping[str, Field[T]]] = None) ->
         :param fields: object fields
     """
 
-    return Object._create_(name, fields)
+    return cast(Type[Object[_T]], Object._create_(name, fields))  # type: ignore
 
 
-class Object(Generic[T], Structure[T]):
+class Object(Generic[_T], Structure[_T]):
 
     """
         Object-like structure template class.
@@ -33,5 +34,5 @@ class Object(Generic[T], Structure[T]):
     __slots__ = ()
 
     @staticmethod
-    def _get_value_(self: object, key: str, /, *, default: Maybe[T] = MISSING) -> Maybe[T]:
-        return cast(Maybe[T], getattr(self, key, default))
+    def _get_value_(self: object, key: str, /, *, default: Maybe[_T] = MISSING) -> Maybe[_T]:
+        return cast(Maybe[_T], getattr(self, key, default))

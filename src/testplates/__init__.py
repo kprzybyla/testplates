@@ -1,5 +1,4 @@
 __all__ = [
-    "Result",
     "Maybe",
     "Value",
     "Boundary",
@@ -11,10 +10,6 @@ __all__ = [
     "LiteralAbsent",
     "LiteralUnlimited",
     "Validator",
-    "success",
-    "failure",
-    "unwrap_success",
-    "unwrap_failure",
     "field",
     "create_object",
     "create_mapping",
@@ -69,6 +64,7 @@ __all__ = [
     "MemberValidationError",
     "FieldValidationError",
     "RequiredKeyMissingError",
+    "UnknownKeyError",
     "InvalidKeyError",
     "ChoiceValidationError",
 ]
@@ -76,7 +72,6 @@ __all__ = [
 # Annotations
 
 from testplates.ux import (
-    Result,
     Maybe,
     Value,
     Boundary,
@@ -91,13 +86,6 @@ from testplates.ux import (
 )
 
 # Concretes
-
-from testplates.ux import (
-    success,
-    failure,
-    unwrap_success,
-    unwrap_failure,
-)
 
 from testplates.ux import (
     field,
@@ -170,6 +158,7 @@ from testplates.ux import (
     MemberValidationError,
     FieldValidationError,
     RequiredKeyMissingError,
+    UnknownKeyError,
     InvalidKeyError,
     ChoiceValidationError,
 )

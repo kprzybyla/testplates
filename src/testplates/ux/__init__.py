@@ -1,5 +1,4 @@
 __all__ = [
-    "Result",
     "Required",
     "Optional",
     "Maybe",
@@ -11,10 +10,6 @@ __all__ = [
     "LiteralAbsent",
     "LiteralUnlimited",
     "Validator",
-    "success",
-    "failure",
-    "unwrap_success",
-    "unwrap_failure",
     "field",
     "create_object",
     "Object",
@@ -69,13 +64,12 @@ __all__ = [
     "MemberValidationError",
     "FieldValidationError",
     "RequiredKeyMissingError",
+    "UnknownKeyError",
     "InvalidKeyError",
     "ChoiceValidationError",
 ]
 
 # Annotations
-
-from .result import Result
 
 from .fields import (
     Required,
@@ -96,13 +90,6 @@ from .value import (
 from .validators import Validator
 
 # Concretes
-
-from .result import (
-    success,
-    failure,
-    unwrap_success,
-    unwrap_failure,
-)
 
 from .fields import field
 
@@ -179,6 +166,7 @@ from .exceptions import (
     MemberValidationError,
     FieldValidationError,
     RequiredKeyMissingError,
+    UnknownKeyError,
     InvalidKeyError,
     ChoiceValidationError,
 )
