@@ -1,4 +1,5 @@
 __all__ = [
+    "is_classinfo",
     "PassthroughValidator",
     "TypeValidator",
     "BooleanValidator",
@@ -17,14 +18,13 @@ __all__ = [
     "InvalidMaximumValueError",
     "InvalidMinimumLengthError",
     "InvalidMaximumLengthError",
-    "InvalidMinimumSizeError",
-    "InvalidMaximumSizeError",
     "InvalidFormatError",
     "ItemValidationError",
     "UniquenessError",
     "MemberValidationError",
     "FieldValidationError",
     "RequiredKeyMissingError",
+    "UnknownKeyError",
     "InvalidKeyError",
     "ChoiceValidationError",
 ]
@@ -38,7 +38,7 @@ from .enum import EnumValidator
 from .sequence import SequenceValidator
 from .mapping import MappingValidator
 from .union import UnionValidator
-from .utils import Validator
+from .utils import is_classinfo, Validator
 from .exceptions import (
     InvalidTypeValueError,
     InvalidTypeError,
@@ -47,14 +47,13 @@ from .exceptions import (
     InvalidMaximumValueError,
     InvalidMinimumLengthError,
     InvalidMaximumLengthError,
-    InvalidMinimumSizeError,
-    InvalidMaximumSizeError,
     InvalidFormatError,
     ItemValidationError,
     UniquenessError,
     MemberValidationError,
     FieldValidationError,
     RequiredKeyMissingError,
+    UnknownKeyError,
     InvalidKeyError,
     ChoiceValidationError,
 )

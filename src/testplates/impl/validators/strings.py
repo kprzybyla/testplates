@@ -1,10 +1,11 @@
 __all__ = ["StringValidator", "BytesValidator"]
 
-from typing import Any, TypeVar, Union, Pattern as Regex, Optional, Final
+from typing import Any, AnyStr, Union, Pattern, Optional, Final
+
+from resultful import success, failure, Result
 
 import testplates
 
-from testplates.impl.base import Result, Success, Failure
 from testplates.impl.base import fits_minimum_length, fits_maximum_length, Limit, UnlimitedType
 from testplates.impl.base import TestplatesError
 
@@ -15,86 +16,91 @@ from .exceptions import (
     InvalidFormatError,
 )
 
-T = TypeVar("T", str, bytes)
-
-AnyString = Union[str, bytes]
 Boundary = Union[Limit, UnlimitedType]
 
-string_type_validator: Final = TypeValidator((str,))
-bytes_type_validator: Final = TypeValidator((bytes,))
+string_type_validator: Final = TypeValidator(str)
+bytes_type_validator: Final = TypeValidator(bytes)
 
 
 class StringValidator:
 
-    __slots__ = ("minimum", "maximum", "regex")
+    __slots__ = ("minimum_length", "maximum_length", "pattern")
 
-    def __init__(self, minimum: Boundary, maximum: Boundary, regex: Optional[Regex[str]]) -> None:
-        self.minimum = minimum
-        self.maximum = maximum
-        self.regex = regex
+    def __init__(
+        self,
+        *,
+        minimum_length: Boundary,
+        maximum_length: Boundary,
+        pattern: Optional[Pattern[str]],
+    ) -> None:
+        self.minimum_length = minimum_length
+        self.maximum_length = maximum_length
+        self.pattern = pattern
 
     def __repr__(self) -> str:
         return f"{testplates.__name__}.{type(self).__name__}()"
 
-    # noinspection PyTypeChecker
-    def __call__(self, data: Any) -> Result[None, TestplatesError]:
-        if (error := string_type_validator(data)).is_failure:
-            return Failure.from_result(error)
+    def __call__(self, data: Any, /) -> Result[None, TestplatesError]:
+        if not (result := string_type_validator(data)):
+            return failure(result)
 
-        if (error := validate_length(data, self.minimum, self.maximum)).is_failure:
-            return Failure.from_result(error)
+        if not (result := validate_length(data, self.minimum_length, self.maximum_length)):
+            return failure(result)
 
-        if (error := validate_regex(data, self.regex)).is_failure:
-            return Failure.from_result(error)
+        if not (result := validate_pattern(data, self.pattern)):
+            return failure(result)
 
-        return Success(None)
+        return success(None)
 
 
 class BytesValidator:
 
-    __slots__ = ("minimum", "maximum", "regex")
+    __slots__ = ("minimum_length", "maximum_length", "pattern")
 
     def __init__(
-        self, minimum: Boundary, maximum: Boundary, regex: Optional[Regex[bytes]]
+        self,
+        *,
+        minimum_length: Boundary,
+        maximum_length: Boundary,
+        pattern: Optional[Pattern[bytes]],
     ) -> None:
-        self.minimum = minimum
-        self.maximum = maximum
-        self.regex = regex
+        self.minimum_length = minimum_length
+        self.maximum_length = maximum_length
+        self.pattern = pattern
 
     def __repr__(self) -> str:
         return f"{type(self).__name__}()"
 
-    # noinspection PyTypeChecker
     def __call__(self, data: Any) -> Result[None, TestplatesError]:
-        if (error := bytes_type_validator(data)).is_failure:
-            return Failure.from_result(error)
+        if not (result := bytes_type_validator(data)):
+            return failure(result)
 
-        if (error := validate_length(data, self.minimum, self.maximum)).is_failure:
-            return Failure.from_result(error)
+        if not (result := validate_length(data, self.minimum_length, self.maximum_length)):
+            return failure(result)
 
-        if (error := validate_regex(data, self.regex)).is_failure:
-            return Failure.from_result(error)
+        if not (result := validate_pattern(data, self.pattern)):
+            return failure(result)
 
-        return Success(None)
+        return success(None)
 
 
-# noinspection PyTypeChecker
 def validate_length(
-    data: AnyString, minimum: Boundary, maximum: Boundary, /
+    data: AnyStr, minimum_length: Boundary, maximum_length: Boundary, /
 ) -> Result[None, TestplatesError]:
-    if not fits_minimum_length(data, minimum):
-        return Failure(InvalidMinimumLengthError(data, minimum))
+    if not fits_minimum_length(data, minimum_length):
+        return failure(InvalidMinimumLengthError(data, minimum_length))
 
-    if not fits_maximum_length(data, maximum):
-        return Failure(InvalidMaximumLengthError(data, maximum))
+    if not fits_maximum_length(data, maximum_length):
+        return failure(InvalidMaximumLengthError(data, maximum_length))
 
-    return Success(None)
+    return success(None)
 
 
-# noinspection PyTypeChecker
-def validate_regex(data: T, regex: Optional[Regex[T]], /) -> Result[None, TestplatesError]:
-    if regex is not None:
-        if not regex.match(data):
-            return Failure(InvalidFormatError(data, regex))
+def validate_pattern(
+    data: AnyStr, pattern: Optional[Pattern[AnyStr]], /
+) -> Result[None, TestplatesError]:
+    if pattern is not None:
+        if not pattern.match(data):
+            return failure(InvalidFormatError(data, pattern))
 
-    return Success(None)
+    return success(None)

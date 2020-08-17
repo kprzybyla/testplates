@@ -6,12 +6,11 @@ __all__ = [
     "InvalidMaximumValueError",
     "InvalidMinimumLengthError",
     "InvalidMaximumLengthError",
-    "InvalidMinimumSizeError",
-    "InvalidMaximumSizeError",
     "InvalidFormatError",
     "UniquenessError",
     "InvalidKeyError",
     "RequiredKeyMissingError",
+    "UnknownKeyError",
     "MemberValidationError",
     "ItemValidationError",
     "FieldValidationError",
@@ -19,11 +18,11 @@ __all__ = [
 ]
 
 from enum import Enum, EnumMeta
-from typing import Any, AnyStr, TypeVar, Tuple, Sized, Pattern
+from typing import Any, TypeVar, Tuple, Union, Sized, Pattern
 
 from testplates.impl.base import TestplatesError
 
-T = TypeVar("T")
+_T = TypeVar("_T")
 
 
 class InvalidTypeValueError(TestplatesError):
@@ -36,7 +35,7 @@ class InvalidTypeValueError(TestplatesError):
         isinstance() function (because it is not a classinfo).
     """
 
-    def __init__(self, given_type: type) -> None:
+    def __init__(self, given_type: Any) -> None:
         self.given_type = given_type
 
         super().__init__(f"Given value {given_type!r} is not a type nor a classinfo")
@@ -143,42 +142,6 @@ class InvalidMaximumLengthError(TestplatesError):
         )
 
 
-class InvalidMinimumSizeError(TestplatesError):
-
-    """
-        Error indicating invalid minimum size.
-
-        Raised when user passed a data that does not match
-        minimum size requirement specified by the validator.
-    """
-
-    def __init__(self, data: Sized, minimum: Any) -> None:
-        self.data = data
-        self.minimum = minimum
-
-        super().__init__(
-            f"Invalid size {len(data)!r} of data {data!r} (minimum allowed size: {minimum!r})"
-        )
-
-
-class InvalidMaximumSizeError(TestplatesError):
-
-    """
-        Error indicating invalid maximum size.
-
-        Raised when user passed a data that does not match
-        maximum size requirement specified by the validator.
-    """
-
-    def __init__(self, data: Sized, maximum: Any) -> None:
-        self.data = data
-        self.maximum = maximum
-
-        super().__init__(
-            f"Invalid size {len(data)!r} of data {data!r} (maximum allowed size: {maximum!r})"
-        )
-
-
 class InvalidFormatError(TestplatesError):
 
     """
@@ -188,11 +151,11 @@ class InvalidFormatError(TestplatesError):
         the pattern requirement specified by the validator.
     """
 
-    def __init__(self, data: AnyStr, regex: Pattern[AnyStr]) -> None:
+    def __init__(self, data: Union[str, bytes], pattern: Pattern[Any]) -> None:
         self.data = data
-        self.regex = regex
+        self.pattern = pattern
 
-        super().__init__(f"Invalid format of data {data!r} (allowed format: {regex!r})")
+        super().__init__(f"Invalid format of data {data!r} (allowed format: {pattern!r})")
 
 
 class UniquenessError(TestplatesError):
@@ -243,6 +206,22 @@ class RequiredKeyMissingError(TestplatesError):
         self.field = field
 
         super().__init__(f"Mandatory key {key!r} ({field!r}) missing in data {data!r}")
+
+
+class UnknownKeyError(TestplatesError):
+
+    """
+        Error indicating unknown key for structure type.
+
+        Raised when user passed a data that contains
+        unknown key that was not specified by structure type.
+    """
+
+    def __init__(self, data: Any, structure_type: Any, key: str) -> None:
+        self.data = data
+        self.key = key
+
+        super().__init__(f"Unknown key {key!r} for structure type {structure_type!r} in {data!r}")
 
 
 class MemberValidationError(TestplatesError):

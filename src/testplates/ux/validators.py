@@ -25,7 +25,7 @@ from testplates.impl.base import (
 )
 
 from testplates.impl.validators import (
-    validate_type,
+    is_classinfo,
     TypeValidator,
     PassthroughValidator,
     BooleanValidator,
@@ -39,7 +39,7 @@ from testplates.impl.validators import (
 )
 
 from .value import Boundary
-from .exceptions import TestplatesError, MemberValidationError
+from .exceptions import TestplatesError, InvalidTypeValueError, MemberValidationError
 
 Validator = Callable[[Any], Result[None, TestplatesError]]
 
@@ -48,10 +48,10 @@ passthrough_validator: Final[PassthroughValidator] = PassthroughValidator()
 
 def type_validator(*allowed_types: type) -> Result[Validator, TestplatesError]:
     for allowed_type in allowed_types:
-        if not (result := validate_type(allowed_type)):
-            return failure(result)
+        if not is_classinfo(allowed_type):
+            return failure(InvalidTypeValueError(allowed_type))
 
-    return success(TypeValidator(allowed_types))
+    return success(TypeValidator(*allowed_types))
 
 
 def boolean_validator() -> Result[Validator, TestplatesError]:
@@ -118,7 +118,11 @@ def integer_validator(
 
     minimum_value, maximum_value = unwrap_success(result)
 
-    return success(IntegerValidator(minimum_value, maximum_value, allow_bool))
+    return success(
+        IntegerValidator(
+            minimum_value=minimum_value, maximum_value=maximum_value, allow_bool=allow_bool
+        )
+    )
 
 
 def string_validator(
@@ -136,7 +140,11 @@ def string_validator(
 
     minimum, maximum = unwrap_success(result)
 
-    return success(StringValidator(minimum, maximum, get_pattern(pattern)))
+    return success(
+        StringValidator(
+            minimum_length=minimum, maximum_length=maximum, pattern=get_pattern(pattern)
+        )
+    )
 
 
 def bytes_validator(
@@ -154,7 +162,11 @@ def bytes_validator(
 
     minimum, maximum = unwrap_success(result)
 
-    return success(BytesValidator(minimum, maximum, get_pattern(pattern)))
+    return success(
+        BytesValidator(
+            minimum_length=minimum, maximum_length=maximum, pattern=get_pattern(pattern)
+        )
+    )
 
 
 def enum_validator(
@@ -175,7 +187,13 @@ def enum_validator(
 
     enum_type_validator = unwrap_success(enum_type_validator_result)
 
-    return success(EnumValidator(enum_type, enum_type_validator, enum_member_validator))
+    return success(
+        EnumValidator(
+            enum_type,
+            enum_type_validator=enum_type_validator,
+            enum_member_validator=enum_member_validator,
+        )
+    )
 
 
 def sequence_validator(
@@ -195,7 +213,14 @@ def sequence_validator(
 
     minimum, maximum = unwrap_success(result)
 
-    return success(SequenceValidator(item_validator, minimum, maximum, unique_items))
+    return success(
+        SequenceValidator(
+            item_validator,
+            minimum_length=minimum,
+            maximum_length=maximum,
+            unique_items=unique_items,
+        )
+    )
 
 
 def mapping_validator(structure_type: StructureMeta[Any], /) -> Result[Validator, TestplatesError]:

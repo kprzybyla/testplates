@@ -3,9 +3,10 @@ __all__ = ["EnumValidator"]
 from enum import EnumMeta
 from typing import Any
 
+from resultful import Result
+
 import testplates
 
-from testplates.impl.base import Result
 from testplates.impl.base import TestplatesError
 
 from .utils import Validator
@@ -18,6 +19,7 @@ class EnumValidator:
     def __init__(
         self,
         enum_type: EnumMeta,
+        *,
         enum_type_validator: Validator,
         enum_member_validator: Validator,
     ) -> None:
@@ -30,5 +32,5 @@ class EnumValidator:
 
         return f"{testplates.__name__}.{type(self).__name__}({parameters})"
 
-    def __call__(self, data: Any) -> Result[None, TestplatesError]:
+    def __call__(self, data: Any, /) -> Result[None, TestplatesError]:
         return self.enum_type_validator(data)
