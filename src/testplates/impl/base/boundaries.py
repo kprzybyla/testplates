@@ -295,7 +295,7 @@ def fits_maximum_value(value: int, maximum: Boundary) -> bool:
 def fits_minimum_length(value: Sized, minimum: Boundary) -> bool:
 
     """
-        Checks whether value size fits the minimum boundary.
+        Checks whether value length fits the minimum boundary.
 
         :param value: value to be checked against boundary
         :param minimum: minimum boundary
@@ -307,7 +307,7 @@ def fits_minimum_length(value: Sized, minimum: Boundary) -> bool:
 def fits_maximum_length(value: Sized, maximum: Boundary) -> bool:
 
     """
-        Checks whether value size fits the maximum boundary.
+        Checks whether value length fits the maximum boundary.
 
         :param value: value to be checked against boundary
         :param maximum: maximum boundary

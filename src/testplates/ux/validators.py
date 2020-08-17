@@ -182,11 +182,13 @@ def sequence_validator(
     item_validator: Validator = passthrough_validator,
     /,
     *,
-    minimum_size: Optional[Boundary[int]] = None,
-    maximum_size: Optional[Boundary[int]] = None,
+    minimum_length: Optional[Boundary[int]] = None,
+    maximum_length: Optional[Boundary[int]] = None,
     unique_items: bool = False,
 ) -> Result[Validator, TestplatesError]:
-    result = get_length_boundaries(inclusive_minimum=minimum_size, inclusive_maximum=maximum_size)
+    result = get_length_boundaries(
+        inclusive_minimum=minimum_length, inclusive_maximum=maximum_length
+    )
 
     if not result:
         return failure(result)

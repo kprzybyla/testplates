@@ -13,7 +13,9 @@ _T = TypeVar("_T")
 
 
 def test_repr() -> None:
-    assert (validator_result := sequence_validator(minimum_size=UNLIMITED, maximum_size=UNLIMITED))
+    assert (
+        validator_result := sequence_validator(minimum_length=UNLIMITED, maximum_length=UNLIMITED)
+    )
 
     fmt = "testplates.SequenceValidator()"
     validator = unwrap_success(validator_result)
@@ -22,7 +24,9 @@ def test_repr() -> None:
 
 @given(data=st.lists(st_anything_comparable()))
 def test_success(data: Sequence[_T]) -> None:
-    assert (validator_result := sequence_validator(minimum_size=UNLIMITED, maximum_size=UNLIMITED))
+    assert (
+        validator_result := sequence_validator(minimum_length=UNLIMITED, maximum_length=UNLIMITED)
+    )
 
     validator = unwrap_success(validator_result)
     assert (validation_result := validator(data))
@@ -33,7 +37,9 @@ def test_success(data: Sequence[_T]) -> None:
 
 @given(data=st_anything_except(Sequence))
 def test_failure_when_data_validation_fails(data: _T) -> None:
-    assert (validator_result := sequence_validator(minimum_size=UNLIMITED, maximum_size=UNLIMITED))
+    assert (
+        validator_result := sequence_validator(minimum_length=UNLIMITED, maximum_length=UNLIMITED)
+    )
 
     validator = unwrap_success(validator_result)
     assert not (validation_result := validator(data))
