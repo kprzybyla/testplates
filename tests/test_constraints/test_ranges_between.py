@@ -78,7 +78,7 @@ def st_exclusive_maximum(draw: Draw[int], value: int) -> int:
 def test_repr_with_inclusive_minimum_and_inclusive_maximum(
     data: st.DataObject, value: int
 ) -> None:
-    fmt = "testplates.RangesBetween(minimum={minimum}, maximum={maximum})"
+    fmt = "testplates.ranges_between(minimum={minimum}, maximum={maximum})"
 
     inclusive_minimum = data.draw(st_inclusive_minimum(value))
     inclusive_maximum = data.draw(st_inclusive_maximum(value))
@@ -95,7 +95,7 @@ def test_repr_with_inclusive_minimum_and_inclusive_maximum(
 def test_repr_with_inclusive_minimum_and_exclusive_maximum(
     data: st.DataObject, value: int
 ) -> None:
-    fmt = "testplates.RangesBetween(minimum={minimum}, exclusive_maximum={maximum})"
+    fmt = "testplates.ranges_between(minimum={minimum}, exclusive_maximum={maximum})"
 
     inclusive_minimum = data.draw(st_inclusive_minimum(value))
     exclusive_maximum = data.draw(st_exclusive_maximum(value))
@@ -112,7 +112,7 @@ def test_repr_with_inclusive_minimum_and_exclusive_maximum(
 def test_repr_with_exclusive_minimum_and_inclusive_maximum(
     data: st.DataObject, value: int
 ) -> None:
-    fmt = "testplates.RangesBetween(exclusive_minimum={minimum}, maximum={maximum})"
+    fmt = "testplates.ranges_between(exclusive_minimum={minimum}, maximum={maximum})"
 
     exclusive_minimum = data.draw(st_exclusive_minimum(value))
     inclusive_maximum = data.draw(st_inclusive_maximum(value))
@@ -129,7 +129,7 @@ def test_repr_with_exclusive_minimum_and_inclusive_maximum(
 def test_repr_with_exclusive_minimum_and_exclusive_maximum(
     data: st.DataObject, value: int
 ) -> None:
-    fmt = "testplates.RangesBetween(exclusive_minimum={minimum}, exclusive_maximum={maximum})"
+    fmt = "testplates.ranges_between(exclusive_minimum={minimum}, exclusive_maximum={maximum})"
 
     exclusive_minimum = data.draw(st_exclusive_minimum(value))
     exclusive_maximum = data.draw(st_exclusive_maximum(value))

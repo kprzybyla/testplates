@@ -12,8 +12,8 @@ from testplates import UNLIMITED
 from testplates import string_validator, bytes_validator
 from testplates import (
     InvalidTypeError,
-    InvalidMinimumLengthError,
-    InvalidMaximumLengthError,
+    InvalidMinimumSizeError,
+    InvalidMaximumSizeError,
     InvalidFormatError,
 )
 
@@ -60,36 +60,30 @@ def st_from_bytes_pattern_inverse(draw: Draw[bytes], pattern: bytes) -> bytes:
 
 
 def test_repr_str() -> None:
-    assert (
-        validator_result := string_validator(minimum_length=UNLIMITED, maximum_length=UNLIMITED)
-    )
+    assert (validator_result := string_validator(minimum_size=UNLIMITED, maximum_size=UNLIMITED))
 
-    fmt = "testplates.StringValidator()"
+    fmt = "testplates.string_validator()"
     validator = unwrap_success(validator_result)
     assert repr(validator) == fmt
 
 
 def test_repr_bytes() -> None:
-    assert (
-        validator_result := bytes_validator(minimum_length=UNLIMITED, maximum_length=UNLIMITED)
-    )
+    assert (validator_result := bytes_validator(minimum_size=UNLIMITED, maximum_size=UNLIMITED))
 
-    fmt = "testplates.BytesValidator()"
+    fmt = "testplates.bytes_validator()"
     validator = unwrap_success(validator_result)
     assert repr(validator) == fmt
 
 
 @given(data=st.text())
 def test_success_str(data: str) -> None:
-    assert (
-        validator_result := string_validator(minimum_length=UNLIMITED, maximum_length=UNLIMITED)
-    )
+    assert (validator_result := string_validator(minimum_size=UNLIMITED, maximum_size=UNLIMITED))
 
     validator = unwrap_success(validator_result)
     assert (validation_result := validator(data))
 
-    value = unwrap_success(validation_result)
-    assert value is None
+    outcome = unwrap_success(validation_result)
+    assert outcome is None
 
 
 # noinspection PyTypeChecker
@@ -100,28 +94,26 @@ def test_success_str_with_pattern(st_data: st.DataObject, pattern: str) -> None:
 
     assert (
         validator_result := string_validator(
-            minimum_length=UNLIMITED, maximum_length=UNLIMITED, pattern=pattern
+            minimum_size=UNLIMITED, maximum_size=UNLIMITED, pattern=pattern
         )
     )
 
     validator = unwrap_success(validator_result)
     assert (validation_result := validator(data))
 
-    value = unwrap_success(validation_result)
-    assert value is None
+    outcome = unwrap_success(validation_result)
+    assert outcome is None
 
 
 @given(data=st.binary())
 def test_success_bytes(data: bytes) -> None:
-    assert (
-        validator_result := bytes_validator(minimum_length=UNLIMITED, maximum_length=UNLIMITED)
-    )
+    assert (validator_result := bytes_validator(minimum_size=UNLIMITED, maximum_size=UNLIMITED))
 
     validator = unwrap_success(validator_result)
     assert (validation_result := validator(data))
 
-    value = unwrap_success(validation_result)
-    assert value is None
+    outcome = unwrap_success(validation_result)
+    assert outcome is None
 
 
 # noinspection PyTypeChecker
@@ -132,22 +124,20 @@ def test_success_bytes_with_pattern(st_data: st.DataObject, pattern: bytes) -> N
 
     assert (
         validator_result := bytes_validator(
-            minimum_length=UNLIMITED, maximum_length=UNLIMITED, pattern=pattern
+            minimum_size=UNLIMITED, maximum_size=UNLIMITED, pattern=pattern
         )
     )
 
     validator = unwrap_success(validator_result)
     assert (validation_result := validator(data))
 
-    value = unwrap_success(validation_result)
-    assert value is None
+    outcome = unwrap_success(validation_result)
+    assert outcome is None
 
 
 @given(data=st_anything_except(str))
 def test_failure_str_when_data_validation_fails(data: _T) -> None:
-    assert (
-        validator_result := string_validator(minimum_length=UNLIMITED, maximum_length=UNLIMITED)
-    )
+    assert (validator_result := string_validator(minimum_size=UNLIMITED, maximum_size=UNLIMITED))
 
     validator = unwrap_success(validator_result)
     assert not (validation_result := validator(data))
@@ -160,9 +150,7 @@ def test_failure_str_when_data_validation_fails(data: _T) -> None:
 
 @given(data=st_anything_except(bytes))
 def test_failure_bytes_when_data_validation_fails(data: _T) -> None:
-    assert (
-        validator_result := bytes_validator(minimum_length=UNLIMITED, maximum_length=UNLIMITED)
-    )
+    assert (validator_result := bytes_validator(minimum_size=UNLIMITED, maximum_size=UNLIMITED))
 
     validator = unwrap_success(validator_result)
     assert not (validation_result := validator(data))
@@ -181,13 +169,13 @@ def test_failure_str_when_value_does_not_fit_minimum_value(
 
     assume(len(data) < minimum)
 
-    assert (validator_result := string_validator(minimum_length=minimum, maximum_length=UNLIMITED))
+    assert (validator_result := string_validator(minimum_size=minimum, maximum_size=UNLIMITED))
 
     validator = unwrap_success(validator_result)
     assert not (validation_result := validator(data))
 
     error = unwrap_failure(validation_result)
-    assert isinstance(error, InvalidMinimumLengthError)
+    assert isinstance(error, InvalidMinimumSizeError)
     assert error.data == data
     assert error.minimum.value == minimum
 
@@ -200,13 +188,13 @@ def test_failure_str_when_value_does_not_fit_maximum_value(
 
     assume(len(data) > maximum)
 
-    assert (validator_result := string_validator(minimum_length=UNLIMITED, maximum_length=maximum))
+    assert (validator_result := string_validator(minimum_size=UNLIMITED, maximum_size=maximum))
 
     validator = unwrap_success(validator_result)
     assert not (validation_result := validator(data))
 
     error = unwrap_failure(validation_result)
-    assert isinstance(error, InvalidMaximumLengthError)
+    assert isinstance(error, InvalidMaximumSizeError)
     assert error.data == data
     assert error.maximum.value == maximum
 
@@ -219,13 +207,13 @@ def test_failure_bytes_when_value_does_not_fit_minimum_value(
 
     assume(len(data) < minimum)
 
-    assert (validator_result := bytes_validator(minimum_length=minimum, maximum_length=UNLIMITED))
+    assert (validator_result := bytes_validator(minimum_size=minimum, maximum_size=UNLIMITED))
 
     validator = unwrap_success(validator_result)
     assert not (validation_result := validator(data))
 
     error = unwrap_failure(validation_result)
-    assert isinstance(error, InvalidMinimumLengthError)
+    assert isinstance(error, InvalidMinimumSizeError)
     assert error.data == data
     assert error.minimum.value == minimum
 
@@ -238,13 +226,13 @@ def test_failure_bytes_when_value_does_not_fit_maximum_value(
 
     assume(len(data) > maximum)
 
-    assert (validator_result := bytes_validator(minimum_length=UNLIMITED, maximum_length=maximum))
+    assert (validator_result := bytes_validator(minimum_size=UNLIMITED, maximum_size=maximum))
 
     validator = unwrap_success(validator_result)
     assert not (validation_result := validator(data))
 
     error = unwrap_failure(validation_result)
-    assert isinstance(error, InvalidMaximumLengthError)
+    assert isinstance(error, InvalidMaximumSizeError)
     assert error.data == data
     assert error.maximum.value == maximum
 
@@ -257,7 +245,7 @@ def test_failure_str_when_value_does_not_pattern(st_data: st.DataObject, pattern
 
     assert (
         validator_result := string_validator(
-            minimum_length=UNLIMITED, maximum_length=UNLIMITED, pattern=pattern
+            minimum_size=UNLIMITED, maximum_size=UNLIMITED, pattern=pattern
         )
     )
 
@@ -278,7 +266,7 @@ def test_failure_bytes_when_value_does_not_pattern(st_data: st.DataObject, patte
 
     assert (
         validator_result := bytes_validator(
-            minimum_length=UNLIMITED, maximum_length=UNLIMITED, pattern=pattern
+            minimum_size=UNLIMITED, maximum_size=UNLIMITED, pattern=pattern
         )
     )
 

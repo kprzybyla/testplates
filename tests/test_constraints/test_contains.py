@@ -52,7 +52,7 @@ def st_values_without(draw: Draw[List[_T]], value: _T) -> List[_T]:
 # noinspection PyTypeChecker
 @given(values=st_values())
 def test_repr(values: List[_T]) -> None:
-    fmt = "testplates.Contains({values})"
+    fmt = "testplates.contains({values})"
 
     constraint = contains(*values)
 

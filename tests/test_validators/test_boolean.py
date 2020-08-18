@@ -15,7 +15,7 @@ _T = TypeVar("_T")
 def test_repr() -> None:
     assert (validator_result := boolean_validator())
 
-    fmt = "testplates.BooleanValidator()"
+    fmt = "testplates.boolean_validator()"
     validator = unwrap_success(validator_result)
     assert repr(validator) == fmt
 
@@ -27,8 +27,8 @@ def test_success(data: bool) -> None:
     validator = unwrap_success(validator_result)
     assert (validation_result := validator(data))
 
-    value = unwrap_success(validation_result)
-    assert value is None
+    outcome = unwrap_success(validation_result)
+    assert outcome is None
 
 
 @given(data=st_anything_except(bool))

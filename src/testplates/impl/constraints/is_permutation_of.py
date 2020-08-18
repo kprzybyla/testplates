@@ -22,7 +22,7 @@ class IsPermutationOf(Generic[_T]):
         self._values = values
 
     def __repr__(self) -> str:
-        return f"{testplates.__name__}.{type(self).__name__}({self._values!r})"
+        return f"{testplates.__name__}.is_permutation_of({self._values!r})"
 
     def __eq__(self, other: Any) -> bool:
         if not isinstance(other, Collection):

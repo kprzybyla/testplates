@@ -30,7 +30,7 @@ class EnumValidator:
     def __repr__(self) -> str:
         parameters = f"{self.enum_type}, {self.enum_member_validator}"
 
-        return f"{testplates.__name__}.{type(self).__name__}({parameters})"
+        return f"{testplates.__name__}.enum_validator({parameters})"
 
     def __call__(self, data: Any, /) -> Result[None, TestplatesError]:
         return self.enum_type_validator(data)

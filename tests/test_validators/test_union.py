@@ -24,7 +24,7 @@ def st_choices(draw: Draw[Dict[str, Validator]], min_size: int = 0) -> Dict[str,
 def test_repr(choices: Dict[str, Validator]) -> None:
     assert (validator_result := union_validator(choices))
 
-    fmt = "testplates.UnionValidator({choices})"
+    fmt = "testplates.union_validator({choices})"
     validator = unwrap_success(validator_result)
     assert repr(validator) == fmt.format(choices=choices)
 
@@ -39,8 +39,8 @@ def test_success(choices: Dict[str, Validator], value: Any) -> None:
     validator = unwrap_success(validator_result)
     assert (validation_result := validator((key, value)))
 
-    value = unwrap_success(validation_result)
-    assert value is None
+    outcome = unwrap_success(validation_result)
+    assert outcome is None
 
 
 # noinspection PyTypeChecker

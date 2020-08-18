@@ -11,8 +11,8 @@ from testplates.impl.base import TestplatesError
 
 from .type import TypeValidator
 from .exceptions import (
-    InvalidMinimumLengthError,
-    InvalidMaximumLengthError,
+    InvalidMinimumSizeError,
+    InvalidMaximumSizeError,
     InvalidFormatError,
 )
 
@@ -38,7 +38,7 @@ class StringValidator:
         self.pattern = pattern
 
     def __repr__(self) -> str:
-        return f"{testplates.__name__}.{type(self).__name__}()"
+        return f"{testplates.__name__}.string_validator()"
 
     def __call__(self, data: Any, /) -> Result[None, TestplatesError]:
         if not (result := string_type_validator(data)):
@@ -69,7 +69,7 @@ class BytesValidator:
         self.pattern = pattern
 
     def __repr__(self) -> str:
-        return f"{testplates.__name__}.{type(self).__name__}()"
+        return f"{testplates.__name__}.bytes_validator()"
 
     def __call__(self, data: Any) -> Result[None, TestplatesError]:
         if not (result := bytes_type_validator(data)):
@@ -88,10 +88,10 @@ def validate_length(
     data: AnyStr, minimum_length: Boundary, maximum_length: Boundary, /
 ) -> Result[None, TestplatesError]:
     if not fits_minimum_length(data, minimum_length):
-        return failure(InvalidMinimumLengthError(data, minimum_length))
+        return failure(InvalidMinimumSizeError(data, minimum_length))
 
     if not fits_maximum_length(data, maximum_length):
-        return failure(InvalidMaximumLengthError(data, maximum_length))
+        return failure(InvalidMaximumSizeError(data, maximum_length))
 
     return success(None)
 

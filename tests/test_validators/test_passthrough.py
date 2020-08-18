@@ -9,7 +9,7 @@ from tests.strategies import st_anything_comparable
 
 
 def test_repr() -> None:
-    fmt = "testplates.PassthroughValidator()"
+    fmt = "testplates.passthrough_validator()"
     assert repr(passthrough_validator) == fmt
 
 
@@ -17,5 +17,5 @@ def test_repr() -> None:
 def test_success(data: Any) -> None:
     assert (validation_result := passthrough_validator(data))
 
-    value = unwrap_success(validation_result)
-    assert value is None
+    outcome = unwrap_success(validation_result)
+    assert outcome is None

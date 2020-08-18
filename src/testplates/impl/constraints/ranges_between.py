@@ -23,7 +23,7 @@ class RangesBetween:
             repr(self._maximum_value),
         ]
 
-        return f"{testplates.__name__}.{type(self).__name__}({', '.join(boundaries)})"
+        return f"{testplates.__name__}.ranges_between({', '.join(boundaries)})"
 
     def __eq__(self, other: Any) -> bool:
         minimum_fits = fits_minimum_value(other, self._minimum_value)

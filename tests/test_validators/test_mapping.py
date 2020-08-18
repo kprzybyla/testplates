@@ -26,7 +26,7 @@ def test_repr() -> None:
     structure_type: Type[Object[Any]] = create_object(STRUCTURE_NAME)
     assert (validator_result := mapping_validator(structure_type))
 
-    fmt = "testplates.MappingValidator({structure_type})"
+    fmt = "testplates.mapping_validator({structure_type})"
     validator = unwrap_success(validator_result)
     assert repr(validator) == fmt.format(structure_type=structure_type)
 
@@ -45,8 +45,8 @@ def test_success(key: str, value: _T) -> None:
     validator = unwrap_success(validator_result)
     assert (validation_result := validator({key: value}))
 
-    value = unwrap_success(validation_result)  # type: ignore
-    assert value is None
+    outcome = unwrap_success(validation_result)
+    assert outcome is None
 
 
 # noinspection PyTypeChecker
@@ -59,8 +59,8 @@ def test_success_with_optional_field(key: str) -> None:
     validator = unwrap_success(validator_result)
     assert (validation_result := validator({}))
 
-    value = unwrap_success(validation_result)
-    assert value is None
+    outcome = unwrap_success(validation_result)
+    assert outcome is None
 
 
 # noinspection PyTypeChecker

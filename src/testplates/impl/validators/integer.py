@@ -4,6 +4,8 @@ from typing import Any, Union, Final, Literal
 
 from resultful import success, failure, Result
 
+import testplates
+
 from testplates.impl.base import fits_minimum_value, fits_maximum_value, Limit, UnlimitedType
 from testplates.impl.base import TestplatesError
 
@@ -32,7 +34,7 @@ class IntegerValidator:
         self.allow_bool = allow_bool
 
     def __repr__(self) -> str:
-        return f"{type(self).__name__}()"
+        return f"{testplates.__name__}.integer_validator()"
 
     def __call__(self, data: Any, /) -> Result[None, TestplatesError]:
         if not (result := validate_integer_type(data)):

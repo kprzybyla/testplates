@@ -22,7 +22,7 @@ class TypeValidator:
     def __repr__(self) -> str:
         allowed_types = format_like_tuple(self.allowed_types)
 
-        return f"{testplates.__name__}.{type(self).__name__}({allowed_types})"
+        return f"{testplates.__name__}.type_validator({allowed_types})"
 
     def __call__(self, data: Any, /) -> Result[None, TestplatesError]:
         allowed_types = self.allowed_types

@@ -18,7 +18,7 @@ from tests.strategies import (
 def test_repr(data: Any) -> None:
     assert (validator_result := type_validator(type(data)))
 
-    fmt = "testplates.TypeValidator({type})"
+    fmt = "testplates.type_validator({type})"
     validator = unwrap_success(validator_result)
     assert repr(validator) == fmt.format(type=type(data))
 
@@ -30,8 +30,8 @@ def test_success(data: Any) -> None:
     validator = unwrap_success(validator_result)
     assert (validation_result := validator(data))
 
-    value = unwrap_success(validation_result)
-    assert value is None
+    outcome = unwrap_success(validation_result)
+    assert outcome is None
 
 
 @given(data=st_anything_except_classinfo())

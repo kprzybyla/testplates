@@ -4,8 +4,8 @@ from typing import overload, TypeVar, Union, Callable, Literal
 
 from testplates.impl.base import Field
 
-from .value import Value, Maybe, LiteralAny, LiteralWildcard, LiteralAbsent, MISSING
-from .validators import passthrough_validator, Validator
+from .value import Value, Maybe, Validator, LiteralAny, LiteralWildcard, LiteralAbsent, MISSING
+from .validators import passthrough_validator
 from .exceptions import InvalidSignatureError
 
 _T = TypeVar("_T")

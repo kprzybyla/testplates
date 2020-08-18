@@ -9,8 +9,8 @@ from testplates import sequence_validator
 from testplates import (
     TestplatesError,
     InvalidTypeError,
-    InvalidMinimumLengthError,
-    InvalidMaximumLengthError,
+    InvalidMinimumSizeError,
+    InvalidMaximumSizeError,
     UniquenessError,
     ItemValidationError,
 )
@@ -22,48 +22,42 @@ _T = TypeVar("_T")
 
 
 def test_repr() -> None:
-    assert (
-        validator_result := sequence_validator(minimum_length=UNLIMITED, maximum_length=UNLIMITED)
-    )
+    assert (validator_result := sequence_validator(minimum_size=UNLIMITED, maximum_size=UNLIMITED))
 
-    fmt = "testplates.SequenceValidator()"
+    fmt = "testplates.sequence_validator()"
     validator = unwrap_success(validator_result)
     assert repr(validator) == fmt
 
 
 @given(data=st.lists(st_anything_comparable()))
 def test_success(data: Sequence[_T]) -> None:
-    assert (
-        validator_result := sequence_validator(minimum_length=UNLIMITED, maximum_length=UNLIMITED)
-    )
+    assert (validator_result := sequence_validator(minimum_size=UNLIMITED, maximum_size=UNLIMITED))
 
     validator = unwrap_success(validator_result)
     assert (validation_result := validator(data))
 
-    value = unwrap_success(validation_result)
-    assert value is None
+    outcome = unwrap_success(validation_result)
+    assert outcome is None
 
 
 @given(data=st.lists(st_hashable(), min_size=1, unique=True))
 def test_success_with_unique_value(data: Sequence[_T]) -> None:
     assert (
         validator_result := sequence_validator(
-            minimum_length=UNLIMITED, maximum_length=UNLIMITED, unique_items=True
+            minimum_size=UNLIMITED, maximum_size=UNLIMITED, unique_items=True
         )
     )
 
     validator = unwrap_success(validator_result)
     assert (validation_result := validator(data))
 
-    value = unwrap_success(validation_result)
-    assert value is None
+    outcome = unwrap_success(validation_result)
+    assert outcome is None
 
 
 @given(data=st_anything_except(Sequence))
 def test_failure_when_data_validation_fails(data: _T) -> None:
-    assert (
-        validator_result := sequence_validator(minimum_length=UNLIMITED, maximum_length=UNLIMITED)
-    )
+    assert (validator_result := sequence_validator(minimum_size=UNLIMITED, maximum_size=UNLIMITED))
 
     validator = unwrap_success(validator_result)
     assert not (validation_result := validator(data))
@@ -82,15 +76,13 @@ def test_failure_when_value_does_not_fit_minimum_value(
 
     assume(len(data) < minimum)
 
-    assert (
-        validator_result := sequence_validator(minimum_length=minimum, maximum_length=UNLIMITED)
-    )
+    assert (validator_result := sequence_validator(minimum_size=minimum, maximum_size=UNLIMITED))
 
     validator = unwrap_success(validator_result)
     assert not (validation_result := validator(data))
 
     error = unwrap_failure(validation_result)
-    assert isinstance(error, InvalidMinimumLengthError)
+    assert isinstance(error, InvalidMinimumSizeError)
     assert error.data == data
     assert error.minimum.value == minimum
 
@@ -103,15 +95,13 @@ def test_failure_when_value_does_not_fit_maximum_value(
 
     assume(len(data) > maximum)
 
-    assert (
-        validator_result := sequence_validator(minimum_length=UNLIMITED, maximum_length=maximum)
-    )
+    assert (validator_result := sequence_validator(minimum_size=UNLIMITED, maximum_size=maximum))
 
     validator = unwrap_success(validator_result)
     assert not (validation_result := validator(data))
 
     error = unwrap_failure(validation_result)
-    assert isinstance(error, InvalidMaximumLengthError)
+    assert isinstance(error, InvalidMaximumSizeError)
     assert error.data == data
     assert error.maximum.value == maximum
 
@@ -122,7 +112,7 @@ def test_failure_when_value_is_not_unique(data: List[_T]) -> None:
 
     assert (
         validator_result := sequence_validator(
-            minimum_length=UNLIMITED, maximum_length=UNLIMITED, unique_items=True
+            minimum_size=UNLIMITED, maximum_size=UNLIMITED, unique_items=True
         )
     )
 
@@ -144,7 +134,7 @@ def test_failure_when_data_item_validation_fails(value: Any, message: str) -> No
 
     assert (
         validator_result := sequence_validator(
-            validator, minimum_length=UNLIMITED, maximum_length=UNLIMITED
+            validator, minimum_size=UNLIMITED, maximum_size=UNLIMITED
         )
     )
 

@@ -108,7 +108,7 @@ def st_inverse_values(draw: Draw[List[_T]]) -> List[_T]:
 # noinspection PyTypeChecker
 @given(values=st_values())
 def test_repr(values: List[_T]) -> None:
-    fmt = "testplates.IsPermutationOf({values})"
+    fmt = "testplates.is_permutation_of({values})"
 
     constraint = is_permutation_of(values)
 

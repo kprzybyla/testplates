@@ -24,7 +24,7 @@ class Contains(Generic[_T]):
         self._values = values
 
     def __repr__(self) -> str:
-        return f"{testplates.__name__}.{type(self).__name__}({format_like_tuple(self._values)})"
+        return f"{testplates.__name__}.contains({format_like_tuple(self._values)})"
 
     def __eq__(self, other: Any) -> bool:
         if not isinstance(other, Container):

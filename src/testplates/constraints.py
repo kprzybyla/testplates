@@ -1,3 +1,13 @@
+__all__ = [
+    "contains",
+    "has_size",
+    "has_size_between",
+    "is_one_of",
+    "is_permutation_of",
+    "matches_pattern",
+    "ranges_between",
+]
+
 from typing import overload, AnyStr, TypeVar, List, Optional
 
 from resultful import unwrap_success, unwrap_failure
@@ -31,28 +41,28 @@ def contains(*values: _T) -> Contains[_T]:
     return Contains(*values)
 
 
-def has_length(length: int) -> HasLength:
+def has_size(size: int) -> HasLength:
 
     """
         Returns constraint object that matches any sized
-        object that has length equal to the exact value.
+        object that has size equal to the exact value.
 
-        :param length: exact length value
+        :param size: exact size value
     """
 
-    return HasLength(length)
+    return HasLength(size)
 
 
-def has_length_between(
+def has_size_between(
     *, minimum: Optional[Boundary[int]] = None, maximum: Optional[Boundary[int]] = None
 ) -> HasLengthBetween:
 
     """
         Returns constraint object that matches any sized object
-        that has length between minimum and maximum boundaries values.
+        that has size between minimum and maximum boundaries values.
 
-        :param minimum: minimum length boundary value
-        :param maximum: maximum length boundary value
+        :param minimum: minimum size boundary value
+        :param maximum: maximum size boundary value
     """
 
     result = get_length_boundaries(inclusive_minimum=minimum, inclusive_maximum=maximum)

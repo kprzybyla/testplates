@@ -54,7 +54,7 @@ def st_from_bytes_pattern_inverse(draw: Draw[bytes], pattern: bytes) -> bytes:
 
 @pytest.mark.parametrize("pattern", PATTERNS)
 def test_repr(pattern: AnyStr) -> None:
-    fmt = "testplates.MatchesPattern({pattern})"
+    fmt = "testplates.matches_pattern({pattern})"
 
     constraint = matches_pattern(pattern)
 

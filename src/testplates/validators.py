@@ -9,7 +9,6 @@ __all__ = [
     "sequence_validator",
     "mapping_validator",
     "union_validator",
-    "Validator",
 ]
 
 from enum import Enum, EnumMeta
@@ -45,6 +44,13 @@ passthrough_validator: Final[PassthroughValidator] = PassthroughValidator()
 
 
 def type_validator(*allowed_types: type) -> Result[Validator, TestplatesError]:
+
+    """
+        ...
+
+        :param allowed_types: ...
+    """
+
     for allowed_type in allowed_types:
         if not is_classinfo(allowed_type):
             return failure(InvalidTypeValueError(allowed_type))
@@ -53,6 +59,11 @@ def type_validator(*allowed_types: type) -> Result[Validator, TestplatesError]:
 
 
 def boolean_validator() -> Result[Validator, TestplatesError]:
+
+    """
+        ...
+    """
+
     return success(BooleanValidator())
 
 
@@ -104,6 +115,17 @@ def integer_validator(
     exclusive_maximum: Optional[Boundary[int]] = None,
     allow_bool: bool = False,
 ) -> Result[Validator, TestplatesError]:
+
+    """
+        ...
+
+        :param minimum: ...
+        :param maximum: ...
+        :param exclusive_minimum: ...
+        :param exclusive_maximum: ...
+        :param allow_bool: ...
+    """
+
     result = get_value_boundaries(
         inclusive_minimum=minimum,
         inclusive_maximum=maximum,
@@ -125,44 +147,62 @@ def integer_validator(
 
 def string_validator(
     *,
-    minimum_length: Optional[Boundary[int]] = None,
-    maximum_length: Optional[Boundary[int]] = None,
+    minimum_size: Optional[Boundary[int]] = None,
+    maximum_size: Optional[Boundary[int]] = None,
     pattern: Optional[str] = None,
 ) -> Result[Validator, TestplatesError]:
-    result = get_length_boundaries(
-        inclusive_minimum=minimum_length, inclusive_maximum=maximum_length
-    )
+
+    """
+        ...
+
+        :param minimum_size: ...
+        :param maximum_size: ...
+        :param pattern: ...
+    """
+
+    result = get_length_boundaries(inclusive_minimum=minimum_size, inclusive_maximum=maximum_size)
 
     if not result:
         return failure(result)
 
-    minimum, maximum = unwrap_success(result)
+    minimum_length, maximum_length = unwrap_success(result)
 
     return success(
         StringValidator(
-            minimum_length=minimum, maximum_length=maximum, pattern=get_pattern(pattern)
+            minimum_length=minimum_length,
+            maximum_length=maximum_length,
+            pattern=get_pattern(pattern),
         )
     )
 
 
 def bytes_validator(
     *,
-    minimum_length: Optional[Boundary[int]] = None,
-    maximum_length: Optional[Boundary[int]] = None,
+    minimum_size: Optional[Boundary[int]] = None,
+    maximum_size: Optional[Boundary[int]] = None,
     pattern: Optional[bytes] = None,
 ) -> Result[Validator, TestplatesError]:
-    result = get_length_boundaries(
-        inclusive_minimum=minimum_length, inclusive_maximum=maximum_length
-    )
+
+    """
+        ...
+
+        :param minimum_size: ...
+        :param maximum_size: ...
+        :param pattern: ...
+    """
+
+    result = get_length_boundaries(inclusive_minimum=minimum_size, inclusive_maximum=maximum_size)
 
     if not result:
         return failure(result)
 
-    minimum, maximum = unwrap_success(result)
+    minimum_length, maximum_length = unwrap_success(result)
 
     return success(
         BytesValidator(
-            minimum_length=minimum, maximum_length=maximum, pattern=get_pattern(pattern)
+            minimum_length=minimum_length,
+            maximum_length=maximum_length,
+            pattern=get_pattern(pattern),
         )
     )
 
@@ -170,6 +210,14 @@ def bytes_validator(
 def enum_validator(
     enum_type: EnumMeta, enum_member_validator: Validator = passthrough_validator, /
 ) -> Result[Validator, TestplatesError]:
+
+    """
+        ...
+
+        :param enum_type: ...
+        :param enum_member_validator: ...
+    """
+
     members: Iterable[Enum] = enum_type.__members__.values()
 
     for member in members:
@@ -198,32 +246,54 @@ def sequence_validator(
     item_validator: Validator = passthrough_validator,
     /,
     *,
-    minimum_length: Optional[Boundary[int]] = None,
-    maximum_length: Optional[Boundary[int]] = None,
+    minimum_size: Optional[Boundary[int]] = None,
+    maximum_size: Optional[Boundary[int]] = None,
     unique_items: bool = False,
 ) -> Result[Validator, TestplatesError]:
-    result = get_length_boundaries(
-        inclusive_minimum=minimum_length, inclusive_maximum=maximum_length
-    )
+
+    """
+        ...
+
+        :param item_validator: ...
+        :param minimum_size: ...
+        :param maximum_size: ...
+        :param unique_items: ...
+    """
+
+    result = get_length_boundaries(inclusive_minimum=minimum_size, inclusive_maximum=maximum_size)
 
     if not result:
         return failure(result)
 
-    minimum, maximum = unwrap_success(result)
+    minimum_length, maximum_length = unwrap_success(result)
 
     return success(
         SequenceValidator(
             item_validator,
-            minimum_length=minimum,
-            maximum_length=maximum,
+            minimum_length=minimum_length,
+            maximum_length=maximum_length,
             unique_items=unique_items,
         )
     )
 
 
 def mapping_validator(structure_type: StructureMeta[Any], /) -> Result[Validator, TestplatesError]:
+
+    """
+        ...
+
+        :param structure_type: ...
+    """
+
     return success(MappingValidator(structure_type))
 
 
 def union_validator(choices: Mapping[str, Validator], /) -> Result[Validator, TestplatesError]:
+
+    """
+        ...
+
+        :param choices: ...
+    """
+
     return success(UnionValidator(choices))

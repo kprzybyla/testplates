@@ -15,8 +15,8 @@ from .utils import has_unique_items, Validator
 from .type import TypeValidator
 from .exceptions import (
     ItemValidationError,
-    InvalidMinimumLengthError,
-    InvalidMaximumLengthError,
+    InvalidMinimumSizeError,
+    InvalidMaximumSizeError,
     UniquenessError,
 )
 
@@ -44,7 +44,7 @@ class SequenceValidator:
         self.unique_items = unique_items
 
     def __repr__(self) -> str:
-        return f"{testplates.__name__}.{type(self).__name__}()"
+        return f"{testplates.__name__}.sequence_validator()"
 
     def __call__(self, data: Any, /) -> Result[None, TestplatesError]:
         if not (result := sequence_type_validator(data)):
@@ -57,10 +57,10 @@ class SequenceValidator:
                 return failure(ItemValidationError(data, item, unwrap_failure(result)))
 
         if not fits_minimum_length(data, self.minimum_length):
-            return failure(InvalidMinimumLengthError(data, self.minimum_length))
+            return failure(InvalidMinimumSizeError(data, self.minimum_length))
 
         if not fits_maximum_length(data, self.maximum_length):
-            return failure(InvalidMaximumLengthError(data, self.maximum_length))
+            return failure(InvalidMaximumSizeError(data, self.maximum_length))
 
         if self.unique_items and not has_unique_items(data):
             return failure(UniquenessError(data))

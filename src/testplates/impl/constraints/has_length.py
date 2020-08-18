@@ -13,7 +13,7 @@ class HasLength:
         self._length = length
 
     def __repr__(self) -> str:
-        return f"{testplates.__name__}.{type(self).__name__}({self._length})"
+        return f"{testplates.__name__}.has_size({self._length})"
 
     def __eq__(self, other: Any) -> bool:
         if not isinstance(other, Sized):

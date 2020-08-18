@@ -42,7 +42,7 @@ def test_repr(members: Dict[str, _T]) -> None:
     enum_type = create_enum_type(members)
     assert (validator_result := enum_validator(enum_type))
 
-    fmt = "testplates.EnumValidator({type}, {validator})"
+    fmt = "testplates.enum_validator({type}, {validator})"
     validator = unwrap_success(validator_result)
     assert repr(validator) == fmt.format(type=enum_type, validator=passthrough_validator)
 
@@ -53,7 +53,7 @@ def test_repr_with_member_validator(members: Dict[str, _T], uint8: Validator) ->
     enum_type = create_enum_type(members)
     assert (validator_result := enum_validator(enum_type, uint8))
 
-    fmt = "testplates.EnumValidator({type}, {validator})"
+    fmt = "testplates.enum_validator({type}, {validator})"
     validator = unwrap_success(validator_result)
     assert repr(validator) == fmt.format(type=enum_type, validator=uint8)
 
@@ -68,8 +68,8 @@ def test_success(members: Dict[str, _T], uint8: Validator) -> None:
     validator = unwrap_success(validator_result)
     assert (validation_result := validator(member))
 
-    value = unwrap_success(validation_result)
-    assert value is None
+    outcome = unwrap_success(validation_result)
+    assert outcome is None
 
 
 # noinspection PyTypeChecker

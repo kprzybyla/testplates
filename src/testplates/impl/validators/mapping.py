@@ -26,7 +26,7 @@ class MappingValidator:
         self.structure_type = structure_type
 
     def __repr__(self) -> str:
-        return f"{testplates.__name__}.{type(self).__name__}({self.structure_type})"
+        return f"{testplates.__name__}.mapping_validator({self.structure_type})"
 
     # noinspection PyProtectedMember
     def __call__(self, data: Any, /) -> Result[None, TestplatesError]:

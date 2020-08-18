@@ -6,7 +6,7 @@ __all__ = [
     "UnexpectedValueError",
     "ProhibitedValueError",
     "MissingBoundaryError",
-    "InvalidLengthError",
+    "InvalidSizeError",
     "MutuallyExclusiveBoundariesError",
     "OverlappingBoundariesError",
     "SingleMatchBoundariesError",
@@ -119,19 +119,19 @@ class MissingBoundaryError(TestplatesError):
         super().__init__(f"Missing value for mandatory boundary {self.name!r}")
 
 
-class InvalidLengthError(TestplatesError):
+class InvalidSizeError(TestplatesError):
 
     """
-        Error indicating invalid length boundary value.
+        Error indicating invalid size boundary value.
 
-        Raised when user sets length boundary with value
-        that does not meet length boundary requirements.
+        Raised when user sets size boundary with value
+        that does not meet size boundary requirements.
     """
 
     def __init__(self, boundary: Any) -> None:
         self.boundary = boundary
 
-        super().__init__(f"Invalid value for length boundary {boundary!r}")
+        super().__init__(f"Invalid value for size boundary {boundary!r}")
 
 
 class MutuallyExclusiveBoundariesError(TestplatesError):

@@ -4,8 +4,8 @@ __all__ = [
     "ProhibitedBoolValueError",
     "InvalidMinimumValueError",
     "InvalidMaximumValueError",
-    "InvalidMinimumLengthError",
-    "InvalidMaximumLengthError",
+    "InvalidMinimumSizeError",
+    "InvalidMaximumSizeError",
     "InvalidFormatError",
     "UniquenessError",
     "InvalidKeyError",
@@ -106,13 +106,13 @@ class InvalidMaximumValueError(TestplatesError):
         super().__init__(f"Invalid value {data!r} (maximum allowed value: {maximum!r})")
 
 
-class InvalidMinimumLengthError(TestplatesError):
+class InvalidMinimumSizeError(TestplatesError):
 
     """
-        Error indicating invalid minimum length.
+        Error indicating invalid minimum size.
 
         Raised when user passed a data that does not match
-        minimum length requirement specified by the validator.
+        minimum size requirement specified by the validator.
     """
 
     def __init__(self, data: Sized, minimum: Any) -> None:
@@ -120,17 +120,17 @@ class InvalidMinimumLengthError(TestplatesError):
         self.minimum = minimum
 
         super().__init__(
-            f"Invalid length {len(data)!r} of data {data!r} (minimum allowed length: {minimum!r})"
+            f"Invalid size {len(data)!r} of data {data!r} (minimum allowed size: {minimum!r})"
         )
 
 
-class InvalidMaximumLengthError(TestplatesError):
+class InvalidMaximumSizeError(TestplatesError):
 
     """
-        Error indicating invalid maximum length.
+        Error indicating invalid maximum size.
 
         Raised when user passed a data that does not match
-        maximum length requirement specified by the validator.
+        maximum size requirement specified by the validator.
     """
 
     def __init__(self, data: Sized, maximum: Any) -> None:
@@ -138,7 +138,7 @@ class InvalidMaximumLengthError(TestplatesError):
         self.maximum = maximum
 
         super().__init__(
-            f"Invalid length {len(data)!r} of data {data!r} (maximum allowed length: {maximum!r})"
+            f"Invalid size {len(data)!r} of data {data!r} (maximum allowed size: {maximum!r})"
         )
 
 

@@ -17,7 +17,7 @@ class MatchesPattern(Generic[AnyStr], abc.ABC):
         self._pattern_type: Type[AnyStr] = pattern_type
 
     def __repr__(self) -> str:
-        return f"{testplates.__name__}.{type(self).__name__}({self._pattern.pattern!r})"
+        return f"{testplates.__name__}.matches_pattern({self._pattern.pattern!r})"
 
     def __eq__(self, other: Any) -> bool:
         if not isinstance(other, self._pattern_type):

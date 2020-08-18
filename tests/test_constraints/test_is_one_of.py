@@ -46,7 +46,7 @@ def st_inverse_values(draw: Draw[List[_T]]) -> List[_T]:
 # noinspection PyTypeChecker
 @given(values=st_values())
 def test_repr(values: List[_T]) -> None:
-    fmt = "testplates.IsOneOf({values})"
+    fmt = "testplates.is_one_of({values})"
 
     constraint = is_one_of(*values)
 

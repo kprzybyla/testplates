@@ -21,7 +21,7 @@ from .exceptions import (
     TestplatesError,
     InvalidSignatureError,
     MissingBoundaryError,
-    InvalidLengthError,
+    InvalidSizeError,
     MutuallyExclusiveBoundariesError,
     OverlappingBoundariesError,
     SingleMatchBoundariesError,
@@ -207,10 +207,10 @@ def validate_length_boundaries(
         return success(None)
 
     if is_outside_length_range(minimum):
-        return failure(InvalidLengthError(minimum))
+        return failure(InvalidSizeError(minimum))
 
     if is_outside_length_range(maximum):
-        return failure(InvalidLengthError(maximum))
+        return failure(InvalidSizeError(maximum))
 
     if is_overlapping(minimum, maximum):
         return failure(OverlappingBoundariesError(minimum, maximum))

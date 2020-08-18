@@ -23,7 +23,7 @@ class HasLengthBetween:
             repr(self._maximum_length),
         ]
 
-        return f"{testplates.__name__}.{type(self).__name__}({', '.join(boundaries)})"
+        return f"{testplates.__name__}.has_size_between({', '.join(boundaries)})"
 
     def __eq__(self, other: Any) -> bool:
         if not isinstance(other, Sized):

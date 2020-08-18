@@ -23,7 +23,7 @@ class UnionValidator:
         self.choices = choices
 
     def __repr__(self) -> str:
-        return f"{testplates.__name__}.{type(self).__name__}({self.choices})"
+        return f"{testplates.__name__}.union_validator({self.choices})"
 
     def __call__(self, data: Any, /) -> Result[None, TestplatesError]:
         if not (result := union_type_validator(data)):

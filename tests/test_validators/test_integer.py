@@ -16,6 +16,10 @@ from testplates import (
 from tests.strategies import st_anything_except
 
 
+def test_repr() -> None:
+    raise NotImplementedError()
+
+
 @given(data=st.booleans())
 def test_success_when_allow_bool_is_true(data: bool) -> None:
     assert (
@@ -27,8 +31,8 @@ def test_success_when_allow_bool_is_true(data: bool) -> None:
     validator = unwrap_success(validator_result)
     assert (validation_result := validator(data))
 
-    value = unwrap_success(validation_result)
-    assert value is None
+    outcome = unwrap_success(validation_result)
+    assert outcome is None
 
 
 @given(data=st_anything_except(int))
