@@ -1,9 +1,9 @@
 __all__ = [
+    "Required",
+    "Optional",
     "Maybe",
     "Value",
     "Boundary",
-    "Required",
-    "Optional",
     "LiteralMissing",
     "LiteralAny",
     "LiteralWildcard",
@@ -12,8 +12,8 @@ __all__ = [
     "Validator",
     "field",
     "create_object",
-    "create_mapping",
     "Object",
+    "create_mapping",
     "Mapping",
     "MISSING",
     "ANY",
@@ -69,31 +69,39 @@ __all__ = [
 
 # Annotations
 
-from testplates.ux import (
+from testplates.fields import (
+    Required,
+    Optional,
+)
+
+from testplates.value import (
     Maybe,
     Value,
     Boundary,
-    Required,
-    Optional,
     LiteralMissing,
     LiteralAny,
     LiteralWildcard,
     LiteralAbsent,
     LiteralUnlimited,
-    Validator,
 )
+
+from testplates.validators import Validator
 
 # Concretes
 
-from testplates.ux import (
-    field,
+from .fields import field
+
+from testplates.object import (
     create_object,
-    create_mapping,
     Object,
+)
+
+from testplates.mapping import (
+    create_mapping,
     Mapping,
 )
 
-from testplates.ux import (
+from testplates.value import (
     MISSING,
     ANY,
     WILDCARD,
@@ -101,7 +109,7 @@ from testplates.ux import (
     UNLIMITED,
 )
 
-from testplates.ux import (
+from testplates.exceptions import (
     TestplatesError,
     InvalidSignatureError,
     DanglingDescriptorError,
@@ -115,7 +123,7 @@ from testplates.ux import (
     SingleMatchBoundariesError,
 )
 
-from testplates.ux import (
+from testplates.constraints import (
     contains,
     has_length,
     has_length_between,
@@ -125,9 +133,9 @@ from testplates.ux import (
     is_permutation_of,
 )
 
-from testplates.ux import InsufficientValuesError
+from testplates.exceptions import InsufficientValuesError
 
-from testplates.ux import (
+from testplates.validators import (
     passthrough_validator,
     type_validator,
     boolean_validator,
@@ -140,7 +148,7 @@ from testplates.ux import (
     union_validator,
 )
 
-from testplates.ux import (
+from testplates.exceptions import (
     InvalidTypeValueError,
     InvalidTypeError,
     ProhibitedBoolValueError,
