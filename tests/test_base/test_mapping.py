@@ -11,6 +11,10 @@ _T = TypeVar("_T")
 KEY: Final[str] = "key"
 
 
+def test_create() -> None:
+    raise NotImplementedError()
+
+
 @given(value=st_anything_comparable())
 def test_value_access_in_required_field(value: _T) -> None:
     class Template(Mapping[Any]):

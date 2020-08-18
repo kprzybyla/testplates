@@ -1,7 +1,8 @@
 from typing import TypeVar
 
 from resultful import unwrap_success, unwrap_failure
-from hypothesis import given, strategies as st
+from hypothesis import given
+from hypothesis import strategies as st
 
 from testplates import boolean_validator
 from testplates import InvalidTypeError

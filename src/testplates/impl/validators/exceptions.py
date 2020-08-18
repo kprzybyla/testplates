@@ -10,7 +10,7 @@ __all__ = [
     "UniquenessError",
     "InvalidKeyError",
     "RequiredKeyMissingError",
-    "UnknownKeyError",
+    "UnknownFieldError",
     "MemberValidationError",
     "ItemValidationError",
     "FieldValidationError",
@@ -208,7 +208,7 @@ class RequiredKeyMissingError(TestplatesError):
         super().__init__(f"Mandatory key {key!r} ({field!r}) missing in data {data!r}")
 
 
-class UnknownKeyError(TestplatesError):
+class UnknownFieldError(TestplatesError):
 
     """
         Error indicating unknown key for structure type.
@@ -219,6 +219,7 @@ class UnknownKeyError(TestplatesError):
 
     def __init__(self, data: Any, structure_type: Any, key: str) -> None:
         self.data = data
+        self.structure_type = structure_type
         self.key = key
 
         super().__init__(f"Unknown key {key!r} for structure type {structure_type!r} in {data!r}")

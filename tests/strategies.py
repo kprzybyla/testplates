@@ -1,10 +1,17 @@
-from typing import Any, TypeVar, Callable
+from typing import Any, TypeVar, Hashable, Callable
 
 from hypothesis import strategies as st
 
 _Ex = TypeVar("_Ex", covariant=True)
 
 Draw = Callable[[st.SearchStrategy[_Ex]], _Ex]
+
+
+def st_hashable() -> st.SearchStrategy[Hashable]:
+    def filter_hashable(value: Any, /) -> bool:
+        return isinstance(value, Hashable)
+
+    return st.from_type(type).flatmap(st.from_type).filter(filter_hashable)
 
 
 def st_anything_comparable() -> st.SearchStrategy[Any]:

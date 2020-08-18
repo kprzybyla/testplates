@@ -24,7 +24,7 @@ __all__ = [
     "MemberValidationError",
     "FieldValidationError",
     "RequiredKeyMissingError",
-    "UnknownKeyError",
+    "UnknownFieldError",
     "InvalidKeyError",
     "ChoiceValidationError",
 ]
@@ -59,7 +59,7 @@ from testplates.impl.validators import (
     MemberValidationError,
     FieldValidationError,
     RequiredKeyMissingError,
-    UnknownKeyError,
+    UnknownFieldError,
     InvalidKeyError,
     ChoiceValidationError,
 )

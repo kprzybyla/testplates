@@ -9,6 +9,10 @@ from tests.strategies import st_anything_comparable
 _T = TypeVar("_T")
 
 
+def test_create() -> None:
+    raise NotImplementedError()
+
+
 @given(value=st_anything_comparable())
 def test_value_access_in_required_field(value: _T) -> None:
     class Template(Object[Any]):

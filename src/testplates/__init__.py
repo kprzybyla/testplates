@@ -62,7 +62,7 @@ __all__ = [
     "MemberValidationError",
     "FieldValidationError",
     "RequiredKeyMissingError",
-    "UnknownKeyError",
+    "UnknownFieldError",
     "InvalidKeyError",
     "ChoiceValidationError",
 ]
@@ -154,7 +154,7 @@ from testplates.ux import (
     MemberValidationError,
     FieldValidationError,
     RequiredKeyMissingError,
-    UnknownKeyError,
+    UnknownFieldError,
     InvalidKeyError,
     ChoiceValidationError,
 )

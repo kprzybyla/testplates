@@ -3,7 +3,8 @@ import pytest
 from typing import Any, List, NoReturn
 
 from resultful import failure, Result
-from hypothesis import given, strategies as st
+from hypothesis import given
+from hypothesis import strategies as st
 
 from testplates import ANY, WILDCARD, ABSENT
 from testplates import field, Required, Optional, Object

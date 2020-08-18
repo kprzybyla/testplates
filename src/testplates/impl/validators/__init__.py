@@ -24,7 +24,7 @@ __all__ = [
     "MemberValidationError",
     "FieldValidationError",
     "RequiredKeyMissingError",
-    "UnknownKeyError",
+    "UnknownFieldError",
     "InvalidKeyError",
     "ChoiceValidationError",
 ]
@@ -53,7 +53,7 @@ from .exceptions import (
     MemberValidationError,
     FieldValidationError,
     RequiredKeyMissingError,
-    UnknownKeyError,
+    UnknownFieldError,
     InvalidKeyError,
     ChoiceValidationError,
 )

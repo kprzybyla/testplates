@@ -69,7 +69,7 @@ class BytesValidator:
         self.pattern = pattern
 
     def __repr__(self) -> str:
-        return f"{type(self).__name__}()"
+        return f"{testplates.__name__}.{type(self).__name__}()"
 
     def __call__(self, data: Any) -> Result[None, TestplatesError]:
         if not (result := bytes_type_validator(data)):

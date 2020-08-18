@@ -13,7 +13,7 @@ from testplates.impl.base import TestplatesError
 
 from .utils import Validator
 from .type import TypeValidator
-from .exceptions import RequiredKeyMissingError, UnknownKeyError, FieldValidationError
+from .exceptions import RequiredKeyMissingError, UnknownFieldError, FieldValidationError
 
 mapping_type_validator: Final[Validator] = TypeValidator(typing.Mapping)
 
@@ -43,7 +43,7 @@ class MappingValidator:
             field_object = structure._fields_.get(key, None)
 
             if field_object is None:
-                return failure(UnknownKeyError(data, structure, key))
+                return failure(UnknownFieldError(data, structure, key))
 
             if not (result := field_object.validator(value)):
                 return failure(FieldValidationError(data, field_object, unwrap_failure(result)))

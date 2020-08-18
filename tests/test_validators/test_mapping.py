@@ -10,6 +10,7 @@ from testplates import (
     TestplatesError,
     InvalidTypeError,
     RequiredKeyMissingError,
+    UnknownFieldError,
     FieldValidationError,
 )
 
@@ -22,12 +23,12 @@ STRUCTURE_NAME: str = "Structure"
 
 # noinspection PyTypeChecker
 def test_repr() -> None:
-    structure: Type[Object[Any]] = create_object(STRUCTURE_NAME)
-    assert (validator_result := mapping_validator(structure))
+    structure_type: Type[Object[Any]] = create_object(STRUCTURE_NAME)
+    assert (validator_result := mapping_validator(structure_type))
 
-    fmt = "testplates.MappingValidator({structure})"
+    fmt = "testplates.MappingValidator({structure_type})"
     validator = unwrap_success(validator_result)
-    assert repr(validator) == fmt.format(structure=structure)
+    assert repr(validator) == fmt.format(structure_type=structure_type)
 
 
 # noinspection PyTypeChecker
@@ -38,8 +39,8 @@ def test_success(key: str, value: _T) -> None:
         return success(None)
 
     field_object: Optional[_T] = field(validator, optional=True)
-    structure = create_object(STRUCTURE_NAME, {key: field_object})
-    assert (validator_result := mapping_validator(structure))
+    structure_type = create_object(STRUCTURE_NAME, {key: field_object})
+    assert (validator_result := mapping_validator(structure_type))
 
     validator = unwrap_success(validator_result)
     assert (validation_result := validator({key: value}))
@@ -52,8 +53,8 @@ def test_success(key: str, value: _T) -> None:
 @given(key=st.text())
 def test_success_with_optional_field(key: str) -> None:
     field_object: Optional[Any] = field(passthrough_validator, optional=True)
-    structure = create_object(STRUCTURE_NAME, {key: field_object})
-    assert (validator_result := mapping_validator(structure))
+    structure_type = create_object(STRUCTURE_NAME, {key: field_object})
+    assert (validator_result := mapping_validator(structure_type))
 
     validator = unwrap_success(validator_result)
     assert (validation_result := validator({}))
@@ -65,8 +66,8 @@ def test_success_with_optional_field(key: str) -> None:
 # noinspection PyTypeChecker
 @given(data=st_anything_except(Mapping))
 def test_failure_when_data_type_validation_fails(data: Any) -> None:
-    structure: Type[Object[Any]] = create_object(STRUCTURE_NAME)
-    assert (validator_result := mapping_validator(structure))
+    structure_type: Type[Object[Any]] = create_object(STRUCTURE_NAME)
+    assert (validator_result := mapping_validator(structure_type))
 
     validator = unwrap_success(validator_result)
     assert not (validation_result := validator(data))
@@ -81,8 +82,8 @@ def test_failure_when_data_type_validation_fails(data: Any) -> None:
 @given(key=st.text())
 def test_failure_when_data_required_key_is_missing(key: str) -> None:
     field_object: Required[Any] = field(passthrough_validator)
-    structure = create_object(STRUCTURE_NAME, {key: field_object})
-    assert (validator_result := mapping_validator(structure))
+    structure_type = create_object(STRUCTURE_NAME, {key: field_object})
+    assert (validator_result := mapping_validator(structure_type))
 
     validator = unwrap_success(validator_result)
     assert not (validation_result := validator({}))
@@ -94,18 +95,32 @@ def test_failure_when_data_required_key_is_missing(key: str) -> None:
 
 
 # noinspection PyTypeChecker
+@given(key=st.text(), value=st_anything_comparable())
+def test_failure_when_data_has_unknown_field(key: str, value: _T) -> None:
+    structure_type: Type[Object[Any]] = create_object(STRUCTURE_NAME, {})
+    assert (validator_result := mapping_validator(structure_type))
+
+    validator = unwrap_success(validator_result)
+    assert not (validation_result := validator({key: value}))
+
+    error = unwrap_failure(validation_result)
+    assert isinstance(error, UnknownFieldError)
+    assert error.data == {key: value}
+    assert error.structure_type == structure_type
+
+
+# noinspection PyTypeChecker
 @given(key=st.text(), value=st_anything_comparable(), message=st.text())
 def test_failure_when_data_field_validation_fails(key: str, value: _T, message: str) -> None:
     field_error = TestplatesError(message)
 
-    # noinspection PyTypeChecker
     def validator(this_value: Any, /) -> Result[None, TestplatesError]:
         assert this_value == value
         return failure(field_error)
 
     field_object: Optional[_T] = field(validator, optional=True)
-    structure = create_object(STRUCTURE_NAME, {key: field_object})
-    assert (validator_result := mapping_validator(structure))
+    structure_type = create_object(STRUCTURE_NAME, {key: field_object})
+    assert (validator_result := mapping_validator(structure_type))
 
     validator = unwrap_success(validator_result)
     assert not (validation_result := validator({key: value}))

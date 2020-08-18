@@ -4,7 +4,8 @@ from typing import cast, Any, TypeVar, Dict
 import pytest
 
 from resultful import unwrap_success, unwrap_failure
-from hypothesis import given, strategies as st
+from hypothesis import given
+from hypothesis import strategies as st
 
 from testplates import enum_validator, passthrough_validator, integer_validator, Validator
 from testplates import InvalidTypeValueError, InvalidTypeError, MemberValidationError
