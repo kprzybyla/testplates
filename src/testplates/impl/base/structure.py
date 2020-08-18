@@ -19,15 +19,14 @@ from typing import (
     Optional,
 )
 
-from resultful import unwrap_failure, Result
+from resultful import unwrap_failure
 
 import testplates
 
 from testplates.impl.utils import format_like_dict
 
-from .value import is_value, values_matches, Maybe, ANY, WILDCARD, ABSENT, MISSING
+from .value import is_value, values_matches, Maybe, Validator, ANY, WILDCARD, ABSENT, MISSING
 from .exceptions import (
-    TestplatesError,
     DanglingDescriptorError,
     MissingValueError,
     UnexpectedValueError,
@@ -35,8 +34,6 @@ from .exceptions import (
 )
 
 _T = TypeVar("_T", covariant=True)
-
-Validator = Callable[[Any], Result[None, TestplatesError]]
 
 
 class Field(Generic[_T]):

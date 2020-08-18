@@ -13,7 +13,7 @@ __all__ = [
 ]
 
 from enum import Enum, EnumMeta
-from typing import overload, Any, Iterable, Mapping, Optional, Callable, Final
+from typing import overload, Any, Iterable, Mapping, Optional, Final
 
 from resultful import success, failure, unwrap_success, unwrap_failure, Result
 
@@ -38,10 +38,8 @@ from testplates.impl.validators import (
     UnionValidator,
 )
 
-from .value import Boundary
+from .value import Boundary, Validator
 from .exceptions import TestplatesError, InvalidTypeValueError, MemberValidationError
-
-Validator = Callable[[Any], Result[None, TestplatesError]]
 
 passthrough_validator: Final[PassthroughValidator] = PassthroughValidator()
 

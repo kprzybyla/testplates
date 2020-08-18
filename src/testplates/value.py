@@ -2,6 +2,7 @@ __all__ = [
     "Maybe",
     "Value",
     "Boundary",
+    "Validator",
     "LiteralMissing",
     "LiteralAny",
     "LiteralWildcard",
@@ -14,15 +15,20 @@ __all__ = [
     "UNLIMITED",
 ]
 
-from typing import TypeVar, Union, Literal, Final
+from typing import Any, TypeVar, Union, Callable, Literal, Final
+
+from resultful import Result
 
 from testplates.impl.base import MissingType, SpecialValueType, UnlimitedType
+
+from .exceptions import TestplatesError
 
 _T = TypeVar("_T")
 
 Maybe = Union[_T, MissingType]
 Value = Union[_T, SpecialValueType]
 Boundary = Union[_T, UnlimitedType]
+Validator = Callable[[Any], Result[None, TestplatesError]]
 
 LiteralMissing = Literal[MissingType.MISSING]
 LiteralAny = Literal[SpecialValueType.ANY]

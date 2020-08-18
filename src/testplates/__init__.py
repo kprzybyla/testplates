@@ -4,12 +4,12 @@ __all__ = [
     "Maybe",
     "Value",
     "Boundary",
+    "Validator",
     "LiteralMissing",
     "LiteralAny",
     "LiteralWildcard",
     "LiteralAbsent",
     "LiteralUnlimited",
-    "Validator",
     "field",
     "create_object",
     "Object",
@@ -78,14 +78,13 @@ from testplates.value import (
     Maybe,
     Value,
     Boundary,
+    Validator,
     LiteralMissing,
     LiteralAny,
     LiteralWildcard,
     LiteralAbsent,
     LiteralUnlimited,
 )
-
-from testplates.validators import Validator
 
 # Concretes
 

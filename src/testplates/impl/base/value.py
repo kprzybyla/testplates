@@ -7,6 +7,8 @@ __all__ = [
     "SpecialValueType",
     "UnlimitedType",
     "Maybe",
+    "Value",
+    "Validator",
     "ANY",
     "WILDCARD",
     "ABSENT",
@@ -16,9 +18,13 @@ __all__ = [
 
 import enum
 
-from typing import Any, TypeVar, Union, Literal, Final
+from typing import Any, TypeVar, Union, Callable, Literal, Final
+
+from resultful import Result
 
 import testplates
+
+from .exceptions import TestplatesError
 
 
 # noinspection PyUnresolvedReferences
@@ -130,6 +136,7 @@ _T = TypeVar("_T")
 
 Maybe = Union[_T, MissingType]
 Value = Union[_T, SpecialValueType]
+Validator = Callable[[Any], Result[None, TestplatesError]]
 
 ANY: Final[Literal[SpecialValueType.ANY]] = SpecialValueType.ANY
 WILDCARD: Final[Literal[SpecialValueType.WILDCARD]] = SpecialValueType.WILDCARD
