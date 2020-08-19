@@ -1,12 +1,10 @@
-from typing import Any, TypeVar, Final
+from typing import Final
 
+from resultful import unwrap_success
 from hypothesis import given
+from hypothesis import strategies as st
 
 from testplates import field, Mapping, Required, Optional
-
-from tests.strategies import st_anything_comparable
-
-_T = TypeVar("_T")
 
 KEY: Final[str] = "key"
 
@@ -15,71 +13,79 @@ def test_create() -> None:
     raise NotImplementedError()
 
 
-@given(value=st_anything_comparable())
-def test_value_access_in_required_field(value: _T) -> None:
-    class Template(Mapping[Any]):
+@given(value=st.integers())
+def test_value_access_in_required_field(value: int) -> None:
+    class Template(Mapping[int]):
 
-        key: Required[_T] = field()
+        key: Required[int] = field(int)
 
-    template = Template(key=value)
+    assert (result := Template()._init_(key=value))
 
+    template = unwrap_success(result)
     assert template[KEY] == value
 
 
-@given(value=st_anything_comparable(), default=st_anything_comparable())
-def test_value_access_in_required_field_with_default_value(value: _T, default: _T) -> None:
-    class Template(Mapping[Any]):
+@given(value=st.integers(), default=st.integers())
+def test_value_access_in_required_field_with_default_value(value: int, default: int) -> None:
+    class Template(Mapping[int]):
 
-        key: Required[_T] = field(default=default)
+        key: Required[int] = field(int, default=default)
 
-    template_value = Template(key=value)
-    template_default = Template()
+    assert (result_value := Template()._init_(key=value))
+    assert (result_default := Template()._init_())
 
+    template_value = unwrap_success(result_value)
+    template_default = unwrap_success(result_default)
     assert template_value[KEY] == value
     assert template_default[KEY] == default
 
 
-@given(value=st_anything_comparable())
-def test_value_access_in_optional_field(value: _T) -> None:
-    class Template(Mapping[Any]):
+@given(value=st.integers())
+def test_value_access_in_optional_field(value: int) -> None:
+    class Template(Mapping[int]):
 
-        key: Optional[_T] = field(optional=True)
+        key: Optional[int] = field(int, optional=True)
 
-    template = Template(key=value)
+    assert (result := Template()._init_(key=value))
 
+    template = unwrap_success(result)
     assert template[KEY] == value
 
 
-@given(value=st_anything_comparable(), default=st_anything_comparable())
-def test_value_access_in_optional_field_with_default_value(value: _T, default: _T) -> None:
-    class Template(Mapping[Any]):
+@given(value=st.integers(), default=st.integers())
+def test_value_access_in_optional_field_with_default_value(value: int, default: int) -> None:
+    class Template(Mapping[int]):
 
-        key: Optional[_T] = field(default=default, optional=True)
+        key: Optional[int] = field(int, default=default, optional=True)
 
-    template_value = Template(key=value)
-    template_default = Template()
+    assert (result_value := Template()._init_(key=value))
+    assert (result_default := Template()._init_())
 
+    template_value = unwrap_success(result_value)
+    template_default = unwrap_success(result_default)
     assert template_value[KEY] == value
     assert template_default[KEY] == default
 
 
-@given(value=st_anything_comparable())
-def test_len(value: _T) -> None:
-    class Template(Mapping[Any]):
+@given(value=st.integers())
+def test_len(value: int) -> None:
+    class Template(Mapping[int]):
 
-        key: Required[_T] = field()
+        key: Required[int] = field(int)
 
-    template = Template(key=value)
+    assert (result := Template()._init_(key=value))
 
+    template = unwrap_success(result)
     assert len(template) == 1
 
 
-@given(value=st_anything_comparable())
-def test_iter(value: _T) -> None:
-    class Template(Mapping[Any]):
+@given(value=st.integers())
+def test_iter(value: int) -> None:
+    class Template(Mapping[int]):
 
-        key: Required[_T] = field()
+        key: Required[int] = field(int)
 
-    template = Template(key=value)
+    assert (result := Template()._init_(key=value))
 
+    template = unwrap_success(result)
     assert list(iter(template)) == [KEY]

@@ -19,14 +19,26 @@ from typing import (
     Optional,
 )
 
-from resultful import unwrap_failure
+from resultful import success, failure, Result
 
 import testplates
 
 from testplates.impl.utils import format_like_dict
 
-from .value import is_value, values_matches, Maybe, Validator, ANY, WILDCARD, ABSENT, MISSING
+from .value import (
+    is_value,
+    values_matches,
+    Value,
+    Maybe,
+    Validator,
+    ANY,
+    WILDCARD,
+    ABSENT,
+    MISSING,
+)
+
 from .exceptions import (
+    TestplatesError,
     DanglingDescriptorError,
     MissingValueError,
     UnexpectedValueError,
@@ -50,7 +62,7 @@ class Field(Generic[_T]):
         /,
         *,
         default: Maybe[_T] = MISSING,
-        default_factory: Maybe[Callable[[], _T]],
+        default_factory: Maybe[Callable[[], _T]] = MISSING,
         optional: bool = False,
     ) -> None:
         self._validator = validator
@@ -78,13 +90,13 @@ class Field(Generic[_T]):
         ...
 
     @overload
-    def __get__(self, instance: Structure[_T], owner: Callable[..., Structure[_T]]) -> _T:
+    def __get__(self, instance: Structure[_T], owner: Callable[..., Structure[_T]]) -> Value[_T]:
         ...
 
     # noinspection PyProtectedMember
     def __get__(
         self, instance: Optional[Structure[_T]], owner: Callable[..., Structure[_T]]
-    ) -> Union[Field[_T], _T]:
+    ) -> Union[Field[_T], Value[_T]]:
 
         """
             Returns either field itself or field value.
@@ -103,6 +115,11 @@ class Field(Generic[_T]):
 
     @property
     def name(self) -> str:
+
+        """
+            Returns field name.
+        """
+
         if self._name is None:
             raise DanglingDescriptorError(self)
 
@@ -117,6 +134,7 @@ class Field(Generic[_T]):
 
         return self._validator
 
+    # noinspection PyCallingNonCallable
     @property
     def default(self) -> Maybe[_T]:
 
@@ -144,7 +162,7 @@ class Field(Generic[_T]):
         return self._optional
 
     # noinspection PyUnboundLocalVariable
-    def validate(self, value: Maybe[_T], /) -> None:
+    def validate(self, value: Maybe[Value[_T]], /) -> Result[None, TestplatesError]:
 
         """
             Validates the given value against the field requirements.
@@ -155,19 +173,21 @@ class Field(Generic[_T]):
         default = self.default
 
         if value is ANY:
-            pass
+            return success(None)
 
         elif value is MISSING and default is MISSING:
-            raise MissingValueError(self)
+            return failure(MissingValueError(self))
 
         elif (value is ABSENT or default is ABSENT) and not self.is_optional:
-            raise ProhibitedValueError(self, value)
+            return failure(ProhibitedValueError(self, value))
 
         elif (value is WILDCARD or default is WILDCARD) and not self.is_optional:
-            raise ProhibitedValueError(self, value)
+            return failure(ProhibitedValueError(self, value))
 
         elif is_value(value) and not (result := self.validator(value)):
-            raise unwrap_failure(result)
+            return result
+
+        return success(None)
 
 
 class StructureDict(Generic[_T], Dict[str, Any]):
@@ -240,22 +260,11 @@ class Structure(Generic[_T], abc.ABC, metaclass=StructureMeta):
 
     __slots__ = ("_values_",)
 
+    # noinspection PyTypeHints
+    # noinspection PyTypeChecker
+    _Self_ = TypeVar("_Self_", bound="Structure[_T]")
+
     _fields_: ClassVar[Mapping[str, Field[_T]]]
-
-    def __init__(self, **values: _T) -> None:
-        keys = self._fields_.keys()
-
-        for key, value in values.items():
-            if key not in keys:
-                raise UnexpectedValueError(key, value)
-
-        for key, field in self._fields_.items():
-            field.validate(values.get(key, MISSING))
-
-            if field.default is not MISSING:
-                values.setdefault(key, field.default)
-
-        self._values_ = values
 
     def __repr__(self) -> str:
         return f"{type(self).__name__}({format_like_dict(self._values_)})"
@@ -270,9 +279,29 @@ class Structure(Generic[_T], abc.ABC, metaclass=StructureMeta):
 
         return True
 
+    def _init_(self: _Self_, **values: Value[_T]) -> Result[_Self_, TestplatesError]:
+        keys = self._fields_.keys()
+
+        for key, value in values.items():
+            if key not in keys:
+                return failure(UnexpectedValueError(key, value))
+
+        for key, field in self._fields_.items():
+            result = field.validate(values.get(key, MISSING))
+
+            if not result:
+                return result
+
+            if field.default is not MISSING:
+                values.setdefault(key, field.default)
+
+        self._values_ = values
+
+        return success(self)
+
     @staticmethod
     @abc.abstractmethod
-    def _get_value_(self: Any, key: str, /, *, default: Maybe[_T] = MISSING) -> Maybe[_T]:
+    def _get_value_(self: Any, key: str, /, *, default: Maybe[_T] = MISSING) -> Maybe[Value[_T]]:
 
         """
             Extracts value by given key using a type specific protocol.

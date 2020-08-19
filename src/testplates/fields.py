@@ -1,6 +1,6 @@
 __all__ = ["field", "Required", "Optional"]
 
-from typing import overload, TypeVar, Union, Callable, Literal
+from typing import overload, Type, TypeVar, Union, Callable, Literal
 
 from testplates.impl.base import Field
 
@@ -15,26 +15,38 @@ Optional = Field[Union[_T, LiteralAny, LiteralWildcard, LiteralAbsent]]
 
 
 @overload
-def field(validator: Validator = ..., /, *, default: Maybe[_T] = ...) -> Required[_T]:
-    ...
-
-
-@overload
 def field(
-    validator: Validator = ..., /, *, default_factory: Maybe[Callable[[], _T]] = ...
+    typ: Type[_T], validator: Validator = ..., /, *, default: Maybe[_T] = ...
 ) -> Required[_T]:
     ...
 
 
 @overload
 def field(
-    validator: Validator = ..., /, *, default: Maybe[_T] = ..., optional: Literal[False]
+    typ: Type[_T],
+    validator: Validator = ...,
+    /,
+    *,
+    default_factory: Maybe[Callable[[], _T]] = ...,
 ) -> Required[_T]:
     ...
 
 
 @overload
 def field(
+    typ: Type[_T],
+    validator: Validator = ...,
+    /,
+    *,
+    default: Maybe[_T] = ...,
+    optional: Literal[False],
+) -> Required[_T]:
+    ...
+
+
+@overload
+def field(
+    typ: Type[_T],
     validator: Validator = ...,
     /,
     *,
@@ -46,13 +58,19 @@ def field(
 
 @overload
 def field(
-    validator: Validator = ..., /, *, default: Maybe[_T] = ..., optional: Literal[True]
+    typ: Type[_T],
+    validator: Validator = ...,
+    /,
+    *,
+    default: Maybe[_T] = ...,
+    optional: Literal[True],
 ) -> Optional[_T]:
     ...
 
 
 @overload
 def field(
+    typ: Type[_T],
     validator: Validator = ...,
     /,
     *,
@@ -64,13 +82,19 @@ def field(
 
 @overload
 def field(
-    validator: Validator = ..., /, *, default: Maybe[_T] = ..., optional: bool = ...
+    typ: Type[_T],
+    validator: Validator = ...,
+    /,
+    *,
+    default: Maybe[_T] = ...,
+    optional: bool = ...,
 ) -> Field[Value[_T]]:
     ...
 
 
 @overload
 def field(
+    typ: Type[_T],
     validator: Validator = ...,
     /,
     *,
@@ -80,7 +104,9 @@ def field(
     ...
 
 
+# noinspection PyUnusedLocal
 def field(
+    typ: Type[_T],
     validator: Validator = passthrough_validator,
     /,
     *,
@@ -95,6 +121,7 @@ def field(
         This is basically a wrapper for :class:`Field`
         with all possible overloads for its arguments.
 
+        :param typ: field type
         :param validator: field validator function or None
         :param default: field default value
         :param default_factory: field default value factory

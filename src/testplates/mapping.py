@@ -8,7 +8,7 @@ from typing import cast, Type, TypeVar, Generic, Iterator, Optional
 
 from testplates.impl.base import Field, Structure
 
-from .value import Maybe, MISSING
+from .value import Value, Maybe, MISSING
 
 _T = TypeVar("_T", covariant=True)
 
@@ -37,7 +37,7 @@ class Mapping(Generic[_T], Structure[_T], typing.Mapping[str, _T]):
 
     __slots__ = ()
 
-    def __getitem__(self, item: str) -> _T:
+    def __getitem__(self, item: str) -> Value[_T]:  # type: ignore
         return self._values_[item]
 
     def __iter__(self) -> Iterator[str]:
@@ -49,5 +49,5 @@ class Mapping(Generic[_T], Structure[_T], typing.Mapping[str, _T]):
     @staticmethod
     def _get_value_(
         self: typing.Mapping[str, _T], key: str, /, *, default: Maybe[_T] = MISSING
-    ) -> Maybe[_T]:
+    ) -> Value[Maybe[_T]]:
         return self.get(key, default)

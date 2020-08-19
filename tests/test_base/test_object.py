@@ -1,61 +1,63 @@
-from typing import Any, TypeVar
-
+from resultful import unwrap_success
 from hypothesis import given
+from hypothesis import strategies as st
 
 from testplates import field, Object, Required, Optional
-
-from tests.strategies import st_anything_comparable
-
-_T = TypeVar("_T")
 
 
 def test_create() -> None:
     raise NotImplementedError()
 
 
-@given(value=st_anything_comparable())
-def test_value_access_in_required_field(value: _T) -> None:
-    class Template(Object[Any]):
+@given(value=st.integers())
+def test_value_access_in_required_field(value: int) -> None:
+    class Template(Object[int]):
 
-        key: Required[_T] = field()
+        key: Required[int] = field(int)
 
-    template = Template(key=value)
+    assert (result := Template()._init_(key=value))
 
+    template = unwrap_success(result)
     assert template.key == value
 
 
-@given(value=st_anything_comparable(), default=st_anything_comparable())
-def test_value_access_in_required_field_with_default_value(value: _T, default: _T) -> None:
-    class Template(Object[Any]):
+@given(value=st.integers(), default=st.integers())
+def test_value_access_in_required_field_with_default_value(value: int, default: int) -> None:
+    class Template(Object[int]):
 
-        key: Required[_T] = field(default=default)
+        key: Required[int] = field(int, default=default)
 
-    template_value = Template(key=value)
-    template_default = Template()
+    assert (result_value := Template()._init_(key=value))
+    assert (result_default := Template()._init_())
 
+    template_value = unwrap_success(result_value)
+    template_default = unwrap_success(result_default)
     assert template_value.key == value
     assert template_default.key == default
 
 
-@given(value=st_anything_comparable())
-def test_value_access_in_optional_field(value: _T) -> None:
-    class Template(Object[Any]):
+@given(value=st.integers())
+def test_value_access_in_optional_field(value: int) -> None:
+    class Template(Object[int]):
 
-        key: Optional[_T] = field(optional=True)
+        key: Optional[int] = field(int, optional=True)
 
-    template = Template(key=value)
+    assert (result := Template()._init_(key=value))
 
+    template = unwrap_success(result)
     assert template.key == value
 
 
-@given(value=st_anything_comparable(), default=st_anything_comparable())
-def test_value_access_in_optional_field_with_default_value(value: _T, default: _T) -> None:
-    class Template(Object[Any]):
+@given(value=st.integers(), default=st.integers())
+def test_value_access_in_optional_field_with_default_value(value: int, default: int) -> None:
+    class Template(Object[int]):
 
-        key: Optional[_T] = field(default=default, optional=True)
+        key: Optional[int] = field(int, default=default, optional=True)
 
-    template_value = Template(key=value)
-    template_default = Template()
+    assert (result_value := Template()._init_(key=value))
+    assert (result_default := Template()._init_())
 
+    template_value = unwrap_success(result_value)
+    template_default = unwrap_success(result_default)
     assert template_value.key == value
     assert template_default.key == default
