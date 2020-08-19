@@ -1,10 +1,8 @@
 __all__ = ["IsPermutationOf"]
 
-from typing import Any, TypeVar, Generic, List, Collection, Final
+from typing import Any, TypeVar, Generic, List, Collection
 
 import testplates
-
-from .exceptions import InsufficientValuesError
 
 _T = TypeVar("_T")
 
