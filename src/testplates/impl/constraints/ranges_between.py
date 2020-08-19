@@ -11,22 +11,22 @@ Boundary = Union[Limit, UnlimitedType]
 
 class RangesBetween:
 
-    __slots__ = ("_minimum_value", "_maximum_value")
+    __slots__ = ("minimum_value", "maximum_value")
 
     def __init__(self, *, minimum_value: Boundary, maximum_value: Boundary) -> None:
-        self._minimum_value = minimum_value
-        self._maximum_value = maximum_value
+        self.minimum_value = minimum_value
+        self.maximum_value = maximum_value
 
     def __repr__(self) -> str:
         boundaries = [
-            repr(self._minimum_value),
-            repr(self._maximum_value),
+            repr(self.minimum_value),
+            repr(self.maximum_value),
         ]
 
         return f"{testplates.__name__}.ranges_between({', '.join(boundaries)})"
 
     def __eq__(self, other: Any) -> bool:
-        minimum_fits = fits_minimum_value(other, self._minimum_value)
-        maximum_fits = fits_maximum_value(other, self._maximum_value)
+        minimum_fits = fits_minimum_value(other, self.minimum_value)
+        maximum_fits = fits_maximum_value(other, self.maximum_value)
 
         return minimum_fits and maximum_fits

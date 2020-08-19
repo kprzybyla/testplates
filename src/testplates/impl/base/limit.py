@@ -13,44 +13,17 @@ EXCLUSIVE_ALIGNMENT: Final[Literal[1]] = 1
 
 class Limit:
 
-    __slots__ = ("_name", "_value", "_is_inclusive")
+    __slots__ = ("name", "value", "is_inclusive")
 
     def __init__(self, name: Extremum, value: int, *, is_inclusive: bool) -> None:
-        self._name = name
-        self._value = value
-        self._is_inclusive = is_inclusive
+        self.name = name
+        self.value = value
+        self.is_inclusive = is_inclusive
 
     def __repr__(self) -> str:
         prefix = "" if self.is_inclusive else "exclusive_"
 
         return f"{prefix}{self.name}={self.value}"
-
-    @property
-    def name(self) -> str:
-
-        """
-            Returns limit name.
-        """
-
-        return self._name
-
-    @property
-    def value(self) -> int:
-
-        """
-            Returns limit value.
-        """
-
-        return self._value
-
-    @property
-    def is_inclusive(self) -> bool:
-
-        """
-            Returns True if limit is inclusive, otherwise False.
-        """
-
-        return self._is_inclusive
 
     @property
     def alignment(self) -> Literal[0, 1]:

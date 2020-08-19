@@ -13,25 +13,25 @@ MINIMUM_NUMBER_OF_VALUES: Final[int] = 2
 
 class IsPermutationOf(Generic[_T]):
 
-    __slots__ = ("_values",)
+    __slots__ = ("values",)
 
     def __init__(self, values: List[_T], /) -> None:
         if len(values) < MINIMUM_NUMBER_OF_VALUES:
             raise InsufficientValuesError(MINIMUM_NUMBER_OF_VALUES)
 
-        self._values = values
+        self.values = values
 
     def __repr__(self) -> str:
-        return f"{testplates.__name__}.is_permutation_of({self._values!r})"
+        return f"{testplates.__name__}.is_permutation_of({self.values!r})"
 
     def __eq__(self, other: Any) -> bool:
         if not isinstance(other, Collection):
             return False
 
-        if len(other) != len(self._values):
+        if len(other) != len(self.values):
             return False
 
-        values = self._values.copy()
+        values = self.values.copy()
 
         for value in other:
             try:

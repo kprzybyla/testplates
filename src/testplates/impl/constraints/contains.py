@@ -15,22 +15,22 @@ MINIMUM_NUMBER_OF_VALUES: Final[int] = 1
 
 class Contains(Generic[_T]):
 
-    __slots__ = ("_values",)
+    __slots__ = ("values",)
 
     def __init__(self, *values: _T) -> None:
         if len(values) < MINIMUM_NUMBER_OF_VALUES:
             raise InsufficientValuesError(MINIMUM_NUMBER_OF_VALUES)
 
-        self._values = values
+        self.values = values
 
     def __repr__(self) -> str:
-        return f"{testplates.__name__}.contains({format_like_tuple(self._values)})"
+        return f"{testplates.__name__}.contains({format_like_tuple(self.values)})"
 
     def __eq__(self, other: Any) -> bool:
         if not isinstance(other, Container):
             return False
 
-        for value in self._values:
+        for value in self.values:
             if value not in other:
                 return False
 
