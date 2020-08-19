@@ -8,7 +8,7 @@ __all__ = [
     "ranges_between",
 ]
 
-from typing import overload, AnyStr, TypeVar, List, Optional
+from typing import overload, AnyStr, TypeVar, List, Optional, Final
 
 from resultful import unwrap_success, unwrap_failure
 
@@ -24,9 +24,13 @@ from testplates.impl.constraints import (
 )
 
 from .value import Boundary
-from .exceptions import InvalidSignatureError
+from .exceptions import InvalidSignatureError, InsufficientValuesError
 
 _T = TypeVar("_T")
+
+MINIMUM_NUMBER_OF_CONTAINS_VALUES: Final[int] = 1
+MINIMUM_NUMBER_OF_IS_ONE_OF_VALUES: Final[int] = 2
+MINIMUM_NUMBER_OF_IS_PERMUTATION_VALUES: Final[int] = 2
 
 
 def contains(*values: _T) -> Contains[_T]:
@@ -37,6 +41,9 @@ def contains(*values: _T) -> Contains[_T]:
 
         :param values: values to be present in container object
     """
+
+    if len(values) < MINIMUM_NUMBER_OF_CONTAINS_VALUES:
+        raise InsufficientValuesError(MINIMUM_NUMBER_OF_CONTAINS_VALUES)
 
     return Contains(*values)
 
@@ -84,6 +91,9 @@ def is_one_of(*values: _T) -> IsOneOf[_T]:
         :param values: values to be matched by constraint object
     """
 
+    if len(values) < MINIMUM_NUMBER_OF_IS_ONE_OF_VALUES:
+        raise InsufficientValuesError(MINIMUM_NUMBER_OF_IS_ONE_OF_VALUES)
+
     return IsOneOf(*values)
 
 
@@ -95,6 +105,9 @@ def is_permutation_of(values: List[_T], /) -> IsPermutationOf[_T]:
 
         :param values: values to be matched as permutation
     """
+
+    if len(values) < MINIMUM_NUMBER_OF_IS_PERMUTATION_VALUES:
+        raise InsufficientValuesError(MINIMUM_NUMBER_OF_IS_PERMUTATION_VALUES)
 
     return IsPermutationOf(values)
 

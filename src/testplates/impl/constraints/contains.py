@@ -10,17 +10,12 @@ from .exceptions import InsufficientValuesError
 
 _T = TypeVar("_T")
 
-MINIMUM_NUMBER_OF_VALUES: Final[int] = 1
-
 
 class Contains(Generic[_T]):
 
     __slots__ = ("values",)
 
     def __init__(self, *values: _T) -> None:
-        if len(values) < MINIMUM_NUMBER_OF_VALUES:
-            raise InsufficientValuesError(MINIMUM_NUMBER_OF_VALUES)
-
         self.values = values
 
     def __repr__(self) -> str:
