@@ -7,13 +7,14 @@ import testplates
 
 class HasLength:
 
-    __slots__ = ("length",)
+    __slots__ = ("name", "length")
 
-    def __init__(self, length: int, /) -> None:
+    def __init__(self, name: str, length: int, /) -> None:
+        self.name = name
         self.length = length
 
     def __repr__(self) -> str:
-        return f"{testplates.__name__}.has_size({self.length})"
+        return f"{testplates.__name__}.{self.name}({self.length})"
 
     def __eq__(self, other: Any) -> bool:
         if not isinstance(other, Sized):

@@ -1,6 +1,8 @@
 __all__ = [
     "contains",
     "has_size",
+    "has_minimum_size",
+    "has_maximum_size",
     "has_size_between",
     "is_one_of",
     "is_permutation_of",
@@ -10,9 +12,15 @@ __all__ = [
 
 from typing import overload, AnyStr, TypeVar, List, Optional, Final
 
-from resultful import unwrap_success, unwrap_failure
+from resultful import success, failure, unwrap_success, unwrap_failure, Result
 
-from testplates.impl.base import get_value_boundaries, get_length_boundaries
+from testplates.impl.base import (
+    get_minimum,
+    get_maximum,
+    get_value_boundaries,
+    get_length_boundaries,
+)
+
 from testplates.impl.constraints import (
     Contains,
     HasLength,
@@ -23,8 +31,13 @@ from testplates.impl.constraints import (
     MatchesPattern,
 )
 
-from .value import Boundary
-from .exceptions import InvalidSignatureError, InsufficientValuesError
+from .value import Boundary, UNLIMITED
+from .exceptions import (
+    TestplatesError,
+    InvalidSignatureError,
+    InsufficientValuesError,
+    UnlimitedRangeError,
+)
 
 _T = TypeVar("_T")
 
@@ -33,7 +46,7 @@ MINIMUM_NUMBER_OF_IS_ONE_OF_VALUES: Final[int] = 2
 MINIMUM_NUMBER_OF_IS_PERMUTATION_VALUES: Final[int] = 2
 
 
-def contains(*values: _T) -> Contains[_T]:
+def contains(*values: _T) -> Result[Contains[_T], TestplatesError]:
 
     """
         Returns constraint object that matches any container object
@@ -43,12 +56,12 @@ def contains(*values: _T) -> Contains[_T]:
     """
 
     if len(values) < MINIMUM_NUMBER_OF_CONTAINS_VALUES:
-        raise InsufficientValuesError(MINIMUM_NUMBER_OF_CONTAINS_VALUES)
+        return failure(InsufficientValuesError(MINIMUM_NUMBER_OF_CONTAINS_VALUES))
 
-    return Contains(*values)
+    return success(Contains(*values))
 
 
-def has_size(size: int) -> HasLength:
+def has_size(size: int) -> Result[HasLength, TestplatesError]:
 
     """
         Returns constraint object that matches any sized
@@ -57,12 +70,58 @@ def has_size(size: int) -> HasLength:
         :param size: exact size value
     """
 
-    return HasLength(size)
+    return success(HasLength(has_size.__name__, size))
+
+
+def has_minimum_size(minimum: int, /) -> Result[HasLengthBetween, TestplatesError]:
+
+    """
+        Returns constraint object that matches any sized
+        object that has size above minimum boundary value.
+
+        :param minimum: minimum size value
+    """
+
+    result = get_minimum(inclusive=minimum)
+
+    if not result:
+        return result
+
+    minimum_length = unwrap_success(result)
+
+    return success(
+        HasLengthBetween(
+            has_minimum_size.__name__, minimum_length=minimum_length, maximum_length=UNLIMITED
+        )
+    )
+
+
+def has_maximum_size(maximum: int, /) -> Result[HasLengthBetween, TestplatesError]:
+
+    """
+        Returns constraint object that matches any sized
+        object that has size below maximum boundary value.
+
+        :param maximum: maximum size value
+    """
+
+    result = get_maximum(inclusive=maximum)
+
+    if not result:
+        return result
+
+    maximum_length = unwrap_success(result)
+
+    return success(
+        HasLengthBetween(
+            has_maximum_size.__name__, minimum_length=UNLIMITED, maximum_length=maximum_length
+        )
+    )
 
 
 def has_size_between(
-    *, minimum: Optional[Boundary[int]] = None, maximum: Optional[Boundary[int]] = None
-) -> HasLengthBetween:
+    *, minimum: Boundary[int], maximum: Boundary[int]
+) -> Result[HasLengthBetween, TestplatesError]:
 
     """
         Returns constraint object that matches any sized object
@@ -75,14 +134,21 @@ def has_size_between(
     result = get_length_boundaries(inclusive_minimum=minimum, inclusive_maximum=maximum)
 
     if not result:
-        raise unwrap_failure(result)
+        return result
 
     minimum_length, maximum_length = unwrap_success(result)
 
-    return HasLengthBetween(minimum_length=minimum_length, maximum_length=maximum_length)
+    if minimum_length is UNLIMITED and maximum_length is UNLIMITED:
+        return failure(UnlimitedRangeError())
+
+    return success(
+        HasLengthBetween(
+            has_size_between.__name__, minimum_length=minimum_length, maximum_length=maximum_length
+        )
+    )
 
 
-def is_one_of(*values: _T) -> IsOneOf[_T]:
+def is_one_of(*values: _T) -> Result[IsOneOf[_T], TestplatesError]:
 
     """
         Returns constraint object that matches any object
@@ -92,12 +158,12 @@ def is_one_of(*values: _T) -> IsOneOf[_T]:
     """
 
     if len(values) < MINIMUM_NUMBER_OF_IS_ONE_OF_VALUES:
-        raise InsufficientValuesError(MINIMUM_NUMBER_OF_IS_ONE_OF_VALUES)
+        return failure(InsufficientValuesError(MINIMUM_NUMBER_OF_IS_ONE_OF_VALUES))
 
-    return IsOneOf(*values)
+    return success(IsOneOf(*values))
 
 
-def is_permutation_of(values: List[_T], /) -> IsPermutationOf[_T]:
+def is_permutation_of(values: List[_T], /) -> Result[IsPermutationOf[_T], TestplatesError]:
 
     """
         Returns constraint object that matches any collection object
@@ -107,12 +173,12 @@ def is_permutation_of(values: List[_T], /) -> IsPermutationOf[_T]:
     """
 
     if len(values) < MINIMUM_NUMBER_OF_IS_PERMUTATION_VALUES:
-        raise InsufficientValuesError(MINIMUM_NUMBER_OF_IS_PERMUTATION_VALUES)
+        return failure(InsufficientValuesError(MINIMUM_NUMBER_OF_IS_PERMUTATION_VALUES))
 
-    return IsPermutationOf(values)
+    return success(IsPermutationOf(values))
 
 
-def matches_pattern(pattern: AnyStr, /) -> MatchesPattern[AnyStr]:
+def matches_pattern(pattern: AnyStr, /) -> Result[MatchesPattern[AnyStr], TestplatesError]:
 
     """
         Returns constraint object that matches any string
@@ -121,40 +187,34 @@ def matches_pattern(pattern: AnyStr, /) -> MatchesPattern[AnyStr]:
         :param pattern: pattern to be matched inside string content
     """
 
-    if isinstance(pattern, str):
-        return MatchesPattern(pattern, str)
-
-    if isinstance(pattern, bytes):
-        return MatchesPattern(pattern, bytes)
-
-    raise InvalidSignatureError("matches() requires str or bytes as 1st argument")
+    return success(MatchesPattern(pattern))
 
 
 @overload
 def ranges_between(
-    *, minimum: Optional[Boundary[int]], maximum: Optional[Boundary[int]]
-) -> RangesBetween:
+    *, minimum: Boundary[int], maximum: Boundary[int]
+) -> Result[RangesBetween, TestplatesError]:
     ...
 
 
 @overload
 def ranges_between(
-    *, minimum: Optional[Boundary[int]], exclusive_maximum: Optional[Boundary[int]]
-) -> RangesBetween:
+    *, minimum: Boundary[int], exclusive_maximum: Boundary[int]
+) -> Result[RangesBetween, TestplatesError]:
     ...
 
 
 @overload
 def ranges_between(
-    *, exclusive_minimum: Optional[Boundary[int]], maximum: Optional[Boundary[int]]
-) -> RangesBetween:
+    *, exclusive_minimum: Boundary[int], maximum: Boundary[int]
+) -> Result[RangesBetween, TestplatesError]:
     ...
 
 
 @overload
 def ranges_between(
-    *, exclusive_minimum: Optional[Boundary[int]], exclusive_maximum: Optional[Boundary[int]]
-) -> RangesBetween:
+    *, exclusive_minimum: Boundary[int], exclusive_maximum: Boundary[int]
+) -> Result[RangesBetween, TestplatesError]:
     ...
 
 
@@ -164,7 +224,7 @@ def ranges_between(
     maximum: Optional[Boundary[int]] = None,
     exclusive_minimum: Optional[Boundary[int]] = None,
     exclusive_maximum: Optional[Boundary[int]] = None,
-) -> RangesBetween:
+) -> Result[RangesBetween, TestplatesError]:
 
     """
         Returns constraint object that matches any object with boundaries
@@ -184,8 +244,8 @@ def ranges_between(
     )
 
     if not result:
-        raise unwrap_failure(result)
+        return result
 
     minimum_value, maximum_value = unwrap_success(result)
 
-    return RangesBetween(minimum_value=minimum_value, maximum_value=maximum_value)
+    return success(RangesBetween(minimum_value=minimum_value, maximum_value=maximum_value))

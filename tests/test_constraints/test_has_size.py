@@ -3,6 +3,7 @@ import sys
 from dataclasses import dataclass
 from typing import Sized, Final
 
+from resultful import unwrap_success
 from hypothesis import assume, given
 from hypothesis import strategies as st
 
@@ -40,16 +41,18 @@ def st_size(
 def test_repr(size: int) -> None:
     fmt = "testplates.has_size({size})"
 
-    constraint = has_size(size)
+    assert (result := has_size(size))
 
+    constraint = unwrap_success(result)
     assert repr(constraint) == fmt.format(size=size)
 
 
 # noinspection PyTypeChecker
 @given(size=st_size())
 def test_returns_true(size: int) -> None:
-    constraint = has_size(size)
+    assert (result := has_size(size))
 
+    constraint = unwrap_success(result)
     assert constraint == SizedWrapper(size)
 
 
@@ -58,14 +61,16 @@ def test_returns_true(size: int) -> None:
 def test_returns_false(size: int, other: int) -> None:
     assume(size != other)
 
-    constraint = has_size(size)
+    assert (result := has_size(size))
 
+    constraint = unwrap_success(result)
     assert constraint != SizedWrapper(other)
 
 
 # noinspection PyTypeChecker
 @given(size=st_size())
 def test_returns_false_when_value_is_not_sized(size: int) -> None:
-    constraint = has_size(size)
+    assert (result := has_size(size))
 
+    constraint = unwrap_success(result)
     assert constraint != NotSized()

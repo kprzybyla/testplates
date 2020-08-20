@@ -1,16 +1,16 @@
 import re
 
-from typing import Any, AnyStr, List, Union, Final
+from typing import AnyStr, List, Union, Final
 
 import pytest
 
+from resultful import unwrap_success
 from hypothesis import assume, given
 from hypothesis import strategies as st
 
 from testplates import matches_pattern
-from testplates import InvalidSignatureError
 
-from tests.strategies import st_anything_except, Draw
+from tests.strategies import Draw
 
 ANY_WORD: Final[str] = r"\w+"
 ANY_DIGIT: Final[str] = r"\d+"
@@ -56,8 +56,9 @@ def st_from_bytes_pattern_inverse(draw: Draw[bytes], pattern: bytes) -> bytes:
 def test_repr(pattern: AnyStr) -> None:
     fmt = "testplates.matches_pattern({pattern})"
 
-    constraint = matches_pattern(pattern)
+    assert (result := matches_pattern(pattern))
 
+    constraint = unwrap_success(result)
     assert repr(constraint) == fmt.format(pattern=repr(pattern))
 
 
@@ -67,8 +68,9 @@ def test_repr(pattern: AnyStr) -> None:
 def test_returns_true_with_str_pattern(data: st.DataObject, pattern: str) -> None:
     value = data.draw(st_from_str_pattern(pattern))
 
-    constraint = matches_pattern(pattern)
+    assert (result := matches_pattern(pattern))
 
+    constraint = unwrap_success(result)
     assert constraint == value
 
 
@@ -78,8 +80,9 @@ def test_returns_true_with_str_pattern(data: st.DataObject, pattern: str) -> Non
 def test_returns_true_with_bytes_pattern(data: st.DataObject, pattern: bytes) -> None:
     value = data.draw(st_from_bytes_pattern(pattern))
 
-    constraint = matches_pattern(pattern)
+    assert (result := matches_pattern(pattern))
 
+    constraint = unwrap_success(result)
     assert constraint == value
 
 
@@ -89,8 +92,9 @@ def test_returns_true_with_bytes_pattern(data: st.DataObject, pattern: bytes) ->
 def test_returns_false_with_str_pattern(data: st.DataObject, pattern: str) -> None:
     value = data.draw(st_from_str_pattern_inverse(pattern))
 
-    constraint = matches_pattern(pattern)
+    assert (result := matches_pattern(pattern))
 
+    constraint = unwrap_success(result)
     assert constraint != value
 
 
@@ -100,8 +104,9 @@ def test_returns_false_with_str_pattern(data: st.DataObject, pattern: str) -> No
 def test_returns_false_with_bytes_pattern(data: st.DataObject, pattern: bytes) -> None:
     value = data.draw(st_from_bytes_pattern_inverse(pattern))
 
-    constraint = matches_pattern(pattern)
+    assert (result := matches_pattern(pattern))
 
+    constraint = unwrap_success(result)
     assert constraint != value
 
 
@@ -111,8 +116,9 @@ def test_returns_false_with_bytes_pattern(data: st.DataObject, pattern: bytes) -
 def test_returns_false_with_str_pattern_and_bytes_value(data: st.DataObject, pattern: str) -> None:
     value = data.draw(st_from_str_pattern(pattern))
 
-    constraint = matches_pattern(pattern)
+    assert (result := matches_pattern(pattern))
 
+    constraint = unwrap_success(result)
     assert constraint != value.encode()
 
 
@@ -124,12 +130,7 @@ def test_returns_false_with_bytes_pattern_and_str_value(
 ) -> None:
     value = data.draw(st_from_bytes_pattern(pattern))
 
-    constraint = matches_pattern(pattern)
+    assert (result := matches_pattern(pattern))
 
+    constraint = unwrap_success(result)
     assert constraint != value.decode()
-
-
-@given(pattern=st_anything_except(str, bytes))
-def test_raises_error_on_invalid_pattern_type(pattern: Any) -> None:
-    with pytest.raises(InvalidSignatureError):
-        matches_pattern(pattern)

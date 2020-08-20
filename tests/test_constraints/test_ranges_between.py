@@ -1,14 +1,12 @@
 from typing import Any, Optional, Literal, Final
 
-import pytest
-
+from resultful import unwrap_success, unwrap_failure
 from hypothesis import assume, given
 from hypothesis import strategies as st
 
 from testplates import UNLIMITED
 from testplates import ranges_between
 from testplates import (
-    InvalidSignatureError,
     MissingBoundaryError,
     MutuallyExclusiveBoundariesError,
     OverlappingBoundariesError,
@@ -85,8 +83,9 @@ def test_repr_with_inclusive_minimum_and_inclusive_maximum(
 
     assume(inclusive_minimum != inclusive_maximum)
 
-    constraint = ranges_between(minimum=inclusive_minimum, maximum=inclusive_maximum)
+    assert (result := ranges_between(minimum=inclusive_minimum, maximum=inclusive_maximum))
 
+    constraint = unwrap_success(result)
     assert repr(constraint) == fmt.format(minimum=inclusive_minimum, maximum=inclusive_maximum)
 
 
@@ -102,8 +101,11 @@ def test_repr_with_inclusive_minimum_and_exclusive_maximum(
 
     assume(inclusive_minimum != exclusive_maximum - EXCLUSIVE_ALIGNMENT)
 
-    constraint = ranges_between(minimum=inclusive_minimum, exclusive_maximum=exclusive_maximum)
+    assert (
+        result := ranges_between(minimum=inclusive_minimum, exclusive_maximum=exclusive_maximum)
+    )
 
+    constraint = unwrap_success(result)
     assert repr(constraint) == fmt.format(minimum=inclusive_minimum, maximum=exclusive_maximum)
 
 
@@ -119,8 +121,11 @@ def test_repr_with_exclusive_minimum_and_inclusive_maximum(
 
     assume(exclusive_minimum + EXCLUSIVE_ALIGNMENT != inclusive_maximum)
 
-    constraint = ranges_between(exclusive_minimum=exclusive_minimum, maximum=inclusive_maximum)
+    assert (
+        result := ranges_between(exclusive_minimum=exclusive_minimum, maximum=inclusive_maximum)
+    )
 
+    constraint = unwrap_success(result)
     assert repr(constraint) == fmt.format(minimum=exclusive_minimum, maximum=inclusive_maximum)
 
 
@@ -136,18 +141,22 @@ def test_repr_with_exclusive_minimum_and_exclusive_maximum(
 
     assume(exclusive_minimum + EXCLUSIVE_ALIGNMENT != exclusive_maximum - EXCLUSIVE_ALIGNMENT)
 
-    constraint = ranges_between(
-        exclusive_minimum=exclusive_minimum, exclusive_maximum=exclusive_maximum
+    assert (
+        result := ranges_between(
+            exclusive_minimum=exclusive_minimum, exclusive_maximum=exclusive_maximum
+        )
     )
 
+    constraint = unwrap_success(result)
     assert repr(constraint) == fmt.format(minimum=exclusive_minimum, maximum=exclusive_maximum)
 
 
 # noinspection PyTypeChecker
 @given(value=st_value())
 def test_success_with_unlimited_minimum_and_unlimited_maximum(value: int) -> None:
-    constraint = ranges_between(minimum=UNLIMITED, maximum=UNLIMITED)
+    assert (result := ranges_between(minimum=UNLIMITED, maximum=UNLIMITED))
 
+    constraint = unwrap_success(result)
     assert constraint == value
 
 
@@ -161,8 +170,9 @@ def test_success_with_inclusive_minimum_and_inclusive_maximum(
 
     assume(inclusive_minimum != inclusive_maximum)
 
-    constraint = ranges_between(minimum=inclusive_minimum, maximum=inclusive_maximum)
+    assert (result := ranges_between(minimum=inclusive_minimum, maximum=inclusive_maximum))
 
+    constraint = unwrap_success(result)
     assert constraint == value
 
 
@@ -176,8 +186,11 @@ def test_success_with_inclusive_minimum_and_exclusive_maximum(
 
     assume(inclusive_minimum != exclusive_maximum - EXCLUSIVE_ALIGNMENT)
 
-    constraint = ranges_between(minimum=inclusive_minimum, exclusive_maximum=exclusive_maximum)
+    assert (
+        result := ranges_between(minimum=inclusive_minimum, exclusive_maximum=exclusive_maximum)
+    )
 
+    constraint = unwrap_success(result)
     assert constraint == value
 
 
@@ -191,8 +204,11 @@ def test_success_with_exclusive_minimum_and_inclusive_maximum(
 
     assume(exclusive_minimum + EXCLUSIVE_ALIGNMENT != inclusive_maximum)
 
-    constraint = ranges_between(exclusive_minimum=exclusive_minimum, maximum=inclusive_maximum)
+    assert (
+        result := ranges_between(exclusive_minimum=exclusive_minimum, maximum=inclusive_maximum)
+    )
 
+    constraint = unwrap_success(result)
     assert constraint == value
 
 
@@ -206,10 +222,13 @@ def test_success_with_exclusive_minimum_and_exclusive_maximum(
 
     assume(exclusive_minimum + EXCLUSIVE_ALIGNMENT != exclusive_maximum - EXCLUSIVE_ALIGNMENT)
 
-    constraint = ranges_between(
-        exclusive_minimum=exclusive_minimum, exclusive_maximum=exclusive_maximum
+    assert (
+        result := ranges_between(
+            exclusive_minimum=exclusive_minimum, exclusive_maximum=exclusive_maximum
+        )
     )
 
+    constraint = unwrap_success(result)
     assert constraint == value
 
 
@@ -224,8 +243,9 @@ def test_failure_when_value_is_above_inclusive_minimum_and_inclusive_maximum(
     assume(inclusive_maximum != value)
     assume(inclusive_minimum != inclusive_maximum)
 
-    constraint = ranges_between(minimum=inclusive_minimum, maximum=inclusive_maximum)
+    assert (result := ranges_between(minimum=inclusive_minimum, maximum=inclusive_maximum))
 
+    constraint = unwrap_success(result)
     assert constraint != value
 
 
@@ -240,8 +260,9 @@ def test_failure_when_value_is_below_inclusive_minimum_and_inclusive_maximum(
     assume(inclusive_minimum != value)
     assume(inclusive_minimum != inclusive_maximum)
 
-    constraint = ranges_between(minimum=inclusive_minimum, maximum=inclusive_maximum)
+    assert (result := ranges_between(minimum=inclusive_minimum, maximum=inclusive_maximum))
 
+    constraint = unwrap_success(result)
     assert constraint != value
 
 
@@ -255,8 +276,11 @@ def test_failure_when_value_is_above_inclusive_minimum_and_exclusive_maximum(
 
     assume(inclusive_minimum < exclusive_maximum - EXCLUSIVE_ALIGNMENT)
 
-    constraint = ranges_between(minimum=inclusive_minimum, exclusive_maximum=exclusive_maximum)
+    assert (
+        result := ranges_between(minimum=inclusive_minimum, exclusive_maximum=exclusive_maximum)
+    )
 
+    constraint = unwrap_success(result)
     assert constraint != value
 
 
@@ -271,8 +295,11 @@ def test_failure_when_value_is_below_inclusive_minimum_and_exclusive_maximum(
     assume(inclusive_minimum != value)
     assume(inclusive_minimum < exclusive_maximum - EXCLUSIVE_ALIGNMENT)
 
-    constraint = ranges_between(minimum=inclusive_minimum, exclusive_maximum=exclusive_maximum)
+    assert (
+        result := ranges_between(minimum=inclusive_minimum, exclusive_maximum=exclusive_maximum)
+    )
 
+    constraint = unwrap_success(result)
     assert constraint != value
 
 
@@ -287,8 +314,11 @@ def test_failure_when_value_is_above_exclusive_minimum_and_inclusive_maximum(
     assume(inclusive_maximum != value)
     assume(exclusive_minimum + EXCLUSIVE_ALIGNMENT < inclusive_maximum)
 
-    constraint = ranges_between(exclusive_minimum=exclusive_minimum, maximum=inclusive_maximum)
+    assert (
+        result := ranges_between(exclusive_minimum=exclusive_minimum, maximum=inclusive_maximum)
+    )
 
+    constraint = unwrap_success(result)
     assert constraint != value
 
 
@@ -302,8 +332,11 @@ def test_failure_when_value_is_below_exclusive_minimum_and_inclusive_maximum(
 
     assume(exclusive_minimum + EXCLUSIVE_ALIGNMENT < inclusive_maximum)
 
-    constraint = ranges_between(exclusive_minimum=exclusive_minimum, maximum=inclusive_maximum)
+    assert (
+        result := ranges_between(exclusive_minimum=exclusive_minimum, maximum=inclusive_maximum)
+    )
 
+    constraint = unwrap_success(result)
     assert constraint != value
 
 
@@ -317,10 +350,13 @@ def test_failure_when_value_is_above_exclusive_minimum_and_exclusive_maximum(
 
     assume(exclusive_minimum + EXCLUSIVE_ALIGNMENT < exclusive_maximum - EXCLUSIVE_ALIGNMENT)
 
-    constraint = ranges_between(
-        exclusive_minimum=exclusive_minimum, exclusive_maximum=exclusive_maximum
+    assert (
+        result := ranges_between(
+            exclusive_minimum=exclusive_minimum, exclusive_maximum=exclusive_maximum
+        )
     )
 
+    constraint = unwrap_success(result)
     assert constraint != value
 
 
@@ -334,10 +370,13 @@ def test_failure_when_value_is_below_exclusive_minimum_and_exclusive_maximum(
 
     assume(exclusive_minimum + EXCLUSIVE_ALIGNMENT < exclusive_maximum - EXCLUSIVE_ALIGNMENT)
 
-    constraint = ranges_between(
-        exclusive_minimum=exclusive_minimum, exclusive_maximum=exclusive_maximum
+    assert (
+        result := ranges_between(
+            exclusive_minimum=exclusive_minimum, exclusive_maximum=exclusive_maximum
+        )
     )
 
+    constraint = unwrap_success(result)
     assert constraint != value
 
 
@@ -351,8 +390,9 @@ def test_failure_when_value_is_not_comparable_with_inclusive_boundaries(
 
     assume(inclusive_minimum != inclusive_maximum)
 
-    constraint = ranges_between(minimum=inclusive_minimum, maximum=inclusive_maximum)
+    assert (result := ranges_between(minimum=inclusive_minimum, maximum=inclusive_maximum))
 
+    constraint = unwrap_success(result)
     assert constraint != NotComparable()
 
 
@@ -366,17 +406,22 @@ def test_failure_when_value_is_not_comparable_with_exclusive_boundaries(
 
     assume(exclusive_minimum + EXCLUSIVE_ALIGNMENT < exclusive_maximum - EXCLUSIVE_ALIGNMENT)
 
-    constraint = ranges_between(
-        exclusive_minimum=exclusive_minimum, exclusive_maximum=exclusive_maximum
+    assert (
+        result := ranges_between(
+            exclusive_minimum=exclusive_minimum, exclusive_maximum=exclusive_maximum
+        )
     )
 
+    constraint = unwrap_success(result)
     assert constraint != NotComparable()
 
 
 # noinspection PyArgumentList
 def test_failure_when_boundaries_are_missing() -> None:
-    with pytest.raises(InvalidSignatureError):
-        ranges_between()  # type: ignore
+    assert not (result := ranges_between())  # type: ignore
+
+    error = unwrap_failure(result)
+    assert isinstance(error, MissingBoundaryError)
 
 
 # noinspection PyTypeChecker
@@ -386,15 +431,17 @@ def test_failure_when_minimum_boundary_is_missing(data: st.DataObject, value: in
     inclusive_maximum = data.draw(st_inclusive_maximum(value))
     exclusive_maximum = data.draw(st_exclusive_maximum(value))
 
-    with pytest.raises(MissingBoundaryError) as exception:
-        ranges_between(maximum=inclusive_maximum)  # type: ignore
+    assert not (result := ranges_between(maximum=inclusive_maximum))  # type: ignore
 
-    assert exception.value.name == MINIMUM_EXTREMUM
+    error = unwrap_failure(result)
+    assert isinstance(error, MissingBoundaryError)
+    assert error.name == MINIMUM_EXTREMUM
 
-    with pytest.raises(MissingBoundaryError) as exception:
-        ranges_between(exclusive_maximum=exclusive_maximum)  # type: ignore
+    assert not (result := ranges_between(exclusive_maximum=exclusive_maximum))  # type: ignore
 
-    assert exception.value.name == MINIMUM_EXTREMUM
+    error = unwrap_failure(result)
+    assert isinstance(error, MissingBoundaryError)
+    assert error.name == MINIMUM_EXTREMUM
 
 
 # noinspection PyTypeChecker
@@ -404,15 +451,17 @@ def test_failure_when_maximum_boundary_is_missing(data: st.DataObject, value: in
     inclusive_minimum = data.draw(st_inclusive_minimum(value))
     exclusive_minimum = data.draw(st_exclusive_minimum(value))
 
-    with pytest.raises(MissingBoundaryError) as exception:
-        ranges_between(minimum=inclusive_minimum)  # type: ignore
+    assert not (result := ranges_between(minimum=inclusive_minimum))  # type: ignore
 
-    assert exception.value.name == MAXIMUM_EXTREMUM
+    error = unwrap_failure(result)
+    assert isinstance(error, MissingBoundaryError)
+    assert error.name == MAXIMUM_EXTREMUM
 
-    with pytest.raises(MissingBoundaryError) as exception:
-        ranges_between(exclusive_minimum=exclusive_minimum)  # type: ignore
+    assert not (result := ranges_between(exclusive_minimum=exclusive_minimum))  # type: ignore
 
-    assert exception.value.name == MAXIMUM_EXTREMUM
+    error = unwrap_failure(result)
+    assert isinstance(error, MissingBoundaryError)
+    assert error.name == MAXIMUM_EXTREMUM
 
 
 # noinspection PyTypeChecker
@@ -427,15 +476,18 @@ def test_failure_when_mutually_exclusive_boundaries_are_set(
     exclusive_minimum = data.draw(st_exclusive_minimum(value))
     exclusive_maximum = data.draw(st_exclusive_maximum(value))
 
-    with pytest.raises(MutuallyExclusiveBoundariesError) as exception:
-        ranges_between(
+    assert not (
+        result := ranges_between(
             minimum=inclusive_minimum,
             maximum=inclusive_maximum,
             exclusive_minimum=exclusive_minimum,
             exclusive_maximum=exclusive_maximum,
-        )  # type: ignore
+        )
+    )  # type: ignore
 
-    assert exception.value.name == MINIMUM_EXTREMUM
+    error = unwrap_failure(result)
+    assert isinstance(error, MutuallyExclusiveBoundariesError)
+    assert error.name == MINIMUM_EXTREMUM
 
 
 # noinspection PyTypeChecker
@@ -450,23 +502,29 @@ def test_failure_when_mutually_exclusive_minimum_boundaries_are_set(
     exclusive_minimum = data.draw(st_exclusive_minimum(value))
     exclusive_maximum = data.draw(st_exclusive_maximum(value))
 
-    with pytest.raises(MutuallyExclusiveBoundariesError) as exception:
-        ranges_between(
+    assert not (
+        result := ranges_between(
             minimum=inclusive_minimum,
             maximum=inclusive_maximum,
             exclusive_minimum=exclusive_minimum,
-        )  # type: ignore
+        )
+    )  # type: ignore
 
-    assert exception.value.name == MINIMUM_EXTREMUM
+    error = unwrap_failure(result)
+    assert isinstance(error, MutuallyExclusiveBoundariesError)
+    assert error.name == MINIMUM_EXTREMUM
 
-    with pytest.raises(MutuallyExclusiveBoundariesError) as exception:
-        ranges_between(
+    assert not (
+        result := ranges_between(
             minimum=inclusive_minimum,
             exclusive_minimum=exclusive_minimum,
             exclusive_maximum=exclusive_maximum,
-        )  # type: ignore
+        )
+    )  # type: ignore
 
-    assert exception.value.name == MINIMUM_EXTREMUM
+    error = unwrap_failure(result)
+    assert isinstance(error, MutuallyExclusiveBoundariesError)
+    assert error.name == MINIMUM_EXTREMUM
 
 
 # noinspection PyTypeChecker
@@ -481,23 +539,29 @@ def test_failure_when_mutually_exclusive_maximum_boundaries_are_set(
     exclusive_minimum = data.draw(st_exclusive_minimum(value))
     exclusive_maximum = data.draw(st_exclusive_maximum(value))
 
-    with pytest.raises(MutuallyExclusiveBoundariesError) as exception:
-        ranges_between(
+    assert not (
+        result := ranges_between(
             minimum=inclusive_minimum,
             maximum=inclusive_maximum,
             exclusive_maximum=exclusive_maximum,
-        )  # type: ignore
+        )
+    )  # type: ignore
 
-    assert exception.value.name == MAXIMUM_EXTREMUM
+    error = unwrap_failure(result)
+    assert isinstance(error, MutuallyExclusiveBoundariesError)
+    assert error.name == MAXIMUM_EXTREMUM
 
-    with pytest.raises(MutuallyExclusiveBoundariesError) as exception:
-        ranges_between(
+    assert not (
+        result := ranges_between(
             maximum=inclusive_maximum,
             exclusive_minimum=exclusive_minimum,
             exclusive_maximum=exclusive_maximum,
-        )  # type: ignore
+        )
+    )  # type: ignore
 
-    assert exception.value.name == MAXIMUM_EXTREMUM
+    error = unwrap_failure(result)
+    assert isinstance(error, MutuallyExclusiveBoundariesError)
+    assert error.name == MAXIMUM_EXTREMUM
 
 
 # noinspection PyTypeChecker
@@ -510,14 +574,14 @@ def test_failure_when_inclusive_minimum_and_inclusive_maximum_are_overlapping(
 
     assume(inclusive_minimum != inclusive_maximum)
 
-    with pytest.raises(OverlappingBoundariesError) as exception:
-        ranges_between(minimum=inclusive_minimum, maximum=inclusive_maximum)
+    assert not (result := ranges_between(minimum=inclusive_minimum, maximum=inclusive_maximum))
 
-    assert exception.value.minimum.value == inclusive_minimum
-    assert exception.value.minimum.is_inclusive is True
-
-    assert exception.value.maximum.value == inclusive_maximum
-    assert exception.value.maximum.is_inclusive is True
+    error = unwrap_failure(result)
+    assert isinstance(error, OverlappingBoundariesError)
+    assert error.minimum.value == inclusive_minimum
+    assert error.minimum.is_inclusive is True
+    assert error.maximum.value == inclusive_maximum
+    assert error.maximum.is_inclusive is True
 
 
 # noinspection PyTypeChecker
@@ -528,14 +592,16 @@ def test_failure_when_inclusive_minimum_and_exclusive_maximum_are_overlapping(
     inclusive_minimum = data.draw(st_value())
     exclusive_maximum = data.draw(st_value(max_value=inclusive_minimum))
 
-    with pytest.raises(OverlappingBoundariesError) as exception:
-        ranges_between(minimum=inclusive_minimum, exclusive_maximum=exclusive_maximum)
+    assert not (
+        result := ranges_between(minimum=inclusive_minimum, exclusive_maximum=exclusive_maximum)
+    )
 
-    assert exception.value.minimum.value == inclusive_minimum
-    assert exception.value.minimum.is_inclusive is True
-
-    assert exception.value.maximum.value == exclusive_maximum
-    assert exception.value.maximum.is_inclusive is False
+    error = unwrap_failure(result)
+    assert isinstance(error, OverlappingBoundariesError)
+    assert error.minimum.value == inclusive_minimum
+    assert error.minimum.is_inclusive is True
+    assert error.maximum.value == exclusive_maximum
+    assert error.maximum.is_inclusive is False
 
 
 # noinspection PyTypeChecker
@@ -546,14 +612,16 @@ def test_failure_when_exclusive_minimum_and_inclusive_maximum_are_overlapping(
     exclusive_minimum = data.draw(st_value())
     inclusive_maximum = data.draw(st_value(max_value=exclusive_minimum))
 
-    with pytest.raises(OverlappingBoundariesError) as exception:
-        ranges_between(exclusive_minimum=exclusive_minimum, maximum=inclusive_maximum)
+    assert not (
+        result := ranges_between(exclusive_minimum=exclusive_minimum, maximum=inclusive_maximum)
+    )
 
-    assert exception.value.minimum.value == exclusive_minimum
-    assert exception.value.minimum.is_inclusive is False
-
-    assert exception.value.maximum.value == inclusive_maximum
-    assert exception.value.maximum.is_inclusive is True
+    error = unwrap_failure(result)
+    assert isinstance(error, OverlappingBoundariesError)
+    assert error.minimum.value == exclusive_minimum
+    assert error.minimum.is_inclusive is False
+    assert error.maximum.value == inclusive_maximum
+    assert error.maximum.is_inclusive is True
 
 
 # noinspection PyTypeChecker
@@ -564,14 +632,18 @@ def test_failure_when_exclusive_minimum_and_exclusive_maximum_are_overlapping(
     exclusive_minimum = data.draw(st_value())
     exclusive_maximum = data.draw(st_value(max_value=exclusive_minimum + EXCLUSIVE_ALIGNMENT))
 
-    with pytest.raises(OverlappingBoundariesError) as exception:
-        ranges_between(exclusive_minimum=exclusive_minimum, exclusive_maximum=exclusive_maximum)
+    assert not (
+        result := ranges_between(
+            exclusive_minimum=exclusive_minimum, exclusive_maximum=exclusive_maximum
+        )
+    )
 
-    assert exception.value.minimum.value == exclusive_minimum
-    assert exception.value.minimum.is_inclusive is False
-
-    assert exception.value.maximum.value == exclusive_maximum
-    assert exception.value.maximum.is_inclusive is False
+    error = unwrap_failure(result)
+    assert isinstance(error, OverlappingBoundariesError)
+    assert error.minimum.value == exclusive_minimum
+    assert error.minimum.is_inclusive is False
+    assert error.maximum.value == exclusive_maximum
+    assert error.maximum.is_inclusive is False
 
 
 # noinspection PyTypeChecker
@@ -582,14 +654,14 @@ def test_failure_when_inclusive_minimum_and_inclusive_maximum_match_single_value
     inclusive_minimum = value
     inclusive_maximum = value
 
-    with pytest.raises(SingleMatchBoundariesError) as exception:
-        ranges_between(minimum=inclusive_minimum, maximum=inclusive_maximum)
+    assert not (result := ranges_between(minimum=inclusive_minimum, maximum=inclusive_maximum))
 
-    assert exception.value.minimum.value == inclusive_minimum
-    assert exception.value.minimum.is_inclusive is True
-
-    assert exception.value.maximum.value == inclusive_maximum
-    assert exception.value.maximum.is_inclusive is True
+    error = unwrap_failure(result)
+    assert isinstance(error, SingleMatchBoundariesError)
+    assert error.minimum.value == inclusive_minimum
+    assert error.minimum.is_inclusive is True
+    assert error.maximum.value == inclusive_maximum
+    assert error.maximum.is_inclusive is True
 
 
 # noinspection PyTypeChecker
@@ -600,14 +672,16 @@ def test_failure_when_inclusive_minimum_and_exclusive_maximum_match_single_value
     inclusive_minimum = value
     exclusive_maximum = value + EXCLUSIVE_ALIGNMENT
 
-    with pytest.raises(SingleMatchBoundariesError) as exception:
-        ranges_between(minimum=inclusive_minimum, exclusive_maximum=exclusive_maximum)
+    assert not (
+        result := ranges_between(minimum=inclusive_minimum, exclusive_maximum=exclusive_maximum)
+    )
 
-    assert exception.value.minimum.value == inclusive_minimum
-    assert exception.value.minimum.is_inclusive is True
-
-    assert exception.value.maximum.value == exclusive_maximum
-    assert exception.value.maximum.is_inclusive is False
+    error = unwrap_failure(result)
+    assert isinstance(error, SingleMatchBoundariesError)
+    assert error.minimum.value == inclusive_minimum
+    assert error.minimum.is_inclusive is True
+    assert error.maximum.value == exclusive_maximum
+    assert error.maximum.is_inclusive is False
 
 
 # noinspection PyTypeChecker
@@ -618,14 +692,16 @@ def test_failure_when_exclusive_minimum_and_inclusive_maximum_match_single_value
     exclusive_minimum = value - EXCLUSIVE_ALIGNMENT
     inclusive_maximum = value
 
-    with pytest.raises(SingleMatchBoundariesError) as exception:
-        ranges_between(exclusive_minimum=exclusive_minimum, maximum=inclusive_maximum)
+    assert not (
+        result := ranges_between(exclusive_minimum=exclusive_minimum, maximum=inclusive_maximum)
+    )
 
-    assert exception.value.minimum.value == exclusive_minimum
-    assert exception.value.minimum.is_inclusive is False
-
-    assert exception.value.maximum.value == inclusive_maximum
-    assert exception.value.maximum.is_inclusive is True
+    error = unwrap_failure(result)
+    assert isinstance(error, SingleMatchBoundariesError)
+    assert error.minimum.value == exclusive_minimum
+    assert error.minimum.is_inclusive is False
+    assert error.maximum.value == inclusive_maximum
+    assert error.maximum.is_inclusive is True
 
 
 # noinspection PyTypeChecker
@@ -636,11 +712,15 @@ def test_failure_when_exclusive_minimum_and_exclusive_maximum_match_single_value
     exclusive_minimum = value - EXCLUSIVE_ALIGNMENT
     exclusive_maximum = value + EXCLUSIVE_ALIGNMENT
 
-    with pytest.raises(SingleMatchBoundariesError) as exception:
-        ranges_between(exclusive_minimum=exclusive_minimum, exclusive_maximum=exclusive_maximum)
+    assert not (
+        result := ranges_between(
+            exclusive_minimum=exclusive_minimum, exclusive_maximum=exclusive_maximum
+        )
+    )
 
-    assert exception.value.minimum.value == exclusive_minimum
-    assert exception.value.minimum.is_inclusive is False
-
-    assert exception.value.maximum.value == exclusive_maximum
-    assert exception.value.maximum.is_inclusive is False
+    error = unwrap_failure(result)
+    assert isinstance(error, SingleMatchBoundariesError)
+    assert error.minimum.value == exclusive_minimum
+    assert error.minimum.is_inclusive is False
+    assert error.maximum.value == exclusive_maximum
+    assert error.maximum.is_inclusive is False

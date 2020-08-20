@@ -3,6 +3,7 @@ from dataclasses import dataclass
 
 import pytest
 
+from resultful import unwrap_success, unwrap_failure
 from hypothesis import assume, given
 from hypothesis import strategies as st
 
@@ -54,16 +55,18 @@ def st_values_without(draw: Draw[List[_T]], value: _T) -> List[_T]:
 def test_repr(values: List[_T]) -> None:
     fmt = "testplates.contains({values})"
 
-    constraint = contains(*values)
+    assert (result := contains(*values))
 
+    constraint = unwrap_success(result)
     assert repr(constraint) == fmt.format(values=", ".join(repr(value) for value in values))
 
 
 # noinspection PyTypeChecker
 @given(values=st_values())
 def test_returns_true(values: List[_T]) -> None:
-    constraint = contains(*values)
+    assert (result := contains(*values))
 
+    constraint = unwrap_success(result)
     assert constraint == ContainerWrapper(values)
 
 
@@ -72,21 +75,24 @@ def test_returns_true(values: List[_T]) -> None:
 def test_returns_false(data: st.DataObject, value: _T) -> None:
     values = data.draw(st_values_without(value))
 
-    constraint = contains(value, *samples(values))
+    assert (result := contains(value, *samples(values)))
 
+    constraint = unwrap_success(result)
     assert constraint != ContainerWrapper(values)
 
 
 # noinspection PyTypeChecker
 @given(values=st_values())
 def test_returns_false_when_value_is_not_container(values: List[_T]) -> None:
-    constraint = contains(*values)
+    assert (result := contains(*values))
 
+    constraint = unwrap_success(result)
     assert constraint != NotContainer()
 
 
-def test_raises_error_when_less_than_one_value_was_provided() -> None:
-    with pytest.raises(InsufficientValuesError) as exception:
-        contains()
+def test_failure_when_less_than_one_value_was_provided() -> None:
+    assert not (result := contains())
 
-    assert exception.value.required == MINIMUM_NUMBER_OF_VALUES
+    error = unwrap_failure(result)
+    assert isinstance(error, InsufficientValuesError)
+    assert error.required == MINIMUM_NUMBER_OF_VALUES

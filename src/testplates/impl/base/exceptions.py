@@ -2,17 +2,19 @@ __all__ = [
     "TestplatesError",
     "InvalidSignatureError",
     "DanglingDescriptorError",
+    "ErroneousFieldsError",
     "MissingValueError",
     "UnexpectedValueError",
     "ProhibitedValueError",
     "MissingBoundaryError",
     "InvalidSizeError",
+    "UnlimitedRangeError",
     "MutuallyExclusiveBoundariesError",
     "OverlappingBoundariesError",
     "SingleMatchBoundariesError",
 ]
 
-from typing import Any
+from typing import Any, Mapping
 
 
 class TestplatesError(Exception):
@@ -55,6 +57,22 @@ class DanglingDescriptorError(TestplatesError):
         self.descriptor = descriptor
 
         super().__init__(f"Descriptor {descriptor!r} defined outside of the class definition")
+
+
+class ErroneousFieldsError(TestplatesError):
+
+    """
+        Error indicating erroneous fields.
+
+        Raised when user incorrectly setups
+        structure fields making them unusable.
+    """
+
+    def __init__(self, structure: Any, fields: Mapping[str, TestplatesError]) -> None:
+        self.structure = structure
+        self.fields = fields
+
+        super().__init__(f"Erroneous fields {fields!r} found in {structure!r}")
 
 
 class MissingValueError(TestplatesError):
@@ -132,6 +150,20 @@ class InvalidSizeError(TestplatesError):
         self.boundary = boundary
 
         super().__init__(f"Invalid value for size boundary {boundary!r}")
+
+
+class UnlimitedRangeError(TestplatesError):
+
+    """
+        Error indicating unlimited range.
+
+        Raised when user sets both minimum and maximum
+        boundaries to unlimited value in the context that
+        does not allow such values to be used there together.
+    """
+
+    def __init__(self) -> None:
+        super().__init__(f"Unlimited range is not permitted in this context")
 
 
 class MutuallyExclusiveBoundariesError(TestplatesError):

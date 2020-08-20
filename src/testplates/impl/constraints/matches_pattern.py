@@ -12,9 +12,9 @@ class MatchesPattern(Generic[AnyStr], abc.ABC):
 
     __slots__ = ("pattern", "pattern_type")
 
-    def __init__(self, value: AnyStr, pattern_type: Type[AnyStr], /) -> None:
+    def __init__(self, value: AnyStr, /) -> None:
         self.pattern: Pattern[AnyStr] = re.compile(value)
-        self.pattern_type: Type[AnyStr] = pattern_type
+        self.pattern_type: Type[AnyStr] = type(value)
 
     def __repr__(self) -> str:
         return f"{testplates.__name__}.matches_pattern({self.pattern.pattern!r})"

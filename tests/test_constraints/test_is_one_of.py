@@ -4,6 +4,7 @@ from typing import TypeVar, List, Final
 
 import pytest
 
+from resultful import unwrap_success, unwrap_failure
 from hypothesis import assume, given
 from hypothesis import strategies as st
 
@@ -48,8 +49,9 @@ def st_inverse_values(draw: Draw[List[_T]]) -> List[_T]:
 def test_repr(values: List[_T]) -> None:
     fmt = "testplates.is_one_of({values})"
 
-    constraint = is_one_of(*values)
+    assert (result := is_one_of(*values))
 
+    constraint = unwrap_success(result)
     assert repr(constraint) == fmt.format(values=", ".join(repr(value) for value in values))
 
 
@@ -58,8 +60,9 @@ def test_repr(values: List[_T]) -> None:
 def test_returns_true(values: List[_T]) -> None:
     value = random.choice(values)
 
-    constraint = is_one_of(*values)
+    assert (result := is_one_of(*values))
 
+    constraint = unwrap_success(result)
     assert constraint == value
 
 
@@ -68,15 +71,17 @@ def test_returns_true(values: List[_T]) -> None:
 def test_returns_false(data: st.DataObject, value: _T) -> None:
     values = data.draw(st_values_without(value))
 
-    constraint = is_one_of(*values)
+    assert (result := is_one_of(*values))
 
+    constraint = unwrap_success(result)
     assert constraint != value
 
 
 # noinspection PyTypeChecker
 @given(values=st_inverse_values())
-def test_raises_error_when_less_than_two_values_were_provided(values: List[_T]) -> None:
-    with pytest.raises(InsufficientValuesError) as exception:
-        is_one_of(*values)
+def test_failure_when_less_than_two_values_were_provided(values: List[_T]) -> None:
+    assert not (result := is_one_of(*values))
 
-    assert exception.value.required == MINIMUM_NUMBER_OF_VALUES
+    error = unwrap_failure(result)
+    assert isinstance(error, InsufficientValuesError)
+    assert error.required == MINIMUM_NUMBER_OF_VALUES

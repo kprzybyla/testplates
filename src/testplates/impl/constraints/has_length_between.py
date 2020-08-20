@@ -11,9 +11,12 @@ Boundary = Union[Limit, UnlimitedType]
 
 class HasLengthBetween:
 
-    __slots__ = ("minimum_length", "maximum_length")
+    __slots__ = ("name", "minimum_length", "maximum_length")
 
-    def __init__(self, *, minimum_length: Boundary, maximum_length: Boundary) -> None:
+    def __init__(
+        self, name: str, /, *, minimum_length: Boundary, maximum_length: Boundary
+    ) -> None:
+        self.name = name
         self.minimum_length = minimum_length
         self.maximum_length = maximum_length
 
@@ -23,7 +26,7 @@ class HasLengthBetween:
             repr(self.maximum_length),
         ]
 
-        return f"{testplates.__name__}.has_size_between({', '.join(boundaries)})"
+        return f"{testplates.__name__}.{self.name}({', '.join(boundaries)})"
 
     def __eq__(self, other: Any) -> bool:
         if not isinstance(other, Sized):
