@@ -12,7 +12,7 @@ __all__ = [
 
 from typing import overload, AnyStr, TypeVar, List, Optional, Final
 
-from resultful import success, failure, unwrap_success, unwrap_failure, Result
+from resultful import success, failure, unwrap_success, Result
 
 from testplates.impl.base import (
     get_minimum,
@@ -32,12 +32,7 @@ from testplates.impl.constraints import (
 )
 
 from .value import Boundary, UNLIMITED
-from .exceptions import (
-    TestplatesError,
-    InvalidSignatureError,
-    InsufficientValuesError,
-    UnlimitedRangeError,
-)
+from .exceptions import TestplatesError, InsufficientValuesError, UnlimitedRangeError
 
 _T = TypeVar("_T")
 
@@ -131,15 +126,15 @@ def has_size_between(
         :param maximum: maximum size boundary value
     """
 
+    if minimum is UNLIMITED and maximum is UNLIMITED:
+        return failure(UnlimitedRangeError())
+
     result = get_length_boundaries(inclusive_minimum=minimum, inclusive_maximum=maximum)
 
     if not result:
         return result
 
     minimum_length, maximum_length = unwrap_success(result)
-
-    if minimum_length is UNLIMITED and maximum_length is UNLIMITED:
-        return failure(UnlimitedRangeError())
 
     return success(
         HasLengthBetween(
@@ -235,6 +230,14 @@ def ranges_between(
         :param exclusive_minimum: exclusive minimum boundary value
         :param exclusive_maximum: exclusive maximum boundary value
     """
+
+    if (
+        (minimum is UNLIMITED and maximum is UNLIMITED)
+        or (minimum is UNLIMITED and exclusive_maximum is UNLIMITED)
+        or (exclusive_minimum is UNLIMITED and maximum is UNLIMITED)
+        or (exclusive_minimum is UNLIMITED and exclusive_maximum is UNLIMITED)
+    ):
+        return failure(UnlimitedRangeError())
 
     result = get_value_boundaries(
         inclusive_minimum=minimum,

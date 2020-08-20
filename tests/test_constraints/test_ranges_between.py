@@ -8,6 +8,7 @@ from testplates import UNLIMITED
 from testplates import ranges_between
 from testplates import (
     MissingBoundaryError,
+    UnlimitedRangeError,
     MutuallyExclusiveBoundariesError,
     OverlappingBoundariesError,
     SingleMatchBoundariesError,
@@ -152,15 +153,6 @@ def test_repr_with_exclusive_minimum_and_exclusive_maximum(
 
 
 # noinspection PyTypeChecker
-@given(value=st_value())
-def test_success_with_unlimited_minimum_and_unlimited_maximum(value: int) -> None:
-    assert (result := ranges_between(minimum=UNLIMITED, maximum=UNLIMITED))
-
-    constraint = unwrap_success(result)
-    assert constraint == value
-
-
-# noinspection PyTypeChecker
 @given(data=st.data(), value=st_value())
 def test_success_with_inclusive_minimum_and_inclusive_maximum(
     data: st.DataObject, value: int
@@ -230,6 +222,34 @@ def test_success_with_exclusive_minimum_and_exclusive_maximum(
 
     constraint = unwrap_success(result)
     assert constraint == value
+
+
+def test_failure_when_minimum_and_maximum_are_unlimited() -> None:
+    assert not (result := ranges_between(minimum=UNLIMITED, maximum=UNLIMITED))
+
+    error = unwrap_failure(result)
+    assert isinstance(error, UnlimitedRangeError)
+
+
+def test_failure_when_minimum_and_exclusive_maximum_are_unlimited() -> None:
+    assert not (result := ranges_between(minimum=UNLIMITED, exclusive_maximum=UNLIMITED))
+
+    error = unwrap_failure(result)
+    assert isinstance(error, UnlimitedRangeError)
+
+
+def test_failure_when_exclusive_minimum_and_maximum_are_unlimited() -> None:
+    assert not (result := ranges_between(exclusive_minimum=UNLIMITED, maximum=UNLIMITED))
+
+    error = unwrap_failure(result)
+    assert isinstance(error, UnlimitedRangeError)
+
+
+def test_failure_when_exclusive_minimum_and_exclusive_maximum_are_unlimited() -> None:
+    assert not (result := ranges_between(exclusive_minimum=UNLIMITED, exclusive_maximum=UNLIMITED))
+
+    error = unwrap_failure(result)
+    assert isinstance(error, UnlimitedRangeError)
 
 
 # noinspection PyTypeChecker
