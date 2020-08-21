@@ -13,7 +13,6 @@ from testplates import UNLIMITED
 from testplates import string_validator
 from testplates import (
     InvalidTypeError,
-    InvalidSignatureError,
     MissingBoundaryError,
     InvalidSizeError,
     InvalidMinimumSizeError,
@@ -161,7 +160,7 @@ def test_failure_when_size_boundaries_are_missing() -> None:
     assert not (validator_result := string_validator())
 
     error = unwrap_failure(validator_result)
-    assert isinstance(error, InvalidSignatureError)
+    assert isinstance(error, MissingBoundaryError)
 
 
 # noinspection PyTypeChecker

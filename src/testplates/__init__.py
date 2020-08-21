@@ -1,6 +1,8 @@
 __all__ = [
     "Required",
     "Optional",
+    "CreateObjectFunctionType",
+    "CreateMappingFunctionType",
     "Maybe",
     "Value",
     "Boundary",
@@ -10,6 +12,8 @@ __all__ = [
     "LiteralWildcard",
     "LiteralAbsent",
     "LiteralUnlimited",
+    "initialize",
+    "fields",
     "field",
     "create_object",
     "Object",
@@ -21,9 +25,7 @@ __all__ = [
     "ABSENT",
     "UNLIMITED",
     "TestplatesError",
-    "InvalidSignatureError",
     "DanglingDescriptorError",
-    "ErroneousFieldsError",
     "MissingValueError",
     "UnexpectedValueError",
     "ProhibitedValueError",
@@ -42,7 +44,6 @@ __all__ = [
     "matches_pattern",
     "is_one_of",
     "is_permutation_of",
-    "InsufficientValuesError",
     "passthrough_validator",
     "type_validator",
     "boolean_validator",
@@ -73,10 +74,13 @@ __all__ = [
 
 # Annotations
 
-from testplates.fields import (
+from testplates.structure import (
     Required,
     Optional,
 )
+
+from testplates.object import CreateObjectFunctionType
+from testplates.mapping import CreateMappingFunctionType
 
 from testplates.value import (
     Maybe,
@@ -92,7 +96,11 @@ from testplates.value import (
 
 # Concretes
 
-from .fields import field
+from testplates.structure import (
+    initialize,
+    fields,
+    field,
+)
 
 from testplates.object import (
     create_object,
@@ -114,9 +122,7 @@ from testplates.value import (
 
 from testplates.exceptions import (
     TestplatesError,
-    InvalidSignatureError,
     DanglingDescriptorError,
-    ErroneousFieldsError,
     MissingValueError,
     UnexpectedValueError,
     ProhibitedValueError,
@@ -139,8 +145,6 @@ from testplates.constraints import (
     is_one_of,
     is_permutation_of,
 )
-
-from testplates.exceptions import InsufficientValuesError
 
 from testplates.validators import (
     passthrough_validator,

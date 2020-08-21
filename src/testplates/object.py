@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-__all__ = ["create_object", "Object"]
+__all__ = ["create_object", "CreateObjectFunctionType", "Object"]
 
-from typing import cast, Generic, Type, TypeVar, Mapping, Optional
+from typing import cast, Type, TypeVar, Generic, Protocol
 
 from testplates.impl.base.structure import Field, Structure
 
@@ -13,7 +13,7 @@ _T = TypeVar("_T", covariant=True)
 
 # noinspection PyTypeChecker
 # noinspection PyProtectedMember
-def create_object(name: str, fields: Optional[Mapping[str, Field[_T]]] = None) -> Type[Object[_T]]:
+def create_object(name: str, **fields: Field[_T]) -> Type[Object[_T]]:
 
     """
         Functional API for creating object.
@@ -22,7 +22,18 @@ def create_object(name: str, fields: Optional[Mapping[str, Field[_T]]] = None) -
         :param fields: object fields
     """
 
-    return cast(Type[Object[_T]], Object._create_(name, fields))  # type: ignore
+    return cast(Type[Object[_T]], Object._create_(name, **fields))
+
+
+class CreateObjectFunctionType(Protocol):
+    def __call__(self, name: str, **fields: Field[Value[_T]]) -> Type[Object[_T]]:
+
+        """
+            Functional API for creating object.
+
+            :param name: object type name
+            :param fields: object fields
+        """
 
 
 class Object(Generic[_T], Structure[_T]):

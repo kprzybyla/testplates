@@ -1,17 +1,31 @@
-__all__ = ["field", "Required", "Optional"]
+__all__ = ["initialize", "fields", "field", "Required", "Optional"]
 
-from typing import overload, Type, TypeVar, Union, Callable, Literal
+from typing import overload, Any, Type, TypeVar, Union, Mapping, Callable, Literal
 
-from testplates.impl.base import Field
+from resultful import Result
+
+from testplates.impl.base import Field, Structure
 
 from .value import Value, Maybe, Validator, LiteralAny, LiteralWildcard, LiteralAbsent, MISSING
 from .validators import passthrough_validator
-from .exceptions import InvalidSignatureError
+from .exceptions import TestplatesError
 
 _T = TypeVar("_T")
 
 Required = Field[Union[_T, LiteralAny]]
 Optional = Field[Union[_T, LiteralAny, LiteralWildcard, LiteralAbsent]]
+
+
+# noinspection PyProtectedMember
+def initialize(
+    structure: Structure[_T], /, **values: Value[Any]
+) -> Result[Structure[_T], TestplatesError]:
+    return structure._init_(**values)
+
+
+# noinspection PyProtectedMember
+def fields(structure_type: Type[Structure[_T]], /) -> Mapping[str, Field[Any]]:
+    return dict(structure_type._fields_)
 
 
 @overload
@@ -27,30 +41,7 @@ def field(
     validator: Validator = ...,
     /,
     *,
-    default_factory: Maybe[Callable[[], _T]] = ...,
-) -> Required[_T]:
-    ...
-
-
-@overload
-def field(
-    typ: Type[_T],
-    validator: Validator = ...,
-    /,
-    *,
     default: Maybe[_T] = ...,
-    optional: Literal[False],
-) -> Required[_T]:
-    ...
-
-
-@overload
-def field(
-    typ: Type[_T],
-    validator: Validator = ...,
-    /,
-    *,
-    default_factory: Maybe[Callable[[], _T]] = ...,
     optional: Literal[False],
 ) -> Required[_T]:
     ...
@@ -87,18 +78,6 @@ def field(
     /,
     *,
     default: Maybe[_T] = ...,
-    optional: bool = ...,
-) -> Field[Value[_T]]:
-    ...
-
-
-@overload
-def field(
-    typ: Type[_T],
-    validator: Validator = ...,
-    /,
-    *,
-    default_factory: Maybe[Callable[[], _T]] = ...,
     optional: bool = ...,
 ) -> Field[Value[_T]]:
     ...
@@ -127,8 +106,5 @@ def field(
         :param default_factory: field default value factory
         :param optional: indication whether field is optional or not
     """
-
-    if default is not MISSING and default_factory is not MISSING:
-        raise InvalidSignatureError("Cannot use default and default_factory together")
 
     return Field(validator, default=default, default_factory=default_factory, optional=optional)

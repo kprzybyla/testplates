@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-__all__ = ["create_mapping", "Mapping"]
+__all__ = ["create_mapping", "CreateMappingFunctionType", "Mapping"]
 
 import typing
 
-from typing import cast, Type, TypeVar, Generic, Iterator, Optional
+from typing import cast, Type, TypeVar, Generic, Iterator, Protocol
 
 from testplates.impl.base import Field, Structure
 
@@ -15,9 +15,7 @@ _T = TypeVar("_T", covariant=True)
 
 # noinspection PyTypeChecker
 # noinspection PyProtectedMember
-def create_mapping(
-    name: str, fields: Optional[typing.Mapping[str, Field[_T]]] = None
-) -> Type[Mapping[_T]]:
+def create_mapping(name: str, **fields: Field[_T]) -> Type[Mapping[_T]]:
 
     """
         Functional API for creating mapping.
@@ -26,7 +24,18 @@ def create_mapping(
         :param fields: mapping fields
     """
 
-    return cast(Type[Mapping[_T]], Mapping._create_(name, fields))  # type: ignore
+    return cast(Type[Mapping[_T]], Mapping._create_(name, **fields))
+
+
+class CreateMappingFunctionType(Protocol):
+    def __call__(self, name: str, **fields: Field[Value[_T]]) -> Type[Mapping[_T]]:
+
+        """
+            Functional API for creating mapping.
+
+            :param name: mapping type name
+            :param fields: mapping fields
+        """
 
 
 class Mapping(Generic[_T], Structure[_T], typing.Mapping[str, _T]):
@@ -48,6 +57,6 @@ class Mapping(Generic[_T], Structure[_T], typing.Mapping[str, _T]):
 
     @staticmethod
     def _get_value_(
-        self: typing.Mapping[str, _T], key: str, /, *, default: Maybe[_T] = MISSING
+        self: Mapping[_T], key: str, /, *, default: Maybe[_T] = MISSING
     ) -> Value[Maybe[_T]]:
         return self.get(key, default)

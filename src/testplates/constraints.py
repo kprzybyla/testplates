@@ -10,7 +10,7 @@ __all__ = [
     "ranges_between",
 ]
 
-from typing import overload, AnyStr, TypeVar, List, Optional
+from typing import AnyStr, TypeVar, List, Optional
 
 from resultful import success, failure, unwrap_success, Result
 
@@ -173,34 +173,6 @@ def matches_pattern(pattern: AnyStr, /) -> Result[MatchesPattern[AnyStr], Testpl
     """
 
     return success(MatchesPattern(matches_pattern.__name__, pattern))
-
-
-@overload
-def ranges_between(
-    *, minimum: Boundary[int], maximum: Boundary[int]
-) -> Result[RangesBetween, TestplatesError]:
-    ...
-
-
-@overload
-def ranges_between(
-    *, minimum: Boundary[int], exclusive_maximum: Boundary[int]
-) -> Result[RangesBetween, TestplatesError]:
-    ...
-
-
-@overload
-def ranges_between(
-    *, exclusive_minimum: Boundary[int], maximum: Boundary[int]
-) -> Result[RangesBetween, TestplatesError]:
-    ...
-
-
-@overload
-def ranges_between(
-    *, exclusive_minimum: Boundary[int], exclusive_maximum: Boundary[int]
-) -> Result[RangesBetween, TestplatesError]:
-    ...
 
 
 def ranges_between(

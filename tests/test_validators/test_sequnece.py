@@ -11,7 +11,6 @@ from testplates import sequence_validator
 from testplates import (
     TestplatesError,
     InvalidTypeError,
-    InvalidSignatureError,
     MissingBoundaryError,
     InvalidSizeError,
     InvalidMinimumSizeError,
@@ -137,7 +136,7 @@ def test_failure_when_size_boundaries_are_missing() -> None:
     assert not (validator_result := sequence_validator())
 
     error = unwrap_failure(validator_result)
-    assert isinstance(error, InvalidSignatureError)
+    assert isinstance(error, MissingBoundaryError)
 
 
 # noinspection PyTypeChecker

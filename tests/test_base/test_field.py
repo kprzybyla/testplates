@@ -1,97 +1,124 @@
-import pytest
-
+from string import printable
 from typing import List, NoReturn
+
+import pytest
 
 from resultful import failure, unwrap_failure, Result
 from hypothesis import given
 from hypothesis import strategies as st
 
 from testplates import ANY, WILDCARD, ABSENT
-from testplates import field, Required, Optional, Object
-from testplates import TestplatesError, InvalidSignatureError, DanglingDescriptorError
+from testplates import initialize, field
+from testplates import TestplatesError, DanglingDescriptorError
 
-from tests.strategies import st_anything_comparable
+from tests.strategies import st_anything_comparable, Draw
 
-
-def test_repr_for_required_field_without_default_value() -> None:
-    fmt = "testplates.Field('key', optional=False)"
-
-    class Template(Object[int]):
-
-        key: Required[int] = field(int)
-
-    assert repr(Template.key) == fmt.format()
+from .assets import CreateFunctionType
+from .conftest import create_function_parameters
 
 
-@given(value=st_anything_comparable())
-def test_repr_for_required_field_with_default_value(value: int) -> None:
-    fmt = "testplates.Field('key', default={value}, optional=False)"
-
-    class Template(Object[int]):
-
-        key: Required[int] = field(int, default=value)
-
-    assert repr(Template.key) == fmt.format(value=repr(value))
+@st.composite
+def st_name(draw: Draw[str]) -> str:
+    return draw(st.text(printable))
 
 
-def test_repr_for_optional_field_without_default_value() -> None:
-    fmt = "testplates.Field('key', optional=True)"
+# noinspection PyTypeChecker
+@given(name=st_name(), key=st.text())
+@create_function_parameters
+def test_repr_for_required_field_without_default_value(
+    name: str, key: str, create_function: CreateFunctionType
+) -> None:
+    field_object = field(int)
+    create_function(name, **{key: field_object})
 
-    class Template(Object[int]):
-
-        key: Optional[int] = field(int, optional=True)
-
-    assert repr(Template.key) == fmt.format()
-
-
-@given(value=st_anything_comparable())
-def test_repr_for_optional_field_with_default_value(value: int) -> None:
-    fmt = "testplates.Field('key', default={value}, optional=True)"
-
-    class Template(Object[int]):
-
-        key: Optional[int] = field(int, default=value, optional=True)
-
-    assert repr(Template.key) == fmt.format(value=repr(value))
+    repr_format = f"testplates.Field({key!r}, optional=False)"
+    assert repr(field_object) == repr_format
 
 
-def test_validator_is_not_called_on_special_value_for_required_field() -> None:
+# noinspection PyTypeChecker
+@given(name=st_name(), key=st.text(), value=st_anything_comparable())
+@create_function_parameters
+def test_repr_for_required_field_with_default_value(
+    name: str, key: str, value: int, create_function: CreateFunctionType
+) -> None:
+    field_object = field(int, default=value)
+    create_function(name, **{key: field_object})
+
+    repr_format = f"testplates.Field({key!r}, default={value!r}, optional=False)"
+    assert repr(field_object) == repr_format
+
+
+# noinspection PyTypeChecker
+@given(name=st_name(), key=st.text())
+@create_function_parameters
+def test_repr_for_optional_field_without_default_value(
+    name: str, key: str, create_function: CreateFunctionType
+) -> None:
+    field_object = field(int, optional=True)
+    create_function(name, **{key: field_object})
+
+    repr_format = f"testplates.Field({key!r}, optional=True)"
+    assert repr(field_object) == repr_format
+
+
+# noinspection PyTypeChecker
+@given(name=st_name(), key=st.text(), value=st_anything_comparable())
+@create_function_parameters
+def test_repr_for_optional_field_with_default_value(
+    name: str, key: str, value: int, create_function: CreateFunctionType
+) -> None:
+    field_object = field(int, default=value, optional=True)
+    create_function(name, **{key: field_object})
+
+    repr_format = f"testplates.Field({key!r}, default={value!r}, optional=True)"
+    assert repr(field_object) == repr_format
+
+
+# noinspection PyTypeChecker
+@given(name=st_name(), key=st.text())
+@create_function_parameters
+def test_validator_is_not_called_on_special_value_for_required_field(
+    name: str, key: str, create_function: CreateFunctionType
+) -> None:
     def validator(*args: int, **kwargs: int) -> NoReturn:
         raise NotImplementedError(args, kwargs)
 
-    class Template(Object[int]):
-
-        key: Required[int] = field(int, validator)
-
-    assert Template()._init_(key=ANY)
+    field_object = field(int, validator)
+    template_type = create_function(name, **{key: field_object})
+    assert initialize(template_type(), **{key: ANY})
 
 
-def test_validator_is_not_called_on_special_value_for_optional_field() -> None:
+# noinspection PyTypeChecker
+@given(name=st_name(), key=st.text())
+@create_function_parameters
+def test_validator_is_not_called_on_special_value_for_optional_field(
+    name: str, key: str, create_function: CreateFunctionType
+) -> None:
     def validator(*args: int, **kwargs: int) -> NoReturn:
         raise NotImplementedError(args, kwargs)
 
-    class Template(Object[int]):
-
-        key: Optional[int] = field(int, validator, optional=True)
-
-    assert Template()._init_(key=ANY)
-    assert Template()._init_(key=WILDCARD)
-    assert Template()._init_(key=ABSENT)
+    field_object = field(int, validator, optional=True)
+    template_type = create_function(name, **{key: field_object})
+    assert initialize(template_type(), **{key: ANY})
+    assert initialize(template_type(), **{key: WILDCARD})
+    assert initialize(template_type(), **{key: ABSENT})
 
 
-@given(value=st_anything_comparable(), message=st.text())
-def test_validator_failure(value: int, message: str) -> None:
+# noinspection PyTypeChecker
+@given(name=st_name(), key=st.text(), value=st_anything_comparable(), message=st.text())
+@create_function_parameters
+def test_validator_failure(
+    name: str, key: str, value: int, message: str, create_function: CreateFunctionType
+) -> None:
     validator_error = TestplatesError(message)
 
     def validator(this_value: int, /) -> Result[None, TestplatesError]:
         assert this_value is value
         return failure(validator_error)
 
-    class Template(Object[int]):
-
-        key: Required[int] = field(int, validator)
-
-    assert not (result := Template()._init_(key=value))
+    field_object = field(int, validator)
+    template_type = create_function(name, **{key: field_object})
+    assert not (result := initialize(template_type(), **{key: value}))
 
     error = unwrap_failure(result)
     assert isinstance(error, TestplatesError)
@@ -99,7 +126,7 @@ def test_validator_failure(value: int, message: str) -> None:
 
 
 def test_name_raises_dangling_descriptor_error_when_specified_outside_the_class() -> None:
-    field_object: Required[int] = field(int)
+    field_object = field(int)
 
     with pytest.raises(DanglingDescriptorError) as exception:
         print(field_object.name)
@@ -109,19 +136,10 @@ def test_name_raises_dangling_descriptor_error_when_specified_outside_the_class(
 
 # noinspection PyTypeChecker
 def test_default_for_mutable_objects() -> None:
-    field_object: Required[List[int]] = field(List[int], default=list())
-
+    field_object = field(List[int], default=list())
     assert field_object.default is field_object.default
 
 
-# noinspection PyTypeChecker
 def test_default_factory_for_mutable_objects() -> None:
-    field_object: Required[List[int]] = field(List[int], default_factory=list)
-
+    field_object = field(List[int], default_factory=list)
     assert field_object.default is not field_object.default
-
-
-# noinspection PyArgumentList
-def test_default_and_default_factory_type_error() -> None:
-    with pytest.raises(InvalidSignatureError):
-        field(int, default=list(), default_factory=list)  # type: ignore

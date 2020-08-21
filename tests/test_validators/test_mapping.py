@@ -37,7 +37,7 @@ def test_success(key: str, value: int) -> None:
         return success(None)
 
     field_object: Optional[int] = field(int, validator, optional=True)
-    structure_type = create_object(STRUCTURE_NAME, {key: field_object})
+    structure_type = create_object(STRUCTURE_NAME, **{key: field_object})
     assert (validator_result := mapping_validator(structure_type))
 
     validator = unwrap_success(validator_result)
@@ -51,7 +51,7 @@ def test_success(key: str, value: int) -> None:
 @given(key=st.text())
 def test_success_with_optional_field(key: str) -> None:
     field_object: Optional[int] = field(int, passthrough_validator, optional=True)
-    structure_type = create_object(STRUCTURE_NAME, {key: field_object})
+    structure_type = create_object(STRUCTURE_NAME, **{key: field_object})
     assert (validator_result := mapping_validator(structure_type))
 
     validator = unwrap_success(validator_result)
@@ -80,7 +80,7 @@ def test_failure_when_data_type_validation_fails(data: Any) -> None:
 @given(key=st.text())
 def test_failure_when_data_required_key_is_missing(key: str) -> None:
     field_object: Required[int] = field(int, passthrough_validator)
-    structure_type = create_object(STRUCTURE_NAME, {key: field_object})
+    structure_type = create_object(STRUCTURE_NAME, **{key: field_object})
     assert (validator_result := mapping_validator(structure_type))
 
     validator = unwrap_success(validator_result)
@@ -95,7 +95,7 @@ def test_failure_when_data_required_key_is_missing(key: str) -> None:
 # noinspection PyTypeChecker
 @given(key=st.text(), value=st_anything_comparable())
 def test_failure_when_data_has_unknown_field(key: str, value: int) -> None:
-    structure_type: Type[Object[int]] = create_object(STRUCTURE_NAME, {})
+    structure_type: Type[Object[int]] = create_object(STRUCTURE_NAME)
     assert (validator_result := mapping_validator(structure_type))
 
     validator = unwrap_success(validator_result)
@@ -117,7 +117,7 @@ def test_failure_when_data_field_validation_fails(key: str, value: int, message:
         return failure(field_error)
 
     field_object: Optional[int] = field(int, validator, optional=True)
-    structure_type = create_object(STRUCTURE_NAME, {key: field_object})
+    structure_type = create_object(STRUCTURE_NAME, **{key: field_object})
     assert (validator_result := mapping_validator(structure_type))
 
     validator = unwrap_success(validator_result)

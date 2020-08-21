@@ -8,7 +8,6 @@ from testplates import UNLIMITED
 from testplates import integer_validator
 from testplates import (
     InvalidTypeError,
-    InvalidSignatureError,
     ProhibitedBoolValueError,
     MissingBoundaryError,
     InvalidMinimumValueError,
@@ -450,7 +449,7 @@ def test_failure_when_boundaries_are_missing() -> None:
     assert not (validator_result := integer_validator())
 
     error = unwrap_failure(validator_result)
-    assert isinstance(error, InvalidSignatureError)
+    assert isinstance(error, MissingBoundaryError)
 
 
 # noinspection PyTypeChecker

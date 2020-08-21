@@ -190,12 +190,12 @@ class Field(Generic[_T]):
         return success(None)
 
 
-class StructureDict(Generic[_T], Dict[str, Any]):
+class StructureDict(Generic[_T], Dict[str, _T]):
 
     __slots__ = ("fields",)
 
-    def __init__(self, **kwargs: Any) -> None:
-        super().__init__(**kwargs)
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
 
         self.fields: Dict[str, Field[_T]] = {}
 
@@ -232,22 +232,17 @@ class StructureMeta(Generic[_T], abc.ABCMeta):
 
     # noinspection PyTypeChecker
     # noinspection PyArgumentList
-    def _create_(
-        cls, name: str, fields: Optional[Mapping[str, Field[_T]]] = None
-    ) -> StructureMeta[_T]:
+    def _create_(cls, name: str, **fields: Field[_T]) -> StructureMeta[_T]:
         bases = (cls,)
         metaclass = cls.__class__
 
-        fields = fields or {}
-
         attrs = metaclass.__prepare__(name, bases)
-        attrs.fields = {key: value for key, value in fields.items()}
+
+        for key, field in (fields or {}).items():
+            attrs.__setitem__(key, field)
 
         instance = cast(StructureMeta[_T], metaclass.__new__(metaclass, name, bases, attrs))
         metaclass.__init__(instance, name, bases, attrs)
-
-        for name, field in fields.items():
-            field.__set_name__(instance, name)
 
         return instance
 
@@ -265,6 +260,9 @@ class Structure(Generic[_T], abc.ABC, metaclass=StructureMeta):
     _Self_ = TypeVar("_Self_", bound="Structure[_T]")
 
     _fields_: ClassVar[Mapping[str, Field[_T]]]
+
+    def __init__(self) -> None:
+        self._values_: Mapping[str, Value[_T]] = {}
 
     def __repr__(self) -> str:
         return f"{type(self).__name__}({format_like_dict(self._values_)})"
@@ -287,9 +285,7 @@ class Structure(Generic[_T], abc.ABC, metaclass=StructureMeta):
                 return failure(UnexpectedValueError(key, value))
 
         for key, field in self._fields_.items():
-            result = field.validate(values.get(key, MISSING))
-
-            if not result:
+            if not (result := field.validate(values.get(key, MISSING))):
                 return result
 
             if field.default is not MISSING:

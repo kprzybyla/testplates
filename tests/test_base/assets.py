@@ -1,10 +1,8 @@
 __all__ = ["CreateFunctionType", "StorageType", "ObjectStorage", "MappingStorage"]
 
-from typing import Any, TypeVar, Union, Dict, Protocol
+from typing import Any, Union, Dict, Protocol
 
 from testplates import CreateObjectFunctionType, CreateMappingFunctionType
-
-_T = TypeVar("_T", covariant=True)
 
 CreateFunctionType = Union[CreateObjectFunctionType, CreateMappingFunctionType]
 
@@ -23,5 +21,5 @@ class ObjectStorage:
             setattr(self, key, value)
 
 
-class MappingStorage(Dict[str, _T]):
+class MappingStorage(Dict[str, Any]):
     pass

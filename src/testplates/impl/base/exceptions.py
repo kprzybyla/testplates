@@ -1,8 +1,6 @@
 __all__ = [
     "TestplatesError",
-    "InvalidSignatureError",
     "DanglingDescriptorError",
-    "ErroneousFieldsError",
     "MissingValueError",
     "UnexpectedValueError",
     "ProhibitedValueError",
@@ -14,7 +12,7 @@ __all__ = [
     "SingleMatchBoundariesError",
 ]
 
-from typing import Any, Mapping
+from typing import Any
 
 
 class TestplatesError(Exception):
@@ -36,13 +34,6 @@ class TestplatesError(Exception):
         return "".join(self.args)
 
 
-class InvalidSignatureError(TestplatesError):
-
-    """
-        Error indicating invalid signature.
-    """
-
-
 class DanglingDescriptorError(TestplatesError):
 
     """
@@ -57,22 +48,6 @@ class DanglingDescriptorError(TestplatesError):
         self.descriptor = descriptor
 
         super().__init__(f"Descriptor {descriptor!r} defined outside of the class definition")
-
-
-class ErroneousFieldsError(TestplatesError):
-
-    """
-        Error indicating erroneous fields.
-
-        Raised when user incorrectly setups
-        structure fields making them unusable.
-    """
-
-    def __init__(self, structure: Any, fields: Mapping[str, TestplatesError]) -> None:
-        self.structure = structure
-        self.fields = fields
-
-        super().__init__(f"Erroneous fields {fields!r} found in {structure!r}")
 
 
 class MissingValueError(TestplatesError):
