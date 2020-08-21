@@ -1,14 +1,16 @@
 __all__ = ["CreateFunctionType", "StorageType", "ObjectStorage", "MappingStorage"]
 
-from typing import Any, Union, Dict, Protocol
+from typing import Any, TypeVar, Union, Dict, Protocol
 
 from testplates import CreateObjectFunctionType, CreateMappingFunctionType
+
+_T = TypeVar("_T")
 
 CreateFunctionType = Union[CreateObjectFunctionType, CreateMappingFunctionType]
 
 
 class StorageType(Protocol):
-    def __call__(self, **values: Any) -> None:
+    def __call__(self: _T, **values: Any) -> _T:
         ...
 
     def __eq__(self, other: Any) -> bool:
