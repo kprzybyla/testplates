@@ -5,18 +5,18 @@ import testplates
 from .assets import ObjectStorage, MappingStorage
 
 
-template_parameters = pytest.mark.parametrize(
-    "template_type",
+create_function_parameters = pytest.mark.parametrize(
+    "create_function",
     [
-        pytest.param(testplates.Object, id="object"),
-        pytest.param(testplates.Mapping, id="mapping"),
+        pytest.param(testplates.create_object, id="object"),
+        pytest.param(testplates.create_mapping, id="mapping"),
     ],
 )
 
-template_and_storage_parameters = pytest.mark.parametrize(
-    "template_type, storage_type",
+create_function_and_storage_type_parameters = pytest.mark.parametrize(
+    "create_function, storage_type",
     [
-        pytest.param(testplates.Object, ObjectStorage, id="object"),
-        pytest.param(testplates.Mapping, MappingStorage, id="mapping"),
+        pytest.param(testplates.create_object, ObjectStorage, id="object"),
+        pytest.param(testplates.create_mapping, MappingStorage, id="mapping"),
     ],
 )
