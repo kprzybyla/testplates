@@ -6,7 +6,6 @@ __all__ = [
     "MatchesPattern",
     "IsOneOf",
     "IsPermutationOf",
-    "InsufficientValuesError",
 ]
 
 from .contains import Contains
@@ -16,4 +15,3 @@ from .ranges_between import RangesBetween
 from .matches_pattern import MatchesPattern
 from .is_one_of import IsOneOf
 from .is_permutation_of import IsPermutationOf
-from .exceptions import InsufficientValuesError

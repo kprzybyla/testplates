@@ -1,14 +1,11 @@
 from typing import TypeVar, List, Container, Final
 from dataclasses import dataclass
 
-import pytest
-
-from resultful import unwrap_success, unwrap_failure
+from resultful import unwrap_success
 from hypothesis import assume, given
 from hypothesis import strategies as st
 
 from testplates import contains
-from testplates import InsufficientValuesError
 
 from tests.utils import samples
 from tests.strategies import st_anything_comparable, Draw
@@ -51,6 +48,7 @@ def st_values_without(draw: Draw[List[_T]], value: _T) -> List[_T]:
 
 
 # noinspection PyTypeChecker
+# noinspection PyArgumentList
 @given(values=st_values())
 def test_repr(values: List[_T]) -> None:
     fmt = "testplates.contains({values})"
@@ -62,6 +60,7 @@ def test_repr(values: List[_T]) -> None:
 
 
 # noinspection PyTypeChecker
+# noinspection PyArgumentList
 @given(values=st_values())
 def test_returns_true(values: List[_T]) -> None:
     assert (result := contains(*values))
@@ -82,17 +81,10 @@ def test_returns_false(data: st.DataObject, value: _T) -> None:
 
 
 # noinspection PyTypeChecker
+# noinspection PyArgumentList
 @given(values=st_values())
 def test_returns_false_when_value_is_not_container(values: List[_T]) -> None:
     assert (result := contains(*values))
 
     constraint = unwrap_success(result)
     assert constraint != NotContainer()
-
-
-def test_failure_when_less_than_one_value_was_provided() -> None:
-    assert not (result := contains())
-
-    error = unwrap_failure(result)
-    assert isinstance(error, InsufficientValuesError)
-    assert error.required == MINIMUM_NUMBER_OF_VALUES

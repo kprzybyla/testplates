@@ -497,13 +497,13 @@ def test_failure_when_mutually_exclusive_boundaries_are_set(
     exclusive_maximum = data.draw(st_exclusive_maximum(value))
 
     assert not (
-        result := ranges_between(
+        result := ranges_between(  # type: ignore
             minimum=inclusive_minimum,
             maximum=inclusive_maximum,
             exclusive_minimum=exclusive_minimum,
             exclusive_maximum=exclusive_maximum,
         )
-    )  # type: ignore
+    )
 
     error = unwrap_failure(result)
     assert isinstance(error, MutuallyExclusiveBoundariesError)
@@ -523,24 +523,24 @@ def test_failure_when_mutually_exclusive_minimum_boundaries_are_set(
     exclusive_maximum = data.draw(st_exclusive_maximum(value))
 
     assert not (
-        result := ranges_between(
+        result := ranges_between(  # type: ignore
             minimum=inclusive_minimum,
             maximum=inclusive_maximum,
             exclusive_minimum=exclusive_minimum,
         )
-    )  # type: ignore
+    )
 
     error = unwrap_failure(result)
     assert isinstance(error, MutuallyExclusiveBoundariesError)
     assert error.name == MINIMUM_EXTREMUM
 
     assert not (
-        result := ranges_between(
+        result := ranges_between(  # type: ignore
             minimum=inclusive_minimum,
             exclusive_minimum=exclusive_minimum,
             exclusive_maximum=exclusive_maximum,
         )
-    )  # type: ignore
+    )
 
     error = unwrap_failure(result)
     assert isinstance(error, MutuallyExclusiveBoundariesError)
@@ -560,24 +560,24 @@ def test_failure_when_mutually_exclusive_maximum_boundaries_are_set(
     exclusive_maximum = data.draw(st_exclusive_maximum(value))
 
     assert not (
-        result := ranges_between(
+        result := ranges_between(  # type: ignore
             minimum=inclusive_minimum,
             maximum=inclusive_maximum,
             exclusive_maximum=exclusive_maximum,
         )
-    )  # type: ignore
+    )
 
     error = unwrap_failure(result)
     assert isinstance(error, MutuallyExclusiveBoundariesError)
     assert error.name == MAXIMUM_EXTREMUM
 
     assert not (
-        result := ranges_between(
+        result := ranges_between(  # type: ignore
             maximum=inclusive_maximum,
             exclusive_minimum=exclusive_minimum,
             exclusive_maximum=exclusive_maximum,
         )
-    )  # type: ignore
+    )
 
     error = unwrap_failure(result)
     assert isinstance(error, MutuallyExclusiveBoundariesError)

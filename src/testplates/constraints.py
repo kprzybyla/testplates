@@ -10,7 +10,7 @@ __all__ = [
     "ranges_between",
 ]
 
-from typing import overload, AnyStr, TypeVar, List, Optional, Final
+from typing import overload, AnyStr, TypeVar, List, Optional
 
 from resultful import success, failure, unwrap_success, Result
 
@@ -32,28 +32,22 @@ from testplates.impl.constraints import (
 )
 
 from .value import Boundary, UNLIMITED
-from .exceptions import TestplatesError, InsufficientValuesError, UnlimitedRangeError
+from .exceptions import TestplatesError, UnlimitedRangeError
 
 _T = TypeVar("_T")
 
-MINIMUM_NUMBER_OF_CONTAINS_VALUES: Final[int] = 1
-MINIMUM_NUMBER_OF_IS_ONE_OF_VALUES: Final[int] = 2
-MINIMUM_NUMBER_OF_IS_PERMUTATION_VALUES: Final[int] = 2
 
-
-def contains(*values: _T) -> Result[Contains[_T], TestplatesError]:
+def contains(first: _T, /, *rest: _T) -> Result[Contains[_T], TestplatesError]:
 
     """
         Returns constraint object that matches any container object
         that contains all values specified via the positional arguments.
 
-        :param values: values to be present in container object
+        :param first: first value to be present in the container object
+        :param rest: other values to be present in container object
     """
 
-    if len(values) < MINIMUM_NUMBER_OF_CONTAINS_VALUES:
-        return failure(InsufficientValuesError(MINIMUM_NUMBER_OF_CONTAINS_VALUES))
-
-    return success(Contains(*values))
+    return success(Contains(contains.__name__, first, *rest))
 
 
 def has_size(size: int) -> Result[HasLength, TestplatesError]:
@@ -143,19 +137,18 @@ def has_size_between(
     )
 
 
-def is_one_of(*values: _T) -> Result[IsOneOf[_T], TestplatesError]:
+def is_one_of(first: _T, second: _T, /, *rest: _T) -> Result[IsOneOf[_T], TestplatesError]:
 
     """
         Returns constraint object that matches any object
         which was specified via the positional arguments.
 
-        :param values: values to be matched by constraint object
+        :param first: first value to be matched by the constraint object
+        :param second: second value to be matched by the constraint object
+        :param rest: other values to be matched by constraint object
     """
 
-    if len(values) < MINIMUM_NUMBER_OF_IS_ONE_OF_VALUES:
-        return failure(InsufficientValuesError(MINIMUM_NUMBER_OF_IS_ONE_OF_VALUES))
-
-    return success(IsOneOf(*values))
+    return success(IsOneOf(is_one_of.__name__, first, second, *rest))
 
 
 def is_permutation_of(values: List[_T], /) -> Result[IsPermutationOf[_T], TestplatesError]:
@@ -167,10 +160,7 @@ def is_permutation_of(values: List[_T], /) -> Result[IsPermutationOf[_T], Testpl
         :param values: values to be matched as permutation
     """
 
-    if len(values) < MINIMUM_NUMBER_OF_IS_PERMUTATION_VALUES:
-        return failure(InsufficientValuesError(MINIMUM_NUMBER_OF_IS_PERMUTATION_VALUES))
-
-    return success(IsPermutationOf(values))
+    return success(IsPermutationOf(is_permutation_of.__name__, values))
 
 
 def matches_pattern(pattern: AnyStr, /) -> Result[MatchesPattern[AnyStr], TestplatesError]:
@@ -182,7 +172,7 @@ def matches_pattern(pattern: AnyStr, /) -> Result[MatchesPattern[AnyStr], Testpl
         :param pattern: pattern to be matched inside string content
     """
 
-    return success(MatchesPattern(pattern))
+    return success(MatchesPattern(matches_pattern.__name__, pattern))
 
 
 @overload
@@ -251,4 +241,8 @@ def ranges_between(
 
     minimum_value, maximum_value = unwrap_success(result)
 
-    return success(RangesBetween(minimum_value=minimum_value, maximum_value=maximum_value))
+    return success(
+        RangesBetween(
+            ranges_between.__name__, minimum_value=minimum_value, maximum_value=maximum_value
+        )
+    )

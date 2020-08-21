@@ -11,13 +11,14 @@ _T = TypeVar("_T")
 
 class Contains(Generic[_T]):
 
-    __slots__ = ("values",)
+    __slots__ = ("name", "values")
 
-    def __init__(self, *values: _T) -> None:
+    def __init__(self, name: str, *values: _T) -> None:
+        self.name = name
         self.values = values
 
     def __repr__(self) -> str:
-        return f"{testplates.__name__}.contains({format_like_tuple(self.values)})"
+        return f"{testplates.__name__}.{self.name}({format_like_tuple(self.values)})"
 
     def __eq__(self, other: Any) -> bool:
         if not isinstance(other, Container):

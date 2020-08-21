@@ -163,7 +163,7 @@ class UnlimitedRangeError(TestplatesError):
     """
 
     def __init__(self) -> None:
-        super().__init__(f"Unlimited range is not permitted in this context")
+        super().__init__("Unlimited range is not permitted in this context")
 
 
 class MutuallyExclusiveBoundariesError(TestplatesError):

@@ -12,7 +12,6 @@ __all__ = [
     "MutuallyExclusiveBoundariesError",
     "OverlappingBoundariesError",
     "SingleMatchBoundariesError",
-    "InsufficientValuesError",
     "InvalidTypeValueError",
     "InvalidTypeError",
     "ProhibitedBoolValueError",
@@ -46,8 +45,6 @@ from testplates.impl.base import (
     OverlappingBoundariesError,
     SingleMatchBoundariesError,
 )
-
-from testplates.impl.constraints import InsufficientValuesError
 
 from testplates.impl.validators import (
     InvalidTypeValueError,

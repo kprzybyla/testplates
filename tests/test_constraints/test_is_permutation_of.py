@@ -1,23 +1,18 @@
 import random
 
-from typing import TypeVar, Sized, Iterable, Iterator, Container, Collection, List, Final
+from typing import TypeVar, Sized, Iterable, Iterator, Container, Collection, List
 from dataclasses import dataclass
 
-import pytest
-
-from resultful import unwrap_success, unwrap_failure
+from resultful import unwrap_success
 from hypothesis import assume, given
 from hypothesis import strategies as st
 
 from testplates import is_permutation_of
-from testplates import InsufficientValuesError
 
 from tests.utils import samples
 from tests.strategies import st_anything_comparable, Draw
 
 _T = TypeVar("_T")
-
-MINIMUM_NUMBER_OF_VALUES: Final[int] = 2
 
 
 @dataclass
@@ -94,16 +89,8 @@ def st_value(draw: Draw[_T]) -> _T:
 
 
 @st.composite
-def st_values(draw: Draw[List[_T]]) -> List[_T]:
-    return draw(st.lists(st_value(), min_size=MINIMUM_NUMBER_OF_VALUES))
-
-
-@st.composite
-def st_inverse_values(draw: Draw[List[_T]]) -> List[_T]:
-    values = draw(st.lists(st_value(), max_size=MINIMUM_NUMBER_OF_VALUES))
-    assume(len(values) != MINIMUM_NUMBER_OF_VALUES)
-
-    return values
+def st_values(draw: Draw[List[_T]], min_size: int = 0) -> List[_T]:
+    return draw(st.lists(st_value(), min_size=min_size))
 
 
 # noinspection PyTypeChecker
@@ -129,7 +116,7 @@ def test_returns_true(values: List[_T]) -> None:
 
 
 # noinspection PyTypeChecker
-@given(values=st_values(), other=st_value())
+@given(values=st_values(min_size=1), other=st_value())
 def test_returns_false(values: List[_T], other: _T) -> None:
     assume(other not in values)
 
@@ -161,7 +148,7 @@ def test_returns_false_when_permutation_has_more_values(values: List[_T]) -> Non
 # noinspection PyTypeChecker
 @given(values=st_values())
 def test_returns_false_when_permutation_has_fewer_values(values: List[_T]) -> None:
-    permutation = samples(values, minimum=MINIMUM_NUMBER_OF_VALUES)
+    permutation = samples(values)
 
     assume(len(permutation) < len(values))
 
@@ -196,13 +183,3 @@ def test_returns_false_when_value_is_not_container(values: List[_T]) -> None:
 
     constraint = unwrap_success(result)
     assert constraint != NotContainer(values)
-
-
-# noinspection PyTypeChecker
-@given(values=st_inverse_values())
-def test_failure_when_less_than_two_values_were_provided(values: List[_T]) -> None:
-    assert not (result := is_permutation_of(values))
-
-    error = unwrap_failure(result)
-    assert isinstance(error, InsufficientValuesError)
-    assert error.required == MINIMUM_NUMBER_OF_VALUES

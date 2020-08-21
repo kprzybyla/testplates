@@ -9,13 +9,14 @@ _T = TypeVar("_T")
 
 class IsPermutationOf(Generic[_T]):
 
-    __slots__ = ("values",)
+    __slots__ = ("name", "values")
 
-    def __init__(self, values: List[_T], /) -> None:
+    def __init__(self, name: str, values: List[_T], /) -> None:
+        self.name = name
         self.values = values
 
     def __repr__(self) -> str:
-        return f"{testplates.__name__}.is_permutation_of({self.values!r})"
+        return f"{testplates.__name__}.{self.name}({self.values!r})"
 
     def __eq__(self, other: Any) -> bool:
         if not isinstance(other, Collection):
