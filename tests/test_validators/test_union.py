@@ -1,14 +1,39 @@
-from typing import Any, Dict, NoReturn
+from typing import (
+    Any,
+    Dict,
+    NoReturn,
+)
 
-from resultful import failure, unwrap_success, unwrap_failure, Result
-from hypothesis import assume, given
-from hypothesis import strategies as st
+from resultful import (
+    failure,
+    unwrap_success,
+    unwrap_failure,
+    Result,
+)
 
-from testplates import union_validator, passthrough_validator, Validator
-from testplates import TestplatesError, InvalidKeyError, InvalidTypeError, ChoiceValidationError
+from hypothesis import (
+    assume,
+    given,
+    strategies as st,
+)
+
+from testplates import (
+    union_validator,
+    passthrough_validator,
+    Validator,
+    TestplatesError,
+    InvalidKeyError,
+    InvalidTypeError,
+    ChoiceValidationError,
+)
 
 from tests.utils import sample
-from tests.strategies import st_anything_except, st_anything_comparable, Draw
+
+from tests.strategies import (
+    st_anything_except,
+    st_anything_comparable,
+    Draw,
+)
 
 
 @st.composite
@@ -46,7 +71,9 @@ def test_success(choices: Dict[str, Validator], value: Any) -> None:
 # noinspection PyTypeChecker
 @given(choices=st_choices(min_size=1), key=st.text(), value=st_anything_comparable())
 def test_failure_when_invalid_key_is_passed(
-    choices: Dict[str, Validator], key: str, value: Any
+    choices: Dict[str, Validator],
+    key: str,
+    value: Any,
 ) -> None:
     assume(key not in choices)
     assert (validator_result := union_validator(choices))
@@ -76,7 +103,9 @@ def test_failure_when_data_type_validation_fails(choices: Dict[str, Validator], 
 # noinspection PyTypeChecker
 @given(choices=st_choices(min_size=1), value=st_anything_comparable(), message=st.text())
 def test_failure_when_data_field_validation_fails(
-    choices: Dict[str, Validator], value: Any, message: str
+    choices: Dict[str, Validator],
+    value: Any,
+    message: str,
 ) -> None:
     choice_error = TestplatesError(message)
 

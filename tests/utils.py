@@ -1,6 +1,10 @@
 import random
 
-from typing import TypeVar, List, Iterable
+from typing import (
+    TypeVar,
+    List,
+    Iterable,
+)
 
 _T = TypeVar("_T")
 

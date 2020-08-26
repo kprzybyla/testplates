@@ -1,11 +1,19 @@
 from typing import TypeVar
 
-from resultful import unwrap_success, unwrap_failure
-from hypothesis import given
-from hypothesis import strategies as st
+from resultful import (
+    unwrap_success,
+    unwrap_failure,
+)
 
-from testplates import boolean_validator
-from testplates import InvalidTypeError
+from hypothesis import (
+    given,
+    strategies as st,
+)
+
+from testplates import (
+    boolean_validator,
+    InvalidTypeError,
+)
 
 from tests.strategies import st_anything_except
 

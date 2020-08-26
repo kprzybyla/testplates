@@ -1,11 +1,19 @@
 import sys
 
+from typing import (
+    Sized,
+    Final,
+)
+
 from dataclasses import dataclass
-from typing import Sized, Final
 
 from resultful import unwrap_success
-from hypothesis import assume, given
-from hypothesis import strategies as st
+
+from hypothesis import (
+    assume,
+    given,
+    strategies as st,
+)
 
 from testplates import has_size
 
@@ -31,7 +39,9 @@ class NotSized:
 
 @st.composite
 def st_size(
-    draw: Draw[int], min_value: int = MINIMUM_ALLOWED_SIZE, max_value: int = MAXIMUM_ALLOWED_SIZE
+    draw: Draw[int],
+    min_value: int = MINIMUM_ALLOWED_SIZE,
+    max_value: int = MAXIMUM_ALLOWED_SIZE,
 ) -> int:
     return draw(st.integers(min_value=min_value, max_value=max_value))
 

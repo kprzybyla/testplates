@@ -1,17 +1,37 @@
 from string import printable
-from typing import List, NoReturn
+
+from typing import (
+    List,
+    NoReturn,
+)
 
 import pytest
 
-from resultful import failure, unwrap_failure, Result
-from hypothesis import given
-from hypothesis import strategies as st
+from resultful import (
+    failure,
+    unwrap_failure,
+    Result,
+)
 
-from testplates import ANY, WILDCARD, ABSENT
-from testplates import initialize, field
-from testplates import TestplatesError, DanglingDescriptorError
+from hypothesis import (
+    given,
+    strategies as st,
+)
 
-from tests.strategies import st_anything_comparable, Draw
+from testplates import (
+    initialize,
+    field,
+    ANY,
+    WILDCARD,
+    ABSENT,
+    TestplatesError,
+    DanglingDescriptorError,
+)
+
+from tests.strategies import (
+    st_anything_comparable,
+    Draw,
+)
 
 from .assets import CreateFunctionType
 from .conftest import create_function_parameters
@@ -26,7 +46,9 @@ def st_name(draw: Draw[str]) -> str:
 @given(name=st_name(), key=st.text())
 @create_function_parameters
 def test_repr_for_required_field_without_default_value(
-    name: str, key: str, create_function: CreateFunctionType
+    name: str,
+    key: str,
+    create_function: CreateFunctionType,
 ) -> None:
     field_object = field(int)
     create_function(name, **{key: field_object})
@@ -39,7 +61,10 @@ def test_repr_for_required_field_without_default_value(
 @given(name=st_name(), key=st.text(), value=st_anything_comparable())
 @create_function_parameters
 def test_repr_for_required_field_with_default_value(
-    name: str, key: str, value: int, create_function: CreateFunctionType
+    name: str,
+    key: str,
+    value: int,
+    create_function: CreateFunctionType,
 ) -> None:
     field_object = field(int, default=value)
     create_function(name, **{key: field_object})
@@ -52,7 +77,9 @@ def test_repr_for_required_field_with_default_value(
 @given(name=st_name(), key=st.text())
 @create_function_parameters
 def test_repr_for_optional_field_without_default_value(
-    name: str, key: str, create_function: CreateFunctionType
+    name: str,
+    key: str,
+    create_function: CreateFunctionType,
 ) -> None:
     field_object = field(int, optional=True)
     create_function(name, **{key: field_object})
@@ -65,7 +92,10 @@ def test_repr_for_optional_field_without_default_value(
 @given(name=st_name(), key=st.text(), value=st_anything_comparable())
 @create_function_parameters
 def test_repr_for_optional_field_with_default_value(
-    name: str, key: str, value: int, create_function: CreateFunctionType
+    name: str,
+    key: str,
+    value: int,
+    create_function: CreateFunctionType,
 ) -> None:
     field_object = field(int, default=value, optional=True)
     create_function(name, **{key: field_object})
@@ -78,7 +108,9 @@ def test_repr_for_optional_field_with_default_value(
 @given(name=st_name(), key=st.text())
 @create_function_parameters
 def test_validator_is_not_called_on_special_value_for_required_field(
-    name: str, key: str, create_function: CreateFunctionType
+    name: str,
+    key: str,
+    create_function: CreateFunctionType,
 ) -> None:
     def validator(*args: int, **kwargs: int) -> NoReturn:
         raise NotImplementedError(args, kwargs)
@@ -92,7 +124,9 @@ def test_validator_is_not_called_on_special_value_for_required_field(
 @given(name=st_name(), key=st.text())
 @create_function_parameters
 def test_validator_is_not_called_on_special_value_for_optional_field(
-    name: str, key: str, create_function: CreateFunctionType
+    name: str,
+    key: str,
+    create_function: CreateFunctionType,
 ) -> None:
     def validator(*args: int, **kwargs: int) -> NoReturn:
         raise NotImplementedError(args, kwargs)
@@ -108,7 +142,11 @@ def test_validator_is_not_called_on_special_value_for_optional_field(
 @given(name=st_name(), key=st.text(), value=st_anything_comparable(), message=st.text())
 @create_function_parameters
 def test_validator_failure(
-    name: str, key: str, value: int, message: str, create_function: CreateFunctionType
+    name: str,
+    key: str,
+    value: int,
+    message: str,
+    create_function: CreateFunctionType,
 ) -> None:
     validator_error = TestplatesError(message)
 
@@ -140,6 +178,7 @@ def test_default_for_mutable_objects() -> None:
     assert field_object.default is field_object.default
 
 
+# noinspection PyTypeChecker
 def test_default_factory_for_mutable_objects() -> None:
     field_object = field(List[int], default_factory=list)
     assert field_object.default is not field_object.default

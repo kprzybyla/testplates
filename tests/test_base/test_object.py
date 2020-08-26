@@ -1,8 +1,17 @@
 from resultful import unwrap_success
-from hypothesis import given
-from hypothesis import strategies as st
 
-from testplates import initialize, field, Object, Required, Optional
+from hypothesis import (
+    given,
+    strategies as st,
+)
+
+from testplates import (
+    initialize,
+    field,
+    Object,
+    Required,
+    Optional,
+)
 
 
 @given(value=st.integers())

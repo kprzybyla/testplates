@@ -1,12 +1,24 @@
-from typing import Any, Optional, Literal, Final
+from typing import (
+    Any,
+    Optional,
+    Literal,
+    Final,
+)
 
-from resultful import unwrap_success, unwrap_failure
-from hypothesis import assume, given
-from hypothesis import strategies as st
+from resultful import (
+    unwrap_success,
+    unwrap_failure,
+)
 
-from testplates import UNLIMITED
-from testplates import integer_validator
+from hypothesis import (
+    assume,
+    given,
+    strategies as st,
+)
+
 from testplates import (
+    integer_validator,
+    UNLIMITED,
     InvalidTypeError,
     ProhibitedBoolValueError,
     MissingBoundaryError,
@@ -17,7 +29,10 @@ from testplates import (
     SingleMatchBoundariesError,
 )
 
-from tests.strategies import st_anything_except, Draw
+from tests.strategies import (
+    st_anything_except,
+    Draw,
+)
 
 MINIMUM_EXTREMUM: Final[Literal["minimum"]] = "minimum"
 MAXIMUM_EXTREMUM: Final[Literal["maximum"]] = "maximum"
@@ -27,7 +42,9 @@ EXCLUSIVE_ALIGNMENT: Final[int] = 1
 
 @st.composite
 def st_value(
-    draw: Draw[int], min_value: Optional[int] = None, max_value: Optional[int] = None
+    draw: Draw[int],
+    min_value: Optional[int] = None,
+    max_value: Optional[int] = None,
 ) -> int:
     return draw(st.integers(min_value=min_value, max_value=max_value))  # type: ignore
 
@@ -70,7 +87,9 @@ def test_repr() -> None:
 def test_success_when_allow_bool_is_true(data: bool) -> None:
     assert (
         validator_result := integer_validator(
-            minimum=UNLIMITED, maximum=UNLIMITED, allow_bool=True,
+            minimum=UNLIMITED,
+            maximum=UNLIMITED,
+            allow_bool=True,
         )
     )
 
@@ -140,8 +159,6 @@ def test_failure_when_value_does_not_fit_maximum_value(st_data: st.DataObject, d
     assert error.maximum.value == maximum
 
 
-# ?????
-
 # noinspection PyTypeChecker
 @given(data=st_value())
 def test_success_with_unlimited_minimum_and_unlimited_maximum(data: int) -> None:
@@ -157,7 +174,8 @@ def test_success_with_unlimited_minimum_and_unlimited_maximum(data: int) -> None
 # noinspection PyTypeChecker
 @given(st_data=st.data(), data=st_value())
 def test_success_with_inclusive_minimum_and_inclusive_maximum(
-    st_data: st.DataObject, data: int
+    st_data: st.DataObject,
+    data: int,
 ) -> None:
     inclusive_minimum = st_data.draw(st_inclusive_minimum(data))
     inclusive_maximum = st_data.draw(st_inclusive_maximum(data))
@@ -165,7 +183,10 @@ def test_success_with_inclusive_minimum_and_inclusive_maximum(
     assume(inclusive_minimum != inclusive_maximum)
 
     assert (
-        validator_result := integer_validator(minimum=inclusive_minimum, maximum=inclusive_maximum)
+        validator_result := integer_validator(
+            minimum=inclusive_minimum,
+            maximum=inclusive_maximum,
+        )
     )
 
     validator = unwrap_success(validator_result)
@@ -178,7 +199,8 @@ def test_success_with_inclusive_minimum_and_inclusive_maximum(
 # noinspection PyTypeChecker
 @given(st_data=st.data(), data=st_value())
 def test_success_with_inclusive_minimum_and_exclusive_maximum(
-    st_data: st.DataObject, data: int
+    st_data: st.DataObject,
+    data: int,
 ) -> None:
     inclusive_minimum = st_data.draw(st_inclusive_minimum(data))
     exclusive_maximum = st_data.draw(st_exclusive_maximum(data))
@@ -187,7 +209,8 @@ def test_success_with_inclusive_minimum_and_exclusive_maximum(
 
     assert (
         validator_result := integer_validator(
-            minimum=inclusive_minimum, exclusive_maximum=exclusive_maximum
+            minimum=inclusive_minimum,
+            exclusive_maximum=exclusive_maximum,
         )
     )
 
@@ -201,7 +224,8 @@ def test_success_with_inclusive_minimum_and_exclusive_maximum(
 # noinspection PyTypeChecker
 @given(st_data=st.data(), data=st_value())
 def test_success_with_exclusive_minimum_and_inclusive_maximum(
-    st_data: st.DataObject, data: int
+    st_data: st.DataObject,
+    data: int,
 ) -> None:
     exclusive_minimum = st_data.draw(st_exclusive_minimum(data))
     inclusive_maximum = st_data.draw(st_inclusive_maximum(data))
@@ -210,7 +234,8 @@ def test_success_with_exclusive_minimum_and_inclusive_maximum(
 
     assert (
         validator_result := integer_validator(
-            exclusive_minimum=exclusive_minimum, maximum=inclusive_maximum
+            exclusive_minimum=exclusive_minimum,
+            maximum=inclusive_maximum,
         )
     )
 
@@ -224,7 +249,8 @@ def test_success_with_exclusive_minimum_and_inclusive_maximum(
 # noinspection PyTypeChecker
 @given(st_data=st.data(), data=st_value())
 def test_success_with_exclusive_minimum_and_exclusive_maximum(
-    st_data: st.DataObject, data: int
+    st_data: st.DataObject,
+    data: int,
 ) -> None:
     exclusive_minimum = st_data.draw(st_exclusive_minimum(data))
     exclusive_maximum = st_data.draw(st_exclusive_maximum(data))
@@ -233,7 +259,8 @@ def test_success_with_exclusive_minimum_and_exclusive_maximum(
 
     assert (
         validator_result := integer_validator(
-            exclusive_minimum=exclusive_minimum, exclusive_maximum=exclusive_maximum
+            exclusive_minimum=exclusive_minimum,
+            exclusive_maximum=exclusive_maximum,
         )
     )
 
@@ -247,7 +274,8 @@ def test_success_with_exclusive_minimum_and_exclusive_maximum(
 # noinspection PyTypeChecker
 @given(st_data=st.data(), data=st_value())
 def test_failure_when_value_is_above_inclusive_minimum_and_inclusive_maximum(
-    st_data: st.DataObject, data: int
+    st_data: st.DataObject,
+    data: int,
 ) -> None:
     inclusive_maximum = st_data.draw(st_value(max_value=data))
     inclusive_minimum = st_data.draw(st_value(max_value=inclusive_maximum))
@@ -256,7 +284,10 @@ def test_failure_when_value_is_above_inclusive_minimum_and_inclusive_maximum(
     assume(inclusive_minimum != inclusive_maximum)
 
     assert (
-        validator_result := integer_validator(minimum=inclusive_minimum, maximum=inclusive_maximum)
+        validator_result := integer_validator(
+            minimum=inclusive_minimum,
+            maximum=inclusive_maximum,
+        )
     )
 
     validator = unwrap_success(validator_result)
@@ -271,7 +302,8 @@ def test_failure_when_value_is_above_inclusive_minimum_and_inclusive_maximum(
 # noinspection PyTypeChecker
 @given(st_data=st.data(), data=st_value())
 def test_failure_when_value_is_below_inclusive_minimum_and_inclusive_maximum(
-    st_data: st.DataObject, data: int
+    st_data: st.DataObject,
+    data: int,
 ) -> None:
     inclusive_minimum = st_data.draw(st_value(min_value=data))
     inclusive_maximum = st_data.draw(st_value(min_value=inclusive_minimum))
@@ -280,7 +312,10 @@ def test_failure_when_value_is_below_inclusive_minimum_and_inclusive_maximum(
     assume(inclusive_minimum != inclusive_maximum)
 
     assert (
-        validator_result := integer_validator(minimum=inclusive_minimum, maximum=inclusive_maximum)
+        validator_result := integer_validator(
+            minimum=inclusive_minimum,
+            maximum=inclusive_maximum,
+        )
     )
 
     validator = unwrap_success(validator_result)
@@ -295,7 +330,8 @@ def test_failure_when_value_is_below_inclusive_minimum_and_inclusive_maximum(
 # noinspection PyTypeChecker
 @given(st_data=st.data(), data=st_value())
 def test_failure_when_value_is_above_inclusive_minimum_and_exclusive_maximum(
-    st_data: st.DataObject, data: int
+    st_data: st.DataObject,
+    data: int,
 ) -> None:
     exclusive_maximum = st_data.draw(st_value(max_value=data))
     inclusive_minimum = st_data.draw(st_value(max_value=exclusive_maximum))
@@ -304,7 +340,8 @@ def test_failure_when_value_is_above_inclusive_minimum_and_exclusive_maximum(
 
     assert (
         validator_result := integer_validator(
-            minimum=inclusive_minimum, exclusive_maximum=exclusive_maximum
+            minimum=inclusive_minimum,
+            exclusive_maximum=exclusive_maximum,
         )
     )
 
@@ -320,7 +357,8 @@ def test_failure_when_value_is_above_inclusive_minimum_and_exclusive_maximum(
 # noinspection PyTypeChecker
 @given(st_data=st.data(), data=st_value())
 def test_failure_when_value_is_below_inclusive_minimum_and_exclusive_maximum(
-    st_data: st.DataObject, data: int
+    st_data: st.DataObject,
+    data: int,
 ) -> None:
     inclusive_minimum = st_data.draw(st_value(min_value=data))
     exclusive_maximum = st_data.draw(st_value(min_value=inclusive_minimum))
@@ -330,7 +368,8 @@ def test_failure_when_value_is_below_inclusive_minimum_and_exclusive_maximum(
 
     assert (
         validator_result := integer_validator(
-            minimum=inclusive_minimum, exclusive_maximum=exclusive_maximum
+            minimum=inclusive_minimum,
+            exclusive_maximum=exclusive_maximum,
         )
     )
 
@@ -346,7 +385,8 @@ def test_failure_when_value_is_below_inclusive_minimum_and_exclusive_maximum(
 # noinspection PyTypeChecker
 @given(st_data=st.data(), data=st_value())
 def test_failure_when_value_is_above_exclusive_minimum_and_inclusive_maximum(
-    st_data: st.DataObject, data: int
+    st_data: st.DataObject,
+    data: int,
 ) -> None:
     inclusive_maximum = st_data.draw(st_value(max_value=data))
     exclusive_minimum = st_data.draw(st_value(max_value=inclusive_maximum))
@@ -356,7 +396,8 @@ def test_failure_when_value_is_above_exclusive_minimum_and_inclusive_maximum(
 
     assert (
         validator_result := integer_validator(
-            exclusive_minimum=exclusive_minimum, maximum=inclusive_maximum
+            exclusive_minimum=exclusive_minimum,
+            maximum=inclusive_maximum,
         )
     )
 
@@ -372,7 +413,8 @@ def test_failure_when_value_is_above_exclusive_minimum_and_inclusive_maximum(
 # noinspection PyTypeChecker
 @given(st_data=st.data(), data=st_value())
 def test_failure_when_value_is_below_exclusive_minimum_and_inclusive_maximum(
-    st_data: st.DataObject, data: int
+    st_data: st.DataObject,
+    data: int,
 ) -> None:
     exclusive_minimum = st_data.draw(st_value(min_value=data))
     inclusive_maximum = st_data.draw(st_value(min_value=exclusive_minimum))
@@ -381,7 +423,8 @@ def test_failure_when_value_is_below_exclusive_minimum_and_inclusive_maximum(
 
     assert (
         validator_result := integer_validator(
-            exclusive_minimum=exclusive_minimum, maximum=inclusive_maximum
+            exclusive_minimum=exclusive_minimum,
+            maximum=inclusive_maximum,
         )
     )
 
@@ -397,7 +440,8 @@ def test_failure_when_value_is_below_exclusive_minimum_and_inclusive_maximum(
 # noinspection PyTypeChecker
 @given(st_data=st.data(), data=st_value())
 def test_failure_when_value_is_above_exclusive_minimum_and_exclusive_maximum(
-    st_data: st.DataObject, data: int
+    st_data: st.DataObject,
+    data: int,
 ) -> None:
     exclusive_maximum = st_data.draw(st_value(max_value=data))
     exclusive_minimum = st_data.draw(st_value(max_value=exclusive_maximum))
@@ -406,7 +450,8 @@ def test_failure_when_value_is_above_exclusive_minimum_and_exclusive_maximum(
 
     assert (
         validator_result := integer_validator(
-            exclusive_minimum=exclusive_minimum, exclusive_maximum=exclusive_maximum
+            exclusive_minimum=exclusive_minimum,
+            exclusive_maximum=exclusive_maximum,
         )
     )
 
@@ -422,7 +467,8 @@ def test_failure_when_value_is_above_exclusive_minimum_and_exclusive_maximum(
 # noinspection PyTypeChecker
 @given(st_data=st.data(), data=st_value())
 def test_failure_when_value_is_below_exclusive_minimum_and_exclusive_maximum(
-    st_data: st.DataObject, data: int
+    st_data: st.DataObject,
+    data: int,
 ) -> None:
     exclusive_minimum = st_data.draw(st_value(min_value=data))
     exclusive_maximum = st_data.draw(st_value(min_value=exclusive_minimum))
@@ -431,7 +477,8 @@ def test_failure_when_value_is_below_exclusive_minimum_and_exclusive_maximum(
 
     assert (
         validator_result := integer_validator(
-            exclusive_minimum=exclusive_minimum, exclusive_maximum=exclusive_maximum
+            exclusive_minimum=exclusive_minimum,
+            exclusive_maximum=exclusive_maximum,
         )
     )
 
@@ -496,7 +543,8 @@ def test_failure_when_maximum_boundary_is_missing(st_data: st.DataObject, data: 
 # noinspection PyArgumentList
 @given(st_data=st.data(), data=st_value())
 def test_failure_when_mutually_exclusive_boundaries_are_set(
-    st_data: st.DataObject, data: int
+    st_data: st.DataObject,
+    data: int,
 ) -> None:
     inclusive_minimum = st_data.draw(st_inclusive_minimum(data))
     inclusive_maximum = st_data.draw(st_inclusive_maximum(data))
@@ -522,7 +570,8 @@ def test_failure_when_mutually_exclusive_boundaries_are_set(
 # noinspection PyArgumentList
 @given(st_data=st.data(), data=st_value())
 def test_failure_when_mutually_exclusive_minimum_boundaries_are_set(
-    st_data: st.DataObject, data: int
+    st_data: st.DataObject,
+    data: int,
 ) -> None:
     inclusive_minimum = st_data.draw(st_inclusive_minimum(data))
     inclusive_maximum = st_data.draw(st_inclusive_maximum(data))
@@ -559,7 +608,8 @@ def test_failure_when_mutually_exclusive_minimum_boundaries_are_set(
 # noinspection PyArgumentList
 @given(st_data=st.data(), data=st_value())
 def test_failure_when_mutually_exclusive_maximum_boundaries_are_set(
-    st_data: st.DataObject, data: int
+    st_data: st.DataObject,
+    data: int,
 ) -> None:
     inclusive_minimum = st_data.draw(st_inclusive_minimum(data))
     inclusive_maximum = st_data.draw(st_inclusive_maximum(data))
@@ -603,7 +653,10 @@ def test_failure_when_inclusive_minimum_and_inclusive_maximum_are_overlapping(
     assume(inclusive_minimum != inclusive_maximum)
 
     assert not (
-        validator_result := integer_validator(minimum=inclusive_minimum, maximum=inclusive_maximum)
+        validator_result := integer_validator(
+            minimum=inclusive_minimum,
+            maximum=inclusive_maximum,
+        )
     )
 
     error = unwrap_failure(validator_result)
@@ -624,7 +677,8 @@ def test_failure_when_inclusive_minimum_and_exclusive_maximum_are_overlapping(
 
     assert not (
         validator_result := integer_validator(
-            minimum=inclusive_minimum, exclusive_maximum=exclusive_maximum
+            minimum=inclusive_minimum,
+            exclusive_maximum=exclusive_maximum,
         )
     )
 
@@ -646,7 +700,8 @@ def test_failure_when_exclusive_minimum_and_inclusive_maximum_are_overlapping(
 
     assert not (
         validator_result := integer_validator(
-            exclusive_minimum=exclusive_minimum, maximum=inclusive_maximum
+            exclusive_minimum=exclusive_minimum,
+            maximum=inclusive_maximum,
         )
     )
 
@@ -668,7 +723,8 @@ def test_failure_when_exclusive_minimum_and_exclusive_maximum_are_overlapping(
 
     assert not (
         validator_result := integer_validator(
-            exclusive_minimum=exclusive_minimum, exclusive_maximum=exclusive_maximum
+            exclusive_minimum=exclusive_minimum,
+            exclusive_maximum=exclusive_maximum,
         )
     )
 
@@ -689,7 +745,10 @@ def test_failure_when_inclusive_minimum_and_inclusive_maximum_match_single_value
     inclusive_maximum = data
 
     assert not (
-        validator_result := integer_validator(minimum=inclusive_minimum, maximum=inclusive_maximum)
+        validator_result := integer_validator(
+            minimum=inclusive_minimum,
+            maximum=inclusive_maximum,
+        )
     )
 
     error = unwrap_failure(validator_result)
@@ -710,7 +769,8 @@ def test_failure_when_inclusive_minimum_and_exclusive_maximum_match_single_value
 
     assert not (
         validator_result := integer_validator(
-            minimum=inclusive_minimum, exclusive_maximum=exclusive_maximum
+            minimum=inclusive_minimum,
+            exclusive_maximum=exclusive_maximum,
         )
     )
 
@@ -732,7 +792,8 @@ def test_failure_when_exclusive_minimum_and_inclusive_maximum_match_single_value
 
     assert not (
         validator_result := integer_validator(
-            exclusive_minimum=exclusive_minimum, maximum=inclusive_maximum
+            exclusive_minimum=exclusive_minimum,
+            maximum=inclusive_maximum,
         )
     )
 
@@ -753,7 +814,8 @@ def test_failure_when_exclusive_minimum_and_exclusive_maximum_match_single_value
     exclusive_maximum = data + EXCLUSIVE_ALIGNMENT
     assert not (
         validator_result := integer_validator(
-            exclusive_minimum=exclusive_minimum, exclusive_maximum=exclusive_maximum
+            exclusive_minimum=exclusive_minimum,
+            exclusive_maximum=exclusive_maximum,
         )
     )
 

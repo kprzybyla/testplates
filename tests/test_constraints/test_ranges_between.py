@@ -1,12 +1,19 @@
 from typing import Any, Optional, Literal, Final
 
-from resultful import unwrap_success, unwrap_failure
-from hypothesis import assume, given
-from hypothesis import strategies as st
+from resultful import (
+    unwrap_success,
+    unwrap_failure,
+)
 
-from testplates import UNLIMITED
-from testplates import ranges_between
+from hypothesis import (
+    assume,
+    given,
+    strategies as st,
+)
+
 from testplates import (
+    ranges_between,
+    UNLIMITED,
     MissingBoundaryError,
     UnlimitedRangeError,
     MutuallyExclusiveBoundariesError,
@@ -41,7 +48,9 @@ class NotComparable:
 
 @st.composite
 def st_value(
-    draw: Draw[int], min_value: Optional[int] = None, max_value: Optional[int] = None
+    draw: Draw[int],
+    min_value: Optional[int] = None,
+    max_value: Optional[int] = None,
 ) -> int:
     return draw(st.integers(min_value=min_value, max_value=max_value))  # type: ignore
 
@@ -75,7 +84,8 @@ def st_exclusive_maximum(draw: Draw[int], value: int) -> int:
 # noinspection PyTypeChecker
 @given(data=st.data(), value=st_value())
 def test_repr_with_inclusive_minimum_and_inclusive_maximum(
-    data: st.DataObject, value: int
+    data: st.DataObject,
+    value: int,
 ) -> None:
     fmt = "testplates.ranges_between(minimum={minimum}, maximum={maximum})"
 
@@ -93,7 +103,8 @@ def test_repr_with_inclusive_minimum_and_inclusive_maximum(
 # noinspection PyTypeChecker
 @given(data=st.data(), value=st_value())
 def test_repr_with_inclusive_minimum_and_exclusive_maximum(
-    data: st.DataObject, value: int
+    data: st.DataObject,
+    value: int,
 ) -> None:
     fmt = "testplates.ranges_between(minimum={minimum}, exclusive_maximum={maximum})"
 
@@ -103,7 +114,10 @@ def test_repr_with_inclusive_minimum_and_exclusive_maximum(
     assume(inclusive_minimum != exclusive_maximum - EXCLUSIVE_ALIGNMENT)
 
     assert (
-        result := ranges_between(minimum=inclusive_minimum, exclusive_maximum=exclusive_maximum)
+        result := ranges_between(
+            minimum=inclusive_minimum,
+            exclusive_maximum=exclusive_maximum,
+        )
     )
 
     constraint = unwrap_success(result)
@@ -113,7 +127,8 @@ def test_repr_with_inclusive_minimum_and_exclusive_maximum(
 # noinspection PyTypeChecker
 @given(data=st.data(), value=st_value())
 def test_repr_with_exclusive_minimum_and_inclusive_maximum(
-    data: st.DataObject, value: int
+    data: st.DataObject,
+    value: int,
 ) -> None:
     fmt = "testplates.ranges_between(exclusive_minimum={minimum}, maximum={maximum})"
 
@@ -123,7 +138,10 @@ def test_repr_with_exclusive_minimum_and_inclusive_maximum(
     assume(exclusive_minimum + EXCLUSIVE_ALIGNMENT != inclusive_maximum)
 
     assert (
-        result := ranges_between(exclusive_minimum=exclusive_minimum, maximum=inclusive_maximum)
+        result := ranges_between(
+            exclusive_minimum=exclusive_minimum,
+            maximum=inclusive_maximum,
+        )
     )
 
     constraint = unwrap_success(result)
@@ -133,7 +151,8 @@ def test_repr_with_exclusive_minimum_and_inclusive_maximum(
 # noinspection PyTypeChecker
 @given(data=st.data(), value=st_value())
 def test_repr_with_exclusive_minimum_and_exclusive_maximum(
-    data: st.DataObject, value: int
+    data: st.DataObject,
+    value: int,
 ) -> None:
     fmt = "testplates.ranges_between(exclusive_minimum={minimum}, exclusive_maximum={maximum})"
 
@@ -144,7 +163,8 @@ def test_repr_with_exclusive_minimum_and_exclusive_maximum(
 
     assert (
         result := ranges_between(
-            exclusive_minimum=exclusive_minimum, exclusive_maximum=exclusive_maximum
+            exclusive_minimum=exclusive_minimum,
+            exclusive_maximum=exclusive_maximum,
         )
     )
 
@@ -155,7 +175,8 @@ def test_repr_with_exclusive_minimum_and_exclusive_maximum(
 # noinspection PyTypeChecker
 @given(data=st.data(), value=st_value())
 def test_success_with_inclusive_minimum_and_inclusive_maximum(
-    data: st.DataObject, value: int
+    data: st.DataObject,
+    value: int,
 ) -> None:
     inclusive_minimum = data.draw(st_inclusive_minimum(value))
     inclusive_maximum = data.draw(st_inclusive_maximum(value))
@@ -171,7 +192,8 @@ def test_success_with_inclusive_minimum_and_inclusive_maximum(
 # noinspection PyTypeChecker
 @given(data=st.data(), value=st_value())
 def test_success_with_inclusive_minimum_and_exclusive_maximum(
-    data: st.DataObject, value: int
+    data: st.DataObject,
+    value: int,
 ) -> None:
     inclusive_minimum = data.draw(st_inclusive_minimum(value))
     exclusive_maximum = data.draw(st_exclusive_maximum(value))
@@ -179,7 +201,10 @@ def test_success_with_inclusive_minimum_and_exclusive_maximum(
     assume(inclusive_minimum != exclusive_maximum - EXCLUSIVE_ALIGNMENT)
 
     assert (
-        result := ranges_between(minimum=inclusive_minimum, exclusive_maximum=exclusive_maximum)
+        result := ranges_between(
+            minimum=inclusive_minimum,
+            exclusive_maximum=exclusive_maximum,
+        )
     )
 
     constraint = unwrap_success(result)
@@ -189,7 +214,8 @@ def test_success_with_inclusive_minimum_and_exclusive_maximum(
 # noinspection PyTypeChecker
 @given(data=st.data(), value=st_value())
 def test_success_with_exclusive_minimum_and_inclusive_maximum(
-    data: st.DataObject, value: int
+    data: st.DataObject,
+    value: int,
 ) -> None:
     exclusive_minimum = data.draw(st_exclusive_minimum(value))
     inclusive_maximum = data.draw(st_inclusive_maximum(value))
@@ -197,7 +223,10 @@ def test_success_with_exclusive_minimum_and_inclusive_maximum(
     assume(exclusive_minimum + EXCLUSIVE_ALIGNMENT != inclusive_maximum)
 
     assert (
-        result := ranges_between(exclusive_minimum=exclusive_minimum, maximum=inclusive_maximum)
+        result := ranges_between(
+            exclusive_minimum=exclusive_minimum,
+            maximum=inclusive_maximum,
+        )
     )
 
     constraint = unwrap_success(result)
@@ -207,7 +236,8 @@ def test_success_with_exclusive_minimum_and_inclusive_maximum(
 # noinspection PyTypeChecker
 @given(data=st.data(), value=st_value())
 def test_success_with_exclusive_minimum_and_exclusive_maximum(
-    data: st.DataObject, value: int
+    data: st.DataObject,
+    value: int,
 ) -> None:
     exclusive_minimum = data.draw(st_exclusive_minimum(value))
     exclusive_maximum = data.draw(st_exclusive_maximum(value))
@@ -216,7 +246,8 @@ def test_success_with_exclusive_minimum_and_exclusive_maximum(
 
     assert (
         result := ranges_between(
-            exclusive_minimum=exclusive_minimum, exclusive_maximum=exclusive_maximum
+            exclusive_minimum=exclusive_minimum,
+            exclusive_maximum=exclusive_maximum,
         )
     )
 
@@ -255,7 +286,8 @@ def test_failure_when_exclusive_minimum_and_exclusive_maximum_are_unlimited() ->
 # noinspection PyTypeChecker
 @given(data=st.data(), value=st_value())
 def test_failure_when_value_is_above_inclusive_minimum_and_inclusive_maximum(
-    data: st.DataObject, value: int
+    data: st.DataObject,
+    value: int,
 ) -> None:
     inclusive_maximum = data.draw(st_value(max_value=value))
     inclusive_minimum = data.draw(st_value(max_value=inclusive_maximum))
@@ -272,7 +304,8 @@ def test_failure_when_value_is_above_inclusive_minimum_and_inclusive_maximum(
 # noinspection PyTypeChecker
 @given(data=st.data(), value=st_value())
 def test_failure_when_value_is_below_inclusive_minimum_and_inclusive_maximum(
-    data: st.DataObject, value: int
+    data: st.DataObject,
+    value: int,
 ) -> None:
     inclusive_minimum = data.draw(st_value(min_value=value))
     inclusive_maximum = data.draw(st_value(min_value=inclusive_minimum))
@@ -289,7 +322,8 @@ def test_failure_when_value_is_below_inclusive_minimum_and_inclusive_maximum(
 # noinspection PyTypeChecker
 @given(data=st.data(), value=st_value())
 def test_failure_when_value_is_above_inclusive_minimum_and_exclusive_maximum(
-    data: st.DataObject, value: int
+    data: st.DataObject,
+    value: int,
 ) -> None:
     exclusive_maximum = data.draw(st_value(max_value=value))
     inclusive_minimum = data.draw(st_value(max_value=exclusive_maximum))
@@ -297,7 +331,10 @@ def test_failure_when_value_is_above_inclusive_minimum_and_exclusive_maximum(
     assume(inclusive_minimum < exclusive_maximum - EXCLUSIVE_ALIGNMENT)
 
     assert (
-        result := ranges_between(minimum=inclusive_minimum, exclusive_maximum=exclusive_maximum)
+        result := ranges_between(
+            minimum=inclusive_minimum,
+            exclusive_maximum=exclusive_maximum,
+        )
     )
 
     constraint = unwrap_success(result)
@@ -307,7 +344,8 @@ def test_failure_when_value_is_above_inclusive_minimum_and_exclusive_maximum(
 # noinspection PyTypeChecker
 @given(data=st.data(), value=st_value())
 def test_failure_when_value_is_below_inclusive_minimum_and_exclusive_maximum(
-    data: st.DataObject, value: int
+    data: st.DataObject,
+    value: int,
 ) -> None:
     inclusive_minimum = data.draw(st_value(min_value=value))
     exclusive_maximum = data.draw(st_value(min_value=inclusive_minimum))
@@ -316,7 +354,10 @@ def test_failure_when_value_is_below_inclusive_minimum_and_exclusive_maximum(
     assume(inclusive_minimum < exclusive_maximum - EXCLUSIVE_ALIGNMENT)
 
     assert (
-        result := ranges_between(minimum=inclusive_minimum, exclusive_maximum=exclusive_maximum)
+        result := ranges_between(
+            minimum=inclusive_minimum,
+            exclusive_maximum=exclusive_maximum,
+        )
     )
 
     constraint = unwrap_success(result)
@@ -326,7 +367,8 @@ def test_failure_when_value_is_below_inclusive_minimum_and_exclusive_maximum(
 # noinspection PyTypeChecker
 @given(data=st.data(), value=st_value())
 def test_failure_when_value_is_above_exclusive_minimum_and_inclusive_maximum(
-    data: st.DataObject, value: int
+    data: st.DataObject,
+    value: int,
 ) -> None:
     inclusive_maximum = data.draw(st_value(max_value=value))
     exclusive_minimum = data.draw(st_value(max_value=inclusive_maximum))
@@ -335,7 +377,10 @@ def test_failure_when_value_is_above_exclusive_minimum_and_inclusive_maximum(
     assume(exclusive_minimum + EXCLUSIVE_ALIGNMENT < inclusive_maximum)
 
     assert (
-        result := ranges_between(exclusive_minimum=exclusive_minimum, maximum=inclusive_maximum)
+        result := ranges_between(
+            exclusive_minimum=exclusive_minimum,
+            maximum=inclusive_maximum,
+        )
     )
 
     constraint = unwrap_success(result)
@@ -345,7 +390,8 @@ def test_failure_when_value_is_above_exclusive_minimum_and_inclusive_maximum(
 # noinspection PyTypeChecker
 @given(data=st.data(), value=st_value())
 def test_failure_when_value_is_below_exclusive_minimum_and_inclusive_maximum(
-    data: st.DataObject, value: int
+    data: st.DataObject,
+    value: int,
 ) -> None:
     exclusive_minimum = data.draw(st_value(min_value=value))
     inclusive_maximum = data.draw(st_value(min_value=exclusive_minimum))
@@ -353,7 +399,10 @@ def test_failure_when_value_is_below_exclusive_minimum_and_inclusive_maximum(
     assume(exclusive_minimum + EXCLUSIVE_ALIGNMENT < inclusive_maximum)
 
     assert (
-        result := ranges_between(exclusive_minimum=exclusive_minimum, maximum=inclusive_maximum)
+        result := ranges_between(
+            exclusive_minimum=exclusive_minimum,
+            maximum=inclusive_maximum,
+        )
     )
 
     constraint = unwrap_success(result)
@@ -363,7 +412,8 @@ def test_failure_when_value_is_below_exclusive_minimum_and_inclusive_maximum(
 # noinspection PyTypeChecker
 @given(data=st.data(), value=st_value())
 def test_failure_when_value_is_above_exclusive_minimum_and_exclusive_maximum(
-    data: st.DataObject, value: int
+    data: st.DataObject,
+    value: int,
 ) -> None:
     exclusive_maximum = data.draw(st_value(max_value=value))
     exclusive_minimum = data.draw(st_value(max_value=exclusive_maximum))
@@ -372,7 +422,8 @@ def test_failure_when_value_is_above_exclusive_minimum_and_exclusive_maximum(
 
     assert (
         result := ranges_between(
-            exclusive_minimum=exclusive_minimum, exclusive_maximum=exclusive_maximum
+            exclusive_minimum=exclusive_minimum,
+            exclusive_maximum=exclusive_maximum,
         )
     )
 
@@ -383,7 +434,8 @@ def test_failure_when_value_is_above_exclusive_minimum_and_exclusive_maximum(
 # noinspection PyTypeChecker
 @given(data=st.data(), value=st_value())
 def test_failure_when_value_is_below_exclusive_minimum_and_exclusive_maximum(
-    data: st.DataObject, value: int
+    data: st.DataObject,
+    value: int,
 ) -> None:
     exclusive_minimum = data.draw(st_value(min_value=value))
     exclusive_maximum = data.draw(st_value(min_value=exclusive_minimum))
@@ -392,7 +444,8 @@ def test_failure_when_value_is_below_exclusive_minimum_and_exclusive_maximum(
 
     assert (
         result := ranges_between(
-            exclusive_minimum=exclusive_minimum, exclusive_maximum=exclusive_maximum
+            exclusive_minimum=exclusive_minimum,
+            exclusive_maximum=exclusive_maximum,
         )
     )
 
@@ -403,7 +456,8 @@ def test_failure_when_value_is_below_exclusive_minimum_and_exclusive_maximum(
 # noinspection PyTypeChecker
 @given(data=st.data(), value=st_value())
 def test_failure_when_value_is_not_comparable_with_inclusive_boundaries(
-    data: st.DataObject, value: int
+    data: st.DataObject,
+    value: int,
 ) -> None:
     inclusive_minimum = data.draw(st_inclusive_minimum(value))
     inclusive_maximum = data.draw(st_inclusive_maximum(value))
@@ -419,7 +473,8 @@ def test_failure_when_value_is_not_comparable_with_inclusive_boundaries(
 # noinspection PyTypeChecker
 @given(data=st.data(), value=st_value())
 def test_failure_when_value_is_not_comparable_with_exclusive_boundaries(
-    data: st.DataObject, value: int
+    data: st.DataObject,
+    value: int,
 ) -> None:
     exclusive_minimum = data.draw(st_exclusive_minimum(value))
     exclusive_maximum = data.draw(st_exclusive_maximum(value))
@@ -428,7 +483,8 @@ def test_failure_when_value_is_not_comparable_with_exclusive_boundaries(
 
     assert (
         result := ranges_between(
-            exclusive_minimum=exclusive_minimum, exclusive_maximum=exclusive_maximum
+            exclusive_minimum=exclusive_minimum,
+            exclusive_maximum=exclusive_maximum,
         )
     )
 
@@ -488,7 +544,8 @@ def test_failure_when_maximum_boundary_is_missing(data: st.DataObject, value: in
 # noinspection PyArgumentList
 @given(data=st.data(), value=st_value())
 def test_failure_when_mutually_exclusive_boundaries_are_set(
-    data: st.DataObject, value: int
+    data: st.DataObject,
+    value: int,
 ) -> None:
     inclusive_minimum = data.draw(st_inclusive_minimum(value))
     inclusive_maximum = data.draw(st_inclusive_maximum(value))
@@ -514,7 +571,8 @@ def test_failure_when_mutually_exclusive_boundaries_are_set(
 # noinspection PyArgumentList
 @given(data=st.data(), value=st_value())
 def test_failure_when_mutually_exclusive_minimum_boundaries_are_set(
-    data: st.DataObject, value: int
+    data: st.DataObject,
+    value: int,
 ) -> None:
     inclusive_minimum = data.draw(st_inclusive_minimum(value))
     inclusive_maximum = data.draw(st_inclusive_maximum(value))
@@ -551,7 +609,8 @@ def test_failure_when_mutually_exclusive_minimum_boundaries_are_set(
 # noinspection PyArgumentList
 @given(data=st.data(), value=st_value())
 def test_failure_when_mutually_exclusive_maximum_boundaries_are_set(
-    data: st.DataObject, value: int
+    data: st.DataObject,
+    value: int,
 ) -> None:
     inclusive_minimum = data.draw(st_inclusive_minimum(value))
     inclusive_maximum = data.draw(st_inclusive_maximum(value))
@@ -594,7 +653,12 @@ def test_failure_when_inclusive_minimum_and_inclusive_maximum_are_overlapping(
 
     assume(inclusive_minimum != inclusive_maximum)
 
-    assert not (result := ranges_between(minimum=inclusive_minimum, maximum=inclusive_maximum))
+    assert not (
+        result := ranges_between(
+            minimum=inclusive_minimum,
+            maximum=inclusive_maximum,
+        )
+    )
 
     error = unwrap_failure(result)
     assert isinstance(error, OverlappingBoundariesError)
@@ -613,7 +677,10 @@ def test_failure_when_inclusive_minimum_and_exclusive_maximum_are_overlapping(
     exclusive_maximum = data.draw(st_value(max_value=inclusive_minimum))
 
     assert not (
-        result := ranges_between(minimum=inclusive_minimum, exclusive_maximum=exclusive_maximum)
+        result := ranges_between(
+            minimum=inclusive_minimum,
+            exclusive_maximum=exclusive_maximum,
+        )
     )
 
     error = unwrap_failure(result)
@@ -633,7 +700,10 @@ def test_failure_when_exclusive_minimum_and_inclusive_maximum_are_overlapping(
     inclusive_maximum = data.draw(st_value(max_value=exclusive_minimum))
 
     assert not (
-        result := ranges_between(exclusive_minimum=exclusive_minimum, maximum=inclusive_maximum)
+        result := ranges_between(
+            exclusive_minimum=exclusive_minimum,
+            maximum=inclusive_maximum,
+        )
     )
 
     error = unwrap_failure(result)
@@ -654,7 +724,8 @@ def test_failure_when_exclusive_minimum_and_exclusive_maximum_are_overlapping(
 
     assert not (
         result := ranges_between(
-            exclusive_minimum=exclusive_minimum, exclusive_maximum=exclusive_maximum
+            exclusive_minimum=exclusive_minimum,
+            exclusive_maximum=exclusive_maximum,
         )
     )
 
@@ -674,7 +745,12 @@ def test_failure_when_inclusive_minimum_and_inclusive_maximum_match_single_value
     inclusive_minimum = value
     inclusive_maximum = value
 
-    assert not (result := ranges_between(minimum=inclusive_minimum, maximum=inclusive_maximum))
+    assert not (
+        result := ranges_between(
+            minimum=inclusive_minimum,
+            maximum=inclusive_maximum,
+        )
+    )
 
     error = unwrap_failure(result)
     assert isinstance(error, SingleMatchBoundariesError)
@@ -693,7 +769,10 @@ def test_failure_when_inclusive_minimum_and_exclusive_maximum_match_single_value
     exclusive_maximum = value + EXCLUSIVE_ALIGNMENT
 
     assert not (
-        result := ranges_between(minimum=inclusive_minimum, exclusive_maximum=exclusive_maximum)
+        result := ranges_between(
+            minimum=inclusive_minimum,
+            exclusive_maximum=exclusive_maximum,
+        )
     )
 
     error = unwrap_failure(result)
@@ -713,7 +792,10 @@ def test_failure_when_exclusive_minimum_and_inclusive_maximum_match_single_value
     inclusive_maximum = value
 
     assert not (
-        result := ranges_between(exclusive_minimum=exclusive_minimum, maximum=inclusive_maximum)
+        result := ranges_between(
+            exclusive_minimum=exclusive_minimum,
+            maximum=inclusive_maximum,
+        )
     )
 
     error = unwrap_failure(result)
@@ -734,7 +816,8 @@ def test_failure_when_exclusive_minimum_and_exclusive_maximum_match_single_value
 
     assert not (
         result := ranges_between(
-            exclusive_minimum=exclusive_minimum, exclusive_maximum=exclusive_maximum
+            exclusive_minimum=exclusive_minimum,
+            exclusive_maximum=exclusive_maximum,
         )
     )
 

@@ -1,4 +1,10 @@
-from testplates import MISSING, ANY, WILDCARD, ABSENT, UNLIMITED
+from testplates import (
+    MISSING,
+    ANY,
+    WILDCARD,
+    ABSENT,
+    UNLIMITED,
+)
 
 
 def test_repr_missing() -> None:

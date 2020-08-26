@@ -1,14 +1,30 @@
 import sys
 
-from typing import Any, TypeVar, List, Sequence, Literal, Final
+from typing import (
+    Any,
+    TypeVar,
+    List,
+    Sequence,
+    Literal,
+    Final,
+)
 
-from resultful import failure, unwrap_success, unwrap_failure, Result
-from hypothesis import assume, given
-from hypothesis import strategies as st
+from resultful import (
+    failure,
+    unwrap_success,
+    unwrap_failure,
+    Result,
+)
 
-from testplates import UNLIMITED
-from testplates import sequence_validator
+from hypothesis import (
+    assume,
+    given,
+    strategies as st,
+)
+
 from testplates import (
+    sequence_validator,
+    UNLIMITED,
     TestplatesError,
     InvalidTypeError,
     MissingBoundaryError,
@@ -22,7 +38,12 @@ from testplates import (
 )
 
 from tests.utils import sample
-from tests.strategies import st_hashable, st_anything_except, st_anything_comparable, Draw
+from tests.strategies import (
+    st_hashable,
+    st_anything_except,
+    st_anything_comparable,
+    Draw,
+)
 
 _T = TypeVar("_T")
 
@@ -35,7 +56,9 @@ MAXIMUM_ALLOWED_SIZE: Final[int] = sys.maxsize
 
 @st.composite
 def st_size(
-    draw: Draw[int], min_value: int = MINIMUM_ALLOWED_SIZE, max_value: int = MAXIMUM_ALLOWED_SIZE,
+    draw: Draw[int],
+    min_value: int = MINIMUM_ALLOWED_SIZE,
+    max_value: int = MAXIMUM_ALLOWED_SIZE,
 ) -> int:
     return draw(st.integers(min_value=min_value, max_value=max_value))
 
@@ -67,7 +90,12 @@ def st_size_above_maximum(draw: Draw[int]) -> int:
 
 
 def test_repr() -> None:
-    assert (validator_result := sequence_validator(minimum_size=UNLIMITED, maximum_size=UNLIMITED))
+    assert (
+        validator_result := sequence_validator(
+            minimum_size=UNLIMITED,
+            maximum_size=UNLIMITED,
+        )
+    )
 
     fmt = "testplates.sequence_validator()"
     validator = unwrap_success(validator_result)
@@ -76,7 +104,12 @@ def test_repr() -> None:
 
 @given(data=st.lists(st_anything_comparable()))
 def test_success(data: Sequence[_T]) -> None:
-    assert (validator_result := sequence_validator(minimum_size=UNLIMITED, maximum_size=UNLIMITED))
+    assert (
+        validator_result := sequence_validator(
+            minimum_size=UNLIMITED,
+            maximum_size=UNLIMITED,
+        )
+    )
 
     validator = unwrap_success(validator_result)
     assert (validation_result := validator(data))
@@ -95,7 +128,12 @@ def test_success_with_minimum_size_and_maximum_size(st_data: st.DataObject, data
 
     assume(minimum != maximum)
 
-    assert (validator_result := sequence_validator(minimum_size=UNLIMITED, maximum_size=UNLIMITED))
+    assert (
+        validator_result := sequence_validator(
+            minimum_size=UNLIMITED,
+            maximum_size=UNLIMITED,
+        )
+    )
 
     validator = unwrap_success(validator_result)
     assert (validation_result := validator(data))
@@ -108,7 +146,9 @@ def test_success_with_minimum_size_and_maximum_size(st_data: st.DataObject, data
 def test_success_with_unique_value(data: Sequence[_T]) -> None:
     assert (
         validator_result := sequence_validator(
-            minimum_size=UNLIMITED, maximum_size=UNLIMITED, unique_items=True
+            minimum_size=UNLIMITED,
+            maximum_size=UNLIMITED,
+            unique_items=True,
         )
     )
 
@@ -121,7 +161,12 @@ def test_success_with_unique_value(data: Sequence[_T]) -> None:
 
 @given(data=st_anything_except(Sequence))
 def test_failure_when_data_validation_fails(data: _T) -> None:
-    assert (validator_result := sequence_validator(minimum_size=UNLIMITED, maximum_size=UNLIMITED))
+    assert (
+        validator_result := sequence_validator(
+            minimum_size=UNLIMITED,
+            maximum_size=UNLIMITED,
+        )
+    )
 
     validator = unwrap_success(validator_result)
     assert not (validation_result := validator(data))
@@ -166,7 +211,8 @@ def test_failure_when_maximum_size_is_missing(data: st.DataObject, size: int) ->
 # noinspection PyTypeChecker
 @given(st_data=st.data(), data=st.text())
 def test_failure_when_value_is_above_minimum_size_and_maximum_size(
-    st_data: st.DataObject, data: str
+    st_data: st.DataObject,
+    data: str,
 ) -> None:
     size = len(data)
 
@@ -178,7 +224,8 @@ def test_failure_when_value_is_above_minimum_size_and_maximum_size(
 
     assert (
         validator_result := sequence_validator(
-            minimum_size=minimum_size, maximum_size=maximum_size
+            minimum_size=minimum_size,
+            maximum_size=maximum_size,
         )
     )
 
@@ -194,7 +241,8 @@ def test_failure_when_value_is_above_minimum_size_and_maximum_size(
 # noinspection PyTypeChecker
 @given(st_data=st.data(), data=st.text())
 def test_failure_when_value_is_below_minimum_size_and_maximum_size(
-    st_data: st.DataObject, data: str
+    st_data: st.DataObject,
+    data: str,
 ) -> None:
     size = len(data)
 
@@ -206,7 +254,8 @@ def test_failure_when_value_is_below_minimum_size_and_maximum_size(
 
     assert (
         validator_result := sequence_validator(
-            minimum_size=minimum_size, maximum_size=maximum_size
+            minimum_size=minimum_size,
+            maximum_size=maximum_size,
         )
     )
 
@@ -225,7 +274,10 @@ def test_failure_when_size_boundaries_are_below_zero(data: st.DataObject, size: 
     below_minimum_size = data.draw(st_size_below_minimum())
 
     assert not (
-        validator_result := sequence_validator(minimum_size=below_minimum_size, maximum_size=size)
+        validator_result := sequence_validator(
+            minimum_size=below_minimum_size,
+            maximum_size=size,
+        )
     )
 
     error = unwrap_failure(validator_result)
@@ -234,7 +286,10 @@ def test_failure_when_size_boundaries_are_below_zero(data: st.DataObject, size: 
     assert error.boundary.is_inclusive is True
 
     assert not (
-        validator_result := sequence_validator(minimum_size=size, maximum_size=below_minimum_size)
+        validator_result := sequence_validator(
+            minimum_size=size,
+            maximum_size=below_minimum_size,
+        )
     )
 
     error = unwrap_failure(validator_result)
@@ -249,7 +304,10 @@ def test_failure_when_size_boundaries_are_above_max_size(data: st.DataObject, si
     above_maximum_size = data.draw(st_size_above_maximum())
 
     assert not (
-        validator_result := sequence_validator(minimum_size=above_maximum_size, maximum_size=size)
+        validator_result := sequence_validator(
+            minimum_size=above_maximum_size,
+            maximum_size=size,
+        )
     )
 
     error = unwrap_failure(validator_result)
@@ -258,7 +316,10 @@ def test_failure_when_size_boundaries_are_above_max_size(data: st.DataObject, si
     assert error.boundary.is_inclusive is True
 
     assert not (
-        validator_result := sequence_validator(minimum_size=size, maximum_size=above_maximum_size)
+        validator_result := sequence_validator(
+            minimum_size=size,
+            maximum_size=above_maximum_size,
+        )
     )
 
     error = unwrap_failure(validator_result)
@@ -277,7 +338,8 @@ def test_failure_when_size_boundaries_are_overlapping(data: st.DataObject) -> No
 
     assert not (
         validator_result := sequence_validator(
-            minimum_size=minimum_size, maximum_size=maximum_size
+            minimum_size=minimum_size,
+            maximum_size=maximum_size,
         )
     )
 
@@ -308,7 +370,9 @@ def test_failure_when_value_is_not_unique(data: List[_T]) -> None:
 
     assert (
         validator_result := sequence_validator(
-            minimum_size=UNLIMITED, maximum_size=UNLIMITED, unique_items=True
+            minimum_size=UNLIMITED,
+            maximum_size=UNLIMITED,
+            unique_items=True,
         )
     )
 
@@ -330,7 +394,9 @@ def test_failure_when_data_item_validation_fails(value: Any, message: str) -> No
 
     assert (
         validator_result := sequence_validator(
-            validator, minimum_size=UNLIMITED, maximum_size=UNLIMITED
+            validator,
+            minimum_size=UNLIMITED,
+            maximum_size=UNLIMITED,
         )
     )
 

@@ -1,10 +1,19 @@
 from typing import Final
 
 from resultful import unwrap_success
-from hypothesis import given
-from hypothesis import strategies as st
 
-from testplates import initialize, field, Mapping, Required, Optional
+from hypothesis import (
+    given,
+    strategies as st,
+)
+
+from testplates import (
+    initialize,
+    field,
+    Mapping,
+    Required,
+    Optional,
+)
 
 KEY: Final[str] = "key"
 

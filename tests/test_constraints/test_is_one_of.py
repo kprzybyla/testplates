@@ -1,14 +1,25 @@
 import random
 
-from typing import TypeVar, List, Final
+from typing import (
+    TypeVar,
+    List,
+    Final,
+)
 
 from resultful import unwrap_success
-from hypothesis import assume, given
-from hypothesis import strategies as st
+
+from hypothesis import (
+    assume,
+    given,
+    strategies as st,
+)
 
 from testplates import is_one_of
 
-from tests.strategies import st_anything_comparable, Draw
+from tests.strategies import (
+    st_anything_comparable,
+    Draw,
+)
 
 _T = TypeVar("_T")
 

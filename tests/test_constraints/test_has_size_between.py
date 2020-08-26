@@ -1,15 +1,27 @@
 import sys
 
-from typing import Sized, Literal, Final
+from typing import (
+    Sized,
+    Literal,
+    Final,
+)
+
 from dataclasses import dataclass
 
-from resultful import unwrap_success, unwrap_failure
-from hypothesis import assume, given
-from hypothesis import strategies as st
+from resultful import (
+    unwrap_success,
+    unwrap_failure,
+)
 
-from testplates import UNLIMITED
-from testplates import has_size_between
+from hypothesis import (
+    assume,
+    given,
+    strategies as st,
+)
+
 from testplates import (
+    has_size_between,
+    UNLIMITED,
     InvalidSizeError,
     UnlimitedRangeError,
     OverlappingBoundariesError,
@@ -41,7 +53,9 @@ class SizedWrapper(Sized):
 
 @st.composite
 def st_size(
-    draw: Draw[int], min_value: int = MINIMUM_ALLOWED_SIZE, max_value: int = MAXIMUM_ALLOWED_SIZE,
+    draw: Draw[int],
+    min_value: int = MINIMUM_ALLOWED_SIZE,
+    max_value: int = MAXIMUM_ALLOWED_SIZE,
 ) -> int:
     return draw(st.integers(min_value=min_value, max_value=max_value))
 

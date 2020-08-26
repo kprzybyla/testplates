@@ -1,11 +1,20 @@
 from typing import Any
 
-from resultful import unwrap_success, unwrap_failure
-from hypothesis import given
-from hypothesis import strategies as st
+from resultful import (
+    unwrap_success,
+    unwrap_failure,
+)
 
-from testplates import type_validator
-from testplates import InvalidTypeValueError, InvalidTypeError
+from hypothesis import (
+    given,
+    strategies as st,
+)
+
+from testplates import (
+    type_validator,
+    InvalidTypeValueError,
+    InvalidTypeError,
+)
 
 from tests.strategies import (
     st_anything_comparable,

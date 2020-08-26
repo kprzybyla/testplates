@@ -1,8 +1,10 @@
 from typing import Final
 from decimal import Decimal
 
-from hypothesis import settings
-from hypothesis import strategies as st
+from hypothesis import (
+    settings,
+    strategies as st,
+)
 
 PROFILE_NO_INCREMENTAL: Final[str] = "no-incremental"
 

@@ -1,17 +1,39 @@
 from string import printable
 
-from resultful import unwrap_success, unwrap_failure
-from hypothesis import given, assume
-from hypothesis import strategies as st
+from resultful import (
+    unwrap_success,
+    unwrap_failure,
+)
 
-from testplates import ANY, WILDCARD, ABSENT
-from testplates import initialize, fields, field
-from testplates import MissingValueError, UnexpectedValueError, ProhibitedValueError
+from hypothesis import (
+    given,
+    assume,
+    strategies as st,
+)
+
+from testplates import (
+    initialize,
+    fields,
+    field,
+    ANY,
+    WILDCARD,
+    ABSENT,
+    MissingValueError,
+    UnexpectedValueError,
+    ProhibitedValueError,
+)
 
 from tests.strategies import Draw
 
-from .assets import CreateFunctionType, StorageType
-from .conftest import create_function_parameters, create_function_and_storage_type_parameters
+from .assets import (
+    CreateFunctionType,
+    StorageType,
+)
+
+from .conftest import (
+    create_function_parameters,
+    create_function_and_storage_type_parameters,
+)
 
 
 @st.composite
@@ -203,7 +225,9 @@ def test_wildcard_value_matches_anything_in_optional_field(
 @given(name=st_name(), key=st.text())
 @create_function_parameters
 def test_wildcard_value_raises_value_error_in_required_field(
-    name: str, key: str, create_function: CreateFunctionType
+    name: str,
+    key: str,
+    create_function: CreateFunctionType,
 ) -> None:
     field_object = field(int)
     template_type = create_function(name, **{key: field_object})
@@ -219,7 +243,10 @@ def test_wildcard_value_raises_value_error_in_required_field(
 @given(name=st_name(), key=st.text())
 @create_function_and_storage_type_parameters
 def test_absent_value_matches_anything_in_optional_field(
-    name: str, key: str, create_function: CreateFunctionType, storage_type: StorageType,
+    name: str,
+    key: str,
+    create_function: CreateFunctionType,
+    storage_type: StorageType,
 ) -> None:
     field_object = field(int, optional=True)
     template_type = create_function(name, **{key: field_object})
@@ -251,7 +278,9 @@ def test_absent_value_mismatches_any_value_in_optional_field(
 @given(name=st_name(), key=st.text())
 @create_function_parameters
 def test_absent_value_raises_value_error_in_required_field(
-    name: str, key: str, create_function: CreateFunctionType
+    name: str,
+    key: str,
+    create_function: CreateFunctionType,
 ) -> None:
     field_object = field(int)
     template_type = create_function(name, **{key: field_object})
@@ -267,7 +296,11 @@ def test_absent_value_raises_value_error_in_required_field(
 @given(name=st_name(), key=st.text(), other_key=st.text(), other_value=st.integers())
 @create_function_parameters
 def test_unexpected_value_raises_value_error(
-    name: str, key: str, other_key: str, other_value: int, create_function: CreateFunctionType
+    name: str,
+    key: str,
+    other_key: str,
+    other_value: int,
+    create_function: CreateFunctionType,
 ) -> None:
     assume(key != other_key)
 
@@ -285,7 +318,9 @@ def test_unexpected_value_raises_value_error(
 @given(name=st_name(), key=st.text())
 @create_function_parameters
 def test_missing_value_in_required_field_raises_value_error(
-    name: str, key: str, create_function: CreateFunctionType
+    name: str,
+    key: str,
+    create_function: CreateFunctionType,
 ) -> None:
     field_object = field(int)
     template_type = create_function(name, **{key: field_object})
@@ -300,7 +335,9 @@ def test_missing_value_in_required_field_raises_value_error(
 @given(name=st_name(), key=st.text())
 @create_function_parameters
 def test_missing_value_in_optional_field_raises_value_error(
-    name: str, key: str, create_function: CreateFunctionType
+    name: str,
+    key: str,
+    create_function: CreateFunctionType,
 ) -> None:
     field_object = field(int, optional=True)
     template_type = create_function(name, **{key: field_object})
@@ -315,7 +352,10 @@ def test_missing_value_in_optional_field_raises_value_error(
 @given(name=st_name(), key=st.text(), default=st.integers())
 @create_function_parameters
 def test_default_value_prevents_value_error_in_required_field_on_missing_value(
-    name: str, key: str, default: int, create_function: CreateFunctionType
+    name: str,
+    key: str,
+    default: int,
+    create_function: CreateFunctionType,
 ) -> None:
     field_object = field(int, default=default)
     template_type = create_function(name, **{key: field_object})
@@ -326,7 +366,10 @@ def test_default_value_prevents_value_error_in_required_field_on_missing_value(
 @given(name=st_name(), key=st.text(), default=st.integers())
 @create_function_parameters
 def test_default_value_prevents_value_error_in_optional_field_on_missing_value(
-    name: str, key: str, default: int, create_function: CreateFunctionType
+    name: str,
+    key: str,
+    default: int,
+    create_function: CreateFunctionType,
 ) -> None:
     field_object = field(int, default=default, optional=True)
     template_type = create_function(name, **{key: field_object})
@@ -337,7 +380,10 @@ def test_default_value_prevents_value_error_in_optional_field_on_missing_value(
 @given(name=st_name(), key=st.text(), default=st.integers())
 @create_function_parameters
 def test_required_field_properties_access(
-    name: str, key: str, default: int, create_function: CreateFunctionType
+    name: str,
+    key: str,
+    default: int,
+    create_function: CreateFunctionType,
 ) -> None:
     field_object = field(int, default=default)
     template_type = create_function(name, **{key: field_object})
@@ -352,7 +398,10 @@ def test_required_field_properties_access(
 @given(name=st_name(), key=st.text(), default=st.integers())
 @create_function_parameters
 def test_optional_field_properties_access(
-    name: str, key: str, default: int, create_function: CreateFunctionType
+    name: str,
+    key: str,
+    default: int,
+    create_function: CreateFunctionType,
 ) -> None:
     field_object = field(int, default=default, optional=True)
     template_type = create_function(name, **{key: field_object})

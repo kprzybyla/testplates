@@ -1,12 +1,21 @@
 import re
 
-from typing import AnyStr, List, Union, Final
+from typing import (
+    AnyStr,
+    List,
+    Union,
+    Final,
+)
 
 import pytest
 
 from resultful import unwrap_success
-from hypothesis import assume, given
-from hypothesis import strategies as st
+
+from hypothesis import (
+    assume,
+    given,
+    strategies as st,
+)
 
 from testplates import matches_pattern
 
@@ -17,10 +26,24 @@ ANY_DIGIT: Final[str] = r"\d+"
 MAC_ADDRESS: Final[str] = r"([0-9A-Fa-f]{2}[:]){5}([0-9A-Fa-f]{2})"
 HEX_COLOR_NUMBER: Final[str] = r"\B#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})\b"
 
-STR_PATTERNS: Final[List[str]] = [ANY_WORD, ANY_DIGIT, MAC_ADDRESS, HEX_COLOR_NUMBER]
-BYTES_PATTERNS: Final[List[bytes]] = list(map(str.encode, STR_PATTERNS))
+STR_PATTERNS: Final[List[str]] = [
+    ANY_WORD,
+    ANY_DIGIT,
+    MAC_ADDRESS,
+    HEX_COLOR_NUMBER,
+]
 
-PATTERNS: Final[List[Union[str, bytes]]] = [*STR_PATTERNS, *BYTES_PATTERNS]
+BYTES_PATTERNS: Final[List[bytes]] = [
+    ANY_WORD.encode(),
+    ANY_DIGIT.encode(),
+    MAC_ADDRESS.encode(),
+    HEX_COLOR_NUMBER.encode(),
+]
+
+PATTERNS: Final[List[Union[str, bytes]]] = [
+    *STR_PATTERNS,
+    *BYTES_PATTERNS,
+]
 
 # TODO(kprzybyla): Implement generic st_from_pattern after following issue is resolved:
 #                  https://github.com/HypothesisWorks/hypothesis/issues/2365

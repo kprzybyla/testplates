@@ -1,17 +1,29 @@
 import re
 import sys
 
-from typing import TypeVar, List, Literal, Final
+from typing import (
+    TypeVar,
+    List,
+    Literal,
+    Final,
+)
 
 import pytest
 
-from resultful import unwrap_success, unwrap_failure
-from hypothesis import assume, given
-from hypothesis import strategies as st
+from resultful import (
+    unwrap_success,
+    unwrap_failure,
+)
 
-from testplates import UNLIMITED
-from testplates import string_validator
+from hypothesis import (
+    assume,
+    given,
+    strategies as st,
+)
+
 from testplates import (
+    string_validator,
+    UNLIMITED,
     InvalidTypeError,
     MissingBoundaryError,
     InvalidSizeError,
@@ -22,7 +34,10 @@ from testplates import (
     InvalidFormatError,
 )
 
-from tests.strategies import st_anything_except, Draw
+from tests.strategies import (
+    st_anything_except,
+    Draw,
+)
 
 _T = TypeVar("_T")
 
@@ -37,12 +52,19 @@ ANY_DIGIT: Final[str] = r"\d+"
 MAC_ADDRESS: Final[str] = r"([0-9A-Fa-f]{2}[:]){5}([0-9A-Fa-f]{2})"
 HEX_COLOR_NUMBER: Final[str] = r"\B#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})\b"
 
-STR_PATTERNS: Final[List[str]] = [ANY_WORD, ANY_DIGIT, MAC_ADDRESS, HEX_COLOR_NUMBER]
+STR_PATTERNS: Final[List[str]] = [
+    ANY_WORD,
+    ANY_DIGIT,
+    MAC_ADDRESS,
+    HEX_COLOR_NUMBER,
+]
 
 
 @st.composite
 def st_size(
-    draw: Draw[int], min_value: int = MINIMUM_ALLOWED_SIZE, max_value: int = MAXIMUM_ALLOWED_SIZE,
+    draw: Draw[int],
+    min_value: int = MINIMUM_ALLOWED_SIZE,
+    max_value: int = MAXIMUM_ALLOWED_SIZE,
 ) -> int:
     return draw(st.integers(min_value=min_value, max_value=max_value))
 
@@ -132,7 +154,9 @@ def test_success_with_pattern(st_data: st.DataObject, pattern: str) -> None:
 
     assert (
         validator_result := string_validator(
-            minimum_size=UNLIMITED, maximum_size=UNLIMITED, pattern=pattern
+            minimum_size=UNLIMITED,
+            maximum_size=UNLIMITED,
+            pattern=pattern,
         )
     )
 
@@ -190,7 +214,8 @@ def test_failure_when_maximum_size_is_missing(data: st.DataObject, size: int) ->
 # noinspection PyTypeChecker
 @given(st_data=st.data(), data=st.text())
 def test_failure_when_value_is_above_minimum_size_and_maximum_size(
-    st_data: st.DataObject, data: str
+    st_data: st.DataObject,
+    data: str,
 ) -> None:
     size = len(data)
 
@@ -201,7 +226,10 @@ def test_failure_when_value_is_above_minimum_size_and_maximum_size(
     assume(minimum_size != maximum_size)
 
     assert (
-        validator_result := string_validator(minimum_size=minimum_size, maximum_size=maximum_size)
+        validator_result := string_validator(
+            minimum_size=minimum_size,
+            maximum_size=maximum_size,
+        )
     )
 
     validator = unwrap_success(validator_result)
@@ -216,7 +244,8 @@ def test_failure_when_value_is_above_minimum_size_and_maximum_size(
 # noinspection PyTypeChecker
 @given(st_data=st.data(), data=st.text())
 def test_failure_when_value_is_below_minimum_size_and_maximum_size(
-    st_data: st.DataObject, data: str
+    st_data: st.DataObject,
+    data: str,
 ) -> None:
     size = len(data)
 
@@ -227,7 +256,10 @@ def test_failure_when_value_is_below_minimum_size_and_maximum_size(
     assume(minimum_size != maximum_size)
 
     assert (
-        validator_result := string_validator(minimum_size=minimum_size, maximum_size=maximum_size)
+        validator_result := string_validator(
+            minimum_size=minimum_size,
+            maximum_size=maximum_size,
+        )
     )
 
     validator = unwrap_success(validator_result)
@@ -245,7 +277,10 @@ def test_failure_when_size_boundaries_are_below_zero(data: st.DataObject, size: 
     below_minimum_size = data.draw(st_size_below_minimum())
 
     assert not (
-        validator_result := string_validator(minimum_size=below_minimum_size, maximum_size=size)
+        validator_result := string_validator(
+            minimum_size=below_minimum_size,
+            maximum_size=size,
+        )
     )
 
     error = unwrap_failure(validator_result)
@@ -254,7 +289,10 @@ def test_failure_when_size_boundaries_are_below_zero(data: st.DataObject, size: 
     assert error.boundary.is_inclusive is True
 
     assert not (
-        validator_result := string_validator(minimum_size=size, maximum_size=below_minimum_size)
+        validator_result := string_validator(
+            minimum_size=size,
+            maximum_size=below_minimum_size,
+        )
     )
 
     error = unwrap_failure(validator_result)
@@ -269,7 +307,10 @@ def test_failure_when_size_boundaries_are_above_max_size(data: st.DataObject, si
     above_maximum_size = data.draw(st_size_above_maximum())
 
     assert not (
-        validator_result := string_validator(minimum_size=above_maximum_size, maximum_size=size)
+        validator_result := string_validator(
+            minimum_size=above_maximum_size,
+            maximum_size=size,
+        )
     )
 
     error = unwrap_failure(validator_result)
@@ -278,7 +319,10 @@ def test_failure_when_size_boundaries_are_above_max_size(data: st.DataObject, si
     assert error.boundary.is_inclusive is True
 
     assert not (
-        validator_result := string_validator(minimum_size=size, maximum_size=above_maximum_size)
+        validator_result := string_validator(
+            minimum_size=size,
+            maximum_size=above_maximum_size,
+        )
     )
 
     error = unwrap_failure(validator_result)
@@ -296,7 +340,10 @@ def test_failure_when_size_boundaries_are_overlapping(data: st.DataObject) -> No
     assume(minimum_size != maximum_size)
 
     assert not (
-        validator_result := string_validator(minimum_size=minimum_size, maximum_size=maximum_size)
+        validator_result := string_validator(
+            minimum_size=minimum_size,
+            maximum_size=maximum_size,
+        )
     )
 
     error = unwrap_failure(validator_result)
@@ -328,7 +375,9 @@ def test_failure_when_value_does_not_pattern(st_data: st.DataObject, pattern: st
 
     assert (
         validator_result := string_validator(
-            minimum_size=UNLIMITED, maximum_size=UNLIMITED, pattern=pattern
+            minimum_size=UNLIMITED,
+            maximum_size=UNLIMITED,
+            pattern=pattern,
         )
     )
 

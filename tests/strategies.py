@@ -1,6 +1,13 @@
-from typing import Any, TypeVar, Hashable, Callable
+from typing import (
+    Any,
+    TypeVar,
+    Hashable,
+    Callable,
+)
 
-from hypothesis import strategies as st
+from hypothesis import (
+    strategies as st,
+)
 
 _Ex = TypeVar("_Ex", covariant=True)
 

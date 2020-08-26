@@ -1,12 +1,30 @@
-from typing import Any, Type, Mapping
+from typing import (
+    Any,
+    Type,
+    Mapping,
+)
 
-from resultful import success, failure, unwrap_success, unwrap_failure, Result
-from hypothesis import given
-from hypothesis import strategies as st
+from resultful import (
+    success,
+    failure,
+    unwrap_success,
+    unwrap_failure,
+    Result,
+)
 
-from testplates import field, create_object, Object, Required, Optional
-from testplates import mapping_validator, passthrough_validator
+from hypothesis import (
+    given,
+    strategies as st,
+)
+
 from testplates import (
+    field,
+    create_object,
+    mapping_validator,
+    passthrough_validator,
+    Object,
+    Required,
+    Optional,
     TestplatesError,
     InvalidTypeError,
     RequiredKeyMissingError,
@@ -14,7 +32,10 @@ from testplates import (
     FieldValidationError,
 )
 
-from tests.strategies import st_anything_except, st_anything_comparable
+from tests.strategies import (
+    st_anything_except,
+    st_anything_comparable,
+)
 
 STRUCTURE_NAME: str = "Structure"
 

@@ -1,14 +1,27 @@
-from typing import TypeVar, List, Container, Final
+from typing import (
+    TypeVar,
+    List,
+    Container,
+    Final,
+)
+
 from dataclasses import dataclass
 
 from resultful import unwrap_success
-from hypothesis import assume, given
-from hypothesis import strategies as st
+
+from hypothesis import (
+    assume,
+    given,
+    strategies as st,
+)
 
 from testplates import contains
 
 from tests.utils import samples
-from tests.strategies import st_anything_comparable, Draw
+from tests.strategies import (
+    st_anything_comparable,
+    Draw,
+)
 
 _T = TypeVar("_T")
 

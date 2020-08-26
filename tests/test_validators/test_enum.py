@@ -1,14 +1,36 @@
-from enum import Enum, EnumMeta
-from typing import cast, Any, TypeVar, Dict
+from enum import (
+    Enum,
+    EnumMeta,
+)
+
+from typing import (
+    cast,
+    Any,
+    TypeVar,
+    Dict,
+)
 
 import pytest
 
-from resultful import unwrap_success, unwrap_failure
-from hypothesis import given
-from hypothesis import strategies as st
+from resultful import (
+    unwrap_success,
+    unwrap_failure,
+)
 
-from testplates import enum_validator, passthrough_validator, integer_validator, Validator
-from testplates import InvalidTypeValueError, InvalidTypeError, MemberValidationError
+from hypothesis import (
+    given,
+    strategies as st,
+)
+
+from testplates import (
+    enum_validator,
+    passthrough_validator,
+    integer_validator,
+    Validator,
+    InvalidTypeValueError,
+    InvalidTypeError,
+    MemberValidationError,
+)
 
 from tests.utils import sample
 from tests.strategies import Draw

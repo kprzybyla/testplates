@@ -1,16 +1,33 @@
 import random
 
-from typing import TypeVar, Sized, Iterable, Iterator, Container, Collection, List
+from typing import (
+    TypeVar,
+    Sized,
+    Iterable,
+    Iterator,
+    Container,
+    Collection,
+    List,
+)
+
 from dataclasses import dataclass
 
 from resultful import unwrap_success
-from hypothesis import assume, given
-from hypothesis import strategies as st
+
+from hypothesis import (
+    assume,
+    given,
+    strategies as st,
+)
 
 from testplates import is_permutation_of
 
 from tests.utils import samples
-from tests.strategies import st_anything_comparable, Draw
+
+from tests.strategies import (
+    st_anything_comparable,
+    Draw,
+)
 
 _T = TypeVar("_T")
 
