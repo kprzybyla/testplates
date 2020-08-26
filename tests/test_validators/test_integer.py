@@ -46,7 +46,7 @@ def st_value(
     min_value: Optional[int] = None,
     max_value: Optional[int] = None,
 ) -> int:
-    return draw(st.integers(min_value=min_value, max_value=max_value))  # type: ignore
+    return draw(st.integers(min_value=min_value, max_value=max_value))
 
 
 @st.composite
@@ -553,7 +553,7 @@ def test_failure_when_mutually_exclusive_boundaries_are_set(
     exclusive_maximum = st_data.draw(st_exclusive_maximum(data))
 
     assert not (
-        validator_result := integer_validator(  # type: ignore
+        validator_result := integer_validator(
             minimum=inclusive_minimum,
             maximum=inclusive_maximum,
             exclusive_minimum=exclusive_minimum,
@@ -580,7 +580,7 @@ def test_failure_when_mutually_exclusive_minimum_boundaries_are_set(
     exclusive_maximum = st_data.draw(st_exclusive_maximum(data))
 
     assert not (
-        validator_result := integer_validator(  # type: ignore
+        validator_result := integer_validator(
             minimum=inclusive_minimum,
             maximum=inclusive_maximum,
             exclusive_minimum=exclusive_minimum,
@@ -592,7 +592,7 @@ def test_failure_when_mutually_exclusive_minimum_boundaries_are_set(
     assert error.name == MINIMUM_EXTREMUM
 
     assert not (
-        validator_result := integer_validator(  # type: ignore
+        validator_result := integer_validator(
             minimum=inclusive_minimum,
             exclusive_minimum=exclusive_minimum,
             exclusive_maximum=exclusive_maximum,
@@ -618,7 +618,7 @@ def test_failure_when_mutually_exclusive_maximum_boundaries_are_set(
     exclusive_maximum = st_data.draw(st_exclusive_maximum(data))
 
     assert not (
-        validator_result := integer_validator(  # type: ignore
+        validator_result := integer_validator(
             minimum=inclusive_minimum,
             maximum=inclusive_maximum,
             exclusive_maximum=exclusive_maximum,
@@ -630,7 +630,7 @@ def test_failure_when_mutually_exclusive_maximum_boundaries_are_set(
     assert error.name == MAXIMUM_EXTREMUM
 
     assert not (
-        validator_result := integer_validator(  # type: ignore
+        validator_result := integer_validator(
             maximum=inclusive_maximum,
             exclusive_minimum=exclusive_minimum,
             exclusive_maximum=exclusive_maximum,

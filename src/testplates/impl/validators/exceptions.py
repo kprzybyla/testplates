@@ -300,8 +300,9 @@ class ChoiceValidationError(TestplatesError):
     the union, choice and error information.
     """
 
-    def __init__(self, data: Any, error: TestplatesError):
+    def __init__(self, data: Any, key: str, error: TestplatesError):
         self.data = data
+        self.key = key
         self.error = error
 
-        super().__init__(f"Choice TODO validation failure in {data!r}: {error!r}")
+        super().__init__(f"Choice {key!r} validation failure in {data!r}: {error!r}")

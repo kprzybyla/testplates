@@ -113,7 +113,7 @@ def test_validator_is_not_called_on_special_value_for_required_field(
     create_function: CreateFunctionType,
 ) -> None:
     def validator(*args: int, **kwargs: int) -> NoReturn:
-        raise NotImplementedError(args, kwargs)
+        assert False, (args, kwargs)
 
     field_object = field(int, validator)
     template_type = create_function(name, **{key: field_object})
@@ -129,7 +129,7 @@ def test_validator_is_not_called_on_special_value_for_optional_field(
     create_function: CreateFunctionType,
 ) -> None:
     def validator(*args: int, **kwargs: int) -> NoReturn:
-        raise NotImplementedError(args, kwargs)
+        assert False, (args, kwargs)
 
     field_object = field(int, validator, optional=True)
     template_type = create_function(name, **{key: field_object})

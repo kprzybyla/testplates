@@ -52,7 +52,7 @@ def st_value(
     min_value: Optional[int] = None,
     max_value: Optional[int] = None,
 ) -> int:
-    return draw(st.integers(min_value=min_value, max_value=max_value))  # type: ignore
+    return draw(st.integers(min_value=min_value, max_value=max_value))
 
 
 @st.composite

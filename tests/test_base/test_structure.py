@@ -224,7 +224,7 @@ def test_wildcard_value_matches_anything_in_optional_field(
 # noinspection PyTypeChecker
 @given(name=st_name(), key=st.text())
 @create_function_parameters
-def test_wildcard_value_raises_value_error_in_required_field(
+def test_wildcard_value_error_in_required_field(
     name: str,
     key: str,
     create_function: CreateFunctionType,
@@ -277,7 +277,7 @@ def test_absent_value_mismatches_any_value_in_optional_field(
 # noinspection PyTypeChecker
 @given(name=st_name(), key=st.text())
 @create_function_parameters
-def test_absent_value_raises_value_error_in_required_field(
+def test_absent_value_error_in_required_field(
     name: str,
     key: str,
     create_function: CreateFunctionType,
@@ -295,7 +295,7 @@ def test_absent_value_raises_value_error_in_required_field(
 # noinspection PyTypeChecker
 @given(name=st_name(), key=st.text(), other_key=st.text(), other_value=st.integers())
 @create_function_parameters
-def test_unexpected_value_raises_value_error(
+def test_unexpected_value_error(
     name: str,
     key: str,
     other_key: str,
@@ -317,7 +317,7 @@ def test_unexpected_value_raises_value_error(
 # noinspection PyTypeChecker
 @given(name=st_name(), key=st.text())
 @create_function_parameters
-def test_missing_value_in_required_field_raises_value_error(
+def test_missing_value_in_required_field_value_error(
     name: str,
     key: str,
     create_function: CreateFunctionType,
@@ -334,7 +334,7 @@ def test_missing_value_in_required_field_raises_value_error(
 # noinspection PyTypeChecker
 @given(name=st_name(), key=st.text())
 @create_function_parameters
-def test_missing_value_in_optional_field_raises_value_error(
+def test_missing_value_in_optional_field_value_error(
     name: str,
     key: str,
     create_function: CreateFunctionType,

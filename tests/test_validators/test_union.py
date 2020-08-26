@@ -38,10 +38,10 @@ from tests.strategies import (
 
 @st.composite
 def st_choices(draw: Draw[Dict[str, Validator]], min_size: int = 0) -> Dict[str, Validator]:
-    def bad_validator(data: Any) -> NoReturn:
-        raise Exception(f"This validator should never be called (data={data!r})")
+    def validator(data: Any) -> NoReturn:
+        assert False, data
 
-    return draw(st.dictionaries(st.text(), values=st.just(bad_validator), min_size=min_size))
+    return draw(st.dictionaries(st.text(), values=st.just(validator), min_size=min_size))
 
 
 # noinspection PyTypeChecker

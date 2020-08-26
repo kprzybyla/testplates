@@ -11,11 +11,15 @@ __all__ = (
 )
 
 from typing import (
+    overload,
     AnyStr,
     TypeVar,
     List,
     Optional,
 )
+
+# TODO(kprzybyla): Make this accessible in resultful
+from resultful.impl.result import Failure
 
 from resultful import (
     success,
@@ -198,6 +202,130 @@ def matches_pattern(pattern: AnyStr, /) -> Result[MatchesPattern[AnyStr], Testpl
     """
 
     return success(MatchesPattern(matches_pattern.__name__, pattern))
+
+
+@overload
+def ranges_between() -> Failure[TestplatesError]:
+    ...
+
+
+@overload
+def ranges_between(
+    *,
+    minimum: Boundary[int],
+) -> Failure[TestplatesError]:
+    ...
+
+
+@overload
+def ranges_between(
+    *,
+    maximum: Boundary[int],
+) -> Failure[TestplatesError]:
+    ...
+
+
+@overload
+def ranges_between(
+    *,
+    exclusive_minimum: Boundary[int],
+) -> Failure[TestplatesError]:
+    ...
+
+
+@overload
+def ranges_between(
+    *,
+    exclusive_maximum: Boundary[int],
+) -> Failure[TestplatesError]:
+    ...
+
+
+@overload
+def ranges_between(
+    *,
+    minimum: Boundary[int],
+    maximum: Boundary[int],
+    exclusive_minimum: Boundary[int],
+) -> Failure[TestplatesError]:
+    ...
+
+
+@overload
+def ranges_between(
+    *,
+    minimum: Boundary[int],
+    maximum: Boundary[int],
+    exclusive_maximum: Boundary[int],
+) -> Failure[TestplatesError]:
+    ...
+
+
+@overload
+def ranges_between(
+    *,
+    minimum: Boundary[int],
+    exclusive_minimum: Boundary[int],
+    exclusive_maximum: Boundary[int],
+) -> Failure[TestplatesError]:
+    ...
+
+
+@overload
+def ranges_between(
+    *,
+    maximum: Boundary[int],
+    exclusive_minimum: Boundary[int],
+    exclusive_maximum: Boundary[int],
+) -> Failure[TestplatesError]:
+    ...
+
+
+@overload
+def ranges_between(
+    *,
+    minimum: Boundary[int],
+    maximum: Boundary[int],
+    exclusive_minimum: Boundary[int],
+    exclusive_maximum: Boundary[int],
+) -> Failure[TestplatesError]:
+    ...
+
+
+@overload
+def ranges_between(
+    *,
+    minimum: Boundary[int],
+    maximum: Boundary[int],
+) -> Result[RangesBetween, TestplatesError]:
+    ...
+
+
+@overload
+def ranges_between(
+    *,
+    minimum: Boundary[int],
+    exclusive_maximum: Boundary[int],
+) -> Result[RangesBetween, TestplatesError]:
+    ...
+
+
+@overload
+def ranges_between(
+    *,
+    exclusive_minimum: Boundary[int],
+    maximum: Boundary[int],
+) -> Result[RangesBetween, TestplatesError]:
+    ...
+
+
+@overload
+def ranges_between(
+    *,
+    exclusive_minimum: Boundary[int],
+    exclusive_maximum: Boundary[int],
+) -> Result[RangesBetween, TestplatesError]:
+    ...
 
 
 def ranges_between(

@@ -24,6 +24,9 @@ from typing import (
     Final,
 )
 
+# TODO(kprzybyla): Make this accessible in resultful
+from resultful.impl.result import Failure
+
 from resultful import (
     success,
     failure,
@@ -92,11 +95,108 @@ def boolean_validator() -> Result[Validator, TestplatesError]:
 
 
 @overload
+def integer_validator() -> Failure[TestplatesError]:
+    ...
+
+
+@overload
 def integer_validator(
     *,
-    minimum: Optional[Boundary[int]] = None,
-    maximum: Optional[Boundary[int]] = None,
-    allow_bool: bool = False,
+    minimum: Boundary[int],
+    allow_bool: bool = ...,
+) -> Failure[TestplatesError]:
+    ...
+
+
+@overload
+def integer_validator(
+    *,
+    maximum: Boundary[int],
+    allow_bool: bool = ...,
+) -> Failure[TestplatesError]:
+    ...
+
+
+@overload
+def integer_validator(
+    *,
+    exclusive_minimum: Boundary[int],
+    allow_bool: bool = ...,
+) -> Failure[TestplatesError]:
+    ...
+
+
+@overload
+def integer_validator(
+    *,
+    exclusive_maximum: Boundary[int],
+    allow_bool: bool = ...,
+) -> Failure[TestplatesError]:
+    ...
+
+
+@overload
+def integer_validator(
+    *,
+    minimum: Boundary[int],
+    maximum: Boundary[int],
+    exclusive_minimum: Boundary[int],
+    allow_bool: bool = ...,
+) -> Failure[TestplatesError]:
+    ...
+
+
+@overload
+def integer_validator(
+    *,
+    minimum: Boundary[int],
+    maximum: Boundary[int],
+    exclusive_maximum: Boundary[int],
+    allow_bool: bool = ...,
+) -> Failure[TestplatesError]:
+    ...
+
+
+@overload
+def integer_validator(
+    *,
+    minimum: Boundary[int],
+    exclusive_minimum: Boundary[int],
+    exclusive_maximum: Boundary[int],
+    allow_bool: bool = ...,
+) -> Failure[TestplatesError]:
+    ...
+
+
+@overload
+def integer_validator(
+    *,
+    maximum: Boundary[int],
+    exclusive_minimum: Boundary[int],
+    exclusive_maximum: Boundary[int],
+    allow_bool: bool = ...,
+) -> Failure[TestplatesError]:
+    ...
+
+
+@overload
+def integer_validator(
+    *,
+    minimum: Boundary[int],
+    maximum: Boundary[int],
+    exclusive_minimum: Boundary[int],
+    exclusive_maximum: Boundary[int],
+    allow_bool: bool = ...,
+) -> Failure[TestplatesError]:
+    ...
+
+
+@overload
+def integer_validator(
+    *,
+    minimum: Boundary[int],
+    maximum: Boundary[int],
+    allow_bool: bool = ...,
 ) -> Result[Validator, TestplatesError]:
     ...
 
@@ -104,9 +204,9 @@ def integer_validator(
 @overload
 def integer_validator(
     *,
-    minimum: Optional[Boundary[int]] = None,
-    exclusive_maximum: Optional[Boundary[int]] = None,
-    allow_bool: bool = False,
+    minimum: Boundary[int],
+    exclusive_maximum: Boundary[int],
+    allow_bool: bool = ...,
 ) -> Result[Validator, TestplatesError]:
     ...
 
@@ -114,9 +214,9 @@ def integer_validator(
 @overload
 def integer_validator(
     *,
-    exclusive_minimum: Optional[Boundary[int]] = None,
-    maximum: Optional[Boundary[int]] = None,
-    allow_bool: bool = False,
+    exclusive_minimum: Boundary[int],
+    maximum: Boundary[int],
+    allow_bool: bool = ...,
 ) -> Result[Validator, TestplatesError]:
     ...
 
@@ -124,9 +224,9 @@ def integer_validator(
 @overload
 def integer_validator(
     *,
-    exclusive_minimum: Optional[Boundary[int]] = None,
-    exclusive_maximum: Optional[Boundary[int]] = None,
-    allow_bool: bool = False,
+    exclusive_minimum: Boundary[int],
+    exclusive_maximum: Boundary[int],
+    allow_bool: bool = ...,
 ) -> Result[Validator, TestplatesError]:
     ...
 

@@ -42,6 +42,8 @@ class UnionValidator:
         if not (result := union_type_validator(data)):
             return failure(result)
 
+        # TODO(kprzybyla): This can still fail!
+
         key, value = data
         choice_validator = self.choices.get(key, None)
 
@@ -49,6 +51,6 @@ class UnionValidator:
             return failure(InvalidKeyError(key, data))
 
         if not (result := choice_validator(value)):
-            return failure(ChoiceValidationError(data, unwrap_failure(result)))
+            return failure(ChoiceValidationError(data, key, unwrap_failure(result)))
 
         return success(None)

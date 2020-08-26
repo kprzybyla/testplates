@@ -45,9 +45,6 @@ PATTERNS: Final[List[Union[str, bytes]]] = [
     *BYTES_PATTERNS,
 ]
 
-# TODO(kprzybyla): Implement generic st_from_pattern after following issue is resolved:
-#                  https://github.com/HypothesisWorks/hypothesis/issues/2365
-
 
 @st.composite
 def st_from_str_pattern(draw: Draw[str], pattern: str) -> str:
