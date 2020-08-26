@@ -7,8 +7,6 @@ __all__ = (
     "fits_maximum_value",
     "fits_minimum_length",
     "fits_maximum_length",
-    "Edge",
-    "Boundary",
 )
 
 import sys

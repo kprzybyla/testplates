@@ -50,12 +50,12 @@ class MappingValidator:
 
         structure = self.structure_type
 
-        for field in structure._fields_.values():
+        for field in structure._testplates_fields_.values():
             if not field.is_optional and field.name not in data.keys():
                 return failure(RequiredKeyMissingError(data, field.name, field))
 
         for key, value in data.items():
-            field_object = structure._fields_.get(key, None)
+            field_object = structure._testplates_fields_.get(key, None)
 
             if field_object is None:
                 return failure(UnknownFieldError(data, structure, key))

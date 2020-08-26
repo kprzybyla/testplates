@@ -43,7 +43,7 @@ def create_mapping(name: str, **fields: Field[_VT]) -> Type[Mapping[_VT]]:
     :param fields: mapping fields
     """
 
-    return cast(Type[Mapping[_VT]], Mapping._create_(name, **fields))
+    return cast(Type[Mapping[_VT]], Mapping._testplates_create_(name, **fields))
 
 
 class CreateMappingFunctionType(Protocol):
@@ -75,7 +75,7 @@ class Mapping(Generic[_VT], Structure, typing.Mapping[str, Value[_VT]]):
         return len(self._values_)
 
     @staticmethod
-    def _get_value_(
+    def _testplates_get_value_(
         self: Mapping[_T],
         key: str,
         /,

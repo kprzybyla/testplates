@@ -50,12 +50,12 @@ def initialize(
     /,
     **values: Value[Any],
 ) -> Result[_Structure, TestplatesError]:
-    return structure._init_(**values)
+    return structure._testplates_init_(**values)
 
 
 # noinspection PyProtectedMember
 def fields(structure_type: Type[Structure], /) -> Mapping[str, Field[Any]]:
-    return dict(structure_type._fields_)
+    return dict(structure_type._testplates_fields_)
 
 
 @overload

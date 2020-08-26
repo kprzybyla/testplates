@@ -224,23 +224,23 @@ class StructureMeta(abc.ABCMeta):
 
     __slots__ = ()
 
-    _fields_: Mapping[str, Field[Any]]
+    _testplates_fields_: Mapping[str, Field[Any]]
 
     def __init__(cls, name: str, bases: Tuple[type, ...], attrs: StructureDict) -> None:
         super().__init__(name, bases, attrs)
 
-        cls._fields_ = attrs.fields
+        cls._testplates_fields_ = attrs.fields
 
     def __repr__(self) -> str:
-        return f"{testplates.__name__}.{type(self).__name__}({format_like_dict(self._fields_)})"
+        parameters = format_like_dict(self._testplates_fields_)
+
+        return f"{testplates.__name__}.{type(self).__name__}({parameters})"
 
     @classmethod
     def __prepare__(mcs, __name: str, __bases: Tuple[type, ...], **kwargs: Any) -> StructureDict:
         return StructureDict()
 
-    # noinspection PyTypeChecker
-    # noinspection PyArgumentList
-    def _create_(cls, name: str, **fields: Field[Any]) -> StructureMeta:
+    def _testplates_create_(cls, name: str, **fields: Field[Any]) -> StructureMeta:
         bases = (cls,)
         metaclass = cls.__class__
 
@@ -263,11 +263,9 @@ class Structure(abc.ABC, metaclass=StructureMeta):
 
     __slots__ = ("_values_",)
 
-    # noinspection PyTypeHints
     # noinspection PyTypeChecker
-    _Self_ = TypeVar("_Self_", bound="Structure")
-
-    _fields_: ClassVar[Mapping[str, Field[Any]]]
+    _testplates_self_ = TypeVar("_testplates_self_", bound="Structure")
+    _testplates_fields_: ClassVar[Mapping[str, Field[Any]]]
 
     def __init__(self) -> None:
         self._values_: Mapping[str, Value[Any]] = {}
@@ -276,23 +274,26 @@ class Structure(abc.ABC, metaclass=StructureMeta):
         return f"{type(self).__name__}({format_like_dict(self._values_)})"
 
     def __eq__(self, other: Any) -> bool:
-        for key, field in self._fields_.items():
-            self_value: Maybe[Value[Any]] = self._get_value_(self, key)
-            other_value: Maybe[Value[Any]] = self._get_value_(other, key)
+        for key, field in self._testplates_fields_.items():
+            self_value: Maybe[Value[Any]] = self._testplates_get_value_(self, key)
+            other_value: Maybe[Value[Any]] = self._testplates_get_value_(other, key)
 
             if not values_matches(self_value, other_value):
                 return False
 
         return True
 
-    def _init_(self: _Self_, **values: Value[Any]) -> Result[_Self_, TestplatesError]:
-        keys = self._fields_.keys()
+    def _testplates_init_(
+        self: _testplates_self_,
+        **values: Value[Any],
+    ) -> Result[_testplates_self_, TestplatesError]:
+        keys = self._testplates_fields_.keys()
 
         for key, value in values.items():
             if key not in keys:
                 return failure(UnexpectedValueError(key, value))
 
-        for key, field in self._fields_.items():
+        for key, field in self._testplates_fields_.items():
             if not (result := field.validate(values.get(key, MISSING))):
                 return result
 
@@ -305,7 +306,13 @@ class Structure(abc.ABC, metaclass=StructureMeta):
 
     @staticmethod
     @abc.abstractmethod
-    def _get_value_(self: Any, key: str, /, *, default: Maybe[_T] = MISSING) -> Maybe[Value[_T]]:
+    def _testplates_get_value_(
+        self: Any,
+        key: str,
+        /,
+        *,
+        default: Maybe[_T] = MISSING,
+    ) -> Maybe[Value[_T]]:
 
         """
         Extracts value by given key using a type specific protocol.

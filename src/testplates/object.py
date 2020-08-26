@@ -39,7 +39,7 @@ def create_object(name: str, **fields: Field[Any]) -> Type[Object]:
     :param fields: object fields
     """
 
-    return cast(Type[Object], Object._create_(name, **fields))
+    return cast(Type[Object], Object._testplates_create_(name, **fields))
 
 
 class CreateObjectFunctionType(Protocol):
@@ -62,7 +62,7 @@ class Object(Structure):
     __slots__ = ()
 
     @staticmethod
-    def _get_value_(
+    def _testplates_get_value_(
         self: object,
         key: str,
         /,
