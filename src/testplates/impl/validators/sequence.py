@@ -1,18 +1,33 @@
-__all__ = ["SequenceValidator"]
+__all__ = ("SequenceValidator",)
 
 import typing
 
-from typing import Any, Union, Final
+from typing import (
+    Any,
+    Union,
+    Final,
+)
 
-from resultful import success, failure, unwrap_failure, Result
+from resultful import (
+    success,
+    failure,
+    unwrap_failure,
+    Result,
+)
 
 import testplates
 
-from testplates.impl.base import fits_minimum_length, fits_maximum_length, Limit, UnlimitedType
-from testplates.impl.base import TestplatesError
+from testplates.impl.base import (
+    fits_minimum_length,
+    fits_maximum_length,
+    Limit,
+    UnlimitedType,
+    TestplatesError,
+)
 
 from .utils import has_unique_items, Validator
 from .type import TypeValidator
+
 from .exceptions import (
     ItemValidationError,
     InvalidMinimumSizeError,
@@ -27,7 +42,12 @@ sequence_type_validator: Final[Validator] = TypeValidator(typing.Sequence)
 
 class SequenceValidator:
 
-    __slots__ = ("item_validator", "minimum_length", "maximum_length", "unique_items")
+    __slots__ = (
+        "item_validator",
+        "minimum_length",
+        "maximum_length",
+        "unique_items",
+    )
 
     def __init__(
         self,

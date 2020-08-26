@@ -1,20 +1,38 @@
-__all__ = ["HasLengthBetween"]
+__all__ = ("HasLengthBetween",)
 
-from typing import Any, Union, Sized
+from typing import (
+    Any,
+    Union,
+    Sized,
+)
 
 import testplates
 
-from testplates.impl.base import fits_minimum_length, fits_maximum_length, Limit, UnlimitedType
+from testplates.impl.base import (
+    fits_minimum_length,
+    fits_maximum_length,
+    Limit,
+    UnlimitedType,
+)
 
 Boundary = Union[Limit, UnlimitedType]
 
 
 class HasLengthBetween:
 
-    __slots__ = ("name", "minimum_length", "maximum_length")
+    __slots__ = (
+        "name",
+        "minimum_length",
+        "maximum_length",
+    )
 
     def __init__(
-        self, name: str, /, *, minimum_length: Boundary, maximum_length: Boundary
+        self,
+        name: str,
+        /,
+        *,
+        minimum_length: Boundary,
+        maximum_length: Boundary,
     ) -> None:
         self.name = name
         self.minimum_length = minimum_length

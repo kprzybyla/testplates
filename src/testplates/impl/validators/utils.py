@@ -1,6 +1,15 @@
-__all__ = ["is_classinfo", "has_unique_items", "Validator"]
+__all__ = (
+    "is_classinfo",
+    "has_unique_items",
+    "Validator",
+)
 
-from typing import Any, Iterable, Hashable, Callable
+from typing import (
+    Any,
+    Iterable,
+    Hashable,
+    Callable,
+)
 
 from resultful import Result
 

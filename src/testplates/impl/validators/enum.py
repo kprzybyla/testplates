@@ -1,4 +1,4 @@
-__all__ = ["EnumValidator"]
+__all__ = ("EnumValidator",)
 
 from enum import EnumMeta
 from typing import Any
@@ -14,7 +14,11 @@ from .utils import Validator
 
 class EnumValidator:
 
-    __slots__ = ("enum_type", "enum_type_validator", "enum_member_validator")
+    __slots__ = (
+        "enum_type",
+        "enum_type_validator",
+        "enum_member_validator",
+    )
 
     def __init__(
         self,

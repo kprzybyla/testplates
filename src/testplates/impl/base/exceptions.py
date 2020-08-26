@@ -1,4 +1,4 @@
-__all__ = [
+__all__ = (
     "TestplatesError",
     "DanglingDescriptorError",
     "MissingValueError",
@@ -10,7 +10,7 @@ __all__ = [
     "MutuallyExclusiveBoundariesError",
     "OverlappingBoundariesError",
     "SingleMatchBoundariesError",
-]
+)
 
 from typing import Any
 

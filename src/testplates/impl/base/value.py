@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-__all__ = [
+__all__ = (
     "is_value",
     "values_matches",
     "MissingType",
@@ -14,11 +14,18 @@ __all__ = [
     "ABSENT",
     "MISSING",
     "UNLIMITED",
-]
+)
 
 import enum
 
-from typing import Any, TypeVar, Union, Callable, Literal, Final
+from typing import (
+    Any,
+    TypeVar,
+    Union,
+    Callable,
+    Literal,
+    Final,
+)
 
 from resultful import Result
 

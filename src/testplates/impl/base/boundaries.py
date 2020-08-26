@@ -1,4 +1,4 @@
-__all__ = [
+__all__ = (
     "get_minimum",
     "get_maximum",
     "get_value_boundaries",
@@ -9,16 +9,37 @@ __all__ = [
     "fits_maximum_length",
     "Edge",
     "Boundary",
-]
+)
 
 import sys
 
-from typing import Sized, Tuple, Union, Optional, Final
+from typing import (
+    Sized,
+    Tuple,
+    Union,
+    Optional,
+    Final,
+)
 
-from resultful import success, failure, unwrap_success, Result
+from resultful import (
+    success,
+    failure,
+    unwrap_success,
+    Result,
+)
 
-from .value import UnlimitedType, UNLIMITED
-from .limit import Limit, Extremum, MINIMUM_EXTREMUM, MAXIMUM_EXTREMUM
+from .value import (
+    UnlimitedType,
+    UNLIMITED,
+)
+
+from .limit import (
+    Limit,
+    Extremum,
+    MINIMUM_EXTREMUM,
+    MAXIMUM_EXTREMUM,
+)
+
 from .exceptions import (
     TestplatesError,
     MissingBoundaryError,
@@ -36,7 +57,8 @@ LENGTH_MAXIMUM: Final[int] = sys.maxsize
 
 
 def get_minimum(
-    inclusive: Optional[Edge] = None, exclusive: Optional[Edge] = None
+    inclusive: Optional[Edge] = None,
+    exclusive: Optional[Edge] = None,
 ) -> Result[Boundary, TestplatesError]:
 
     """
@@ -50,7 +72,8 @@ def get_minimum(
 
 
 def get_maximum(
-    inclusive: Optional[Edge] = None, exclusive: Optional[Edge] = None
+    inclusive: Optional[Edge] = None,
+    exclusive: Optional[Edge] = None,
 ) -> Result[Boundary, TestplatesError]:
 
     """
@@ -64,7 +87,10 @@ def get_maximum(
 
 
 def get_boundary(
-    name: Extremum, *, inclusive: Optional[Edge] = None, exclusive: Optional[Edge] = None
+    name: Extremum,
+    *,
+    inclusive: Optional[Edge] = None,
+    exclusive: Optional[Edge] = None,
 ) -> Result[Boundary, TestplatesError]:
 
     """
@@ -128,7 +154,9 @@ def get_value_boundaries(
 
 
 def validate_value_boundaries(
-    *, minimum: Boundary, maximum: Boundary
+    *,
+    minimum: Boundary,
+    maximum: Boundary,
 ) -> Result[None, TestplatesError]:
 
     """
@@ -151,7 +179,8 @@ def validate_value_boundaries(
 
 
 def get_length_boundaries(
-    inclusive_minimum: Optional[Edge] = None, inclusive_maximum: Optional[Edge] = None
+    inclusive_minimum: Optional[Edge] = None,
+    inclusive_maximum: Optional[Edge] = None,
 ) -> Result[Tuple[Boundary, Boundary], TestplatesError]:
 
     """
@@ -183,7 +212,8 @@ def get_length_boundaries(
 
 
 def validate_length_boundaries(
-    minimum: Boundary, maximum: Boundary
+    minimum: Boundary,
+    maximum: Boundary,
 ) -> Result[None, TestplatesError]:
 
     """

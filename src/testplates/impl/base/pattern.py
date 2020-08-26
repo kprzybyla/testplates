@@ -1,8 +1,12 @@
-__all__ = ["get_pattern"]
+__all__ = ("get_pattern",)
 
 import re
 
-from typing import AnyStr, Pattern, Optional
+from typing import (
+    AnyStr,
+    Pattern,
+    Optional,
+)
 
 
 def get_pattern(pattern: Optional[AnyStr]) -> Optional[Pattern[AnyStr]]:

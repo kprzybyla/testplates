@@ -1,6 +1,14 @@
-__all__ = ["Limit", "Extremum", "MINIMUM_EXTREMUM", "MAXIMUM_EXTREMUM"]
+__all__ = (
+    "Limit",
+    "Extremum",
+    "MINIMUM_EXTREMUM",
+    "MAXIMUM_EXTREMUM",
+)
 
-from typing import Literal, Final
+from typing import (
+    Literal,
+    Final,
+)
 
 Extremum = Literal["minimum", "maximum"]
 
@@ -13,7 +21,11 @@ EXCLUSIVE_ALIGNMENT: Final[Literal[1]] = 1
 
 class Limit:
 
-    __slots__ = ("name", "value", "is_inclusive")
+    __slots__ = (
+        "name",
+        "value",
+        "is_inclusive",
+    )
 
     def __init__(self, name: Extremum, value: int, *, is_inclusive: bool) -> None:
         self.name = name

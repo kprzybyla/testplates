@@ -1,6 +1,12 @@
-__all__ = ["IsPermutationOf"]
+__all__ = ("IsPermutationOf",)
 
-from typing import Any, TypeVar, Generic, List, Collection
+from typing import (
+    Any,
+    TypeVar,
+    Generic,
+    List,
+    Collection,
+)
 
 import testplates
 
@@ -9,7 +15,10 @@ _T = TypeVar("_T")
 
 class IsPermutationOf(Generic[_T]):
 
-    __slots__ = ("name", "values")
+    __slots__ = (
+        "name",
+        "values",
+    )
 
     def __init__(self, name: str, values: List[_T], /) -> None:
         self.name = name

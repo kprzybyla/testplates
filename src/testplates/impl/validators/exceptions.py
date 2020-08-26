@@ -1,4 +1,4 @@
-__all__ = [
+__all__ = (
     "InvalidTypeValueError",
     "InvalidTypeError",
     "ProhibitedBoolValueError",
@@ -15,10 +15,21 @@ __all__ = [
     "ItemValidationError",
     "FieldValidationError",
     "ChoiceValidationError",
-]
+)
 
-from enum import Enum, EnumMeta
-from typing import Any, TypeVar, Tuple, Union, Sized, Pattern
+from enum import (
+    Enum,
+    EnumMeta,
+)
+
+from typing import (
+    Any,
+    TypeVar,
+    Tuple,
+    Union,
+    Sized,
+    Pattern,
+)
 
 from testplates.impl.base import TestplatesError
 

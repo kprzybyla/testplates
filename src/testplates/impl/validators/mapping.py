@@ -1,19 +1,34 @@
-__all__ = ["MappingValidator"]
+__all__ = ("MappingValidator",)
 
 import typing
 
-from typing import Any, Final
+from typing import (
+    Any,
+    Final,
+)
 
-from resultful import success, failure, unwrap_failure, Result
+from resultful import (
+    success,
+    failure,
+    unwrap_failure,
+    Result,
+)
 
 import testplates
 
-from testplates.impl.base import StructureMeta
-from testplates.impl.base import TestplatesError
+from testplates.impl.base import (
+    StructureMeta,
+    TestplatesError,
+)
 
 from .utils import Validator
 from .type import TypeValidator
-from .exceptions import RequiredKeyMissingError, UnknownFieldError, FieldValidationError
+
+from .exceptions import (
+    RequiredKeyMissingError,
+    UnknownFieldError,
+    FieldValidationError,
+)
 
 mapping_type_validator: Final[Validator] = TypeValidator(typing.Mapping)
 

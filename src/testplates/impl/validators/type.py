@@ -1,8 +1,12 @@
-__all__ = ["TypeValidator"]
+__all__ = ("TypeValidator",)
 
 from typing import Any
 
-from resultful import success, failure, Result
+from resultful import (
+    success,
+    failure,
+    Result,
+)
 
 import testplates
 

@@ -1,6 +1,10 @@
 from __future__ import annotations
 
-__all__ = ["Field", "StructureMeta", "Structure"]
+__all__ = (
+    "Field",
+    "Structure",
+    "StructureMeta",
+)
 
 import abc
 
@@ -19,7 +23,11 @@ from typing import (
     Optional,
 )
 
-from resultful import success, failure, Result
+from resultful import (
+    success,
+    failure,
+    Result,
+)
 
 import testplates
 
@@ -54,7 +62,13 @@ class Field(Generic[_T]):
     Field descriptor class.
     """
 
-    __slots__ = ("_validator", "_default", "_default_factory", "_optional", "_name")
+    __slots__ = (
+        "_validator",
+        "_default",
+        "_default_factory",
+        "_optional",
+        "_name",
+    )
 
     def __init__(
         self,
@@ -95,7 +109,9 @@ class Field(Generic[_T]):
 
     # noinspection PyProtectedMember
     def __get__(
-        self, instance: Optional[Structure], owner: Callable[..., Structure]
+        self,
+        instance: Optional[Structure],
+        owner: Callable[..., Structure],
     ) -> Union[Field[_T], Value[_T]]:
 
         """

@@ -1,6 +1,13 @@
-__all__ = ["format_like_tuple", "format_like_dict"]
+__all__ = (
+    "format_like_tuple",
+    "format_like_dict",
+)
 
-from typing import Any, Iterable, Mapping
+from typing import (
+    Any,
+    Iterable,
+    Mapping,
+)
 
 
 def format_like_tuple(values: Iterable[Any]) -> str:

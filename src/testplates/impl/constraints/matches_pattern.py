@@ -1,16 +1,26 @@
-__all__ = ["MatchesPattern"]
+__all__ = ("MatchesPattern",)
 
 import re
 import abc
 
-from typing import Any, AnyStr, Type, Generic, Pattern
+from typing import (
+    Any,
+    AnyStr,
+    Type,
+    Generic,
+    Pattern,
+)
 
 import testplates
 
 
 class MatchesPattern(Generic[AnyStr], abc.ABC):
 
-    __slots__ = ("name", "pattern", "pattern_type")
+    __slots__ = (
+        "name",
+        "pattern",
+        "pattern_type",
+    )
 
     def __init__(self, name: str, value: AnyStr, /) -> None:
         self.name = name

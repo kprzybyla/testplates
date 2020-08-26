@@ -1,8 +1,17 @@
-__all__ = ["UnionValidator"]
+__all__ = ("UnionValidator",)
 
-from typing import Any, Mapping, Final
+from typing import (
+    Any,
+    Mapping,
+    Final,
+)
 
-from resultful import success, failure, unwrap_failure, Result
+from resultful import (
+    success,
+    failure,
+    unwrap_failure,
+    Result,
+)
 
 import testplates
 
@@ -10,7 +19,11 @@ from testplates.impl.base import TestplatesError
 
 from .utils import Validator
 from .type import TypeValidator
-from .exceptions import InvalidKeyError, ChoiceValidationError
+
+from .exceptions import (
+    InvalidKeyError,
+    ChoiceValidationError,
+)
 
 union_type_validator: Final[Validator] = TypeValidator(tuple)
 

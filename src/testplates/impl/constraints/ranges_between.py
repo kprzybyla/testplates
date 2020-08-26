@@ -1,17 +1,29 @@
-__all__ = ["RangesBetween"]
+__all__ = ("RangesBetween",)
 
-from typing import Any, Union
+from typing import (
+    Any,
+    Union,
+)
 
 import testplates
 
-from testplates.impl.base import fits_minimum_value, fits_maximum_value, Limit, UnlimitedType
+from testplates.impl.base import (
+    fits_minimum_value,
+    fits_maximum_value,
+    Limit,
+    UnlimitedType,
+)
 
 Boundary = Union[Limit, UnlimitedType]
 
 
 class RangesBetween:
 
-    __slots__ = ("name", "minimum_value", "maximum_value")
+    __slots__ = (
+        "name",
+        "minimum_value",
+        "maximum_value",
+    )
 
     def __init__(self, name: str, /, *, minimum_value: Boundary, maximum_value: Boundary) -> None:
         self.name = name

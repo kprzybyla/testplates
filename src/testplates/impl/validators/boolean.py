@@ -1,6 +1,9 @@
-__all__ = ["BooleanValidator"]
+__all__ = ("BooleanValidator",)
 
-from typing import Any, Final
+from typing import (
+    Any,
+    Final,
+)
 
 from resultful import Result
 

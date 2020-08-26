@@ -1,15 +1,35 @@
-__all__ = ["StringValidator", "BytesValidator"]
+__all__ = (
+    "StringValidator",
+    "BytesValidator",
+)
 
-from typing import Any, AnyStr, Union, Pattern, Optional, Final
+from typing import (
+    Any,
+    AnyStr,
+    Union,
+    Pattern,
+    Optional,
+    Final,
+)
 
-from resultful import success, failure, Result
+from resultful import (
+    success,
+    failure,
+    Result,
+)
 
 import testplates
 
-from testplates.impl.base import fits_minimum_length, fits_maximum_length, Limit, UnlimitedType
-from testplates.impl.base import TestplatesError
+from testplates.impl.base import (
+    fits_minimum_length,
+    fits_maximum_length,
+    Limit,
+    UnlimitedType,
+    TestplatesError,
+)
 
 from .type import TypeValidator
+
 from .exceptions import (
     InvalidMinimumSizeError,
     InvalidMaximumSizeError,
@@ -24,7 +44,11 @@ bytes_type_validator: Final = TypeValidator(bytes)
 
 class StringValidator:
 
-    __slots__ = ("minimum_length", "maximum_length", "pattern")
+    __slots__ = (
+        "minimum_length",
+        "maximum_length",
+        "pattern",
+    )
 
     def __init__(
         self,
@@ -55,7 +79,11 @@ class StringValidator:
 
 class BytesValidator:
 
-    __slots__ = ("minimum_length", "maximum_length", "pattern")
+    __slots__ = (
+        "minimum_length",
+        "maximum_length",
+        "pattern",
+    )
 
     def __init__(
         self,
@@ -85,7 +113,10 @@ class BytesValidator:
 
 
 def validate_length(
-    data: AnyStr, minimum_length: Boundary, maximum_length: Boundary, /
+    data: AnyStr,
+    minimum_length: Boundary,
+    maximum_length: Boundary,
+    /,
 ) -> Result[None, TestplatesError]:
     if not fits_minimum_length(data, minimum_length):
         return failure(InvalidMinimumSizeError(data, minimum_length))
@@ -97,7 +128,9 @@ def validate_length(
 
 
 def validate_pattern(
-    data: AnyStr, pattern: Optional[Pattern[AnyStr]], /
+    data: AnyStr,
+    pattern: Optional[Pattern[AnyStr]],
+    /,
 ) -> Result[None, TestplatesError]:
     if pattern is not None:
         if not pattern.match(data):

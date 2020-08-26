@@ -1,8 +1,11 @@
-__all__ = ["PassthroughValidator"]
+__all__ = ("PassthroughValidator",)
 
 from typing import Any
 
-from resultful import success, Result
+from resultful import (
+    success,
+    Result,
+)
 
 import testplates
 

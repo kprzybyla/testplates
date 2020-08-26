@@ -1,6 +1,10 @@
-__all__ = ["IsOneOf"]
+__all__ = ("IsOneOf",)
 
-from typing import Any, TypeVar, Generic
+from typing import (
+    Any,
+    TypeVar,
+    Generic,
+)
 
 import testplates
 
@@ -11,7 +15,10 @@ _T = TypeVar("_T")
 
 class IsOneOf(Generic[_T]):
 
-    __slots__ = ("name", "values")
+    __slots__ = (
+        "name",
+        "values",
+    )
 
     def __init__(self, name: str, *values: _T) -> None:
         self.name = name

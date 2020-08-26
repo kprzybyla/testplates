@@ -1,6 +1,11 @@
-__all__ = ["Contains"]
+__all__ = ("Contains",)
 
-from typing import Any, TypeVar, Generic, Container
+from typing import (
+    Any,
+    TypeVar,
+    Generic,
+    Container,
+)
 
 import testplates
 
@@ -11,7 +16,10 @@ _T = TypeVar("_T")
 
 class Contains(Generic[_T]):
 
-    __slots__ = ("name", "values")
+    __slots__ = (
+        "name",
+        "values",
+    )
 
     def __init__(self, name: str, *values: _T) -> None:
         self.name = name

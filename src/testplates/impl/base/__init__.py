@@ -1,4 +1,4 @@
-__all__ = [
+__all__ = (
     "get_pattern",
     "get_minimum",
     "get_maximum",
@@ -26,14 +26,23 @@ __all__ = [
     "MutuallyExclusiveBoundariesError",
     "OverlappingBoundariesError",
     "SingleMatchBoundariesError",
-]
+)
 
-from .structure import Field, Structure, StructureMeta
-from .value import MissingType, SpecialValueType, UnlimitedType
+from .structure import (
+    Field,
+    Structure,
+    StructureMeta,
+)
 
-from .pattern import get_pattern
+from .value import (
+    MissingType,
+    SpecialValueType,
+    UnlimitedType,
+)
 
 from .limit import Limit
+from .pattern import get_pattern
+
 from .boundaries import (
     get_minimum,
     get_maximum,

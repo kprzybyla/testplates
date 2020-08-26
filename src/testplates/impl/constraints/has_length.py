@@ -1,13 +1,19 @@
-__all__ = ["HasLength"]
+__all__ = ("HasLength",)
 
-from typing import Any, Sized
+from typing import (
+    Any,
+    Sized,
+)
 
 import testplates
 
 
 class HasLength:
 
-    __slots__ = ("name", "length")
+    __slots__ = (
+        "name",
+        "length",
+    )
 
     def __init__(self, name: str, length: int, /) -> None:
         self.name = name

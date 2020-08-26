@@ -1,4 +1,4 @@
-__all__ = [
+__all__ = (
     "Contains",
     "HasLength",
     "HasLengthBetween",
@@ -6,7 +6,7 @@ __all__ = [
     "MatchesPattern",
     "IsOneOf",
     "IsPermutationOf",
-]
+)
 
 from .contains import Contains
 from .has_length import HasLength
