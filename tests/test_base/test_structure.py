@@ -269,6 +269,8 @@ def test_absent_value_raises_value_error_in_required_field(
 def test_unexpected_value_raises_value_error(
     name: str, key: str, other_key: str, other_value: int, create_function: CreateFunctionType
 ) -> None:
+    assume(key != other_key)
+
     field_object = field(int)
     template_type = create_function(name, **{key: field_object})
     assert not (result := initialize(template_type(), **{other_key: other_value}))
