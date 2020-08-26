@@ -25,7 +25,6 @@ __all__ = (
     "ABSENT",
     "UNLIMITED",
     "TestplatesError",
-    "DanglingDescriptorError",
     "MissingValueError",
     "UnexpectedValueError",
     "ProhibitedValueError",
@@ -122,7 +121,6 @@ from testplates.value import (
 
 from testplates.exceptions import (
     TestplatesError,
-    DanglingDescriptorError,
     MissingValueError,
     UnexpectedValueError,
     ProhibitedValueError,

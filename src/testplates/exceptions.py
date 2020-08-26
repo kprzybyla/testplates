@@ -1,6 +1,5 @@
 __all__ = (
     "TestplatesError",
-    "DanglingDescriptorError",
     "MissingValueError",
     "UnexpectedValueError",
     "ProhibitedValueError",
@@ -30,7 +29,6 @@ __all__ = (
 
 from testplates.impl.base import (
     TestplatesError,
-    DanglingDescriptorError,
     MissingValueError,
     UnexpectedValueError,
     ProhibitedValueError,

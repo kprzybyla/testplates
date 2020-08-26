@@ -47,7 +47,6 @@ from .value import (
 
 from .exceptions import (
     TestplatesError,
-    DanglingDescriptorError,
     MissingValueError,
     UnexpectedValueError,
     ProhibitedValueError,
@@ -83,8 +82,6 @@ class Field(Generic[_T]):
         self._default = default
         self._default_factory = default_factory
         self._optional = optional
-
-        self._name: Optional[str] = None
 
     def __repr__(self) -> str:
         parameters = [f"{self._name!r}"]
@@ -135,9 +132,6 @@ class Field(Generic[_T]):
         """
         Returns field name.
         """
-
-        if self._name is None:
-            raise DanglingDescriptorError(self)
 
         return self._name
 

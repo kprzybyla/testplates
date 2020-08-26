@@ -1,6 +1,5 @@
 __all__ = (
     "TestplatesError",
-    "DanglingDescriptorError",
     "MissingValueError",
     "UnexpectedValueError",
     "ProhibitedValueError",
@@ -32,22 +31,6 @@ class TestplatesError(Exception):
         """
 
         return "".join(self.args)
-
-
-class DanglingDescriptorError(TestplatesError):
-
-    """
-    Error indicating dangling descriptor.
-
-    Raised when user defines descriptor outside of the class
-    definition. Such declaration does not trigger descriptor
-    protocol and may cause unexpected behaviour.
-    """
-
-    def __init__(self, descriptor: Any) -> None:
-        self.descriptor = descriptor
-
-        super().__init__(f"Descriptor {descriptor!r} defined outside of the class definition")
 
 
 class MissingValueError(TestplatesError):

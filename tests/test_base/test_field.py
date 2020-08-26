@@ -5,8 +5,6 @@ from typing import (
     NoReturn,
 )
 
-import pytest
-
 from resultful import (
     failure,
     unwrap_failure,
@@ -25,7 +23,6 @@ from testplates import (
     WILDCARD,
     ABSENT,
     TestplatesError,
-    DanglingDescriptorError,
 )
 
 from tests.strategies import (
@@ -161,15 +158,6 @@ def test_validator_failure(
     error = unwrap_failure(result)
     assert isinstance(error, TestplatesError)
     assert error.message == message
-
-
-def test_name_raises_dangling_descriptor_error_when_specified_outside_the_class() -> None:
-    field_object = field(int)
-
-    with pytest.raises(DanglingDescriptorError) as exception:
-        print(field_object.name)
-
-    assert exception.value.descriptor == field_object
 
 
 # noinspection PyTypeChecker
