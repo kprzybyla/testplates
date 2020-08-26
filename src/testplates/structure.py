@@ -21,7 +21,6 @@ Optional = Field[Union[_T, LiteralAny, LiteralWildcard, LiteralAbsent]]
 def initialize(
     structure: _Structure, /, **values: Value[Any]
 ) -> Result[_Structure, TestplatesError]:
-
     return structure._init_(**values)
 
 
@@ -31,8 +30,32 @@ def fields(structure_type: Type[Structure], /) -> Mapping[str, Field[Any]]:
 
 
 @overload
+def field(typ: Type[_T], validator: Validator = ..., /) -> Required[_T]:
+    ...
+
+
+@overload
+def field(typ: Type[_T], validator: Validator = ..., /, *, default: _T) -> Required[_T]:
+    ...
+
+
+@overload
 def field(
-    typ: Type[_T], validator: Validator = ..., /, *, default: Maybe[_T] = ...
+    typ: Type[_T], validator: Validator = ..., /, *, default_factory: Callable[[], _T]
+) -> Required[_T]:
+    ...
+
+
+@overload
+def field(
+    typ: Type[_T], validator: Validator = ..., /, *, optional: Literal[False]
+) -> Required[_T]:
+    ...
+
+
+@overload
+def field(
+    typ: Type[_T], validator: Validator = ..., /, *, default: _T, optional: Literal[False]
 ) -> Required[_T]:
     ...
 
@@ -43,7 +66,7 @@ def field(
     validator: Validator = ...,
     /,
     *,
-    default: Maybe[_T] = ...,
+    default_factory: Callable[[], _T],
     optional: Literal[False],
 ) -> Required[_T]:
     ...
@@ -51,12 +74,14 @@ def field(
 
 @overload
 def field(
-    typ: Type[_T],
-    validator: Validator = ...,
-    /,
-    *,
-    default: Maybe[_T] = ...,
-    optional: Literal[True],
+    typ: Type[_T], validator: Validator = ..., /, *, optional: Literal[True]
+) -> Optional[_T]:
+    ...
+
+
+@overload
+def field(
+    typ: Type[_T], validator: Validator = ..., /, *, default: _T, optional: Literal[True]
 ) -> Optional[_T]:
     ...
 
@@ -67,9 +92,23 @@ def field(
     validator: Validator = ...,
     /,
     *,
-    default_factory: Maybe[Callable[[], _T]] = ...,
+    default_factory: Callable[[], _T],
     optional: Literal[True],
 ) -> Optional[_T]:
+    ...
+
+
+@overload
+def field(
+    typ: Type[_T], validator: Validator = ..., /, *, optional: bool = ...
+) -> Field[Value[_T]]:
+    ...
+
+
+@overload
+def field(
+    typ: Type[_T], validator: Validator = ..., /, *, default: _T, optional: bool = ...
+) -> Field[Value[_T]]:
     ...
 
 
@@ -79,7 +118,7 @@ def field(
     validator: Validator = ...,
     /,
     *,
-    default: Maybe[_T] = ...,
+    default_factory: Callable[[], _T],
     optional: bool = ...,
 ) -> Field[Value[_T]]:
     ...
