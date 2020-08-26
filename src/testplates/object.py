@@ -16,10 +16,10 @@ _T = TypeVar("_T")
 def create_object(name: str, **fields: Field[Any]) -> Type[Object]:
 
     """
-        Functional API for creating object.
+    Functional API for creating object.
 
-        :param name: object type name
-        :param fields: object fields
+    :param name: object type name
+    :param fields: object fields
     """
 
     return cast(Type[Object], Object._create_(name, **fields))
@@ -29,17 +29,17 @@ class CreateObjectFunctionType(Protocol):
     def __call__(self, name: str, **fields: Field[Value[Any]]) -> Type[Object]:
 
         """
-            Functional API for creating object.
+        Functional API for creating object.
 
-            :param name: object type name
-            :param fields: object fields
+        :param name: object type name
+        :param fields: object fields
         """
 
 
 class Object(Structure):
 
     """
-        Object-like structure template class.
+    Object-like structure template class.
     """
 
     __slots__ = ()

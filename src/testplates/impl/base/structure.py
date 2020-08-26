@@ -51,7 +51,7 @@ _T = TypeVar("_T", covariant=True)
 class Field(Generic[_T]):
 
     """
-        Field descriptor class.
+    Field descriptor class.
     """
 
     __slots__ = ("_validator", "_default", "_default_factory", "_optional", "_name")
@@ -99,13 +99,13 @@ class Field(Generic[_T]):
     ) -> Union[Field[_T], Value[_T]]:
 
         """
-            Returns either field itself or field value.
+        Returns either field itself or field value.
 
-            Return value depends on the fact whether field was accessed
-            via :class:`Structure` class object or class instance attribute.
+        Return value depends on the fact whether field was accessed
+        via :class:`Structure` class object or class instance attribute.
 
-            :param instance: :class:`Structure` class instance to which field is attached or None
-            :param owner: :class:`Structure` class object to which field is attached
+        :param instance: :class:`Structure` class instance to which field is attached or None
+        :param owner: :class:`Structure` class object to which field is attached
         """
 
         if instance is None:
@@ -117,7 +117,7 @@ class Field(Generic[_T]):
     def name(self) -> str:
 
         """
-            Returns field name.
+        Returns field name.
         """
 
         if self._name is None:
@@ -129,7 +129,7 @@ class Field(Generic[_T]):
     def validator(self) -> Validator:
 
         """
-            Returns field validator function.
+        Returns field validator function.
         """
 
         return self._validator
@@ -139,10 +139,10 @@ class Field(Generic[_T]):
     def default(self) -> Maybe[_T]:
 
         """
-            Returns field default value.
+        Returns field default value.
 
-            If the field does not have a default value,
-            missing value indicator is returned instead.
+        If the field does not have a default value,
+        missing value indicator is returned instead.
         """
 
         default_factory = self._default_factory
@@ -156,7 +156,7 @@ class Field(Generic[_T]):
     def is_optional(self) -> bool:
 
         """
-            Returns True if field is optional, otherwise False.
+        Returns True if field is optional, otherwise False.
         """
 
         return self._optional
@@ -165,9 +165,9 @@ class Field(Generic[_T]):
     def validate(self, value: Maybe[Value[_T]], /) -> Result[None, TestplatesError]:
 
         """
-            Validates the given value against the field requirements.
+        Validates the given value against the field requirements.
 
-            :param value: value to be validated
+        :param value: value to be validated
         """
 
         default = self.default
@@ -209,7 +209,7 @@ class StructureDict(Dict[str, Any]):
 class StructureMeta(abc.ABCMeta):
 
     """
-        Structure template metaclass.
+    Structure template metaclass.
     """
 
     __slots__ = ()
@@ -248,7 +248,7 @@ class StructureMeta(abc.ABCMeta):
 class Structure(abc.ABC, metaclass=StructureMeta):
 
     """
-        Structure template base class.
+    Structure template base class.
     """
 
     __slots__ = ("_values_",)
@@ -298,11 +298,11 @@ class Structure(abc.ABC, metaclass=StructureMeta):
     def _get_value_(self: Any, key: str, /, *, default: Maybe[_T] = MISSING) -> Maybe[Value[_T]]:
 
         """
-            Extracts value by given key using a type specific protocol.
+        Extracts value by given key using a type specific protocol.
 
-            If value is missing, returns default value.
+        If value is missing, returns default value.
 
-            :param self: object with a type specific protocol
-            :param key: key used to access the value in a structure
-            :param default: default value that will be used in case value is missing
+        :param self: object with a type specific protocol
+        :param key: key used to access the value in a structure
+        :param default: default value that will be used in case value is missing
         """

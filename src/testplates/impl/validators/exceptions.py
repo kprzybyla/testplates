@@ -28,11 +28,11 @@ _T = TypeVar("_T")
 class InvalidTypeValueError(TestplatesError):
 
     """
-        Error indicating invalid type value.
+    Error indicating invalid type value.
 
-        Raised when user passed value which is not a type
-        or may not be used as the second argument of built-in
-        isinstance() function (because it is not a classinfo).
+    Raised when user passed value which is not a type
+    or may not be used as the second argument of built-in
+    isinstance() function (because it is not a classinfo).
     """
 
     def __init__(self, given_type: Any) -> None:
@@ -44,10 +44,10 @@ class InvalidTypeValueError(TestplatesError):
 class InvalidTypeError(TestplatesError):
 
     """
-        Error indicating invalid type.
+    Error indicating invalid type.
 
-        Raised when user passed a data which has a type
-        not present in the specified allowed types tuple.
+    Raised when user passed a data which has a type
+    not present in the specified allowed types tuple.
     """
 
     def __init__(self, data: Any, allowed_types: Tuple[type, ...]) -> None:
@@ -62,10 +62,10 @@ class InvalidTypeError(TestplatesError):
 class ProhibitedBoolValueError(TestplatesError):
 
     """
-        Error indicating prohibited bool value.
+    Error indicating prohibited bool value.
 
-        Raised when user passed a data which has a bool type
-        but the validator does not allow bool type values.
+    Raised when user passed a data which has a bool type
+    but the validator does not allow bool type values.
     """
 
     def __init__(self, data: bool) -> None:
@@ -77,10 +77,10 @@ class ProhibitedBoolValueError(TestplatesError):
 class InvalidMinimumValueError(TestplatesError):
 
     """
-        Error indicating invalid minimum value.
+    Error indicating invalid minimum value.
 
-        Raised when user passed a data that does not match
-        minimum value requirement specified by the validator.
+    Raised when user passed a data that does not match
+    minimum value requirement specified by the validator.
     """
 
     def __init__(self, data: Any, minimum: Any) -> None:
@@ -93,10 +93,10 @@ class InvalidMinimumValueError(TestplatesError):
 class InvalidMaximumValueError(TestplatesError):
 
     """
-        Error indicating invalid maximum value.
+    Error indicating invalid maximum value.
 
-        Raised when user passed a data that does not match
-        maximum value requirement specified by the validator.
+    Raised when user passed a data that does not match
+    maximum value requirement specified by the validator.
     """
 
     def __init__(self, data: Any, maximum: Any) -> None:
@@ -109,10 +109,10 @@ class InvalidMaximumValueError(TestplatesError):
 class InvalidMinimumSizeError(TestplatesError):
 
     """
-        Error indicating invalid minimum size.
+    Error indicating invalid minimum size.
 
-        Raised when user passed a data that does not match
-        minimum size requirement specified by the validator.
+    Raised when user passed a data that does not match
+    minimum size requirement specified by the validator.
     """
 
     def __init__(self, data: Sized, minimum: Any) -> None:
@@ -127,10 +127,10 @@ class InvalidMinimumSizeError(TestplatesError):
 class InvalidMaximumSizeError(TestplatesError):
 
     """
-        Error indicating invalid maximum size.
+    Error indicating invalid maximum size.
 
-        Raised when user passed a data that does not match
-        maximum size requirement specified by the validator.
+    Raised when user passed a data that does not match
+    maximum size requirement specified by the validator.
     """
 
     def __init__(self, data: Sized, maximum: Any) -> None:
@@ -145,10 +145,10 @@ class InvalidMaximumSizeError(TestplatesError):
 class InvalidFormatError(TestplatesError):
 
     """
-        Error indicating invalid data format.
+    Error indicating invalid data format.
 
-        Raised when user passed a data that does not match
-        the pattern requirement specified by the validator.
+    Raised when user passed a data that does not match
+    the pattern requirement specified by the validator.
     """
 
     def __init__(self, data: Union[str, bytes], pattern: Pattern[Any]) -> None:
@@ -161,11 +161,11 @@ class InvalidFormatError(TestplatesError):
 class UniquenessError(TestplatesError):
 
     """
-        Error indicating not unique elements.
+    Error indicating not unique elements.
 
-        Raised when user passed a data that contains
-        not unique elements by the validator specified
-        that all elements should be unique.
+    Raised when user passed a data that contains
+    not unique elements by the validator specified
+    that all elements should be unique.
     """
 
     def __init__(self, data: Sized) -> None:
@@ -177,10 +177,10 @@ class UniquenessError(TestplatesError):
 class InvalidKeyError(TestplatesError):
 
     """
-        Error indicating invalid key.
+    Error indicating invalid key.
 
-        Raised when user passed a data that contains
-        key that was not expected by the validator.
+    Raised when user passed a data that contains
+    key that was not expected by the validator.
     """
 
     def __init__(self, key: str, data: Any):
@@ -193,11 +193,11 @@ class InvalidKeyError(TestplatesError):
 class RequiredKeyMissingError(TestplatesError):
 
     """
-        Error indicating required key missing.
+    Error indicating required key missing.
 
 
-        Raised when user passed a data that is missing
-        a mandatory key specified by the validator.
+    Raised when user passed a data that is missing
+    a mandatory key specified by the validator.
     """
 
     def __init__(self, data: Any, key: str, field: Any) -> None:
@@ -211,10 +211,10 @@ class RequiredKeyMissingError(TestplatesError):
 class UnknownFieldError(TestplatesError):
 
     """
-        Error indicating unknown key for structure type.
+    Error indicating unknown key for structure type.
 
-        Raised when user passed a data that contains
-        unknown key that was not specified by structure type.
+    Raised when user passed a data that contains
+    unknown key that was not specified by structure type.
     """
 
     def __init__(self, data: Any, structure_type: Any, key: str) -> None:
@@ -228,11 +228,11 @@ class UnknownFieldError(TestplatesError):
 class MemberValidationError(TestplatesError):
 
     """
-        Error indicating member validation failure.
+    Error indicating member validation failure.
 
-        Raised when member validation fails with
-        any kind of error. This exception wraps
-        the enum, member and error information.
+    Raised when member validation fails with
+    any kind of error. This exception wraps
+    the enum, member and error information.
     """
 
     def __init__(self, enum_type: EnumMeta, member: Enum, error: TestplatesError) -> None:
@@ -246,11 +246,11 @@ class MemberValidationError(TestplatesError):
 class ItemValidationError(TestplatesError):
 
     """
-        Error indicating item validation failure.
+    Error indicating item validation failure.
 
-        Raised when item validation fails with
-        any kind of error. This exception wraps
-        the sequence, item and error information.
+    Raised when item validation fails with
+    any kind of error. This exception wraps
+    the sequence, item and error information.
     """
 
     def __init__(self, data: Any, item: Any, error: TestplatesError) -> None:
@@ -264,11 +264,11 @@ class ItemValidationError(TestplatesError):
 class FieldValidationError(TestplatesError):
 
     """
-        Error indicating field validation failure.
+    Error indicating field validation failure.
 
-        Raised when field validation fails with
-        any kind of error. This exception wraps
-        the mapping, field and error information.
+    Raised when field validation fails with
+    any kind of error. This exception wraps
+    the mapping, field and error information.
     """
 
     def __init__(self, data: Any, field: Any, error: TestplatesError) -> None:
@@ -282,11 +282,11 @@ class FieldValidationError(TestplatesError):
 class ChoiceValidationError(TestplatesError):
 
     """
-        Error indicating choice validation failure.
+    Error indicating choice validation failure.
 
-        Raised when choice validation fails with
-        any kind of error. This exception wraps
-        the union, choice and error information.
+    Raised when choice validation fails with
+    any kind of error. This exception wraps
+    the union, choice and error information.
     """
 
     def __init__(self, data: Any, error: TestplatesError):

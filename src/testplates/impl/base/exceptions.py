@@ -18,7 +18,7 @@ from typing import Any
 class TestplatesError(Exception):
 
     """
-        Base testplates error.
+    Base testplates error.
     """
 
     def __init__(self, message: str):
@@ -28,7 +28,7 @@ class TestplatesError(Exception):
     def message(self) -> str:
 
         """
-            Returns error message.
+        Returns error message.
         """
 
         return "".join(self.args)
@@ -37,11 +37,11 @@ class TestplatesError(Exception):
 class DanglingDescriptorError(TestplatesError):
 
     """
-        Error indicating dangling descriptor.
+    Error indicating dangling descriptor.
 
-        Raised when user defines descriptor outside of the class
-        definition. Such declaration does not trigger descriptor
-        protocol and may cause unexpected behaviour.
+    Raised when user defines descriptor outside of the class
+    definition. Such declaration does not trigger descriptor
+    protocol and may cause unexpected behaviour.
     """
 
     def __init__(self, descriptor: Any) -> None:
@@ -53,10 +53,10 @@ class DanglingDescriptorError(TestplatesError):
 class MissingValueError(TestplatesError):
 
     """
-        Error indicating missing value.
+    Error indicating missing value.
 
-        Raised when user forgets to set mandatory
-        value for given field with actual value.
+    Raised when user forgets to set mandatory
+    value for given field with actual value.
     """
 
     def __init__(self, field: Any) -> None:
@@ -68,10 +68,10 @@ class MissingValueError(TestplatesError):
 class UnexpectedValueError(TestplatesError):
 
     """
-        Error indicating unexpected value.
+    Error indicating unexpected value.
 
-        Raised when user passes value which was
-        not defined inside the template definition.
+    Raised when user passes value which was
+    not defined inside the template definition.
     """
 
     def __init__(self, key: str, value: Any) -> None:
@@ -84,10 +84,10 @@ class UnexpectedValueError(TestplatesError):
 class ProhibitedValueError(TestplatesError):
 
     """
-        Error indicating prohibited value.
+    Error indicating prohibited value.
 
-        Raised when user sets prohibited value that
-        is invalid for given field due to its nature.
+    Raised when user sets prohibited value that
+    is invalid for given field due to its nature.
     """
 
     def __init__(self, field: Any, value: Any) -> None:
@@ -100,10 +100,10 @@ class ProhibitedValueError(TestplatesError):
 class MissingBoundaryError(TestplatesError):
 
     """
-        Error indicating missing boundary.
+    Error indicating missing boundary.
 
-        Raised when user forgets to set mandatory boundary
-        for given template with minimum and maximum constraints.
+    Raised when user forgets to set mandatory boundary
+    for given template with minimum and maximum constraints.
     """
 
     def __init__(self, name: str) -> None:
@@ -115,10 +115,10 @@ class MissingBoundaryError(TestplatesError):
 class InvalidSizeError(TestplatesError):
 
     """
-        Error indicating invalid size boundary value.
+    Error indicating invalid size boundary value.
 
-        Raised when user sets size boundary with value
-        that does not meet size boundary requirements.
+    Raised when user sets size boundary with value
+    that does not meet size boundary requirements.
     """
 
     def __init__(self, boundary: Any) -> None:
@@ -130,11 +130,11 @@ class InvalidSizeError(TestplatesError):
 class UnlimitedRangeError(TestplatesError):
 
     """
-        Error indicating unlimited range.
+    Error indicating unlimited range.
 
-        Raised when user sets both minimum and maximum
-        boundaries to unlimited value in the context that
-        does not allow such values to be used there together.
+    Raised when user sets both minimum and maximum
+    boundaries to unlimited value in the context that
+    does not allow such values to be used there together.
     """
 
     def __init__(self) -> None:
@@ -144,10 +144,10 @@ class UnlimitedRangeError(TestplatesError):
 class MutuallyExclusiveBoundariesError(TestplatesError):
 
     """
-        Error indicating exclusive and inclusive boundaries collision.
+    Error indicating exclusive and inclusive boundaries collision.
 
-        Raised when user sets mutually exclusive
-        boundaries at the same time with value.
+    Raised when user sets mutually exclusive
+    boundaries at the same time with value.
     """
 
     def __init__(self, name: str) -> None:
@@ -159,10 +159,10 @@ class MutuallyExclusiveBoundariesError(TestplatesError):
 class OverlappingBoundariesError(TestplatesError):
 
     """
-        Error indicating overlapping boundaries.
+    Error indicating overlapping boundaries.
 
-        Raised when user sets both minimum and maximum
-        boundaries with values the overlap over each other.
+    Raised when user sets both minimum and maximum
+    boundaries with values the overlap over each other.
     """
 
     def __init__(self, minimum: Any, maximum: Any) -> None:
@@ -175,10 +175,10 @@ class OverlappingBoundariesError(TestplatesError):
 class SingleMatchBoundariesError(TestplatesError):
 
     """
-        Error indicating single match boundaries range.
+    Error indicating single match boundaries range.
 
-        Raised when user sets boundaries with values that
-        creates range which matches only single value.
+    Raised when user sets boundaries with values that
+    creates range which matches only single value.
     """
 
     def __init__(self, minimum: Any, maximum: Any) -> None:

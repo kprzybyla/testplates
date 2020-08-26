@@ -40,11 +40,11 @@ _T = TypeVar("_T")
 def contains(first: _T, /, *rest: _T) -> Result[Contains[_T], TestplatesError]:
 
     """
-        Returns constraint object that matches any container object
-        that contains all values specified via the positional arguments.
+    Returns constraint object that matches any container object
+    that contains all values specified via the positional arguments.
 
-        :param first: first value to be present in the container object
-        :param rest: other values to be present in container object
+    :param first: first value to be present in the container object
+    :param rest: other values to be present in container object
     """
 
     return success(Contains(contains.__name__, first, *rest))
@@ -53,10 +53,10 @@ def contains(first: _T, /, *rest: _T) -> Result[Contains[_T], TestplatesError]:
 def has_size(size: int) -> Result[HasLength, TestplatesError]:
 
     """
-        Returns constraint object that matches any sized
-        object that has size equal to the exact value.
+    Returns constraint object that matches any sized
+    object that has size equal to the exact value.
 
-        :param size: exact size value
+    :param size: exact size value
     """
 
     return success(HasLength(has_size.__name__, size))
@@ -65,10 +65,10 @@ def has_size(size: int) -> Result[HasLength, TestplatesError]:
 def has_minimum_size(minimum: int, /) -> Result[HasLengthBetween, TestplatesError]:
 
     """
-        Returns constraint object that matches any sized
-        object that has size above minimum boundary value.
+    Returns constraint object that matches any sized
+    object that has size above minimum boundary value.
 
-        :param minimum: minimum size value
+    :param minimum: minimum size value
     """
 
     result = get_minimum(inclusive=minimum)
@@ -88,10 +88,10 @@ def has_minimum_size(minimum: int, /) -> Result[HasLengthBetween, TestplatesErro
 def has_maximum_size(maximum: int, /) -> Result[HasLengthBetween, TestplatesError]:
 
     """
-        Returns constraint object that matches any sized
-        object that has size below maximum boundary value.
+    Returns constraint object that matches any sized
+    object that has size below maximum boundary value.
 
-        :param maximum: maximum size value
+    :param maximum: maximum size value
     """
 
     result = get_maximum(inclusive=maximum)
@@ -113,11 +113,11 @@ def has_size_between(
 ) -> Result[HasLengthBetween, TestplatesError]:
 
     """
-        Returns constraint object that matches any sized object
-        that has size between minimum and maximum boundaries values.
+    Returns constraint object that matches any sized object
+    that has size between minimum and maximum boundaries values.
 
-        :param minimum: minimum size boundary value
-        :param maximum: maximum size boundary value
+    :param minimum: minimum size boundary value
+    :param maximum: maximum size boundary value
     """
 
     if minimum is UNLIMITED and maximum is UNLIMITED:
@@ -140,12 +140,12 @@ def has_size_between(
 def is_one_of(first: _T, second: _T, /, *rest: _T) -> Result[IsOneOf[_T], TestplatesError]:
 
     """
-        Returns constraint object that matches any object
-        which was specified via the positional arguments.
+    Returns constraint object that matches any object
+    which was specified via the positional arguments.
 
-        :param first: first value to be matched by the constraint object
-        :param second: second value to be matched by the constraint object
-        :param rest: other values to be matched by constraint object
+    :param first: first value to be matched by the constraint object
+    :param second: second value to be matched by the constraint object
+    :param rest: other values to be matched by constraint object
     """
 
     return success(IsOneOf(is_one_of.__name__, first, second, *rest))
@@ -154,10 +154,10 @@ def is_one_of(first: _T, second: _T, /, *rest: _T) -> Result[IsOneOf[_T], Testpl
 def is_permutation_of(values: List[_T], /) -> Result[IsPermutationOf[_T], TestplatesError]:
 
     """
-        Returns constraint object that matches any collection object
-        that is a permutation of values specified via parameter.
+    Returns constraint object that matches any collection object
+    that is a permutation of values specified via parameter.
 
-        :param values: values to be matched as permutation
+    :param values: values to be matched as permutation
     """
 
     return success(IsPermutationOf(is_permutation_of.__name__, values))
@@ -166,10 +166,10 @@ def is_permutation_of(values: List[_T], /) -> Result[IsPermutationOf[_T], Testpl
 def matches_pattern(pattern: AnyStr, /) -> Result[MatchesPattern[AnyStr], TestplatesError]:
 
     """
-        Returns constraint object that matches any string
-        object whose content matches the specified pattern.
+    Returns constraint object that matches any string
+    object whose content matches the specified pattern.
 
-        :param pattern: pattern to be matched inside string content
+    :param pattern: pattern to be matched inside string content
     """
 
     return success(MatchesPattern(matches_pattern.__name__, pattern))
@@ -184,13 +184,13 @@ def ranges_between(
 ) -> Result[RangesBetween, TestplatesError]:
 
     """
-        Returns constraint object that matches any object with boundaries
-        support that ranges between minimum and maximum boundaries values.
+    Returns constraint object that matches any object with boundaries
+    support that ranges between minimum and maximum boundaries values.
 
-        :param minimum: inclusive minimum boundary value
-        :param maximum: inclusive maximum boundary value
-        :param exclusive_minimum: exclusive minimum boundary value
-        :param exclusive_maximum: exclusive maximum boundary value
+    :param minimum: inclusive minimum boundary value
+    :param maximum: inclusive maximum boundary value
+    :param exclusive_minimum: exclusive minimum boundary value
+    :param exclusive_maximum: exclusive maximum boundary value
     """
 
     if (

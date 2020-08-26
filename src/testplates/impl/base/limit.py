@@ -29,13 +29,13 @@ class Limit:
     def alignment(self) -> Literal[0, 1]:
 
         """
-            Returns limit alignment.
+        Returns limit alignment.
 
-            Alignment indicates whether we accept the value
-            equal to the limit value as correct one or not.
+        Alignment indicates whether we accept the value
+        equal to the limit value as correct one or not.
 
-            If alignment is equal to 0, value equal to limit is accepted.
-            If alignment is equal to 1, value equal to limit is not accepted.
+        If alignment is equal to 0, value equal to limit is accepted.
+        If alignment is equal to 1, value equal to limit is not accepted.
         """
 
         return INCLUSIVE_ALIGNMENT if self.is_inclusive else EXCLUSIVE_ALIGNMENT

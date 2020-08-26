@@ -136,16 +136,16 @@ def field(
 ) -> Union[Required[_T], Optional[_T], Field[Value[_T]]]:
 
     """
-        Creates field for structure template.
+    Creates field for structure template.
 
-        This is basically a wrapper for :class:`Field`
-        with all possible overloads for its arguments.
+    This is basically a wrapper for :class:`Field`
+    with all possible overloads for its arguments.
 
-        :param typ: field type
-        :param validator: field validator function or None
-        :param default: field default value
-        :param default_factory: field default value factory
-        :param optional: indication whether field is optional or not
+    :param typ: field type
+    :param validator: field validator function or None
+    :param default: field default value
+    :param default_factory: field default value factory
+    :param optional: indication whether field is optional or not
     """
 
     return Field(validator, default=default, default_factory=default_factory, optional=optional)

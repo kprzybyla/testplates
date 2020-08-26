@@ -19,10 +19,10 @@ _VT = TypeVar("_VT", covariant=True)
 def create_mapping(name: str, **fields: Field[_VT]) -> Type[Mapping[_VT]]:
 
     """
-        Functional API for creating mapping.
+    Functional API for creating mapping.
 
-        :param name: mapping type name
-        :param fields: mapping fields
+    :param name: mapping type name
+    :param fields: mapping fields
     """
 
     return cast(Type[Mapping[_VT]], Mapping._create_(name, **fields))
@@ -32,17 +32,17 @@ class CreateMappingFunctionType(Protocol):
     def __call__(self, name: str, **fields: Field[Value[_VT]]) -> Type[Mapping[_VT]]:
 
         """
-            Functional API for creating mapping.
+        Functional API for creating mapping.
 
-            :param name: mapping type name
-            :param fields: mapping fields
+        :param name: mapping type name
+        :param fields: mapping fields
         """
 
 
 class Mapping(Generic[_VT], Structure, typing.Mapping[str, Value[_VT]]):
 
     """
-        Mapping-like structure template class.
+    Mapping-like structure template class.
     """
 
     __slots__ = ()

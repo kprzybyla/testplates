@@ -31,10 +31,10 @@ from .exceptions import TestplatesError
 def is_value(value: Maybe[Value[Any]]) -> bool:
 
     """
-        Returns True if value is not missing
-        or a special value, otherwise False.
+    Returns True if value is not missing
+    or a special value, otherwise False.
 
-        :param value: template value
+    :param value: template value
     """
 
     return value not in [MISSING, ANY, ABSENT, WILDCARD]
@@ -44,14 +44,14 @@ def is_value(value: Maybe[Value[Any]]) -> bool:
 def values_matches(self_value: Maybe[Value[_T]], other_value: Maybe[Value[_T]], /) -> bool:
 
     """
-        Compares self value and other value and
-        returns True if they match, otherwise False.
+    Compares self value and other value and
+    returns True if they match, otherwise False.
 
-        Assumes that special values were validated
-        against field types and do not bend any logic.
+    Assumes that special values were validated
+    against field types and do not bend any logic.
 
-        :param self_value: self template value
-        :param other_value: other object value
+    :param self_value: self template value
+    :param other_value: other object value
     """
 
     if self_value is WILDCARD:
@@ -70,7 +70,7 @@ def values_matches(self_value: Maybe[Value[_T]], other_value: Maybe[Value[_T]], 
 class MissingType(enum.Enum):
 
     """
-        Missing value type class.
+    Missing value type class.
     """
 
     MISSING = enum.auto()
@@ -87,7 +87,7 @@ class MissingType(enum.Enum):
 class SpecialValueType(enum.Enum):
 
     """
-        Special value type class.
+    Special value type class.
     """
 
     ANY = enum.auto()
@@ -119,7 +119,7 @@ class SpecialValueType(enum.Enum):
 class UnlimitedType(enum.Enum):
 
     """
-        Unlimited value type class.
+    Unlimited value type class.
     """
 
     UNLIMITED = enum.auto()

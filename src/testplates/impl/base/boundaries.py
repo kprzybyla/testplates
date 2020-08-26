@@ -40,10 +40,10 @@ def get_minimum(
 ) -> Result[Boundary, TestplatesError]:
 
     """
-        Gets minimum boundary.
+    Gets minimum boundary.
 
-        :param inclusive: inclusive boundary value or None
-        :param exclusive: exclusive boundary value or None
+    :param inclusive: inclusive boundary value or None
+    :param exclusive: exclusive boundary value or None
     """
 
     return get_boundary(MINIMUM_EXTREMUM, inclusive=inclusive, exclusive=exclusive)
@@ -54,10 +54,10 @@ def get_maximum(
 ) -> Result[Boundary, TestplatesError]:
 
     """
-        Gets maximum boundary.
+    Gets maximum boundary.
 
-        :param inclusive: inclusive boundary value or None
-        :param exclusive: exclusive boundary value or None
+    :param inclusive: inclusive boundary value or None
+    :param exclusive: exclusive boundary value or None
     """
 
     return get_boundary(MAXIMUM_EXTREMUM, inclusive=inclusive, exclusive=exclusive)
@@ -68,11 +68,11 @@ def get_boundary(
 ) -> Result[Boundary, TestplatesError]:
 
     """
-        Gets boundary.
+    Gets boundary.
 
-        :param name: extremum name
-        :param inclusive: inclusive boundary value or None
-        :param exclusive: exclusive boundary value or None
+    :param name: extremum name
+    :param inclusive: inclusive boundary value or None
+    :param exclusive: exclusive boundary value or None
     """
 
     if inclusive is None and exclusive is None:
@@ -98,12 +98,12 @@ def get_value_boundaries(
 ) -> Result[Tuple[Boundary, Boundary], TestplatesError]:
 
     """
-        Gets minimum and maximum value boundaries.
+    Gets minimum and maximum value boundaries.
 
-        :param inclusive_minimum: inclusive minimum boundary value
-        :param inclusive_maximum: inclusive maximum boundary value
-        :param exclusive_minimum: exclusive minimum boundary value
-        :param exclusive_maximum: exclusive maximum boundary value
+    :param inclusive_minimum: inclusive minimum boundary value
+    :param inclusive_maximum: inclusive maximum boundary value
+    :param exclusive_minimum: exclusive minimum boundary value
+    :param exclusive_maximum: exclusive maximum boundary value
     """
 
     minimum_result = get_minimum(inclusive=inclusive_minimum, exclusive=exclusive_minimum)
@@ -132,10 +132,10 @@ def validate_value_boundaries(
 ) -> Result[None, TestplatesError]:
 
     """
-        Checks minimum and maximum value boundaries.
+    Checks minimum and maximum value boundaries.
 
-        :param minimum: minimum value boundary
-        :param maximum: maximum value boundary
+    :param minimum: minimum value boundary
+    :param maximum: maximum value boundary
     """
 
     if minimum is UNLIMITED or maximum is UNLIMITED:
@@ -155,10 +155,10 @@ def get_length_boundaries(
 ) -> Result[Tuple[Boundary, Boundary], TestplatesError]:
 
     """
-        Gets minimum and maximum length boundaries.
+    Gets minimum and maximum length boundaries.
 
-        :param inclusive_minimum: inclusive minimum boundary value
-        :param inclusive_maximum: inclusive maximum boundary value
+    :param inclusive_minimum: inclusive minimum boundary value
+    :param inclusive_maximum: inclusive maximum boundary value
     """
 
     minimum_result = get_minimum(inclusive=inclusive_minimum)
@@ -187,10 +187,10 @@ def validate_length_boundaries(
 ) -> Result[None, TestplatesError]:
 
     """
-        Checks minimum and maximum length boundaries.
+    Checks minimum and maximum length boundaries.
 
-        :param minimum: minimum length boundary
-        :param maximum: maximum length boundary
+    :param minimum: minimum length boundary
+    :param maximum: maximum length boundary
     """
 
     if minimum is UNLIMITED or maximum is UNLIMITED:
@@ -214,9 +214,9 @@ def validate_length_boundaries(
 def is_outside_length_range(boundary: Limit) -> bool:
 
     """
-        Returns True if boundary is outside of length range, otherwise False.
+    Returns True if boundary is outside of length range, otherwise False.
 
-        :param boundary: boundary limit
+    :param boundary: boundary limit
     """
 
     return boundary.value < LENGTH_MINIMUM or boundary.value > LENGTH_MAXIMUM
@@ -225,10 +225,10 @@ def is_outside_length_range(boundary: Limit) -> bool:
 def is_overlapping(minimum: Limit, maximum: Limit) -> bool:
 
     """
-        Returns True if boundaries are overlapping each other, otherwise False.
+    Returns True if boundaries are overlapping each other, otherwise False.
 
-        :param minimum: minimum boundary limit
-        :param maximum: maximum boundary limit
+    :param minimum: minimum boundary limit
+    :param maximum: maximum boundary limit
     """
 
     return minimum.value + minimum.alignment > maximum.value - maximum.alignment
@@ -237,10 +237,10 @@ def is_overlapping(minimum: Limit, maximum: Limit) -> bool:
 def is_single_match(minimum: Limit, maximum: Limit) -> bool:
 
     """
-        Returns True if boundaries will match only single value, otherwise False.
+    Returns True if boundaries will match only single value, otherwise False.
 
-        :param minimum: minimum boundary limit
-        :param maximum: maximum boundary limit
+    :param minimum: minimum boundary limit
+    :param maximum: maximum boundary limit
     """
 
     return minimum.value + minimum.alignment == maximum.value - maximum.alignment
@@ -249,10 +249,10 @@ def is_single_match(minimum: Limit, maximum: Limit) -> bool:
 def fits_minimum_value(value: int, minimum: Boundary) -> bool:
 
     """
-        Checks whether value fits the minimum boundary.
+    Checks whether value fits the minimum boundary.
 
-        :param value: value to be checked against boundary
-        :param minimum: minimum boundary
+    :param value: value to be checked against boundary
+    :param minimum: minimum boundary
     """
 
     if minimum is UNLIMITED:
@@ -267,10 +267,10 @@ def fits_minimum_value(value: int, minimum: Boundary) -> bool:
 def fits_maximum_value(value: int, maximum: Boundary) -> bool:
 
     """
-        Checks whether value fits the maximum boundary.
+    Checks whether value fits the maximum boundary.
 
-        :param value: value to be checked against boundary
-        :param maximum: maximum boundary
+    :param value: value to be checked against boundary
+    :param maximum: maximum boundary
     """
 
     if maximum is UNLIMITED:
@@ -285,10 +285,10 @@ def fits_maximum_value(value: int, maximum: Boundary) -> bool:
 def fits_minimum_length(value: Sized, minimum: Boundary) -> bool:
 
     """
-        Checks whether value length fits the minimum boundary.
+    Checks whether value length fits the minimum boundary.
 
-        :param value: value to be checked against boundary
-        :param minimum: minimum boundary
+    :param value: value to be checked against boundary
+    :param minimum: minimum boundary
     """
 
     return fits_minimum_value(len(value), minimum)
@@ -297,10 +297,10 @@ def fits_minimum_length(value: Sized, minimum: Boundary) -> bool:
 def fits_maximum_length(value: Sized, maximum: Boundary) -> bool:
 
     """
-        Checks whether value length fits the maximum boundary.
+    Checks whether value length fits the maximum boundary.
 
-        :param value: value to be checked against boundary
-        :param maximum: maximum boundary
+    :param value: value to be checked against boundary
+    :param maximum: maximum boundary
     """
 
     return fits_maximum_value(len(value), maximum)
