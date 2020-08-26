@@ -1,4 +1,4 @@
-__all__ = [
+__all__ = (
     "passthrough_validator",
     "type_validator",
     "boolean_validator",
@@ -9,12 +9,28 @@ __all__ = [
     "sequence_validator",
     "mapping_validator",
     "union_validator",
-]
+)
 
-from enum import Enum, EnumMeta
-from typing import overload, Iterable, Mapping, Optional, Final
+from enum import (
+    Enum,
+    EnumMeta,
+)
 
-from resultful import success, failure, unwrap_success, unwrap_failure, Result
+from typing import (
+    overload,
+    Iterable,
+    Mapping,
+    Optional,
+    Final,
+)
+
+from resultful import (
+    success,
+    failure,
+    unwrap_success,
+    unwrap_failure,
+    Result,
+)
 
 from testplates.impl.base import (
     get_pattern,
@@ -37,8 +53,16 @@ from testplates.impl.validators import (
     UnionValidator,
 )
 
-from .value import Boundary, Validator
-from .exceptions import TestplatesError, InvalidTypeValueError, MemberValidationError
+from .value import (
+    Boundary,
+    Validator,
+)
+
+from .exceptions import (
+    TestplatesError,
+    InvalidTypeValueError,
+    MemberValidationError,
+)
 
 passthrough_validator: Final[PassthroughValidator] = PassthroughValidator()
 
@@ -140,7 +164,9 @@ def integer_validator(
 
     return success(
         IntegerValidator(
-            minimum_value=minimum_value, maximum_value=maximum_value, allow_bool=allow_bool
+            minimum_value=minimum_value,
+            maximum_value=maximum_value,
+            allow_bool=allow_bool,
         )
     )
 
@@ -208,7 +234,9 @@ def bytes_validator(
 
 
 def enum_validator(
-    enum_type: EnumMeta, enum_member_validator: Validator = passthrough_validator, /
+    enum_type: EnumMeta,
+    enum_member_validator: Validator = passthrough_validator,
+    /,
 ) -> Result[Validator, TestplatesError]:
 
     """

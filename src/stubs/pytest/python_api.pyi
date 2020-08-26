@@ -1,5 +1,14 @@
 from types import TracebackType
-from typing import Type, TypeVar, Generic, Union, Tuple, Pattern, Optional
+
+from typing import (
+    Type,
+    TypeVar,
+    Generic,
+    Union,
+    Tuple,
+    Pattern,
+    Optional,
+)
 
 from .code import ExceptionInfo
 

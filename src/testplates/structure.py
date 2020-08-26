@@ -1,12 +1,39 @@
-__all__ = ["initialize", "fields", "field", "Required", "Optional"]
+__all__ = (
+    "initialize",
+    "fields",
+    "field",
+    "Required",
+    "Optional",
+)
 
-from typing import overload, Any, Type, TypeVar, Union, Mapping, Callable, Literal
+from typing import (
+    overload,
+    Any,
+    Type,
+    TypeVar,
+    Union,
+    Mapping,
+    Callable,
+    Literal,
+)
 
 from resultful import Result
 
-from testplates.impl.base import Field, Structure
+from testplates.impl.base import (
+    Field,
+    Structure,
+)
 
-from .value import Value, Maybe, Validator, LiteralAny, LiteralWildcard, LiteralAbsent, MISSING
+from .value import (
+    Value,
+    Maybe,
+    Validator,
+    LiteralAny,
+    LiteralWildcard,
+    LiteralAbsent,
+    MISSING,
+)
+
 from .validators import passthrough_validator
 from .exceptions import TestplatesError
 
@@ -19,7 +46,9 @@ Optional = Field[Union[_T, LiteralAny, LiteralWildcard, LiteralAbsent]]
 
 # noinspection PyProtectedMember
 def initialize(
-    structure: _Structure, /, **values: Value[Any]
+    structure: _Structure,
+    /,
+    **values: Value[Any],
 ) -> Result[_Structure, TestplatesError]:
     return structure._init_(**values)
 
@@ -30,32 +59,55 @@ def fields(structure_type: Type[Structure], /) -> Mapping[str, Field[Any]]:
 
 
 @overload
-def field(typ: Type[_T], validator: Validator = ..., /) -> Required[_T]:
-    ...
-
-
-@overload
-def field(typ: Type[_T], validator: Validator = ..., /, *, default: _T) -> Required[_T]:
-    ...
-
-
-@overload
 def field(
-    typ: Type[_T], validator: Validator = ..., /, *, default_factory: Callable[[], _T]
+    typ: Type[_T],
+    validator: Validator = ...,
+    /,
 ) -> Required[_T]:
     ...
 
 
 @overload
 def field(
-    typ: Type[_T], validator: Validator = ..., /, *, optional: Literal[False]
+    typ: Type[_T],
+    validator: Validator = ...,
+    /,
+    *,
+    default: _T,
 ) -> Required[_T]:
     ...
 
 
 @overload
 def field(
-    typ: Type[_T], validator: Validator = ..., /, *, default: _T, optional: Literal[False]
+    typ: Type[_T],
+    validator: Validator = ...,
+    /,
+    *,
+    default_factory: Callable[[], _T],
+) -> Required[_T]:
+    ...
+
+
+@overload
+def field(
+    typ: Type[_T],
+    validator: Validator = ...,
+    /,
+    *,
+    optional: Literal[False],
+) -> Required[_T]:
+    ...
+
+
+@overload
+def field(
+    typ: Type[_T],
+    validator: Validator = ...,
+    /,
+    *,
+    default: _T,
+    optional: Literal[False],
 ) -> Required[_T]:
     ...
 
@@ -74,14 +126,23 @@ def field(
 
 @overload
 def field(
-    typ: Type[_T], validator: Validator = ..., /, *, optional: Literal[True]
+    typ: Type[_T],
+    validator: Validator = ...,
+    /,
+    *,
+    optional: Literal[True],
 ) -> Optional[_T]:
     ...
 
 
 @overload
 def field(
-    typ: Type[_T], validator: Validator = ..., /, *, default: _T, optional: Literal[True]
+    typ: Type[_T],
+    validator: Validator = ...,
+    /,
+    *,
+    default: _T,
+    optional: Literal[True],
 ) -> Optional[_T]:
     ...
 
@@ -100,14 +161,23 @@ def field(
 
 @overload
 def field(
-    typ: Type[_T], validator: Validator = ..., /, *, optional: bool = ...
+    typ: Type[_T],
+    validator: Validator = ...,
+    /,
+    *,
+    optional: bool = ...,
 ) -> Field[Value[_T]]:
     ...
 
 
 @overload
 def field(
-    typ: Type[_T], validator: Validator = ..., /, *, default: _T, optional: bool = ...
+    typ: Type[_T],
+    validator: Validator = ...,
+    /,
+    *,
+    default: _T,
+    optional: bool = ...,
 ) -> Field[Value[_T]]:
     ...
 

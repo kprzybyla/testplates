@@ -1,4 +1,4 @@
-__all__ = [
+__all__ = (
     "Maybe",
     "Value",
     "Boundary",
@@ -13,13 +13,24 @@ __all__ = [
     "WILDCARD",
     "ABSENT",
     "UNLIMITED",
-]
+)
 
-from typing import Any, TypeVar, Union, Callable, Literal, Final
+from typing import (
+    Any,
+    TypeVar,
+    Union,
+    Callable,
+    Literal,
+    Final,
+)
 
 from resultful import Result
 
-from testplates.impl.base import MissingType, SpecialValueType, UnlimitedType
+from testplates.impl.base import (
+    MissingType,
+    SpecialValueType,
+    UnlimitedType,
+)
 
 from .exceptions import TestplatesError
 

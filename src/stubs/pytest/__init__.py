@@ -1,4 +1,9 @@
-__all__ = ["mark", "param", "fixture", "raises"]
+__all__ = (
+    "mark",
+    "param",
+    "fixture",
+    "raises",
+)
 
 from . import mark
 from .mark import param

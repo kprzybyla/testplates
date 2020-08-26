@@ -1,4 +1,4 @@
-__all__ = [
+__all__ = (
     "Required",
     "Optional",
     "CreateObjectFunctionType",
@@ -70,7 +70,7 @@ __all__ = [
     "UnknownFieldError",
     "InvalidKeyError",
     "ChoiceValidationError",
-]
+)
 
 # Annotations
 

@@ -1,4 +1,4 @@
-__all__ = [
+__all__ = (
     "TestplatesError",
     "DanglingDescriptorError",
     "MissingValueError",
@@ -26,7 +26,7 @@ __all__ = [
     "UnknownFieldError",
     "InvalidKeyError",
     "ChoiceValidationError",
-]
+)
 
 from testplates.impl.base import (
     TestplatesError,

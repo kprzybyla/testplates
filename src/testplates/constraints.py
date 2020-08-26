@@ -1,4 +1,4 @@
-__all__ = [
+__all__ = (
     "contains",
     "has_size",
     "has_minimum_size",
@@ -8,11 +8,21 @@ __all__ = [
     "is_permutation_of",
     "matches_pattern",
     "ranges_between",
-]
+)
 
-from typing import AnyStr, TypeVar, List, Optional
+from typing import (
+    AnyStr,
+    TypeVar,
+    List,
+    Optional,
+)
 
-from resultful import success, failure, unwrap_success, Result
+from resultful import (
+    success,
+    failure,
+    unwrap_success,
+    Result,
+)
 
 from testplates.impl.base import (
     get_minimum,
@@ -31,8 +41,15 @@ from testplates.impl.constraints import (
     MatchesPattern,
 )
 
-from .value import Boundary, UNLIMITED
-from .exceptions import TestplatesError, UnlimitedRangeError
+from .value import (
+    Boundary,
+    UNLIMITED,
+)
+
+from .exceptions import (
+    TestplatesError,
+    UnlimitedRangeError,
+)
 
 _T = TypeVar("_T")
 
@@ -80,7 +97,9 @@ def has_minimum_size(minimum: int, /) -> Result[HasLengthBetween, TestplatesErro
 
     return success(
         HasLengthBetween(
-            has_minimum_size.__name__, minimum_length=minimum_length, maximum_length=UNLIMITED
+            has_minimum_size.__name__,
+            minimum_length=minimum_length,
+            maximum_length=UNLIMITED,
         )
     )
 
@@ -103,13 +122,17 @@ def has_maximum_size(maximum: int, /) -> Result[HasLengthBetween, TestplatesErro
 
     return success(
         HasLengthBetween(
-            has_maximum_size.__name__, minimum_length=UNLIMITED, maximum_length=maximum_length
+            has_maximum_size.__name__,
+            minimum_length=UNLIMITED,
+            maximum_length=maximum_length,
         )
     )
 
 
 def has_size_between(
-    *, minimum: Boundary[int], maximum: Boundary[int]
+    *,
+    minimum: Boundary[int],
+    maximum: Boundary[int],
 ) -> Result[HasLengthBetween, TestplatesError]:
 
     """
@@ -132,7 +155,9 @@ def has_size_between(
 
     return success(
         HasLengthBetween(
-            has_size_between.__name__, minimum_length=minimum_length, maximum_length=maximum_length
+            has_size_between.__name__,
+            minimum_length=minimum_length,
+            maximum_length=maximum_length,
         )
     )
 
@@ -215,6 +240,8 @@ def ranges_between(
 
     return success(
         RangesBetween(
-            ranges_between.__name__, minimum_value=minimum_value, maximum_value=maximum_value
+            ranges_between.__name__,
+            minimum_value=minimum_value,
+            maximum_value=maximum_value,
         )
     )

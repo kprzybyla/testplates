@@ -1,4 +1,12 @@
-from typing import Any, Union, Tuple, List, Iterable, Callable, Optional
+from typing import (
+    Any,
+    Union,
+    Tuple,
+    List,
+    Iterable,
+    Callable,
+    Optional,
+)
 
 class MarkDecorator: ...
 

@@ -1,12 +1,29 @@
 from __future__ import annotations
 
-__all__ = ["create_object", "CreateObjectFunctionType", "Object"]
+__all__ = (
+    "create_object",
+    "CreateObjectFunctionType",
+    "Object",
+)
 
-from typing import cast, Any, Type, TypeVar, Protocol
+from typing import (
+    cast,
+    Any,
+    Type,
+    TypeVar,
+    Protocol,
+)
 
-from testplates.impl.base.structure import Field, Structure
+from testplates.impl.base.structure import (
+    Field,
+    Structure,
+)
 
-from .value import Value, Maybe, MISSING
+from .value import (
+    Value,
+    Maybe,
+    MISSING,
+)
 
 _T = TypeVar("_T")
 
@@ -46,6 +63,10 @@ class Object(Structure):
 
     @staticmethod
     def _get_value_(
-        self: object, key: str, /, *, default: Maybe[_T] = MISSING
+        self: object,
+        key: str,
+        /,
+        *,
+        default: Maybe[_T] = MISSING,
     ) -> Value[Maybe[_T]]:
         return cast(Value[Maybe[_T]], getattr(self, key, default))

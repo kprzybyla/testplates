@@ -1,4 +1,13 @@
-from typing import Any, TypeVar, Tuple, Union, Iterable, Callable, Optional, Literal
+from typing import (
+    Any,
+    TypeVar,
+    Tuple,
+    Union,
+    Iterable,
+    Callable,
+    Optional,
+    Literal,
+)
 
 _Scope = Literal["session", "package", "module", "class", "function"]
 _FixtureFunction = TypeVar("_FixtureFunction", bound=Callable[..., object])

@@ -1,14 +1,32 @@
 from __future__ import annotations
 
-__all__ = ["create_mapping", "CreateMappingFunctionType", "Mapping"]
+__all__ = (
+    "create_mapping",
+    "CreateMappingFunctionType",
+    "Mapping",
+)
 
 import typing
 
-from typing import cast, Type, TypeVar, Generic, Iterator, Protocol
+from typing import (
+    cast,
+    Type,
+    TypeVar,
+    Generic,
+    Iterator,
+    Protocol,
+)
 
-from testplates.impl.base import Field, Structure
+from testplates.impl.base import (
+    Field,
+    Structure,
+)
 
-from .value import Value, Maybe, MISSING
+from .value import (
+    Value,
+    Maybe,
+    MISSING,
+)
 
 _T = TypeVar("_T")
 _VT = TypeVar("_VT", covariant=True)
@@ -58,6 +76,10 @@ class Mapping(Generic[_VT], Structure, typing.Mapping[str, Value[_VT]]):
 
     @staticmethod
     def _get_value_(
-        self: Mapping[_T], key: str, /, *, default: Maybe[_T] = MISSING
+        self: Mapping[_T],
+        key: str,
+        /,
+        *,
+        default: Maybe[_T] = MISSING,
     ) -> Value[Maybe[_T]]:
         return self.get(key, default)
