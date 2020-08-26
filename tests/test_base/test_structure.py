@@ -264,18 +264,19 @@ def test_absent_value_raises_value_error_in_required_field(
 
 
 # noinspection PyTypeChecker
-@given(name=st_name(), key=st.text(), value=st.integers())
+@given(name=st_name(), key=st.text(), other_key=st.text(), other_value=st.integers())
 @create_function_parameters
 def test_unexpected_value_raises_value_error(
-    name: str, key: str, value: int, create_function: CreateFunctionType
+    name: str, key: str, other_key: str, other_value: int, create_function: CreateFunctionType
 ) -> None:
-    template_type = create_function(name)
-    assert not (result := initialize(template_type(), **{key: value}))
+    field_object = field(int)
+    template_type = create_function(name, **{key: field_object})
+    assert not (result := initialize(template_type(), **{other_key: other_value}))
 
     error = unwrap_failure(result)
     assert isinstance(error, UnexpectedValueError)
-    assert error.key == key
-    assert error.value == value
+    assert error.key == other_key
+    assert error.value == other_value
 
 
 # noinspection PyTypeChecker

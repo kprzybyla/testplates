@@ -82,20 +82,20 @@ class Field(Generic[_T]):
 
         return f"{testplates.__name__}.{type(self).__name__}({', '.join(parameters)})"
 
-    def __set_name__(self, owner: Callable[..., Structure[_T]], name: str) -> None:
+    def __set_name__(self, owner: Callable[..., Structure], name: str) -> None:
         self._name = name
 
     @overload
-    def __get__(self, instance: None, owner: Callable[..., Structure[_T]]) -> Field[_T]:
+    def __get__(self, instance: None, owner: Callable[..., Structure]) -> Field[_T]:
         ...
 
     @overload
-    def __get__(self, instance: Structure[_T], owner: Callable[..., Structure[_T]]) -> Value[_T]:
+    def __get__(self, instance: Structure, owner: Callable[..., Structure]) -> Value[_T]:
         ...
 
     # noinspection PyProtectedMember
     def __get__(
-        self, instance: Optional[Structure[_T]], owner: Callable[..., Structure[_T]]
+        self, instance: Optional[Structure], owner: Callable[..., Structure]
     ) -> Union[Field[_T], Value[_T]]:
 
         """
@@ -190,14 +190,14 @@ class Field(Generic[_T]):
         return success(None)
 
 
-class StructureDict(Generic[_T], Dict[str, _T]):
+class StructureDict(Dict[str, Any]):
 
     __slots__ = ("fields",)
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
 
-        self.fields: Dict[str, Field[_T]] = {}
+        self.fields: Dict[str, Field[Any]] = {}
 
     def __setitem__(self, key: str, value: Any) -> None:
         if isinstance(value, Field):
@@ -206,7 +206,7 @@ class StructureDict(Generic[_T], Dict[str, _T]):
         super().__setitem__(key, value)
 
 
-class StructureMeta(Generic[_T], abc.ABCMeta):
+class StructureMeta(abc.ABCMeta):
 
     """
         Structure template metaclass.
@@ -214,9 +214,9 @@ class StructureMeta(Generic[_T], abc.ABCMeta):
 
     __slots__ = ()
 
-    _fields_: Mapping[str, Field[_T]]
+    _fields_: Mapping[str, Field[Any]]
 
-    def __init__(cls, name: str, bases: Tuple[type, ...], attrs: StructureDict[_T]) -> None:
+    def __init__(cls, name: str, bases: Tuple[type, ...], attrs: StructureDict) -> None:
         super().__init__(name, bases, attrs)
 
         cls._fields_ = attrs.fields
@@ -225,14 +225,12 @@ class StructureMeta(Generic[_T], abc.ABCMeta):
         return f"{testplates.__name__}.{type(self).__name__}({format_like_dict(self._fields_)})"
 
     @classmethod
-    def __prepare__(
-        mcs, __name: str, __bases: Tuple[type, ...], **kwargs: Any
-    ) -> StructureDict[_T]:
+    def __prepare__(mcs, __name: str, __bases: Tuple[type, ...], **kwargs: Any) -> StructureDict:
         return StructureDict()
 
     # noinspection PyTypeChecker
     # noinspection PyArgumentList
-    def _create_(cls, name: str, **fields: Field[_T]) -> StructureMeta[_T]:
+    def _create_(cls, name: str, **fields: Field[Any]) -> StructureMeta:
         bases = (cls,)
         metaclass = cls.__class__
 
@@ -241,13 +239,13 @@ class StructureMeta(Generic[_T], abc.ABCMeta):
         for key, field in (fields or {}).items():
             attrs.__setitem__(key, field)
 
-        instance = cast(StructureMeta[_T], metaclass.__new__(metaclass, name, bases, attrs))
+        instance = cast(StructureMeta, metaclass.__new__(metaclass, name, bases, attrs))
         metaclass.__init__(instance, name, bases, attrs)
 
         return instance
 
 
-class Structure(Generic[_T], abc.ABC, metaclass=StructureMeta):
+class Structure(abc.ABC, metaclass=StructureMeta):
 
     """
         Structure template base class.
@@ -257,27 +255,27 @@ class Structure(Generic[_T], abc.ABC, metaclass=StructureMeta):
 
     # noinspection PyTypeHints
     # noinspection PyTypeChecker
-    _Self_ = TypeVar("_Self_", bound="Structure[_T]")
+    _Self_ = TypeVar("_Self_", bound="Structure")
 
-    _fields_: ClassVar[Mapping[str, Field[_T]]]
+    _fields_: ClassVar[Mapping[str, Field[Any]]]
 
     def __init__(self) -> None:
-        self._values_: Mapping[str, Value[_T]] = {}
+        self._values_: Mapping[str, Value[Any]] = {}
 
     def __repr__(self) -> str:
         return f"{type(self).__name__}({format_like_dict(self._values_)})"
 
     def __eq__(self, other: Any) -> bool:
         for key, field in self._fields_.items():
-            self_value = self._get_value_(self, key)
-            other_value = self._get_value_(other, key)
+            self_value: Maybe[Value[Any]] = self._get_value_(self, key)
+            other_value: Maybe[Value[Any]] = self._get_value_(other, key)
 
             if not values_matches(self_value, other_value):
                 return False
 
         return True
 
-    def _init_(self: _Self_, **values: Value[_T]) -> Result[_Self_, TestplatesError]:
+    def _init_(self: _Self_, **values: Value[Any]) -> Result[_Self_, TestplatesError]:
         keys = self._fields_.keys()
 
         for key, value in values.items():

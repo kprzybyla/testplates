@@ -7,7 +7,7 @@ from testplates import initialize, field, Object, Required, Optional
 
 @given(value=st.integers())
 def test_value_access_in_required_field(value: int) -> None:
-    class Template(Object[int]):
+    class Template(Object):
 
         key: Required[int] = field(int)
 
@@ -19,7 +19,7 @@ def test_value_access_in_required_field(value: int) -> None:
 
 @given(value=st.integers(), default=st.integers())
 def test_value_access_in_required_field_with_default_value(value: int, default: int) -> None:
-    class Template(Object[int]):
+    class Template(Object):
 
         key: Required[int] = field(int, default=default)
 
@@ -34,7 +34,7 @@ def test_value_access_in_required_field_with_default_value(value: int, default: 
 
 @given(value=st.integers())
 def test_value_access_in_optional_field(value: int) -> None:
-    class Template(Object[int]):
+    class Template(Object):
 
         key: Optional[int] = field(int, optional=True)
 
@@ -46,7 +46,7 @@ def test_value_access_in_optional_field(value: int) -> None:
 
 @given(value=st.integers(), default=st.integers())
 def test_value_access_in_optional_field_with_default_value(value: int, default: int) -> None:
-    class Template(Object[int]):
+    class Template(Object):
 
         key: Optional[int] = field(int, default=default, optional=True)
 

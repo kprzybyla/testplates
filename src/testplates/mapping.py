@@ -10,12 +10,13 @@ from testplates.impl.base import Field, Structure
 
 from .value import Value, Maybe, MISSING
 
-_T = TypeVar("_T", covariant=True)
+_T = TypeVar("_T")
+_VT = TypeVar("_VT", covariant=True)
 
 
 # noinspection PyTypeChecker
 # noinspection PyProtectedMember
-def create_mapping(name: str, **fields: Field[_T]) -> Type[Mapping[_T]]:
+def create_mapping(name: str, **fields: Field[_VT]) -> Type[Mapping[_VT]]:
 
     """
         Functional API for creating mapping.
@@ -24,11 +25,11 @@ def create_mapping(name: str, **fields: Field[_T]) -> Type[Mapping[_T]]:
         :param fields: mapping fields
     """
 
-    return cast(Type[Mapping[_T]], Mapping._create_(name, **fields))
+    return cast(Type[Mapping[_VT]], Mapping._create_(name, **fields))
 
 
 class CreateMappingFunctionType(Protocol):
-    def __call__(self, name: str, **fields: Field[Value[_T]]) -> Type[Mapping[_T]]:
+    def __call__(self, name: str, **fields: Field[Value[_VT]]) -> Type[Mapping[_VT]]:
 
         """
             Functional API for creating mapping.
@@ -38,7 +39,7 @@ class CreateMappingFunctionType(Protocol):
         """
 
 
-class Mapping(Generic[_T], Structure[_T], typing.Mapping[str, _T]):
+class Mapping(Generic[_VT], Structure, typing.Mapping[str, Value[_VT]]):
 
     """
         Mapping-like structure template class.
@@ -46,7 +47,7 @@ class Mapping(Generic[_T], Structure[_T], typing.Mapping[str, _T]):
 
     __slots__ = ()
 
-    def __getitem__(self, item: str) -> Value[_T]:  # type: ignore
+    def __getitem__(self, item: str) -> Value[_VT]:
         return self._values_[item]
 
     def __iter__(self) -> Iterator[str]:

@@ -11,6 +11,7 @@ from .validators import passthrough_validator
 from .exceptions import TestplatesError
 
 _T = TypeVar("_T")
+_Structure = TypeVar("_Structure", bound=Structure)
 
 Required = Field[Union[_T, LiteralAny]]
 Optional = Field[Union[_T, LiteralAny, LiteralWildcard, LiteralAbsent]]
@@ -18,13 +19,14 @@ Optional = Field[Union[_T, LiteralAny, LiteralWildcard, LiteralAbsent]]
 
 # noinspection PyProtectedMember
 def initialize(
-    structure: Structure[_T], /, **values: Value[Any]
-) -> Result[Structure[_T], TestplatesError]:
+    structure: _Structure, /, **values: Value[Any]
+) -> Result[_Structure, TestplatesError]:
+
     return structure._init_(**values)
 
 
 # noinspection PyProtectedMember
-def fields(structure_type: Type[Structure[_T]], /) -> Mapping[str, Field[Any]]:
+def fields(structure_type: Type[Structure], /) -> Mapping[str, Field[Any]]:
     return dict(structure_type._fields_)
 
 

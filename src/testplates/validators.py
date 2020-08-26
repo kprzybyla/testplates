@@ -12,7 +12,7 @@ __all__ = [
 ]
 
 from enum import Enum, EnumMeta
-from typing import overload, Any, Iterable, Mapping, Optional, Final
+from typing import overload, Iterable, Mapping, Optional, Final
 
 from resultful import success, failure, unwrap_success, unwrap_failure, Result
 
@@ -277,7 +277,7 @@ def sequence_validator(
     )
 
 
-def mapping_validator(structure_type: StructureMeta[Any], /) -> Result[Validator, TestplatesError]:
+def mapping_validator(structure_type: StructureMeta, /) -> Result[Validator, TestplatesError]:
 
     """
         ...
