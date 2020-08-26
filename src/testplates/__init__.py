@@ -68,6 +68,7 @@ __all__ = (
     "RequiredKeyMissingError",
     "UnknownFieldError",
     "InvalidKeyError",
+    "InvalidDataFormatError",
     "ChoiceValidationError",
 )
 
@@ -173,5 +174,6 @@ from testplates.exceptions import (
     RequiredKeyMissingError,
     UnknownFieldError,
     InvalidKeyError,
+    InvalidDataFormatError,
     ChoiceValidationError,
 )

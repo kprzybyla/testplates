@@ -24,6 +24,7 @@ from testplates import (
     TestplatesError,
     InvalidKeyError,
     InvalidTypeError,
+    InvalidDataFormatError,
     ChoiceValidationError,
 )
 
@@ -84,6 +85,24 @@ def test_failure_when_invalid_key_is_passed(
     error = unwrap_failure(validation_result)
     assert isinstance(error, InvalidKeyError)
     assert error.data == (key, value)
+
+
+# noinspection PyTypeChecker
+@given(choices=st_choices(min_size=1), value=st_anything_comparable())
+def test_failure_when_invalid_tuple_format_is_passed(
+    choices: Dict[str, Validator],
+    value: Any,
+) -> None:
+    key = sample(choices)
+    choices[key] = passthrough_validator
+    assert (validator_result := union_validator(choices))
+
+    validator = unwrap_success(validator_result)
+    assert not (validation_result := validator((key, value, value)))
+
+    error = unwrap_failure(validation_result)
+    assert isinstance(error, InvalidDataFormatError)
+    assert error.data == (key, value, value)
 
 
 # noinspection PyTypeChecker

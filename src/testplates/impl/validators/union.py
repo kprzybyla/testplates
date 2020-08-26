@@ -22,6 +22,7 @@ from .type import TypeValidator
 
 from .exceptions import (
     InvalidKeyError,
+    InvalidDataFormatError,
     ChoiceValidationError,
 )
 
@@ -42,15 +43,17 @@ class UnionValidator:
         if not (result := union_type_validator(data)):
             return failure(result)
 
-        # TODO(kprzybyla): This can still fail!
+        try:
+            key, value = data
+        except ValueError:
+            return failure(InvalidDataFormatError(data))
 
-        key, value = data
         choice_validator = self.choices.get(key, None)
 
         if choice_validator is None:
             return failure(InvalidKeyError(key, data))
 
         if not (result := choice_validator(value)):
-            return failure(ChoiceValidationError(data, key, unwrap_failure(result)))
+            return failure(ChoiceValidationError(data, choice_validator, unwrap_failure(result)))
 
         return success(None)

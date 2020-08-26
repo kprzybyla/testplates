@@ -9,6 +9,7 @@ __all__ = (
     "InvalidFormatError",
     "UniquenessError",
     "InvalidKeyError",
+    "InvalidDataFormatError",
     "RequiredKeyMissingError",
     "UnknownFieldError",
     "MemberValidationError",
@@ -194,11 +195,26 @@ class InvalidKeyError(TestplatesError):
     key that was not expected by the validator.
     """
 
-    def __init__(self, key: str, data: Any):
+    def __init__(self, key: str, data: Any) -> None:
         self.key = key
         self.data = data
 
         super().__init__(f"Invalid key {key!r} found in data {data!r}")
+
+
+class InvalidDataFormatError(TestplatesError):
+
+    """
+    Error indicating invalid data format.
+
+    Raised when user passed a data which is a tuple
+    but it contains more or less than two elements.
+    """
+
+    def __init__(self, data: Any) -> None:
+        self.data = data
+
+        super().__init__(f"Invalid data format found in data {data!r}")
 
 
 class RequiredKeyMissingError(TestplatesError):
@@ -300,9 +316,9 @@ class ChoiceValidationError(TestplatesError):
     the union, choice and error information.
     """
 
-    def __init__(self, data: Any, key: str, error: TestplatesError):
+    def __init__(self, data: Any, validator: Any, error: TestplatesError) -> None:
         self.data = data
-        self.key = key
+        self.validator = validator
         self.error = error
 
-        super().__init__(f"Choice {key!r} validation failure in {data!r}: {error!r}")
+        super().__init__(f"Choice {validator!r} validation failure in {data!r}: {error!r}")

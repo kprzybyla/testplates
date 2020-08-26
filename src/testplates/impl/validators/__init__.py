@@ -26,6 +26,7 @@ __all__ = (
     "RequiredKeyMissingError",
     "UnknownFieldError",
     "InvalidKeyError",
+    "InvalidDataFormatError",
     "ChoiceValidationError",
 )
 
@@ -60,5 +61,6 @@ from .exceptions import (
     RequiredKeyMissingError,
     UnknownFieldError,
     InvalidKeyError,
+    InvalidDataFormatError,
     ChoiceValidationError,
 )
