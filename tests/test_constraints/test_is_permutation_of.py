@@ -10,8 +10,6 @@ from typing import (
     List,
 )
 
-from dataclasses import dataclass
-
 from resultful import unwrap_success
 
 from hypothesis import (
@@ -32,10 +30,12 @@ from tests.strategies import (
 _T = TypeVar("_T")
 
 
-@dataclass
 class CollectionWrapper(Collection[_T]):
 
-    values: List[_T]
+    __slots__ = ("values",)
+
+    def __init__(self, values: List[_T]) -> None:
+        self.values = values
 
     def __len__(self) -> int:
         return len(self.values)
@@ -47,13 +47,15 @@ class CollectionWrapper(Collection[_T]):
         return item in self.values
 
 
-@dataclass
 class NotSized(Iterable[_T], Container[_T]):
 
-    values: List[_T]
+    __slots__ = ("values",)
 
     __len__ = None
 
+    def __init__(self, values: List[_T]) -> None:
+        self.values = values
+
     def __iter__(self) -> Iterator[_T]:
         return iter(self.values)
 
@@ -61,12 +63,14 @@ class NotSized(Iterable[_T], Container[_T]):
         return item in self.values
 
 
-@dataclass
 class NotIterable(Sized, Container[_T]):
 
-    values: List[_T]
+    __slots__ = ("values",)
 
     __iter__ = None
+
+    def __init__(self, values: List[_T]) -> None:
+        self.values = values
 
     def __len__(self) -> int:
         return len(self.values)
@@ -75,12 +79,14 @@ class NotIterable(Sized, Container[_T]):
         return item in self.values
 
 
-@dataclass
 class NotContainer(Sized, Iterable[_T]):
 
-    values: List[_T]
+    __slots__ = ("values",)
 
     __contains__ = None
+
+    def __init__(self, values: List[_T]) -> None:
+        self.values = values
 
     def __len__(self) -> int:
         return len(self.values)

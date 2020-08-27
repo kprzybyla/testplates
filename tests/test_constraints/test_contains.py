@@ -5,8 +5,6 @@ from typing import (
     Final,
 )
 
-from dataclasses import dataclass
-
 from resultful import unwrap_success
 
 from hypothesis import (
@@ -28,10 +26,12 @@ _T = TypeVar("_T")
 MINIMUM_NUMBER_OF_VALUES: Final[int] = 1
 
 
-@dataclass
 class ContainerWrapper(Container[_T]):
 
-    values: List[_T]
+    __slots__ = ("values",)
+
+    def __init__(self, values: List[_T]) -> None:
+        self.values = values
 
     def __contains__(self, item: object) -> bool:
         return item in self.values

@@ -6,8 +6,6 @@ from typing import (
     Final,
 )
 
-from dataclasses import dataclass
-
 from resultful import (
     unwrap_success,
     unwrap_failure,
@@ -42,10 +40,12 @@ class NotSized:
     __len__ = None
 
 
-@dataclass
 class SizedWrapper(Sized):
 
-    size: int
+    __slots__ = ("size",)
+
+    def __init__(self, size: int) -> None:
+        self.size = size
 
     def __len__(self) -> int:
         return self.size

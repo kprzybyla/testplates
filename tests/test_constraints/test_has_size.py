@@ -5,8 +5,6 @@ from typing import (
     Final,
 )
 
-from dataclasses import dataclass
-
 from resultful import unwrap_success
 
 from hypothesis import (
@@ -23,18 +21,20 @@ MINIMUM_ALLOWED_SIZE: Final[int] = 0
 MAXIMUM_ALLOWED_SIZE: Final[int] = sys.maxsize
 
 
-@dataclass
-class SizedWrapper(Sized):
-
-    size: int
-
-    def __len__(self) -> int:
-        return self.size
-
-
 class NotSized:
 
     __len__ = None
+
+
+class SizedWrapper(Sized):
+
+    __slots__ = ("size",)
+
+    def __init__(self, size: int) -> None:
+        self.size = size
+
+    def __len__(self) -> int:
+        return self.size
 
 
 @st.composite
