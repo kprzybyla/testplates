@@ -29,8 +29,8 @@ from resultful import (
 )
 
 from testplates.impl.base import (
-    get_minimum,
-    get_maximum,
+    get_minimum_size,
+    get_maximum_size,
     get_value_boundaries,
     get_size_boundaries,
 )
@@ -38,6 +38,8 @@ from testplates.impl.base import (
 from testplates.impl.constraints import (
     Contains,
     HasSize,
+    HasMinimumSize,
+    HasMaximumSize,
     HasSizeBetween,
     IsOneOf,
     IsPermutationOf,
@@ -83,7 +85,7 @@ def has_size(size: int) -> Result[HasSize, TestplatesError]:
     return success(HasSize(has_size.__name__, size))
 
 
-def has_minimum_size(minimum: int, /) -> Result[HasSizeBetween, TestplatesError]:
+def has_minimum_size(minimum: int, /) -> Result[HasMinimumSize, TestplatesError]:
 
     """
     Returns constraint object that matches any sized
@@ -92,23 +94,17 @@ def has_minimum_size(minimum: int, /) -> Result[HasSizeBetween, TestplatesError]
     :param minimum: minimum size value
     """
 
-    result = get_minimum(inclusive=minimum)
+    result = get_minimum_size(minimum)
 
     if not result:
         return result
 
     minimum_size_boundary = unwrap_success(result)
 
-    return success(
-        HasSizeBetween(
-            has_minimum_size.__name__,
-            minimum_size=minimum_size_boundary,
-            maximum_size=UNLIMITED,
-        )
-    )
+    return success(HasMinimumSize(has_minimum_size.__name__, minimum_size_boundary))
 
 
-def has_maximum_size(maximum: int, /) -> Result[HasSizeBetween, TestplatesError]:
+def has_maximum_size(maximum: int, /) -> Result[HasMaximumSize, TestplatesError]:
 
     """
     Returns constraint object that matches any sized
@@ -117,20 +113,14 @@ def has_maximum_size(maximum: int, /) -> Result[HasSizeBetween, TestplatesError]
     :param maximum: maximum size value
     """
 
-    result = get_maximum(inclusive=maximum)
+    result = get_maximum_size(maximum)
 
     if not result:
         return result
 
     maximum_size_boundary = unwrap_success(result)
 
-    return success(
-        HasSizeBetween(
-            has_maximum_size.__name__,
-            minimum_size=UNLIMITED,
-            maximum_size=maximum_size_boundary,
-        )
-    )
+    return success(HasMaximumSize(has_maximum_size.__name__, maximum_size_boundary))
 
 
 def has_size_between(

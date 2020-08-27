@@ -1,6 +1,8 @@
 __all__ = (
     "get_minimum",
     "get_maximum",
+    "get_minimum_size",
+    "get_maximum_size",
     "get_value_boundaries",
     "get_size_boundaries",
     "fits_minimum_value",
@@ -82,6 +84,54 @@ def get_maximum(
     """
 
     return get_boundary(MAXIMUM_EXTREMUM, inclusive=inclusive, exclusive=exclusive)
+
+
+def get_minimum_size(size: Edge, /) -> Result[Boundary, TestplatesError]:
+
+    """
+    Gets minimum size boundary.
+
+    :param size: inclusive boundary value or None
+    """
+
+    boundary_result = get_boundary(MINIMUM_EXTREMUM, inclusive=size)
+
+    if not boundary_result:
+        return failure(boundary_result)
+
+    boundary = unwrap_success(boundary_result)
+
+    if boundary is UNLIMITED:
+        return success(boundary)
+
+    if is_outside_size_range(boundary):
+        return failure(InvalidSizeError(boundary))
+
+    return success(boundary)
+
+
+def get_maximum_size(size: Edge, /) -> Result[Boundary, TestplatesError]:
+
+    """
+    Gets maximum size boundary.
+
+    :param size: inclusive boundary value or None
+    """
+
+    boundary_result = get_boundary(MAXIMUM_EXTREMUM, inclusive=size)
+
+    if not boundary_result:
+        return failure(boundary_result)
+
+    boundary = unwrap_success(boundary_result)
+
+    if boundary is UNLIMITED:
+        return success(boundary)
+
+    if is_outside_size_range(boundary):
+        return failure(InvalidSizeError(boundary))
+
+    return success(boundary)
 
 
 def get_boundary(

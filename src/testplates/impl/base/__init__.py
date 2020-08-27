@@ -2,6 +2,8 @@ __all__ = (
     "get_pattern",
     "get_minimum",
     "get_maximum",
+    "get_minimum_size",
+    "get_maximum_size",
     "get_value_boundaries",
     "get_size_boundaries",
     "fits_minimum_value",
@@ -45,6 +47,8 @@ from .pattern import get_pattern
 from .boundaries import (
     get_minimum,
     get_maximum,
+    get_minimum_size,
+    get_maximum_size,
     get_value_boundaries,
     get_size_boundaries,
     fits_minimum_value,
