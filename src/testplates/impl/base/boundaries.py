@@ -2,11 +2,11 @@ __all__ = (
     "get_minimum",
     "get_maximum",
     "get_value_boundaries",
-    "get_length_boundaries",
+    "get_size_boundaries",
     "fits_minimum_value",
     "fits_maximum_value",
-    "fits_minimum_length",
-    "fits_maximum_length",
+    "fits_minimum_size",
+    "fits_maximum_size",
 )
 
 import sys
@@ -50,8 +50,8 @@ from .exceptions import (
 Edge = Union[int, UnlimitedType]
 Boundary = Union[Limit, UnlimitedType]
 
-LENGTH_MINIMUM: Final[int] = 0
-LENGTH_MAXIMUM: Final[int] = sys.maxsize
+SIZE_MINIMUM: Final[int] = 0
+SIZE_MAXIMUM: Final[int] = sys.maxsize
 
 
 def get_minimum(
@@ -176,13 +176,13 @@ def validate_value_boundaries(
     return success(None)
 
 
-def get_length_boundaries(
+def get_size_boundaries(
     inclusive_minimum: Optional[Edge] = None,
     inclusive_maximum: Optional[Edge] = None,
 ) -> Result[Tuple[Boundary, Boundary], TestplatesError]:
 
     """
-    Gets minimum and maximum length boundaries.
+    Gets minimum and maximum size boundaries.
 
     :param inclusive_minimum: inclusive minimum boundary value
     :param inclusive_maximum: inclusive maximum boundary value
@@ -201,7 +201,7 @@ def get_length_boundaries(
     minimum = unwrap_success(minimum_result)
     maximum = unwrap_success(maximum_result)
 
-    result = validate_length_boundaries(minimum=minimum, maximum=maximum)
+    result = validate_size_boundaries(minimum=minimum, maximum=maximum)
 
     if not result:
         return failure(result)
@@ -209,25 +209,25 @@ def get_length_boundaries(
     return success((minimum, maximum))
 
 
-def validate_length_boundaries(
+def validate_size_boundaries(
     minimum: Boundary,
     maximum: Boundary,
 ) -> Result[None, TestplatesError]:
 
     """
-    Checks minimum and maximum length boundaries.
+    Checks minimum and maximum size boundaries.
 
-    :param minimum: minimum length boundary
-    :param maximum: maximum length boundary
+    :param minimum: minimum size boundary
+    :param maximum: maximum size boundary
     """
 
     if minimum is UNLIMITED or maximum is UNLIMITED:
         return success(None)
 
-    if is_outside_length_range(minimum):
+    if is_outside_size_range(minimum):
         return failure(InvalidSizeError(minimum))
 
-    if is_outside_length_range(maximum):
+    if is_outside_size_range(maximum):
         return failure(InvalidSizeError(maximum))
 
     if is_overlapping(minimum, maximum):
@@ -239,15 +239,15 @@ def validate_length_boundaries(
     return success(None)
 
 
-def is_outside_length_range(boundary: Limit) -> bool:
+def is_outside_size_range(boundary: Limit) -> bool:
 
     """
-    Returns True if boundary is outside of length range, otherwise False.
+    Returns True if boundary is outside of size range, otherwise False.
 
     :param boundary: boundary limit
     """
 
-    return boundary.value < LENGTH_MINIMUM or boundary.value > LENGTH_MAXIMUM
+    return boundary.value < SIZE_MINIMUM or boundary.value > SIZE_MAXIMUM
 
 
 def is_overlapping(minimum: Limit, maximum: Limit) -> bool:
@@ -310,10 +310,10 @@ def fits_maximum_value(value: int, maximum: Boundary) -> bool:
         return value.__lt__(maximum.value) is True
 
 
-def fits_minimum_length(value: Sized, minimum: Boundary) -> bool:
+def fits_minimum_size(value: Sized, minimum: Boundary) -> bool:
 
     """
-    Checks whether value length fits the minimum boundary.
+    Checks whether value size fits the minimum boundary.
 
     :param value: value to be checked against boundary
     :param minimum: minimum boundary
@@ -322,10 +322,10 @@ def fits_minimum_length(value: Sized, minimum: Boundary) -> bool:
     return fits_minimum_value(len(value), minimum)
 
 
-def fits_maximum_length(value: Sized, maximum: Boundary) -> bool:
+def fits_maximum_size(value: Sized, maximum: Boundary) -> bool:
 
     """
-    Checks whether value length fits the maximum boundary.
+    Checks whether value size fits the maximum boundary.
 
     :param value: value to be checked against boundary
     :param maximum: maximum boundary

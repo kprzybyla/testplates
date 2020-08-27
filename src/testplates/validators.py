@@ -38,7 +38,7 @@ from resultful import (
 from testplates.impl.base import (
     get_pattern,
     get_value_boundaries,
-    get_length_boundaries,
+    get_size_boundaries,
     StructureMeta,
 )
 
@@ -260,12 +260,12 @@ def integer_validator(
     if not result:
         return failure(result)
 
-    minimum_value, maximum_value = unwrap_success(result)
+    minimum_value_boundary, maximum_value_boundary = unwrap_success(result)
 
     return success(
         IntegerValidator(
-            minimum_value=minimum_value,
-            maximum_value=maximum_value,
+            minimum_value=minimum_value_boundary,
+            maximum_value=maximum_value_boundary,
             allow_bool=allow_bool,
         )
     )
@@ -286,17 +286,17 @@ def string_validator(
     :param pattern: ...
     """
 
-    result = get_length_boundaries(inclusive_minimum=minimum_size, inclusive_maximum=maximum_size)
+    result = get_size_boundaries(inclusive_minimum=minimum_size, inclusive_maximum=maximum_size)
 
     if not result:
         return failure(result)
 
-    minimum_length, maximum_length = unwrap_success(result)
+    minimum_size_boundary, maximum_size_boundary = unwrap_success(result)
 
     return success(
         StringValidator(
-            minimum_length=minimum_length,
-            maximum_length=maximum_length,
+            minimum_size=minimum_size_boundary,
+            maximum_size=maximum_size_boundary,
             pattern=get_pattern(pattern),
         )
     )
@@ -317,17 +317,17 @@ def bytes_validator(
     :param pattern: ...
     """
 
-    result = get_length_boundaries(inclusive_minimum=minimum_size, inclusive_maximum=maximum_size)
+    result = get_size_boundaries(inclusive_minimum=minimum_size, inclusive_maximum=maximum_size)
 
     if not result:
         return failure(result)
 
-    minimum_length, maximum_length = unwrap_success(result)
+    minimum_size_boundary, maximum_size_boundary = unwrap_success(result)
 
     return success(
         BytesValidator(
-            minimum_length=minimum_length,
-            maximum_length=maximum_length,
+            minimum_size=minimum_size_boundary,
+            maximum_size=maximum_size_boundary,
             pattern=get_pattern(pattern),
         )
     )
@@ -388,18 +388,18 @@ def sequence_validator(
     :param unique_items: ...
     """
 
-    result = get_length_boundaries(inclusive_minimum=minimum_size, inclusive_maximum=maximum_size)
+    result = get_size_boundaries(inclusive_minimum=minimum_size, inclusive_maximum=maximum_size)
 
     if not result:
         return failure(result)
 
-    minimum_length, maximum_length = unwrap_success(result)
+    minimum_size_boundary, maximum_size_boundary = unwrap_success(result)
 
     return success(
         SequenceValidator(
             item_validator,
-            minimum_length=minimum_length,
-            maximum_length=maximum_length,
+            minimum_size=minimum_size_boundary,
+            maximum_size=maximum_size_boundary,
             unique_items=unique_items,
         )
     )

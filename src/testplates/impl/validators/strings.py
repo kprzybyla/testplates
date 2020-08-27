@@ -21,8 +21,8 @@ from resultful import (
 import testplates
 
 from testplates.impl.base import (
-    fits_minimum_length,
-    fits_maximum_length,
+    fits_minimum_size,
+    fits_maximum_size,
     Limit,
     UnlimitedType,
     TestplatesError,
@@ -45,20 +45,20 @@ bytes_type_validator: Final = TypeValidator(bytes)
 class StringValidator:
 
     __slots__ = (
-        "minimum_length",
-        "maximum_length",
+        "minimum_size",
+        "maximum_size",
         "pattern",
     )
 
     def __init__(
         self,
         *,
-        minimum_length: Boundary,
-        maximum_length: Boundary,
+        minimum_size: Boundary,
+        maximum_size: Boundary,
         pattern: Optional[Pattern[str]],
     ) -> None:
-        self.minimum_length = minimum_length
-        self.maximum_length = maximum_length
+        self.minimum_size = minimum_size
+        self.maximum_size = maximum_size
         self.pattern = pattern
 
     def __repr__(self) -> str:
@@ -68,7 +68,7 @@ class StringValidator:
         if not (result := string_type_validator(data)):
             return failure(result)
 
-        if not (result := validate_length(data, self.minimum_length, self.maximum_length)):
+        if not (result := validate_size(data, self.minimum_size, self.maximum_size)):
             return failure(result)
 
         if not (result := validate_pattern(data, self.pattern)):
@@ -80,20 +80,20 @@ class StringValidator:
 class BytesValidator:
 
     __slots__ = (
-        "minimum_length",
-        "maximum_length",
+        "minimum_size",
+        "maximum_size",
         "pattern",
     )
 
     def __init__(
         self,
         *,
-        minimum_length: Boundary,
-        maximum_length: Boundary,
+        minimum_size: Boundary,
+        maximum_size: Boundary,
         pattern: Optional[Pattern[bytes]],
     ) -> None:
-        self.minimum_length = minimum_length
-        self.maximum_length = maximum_length
+        self.minimum_size = minimum_size
+        self.maximum_size = maximum_size
         self.pattern = pattern
 
     def __repr__(self) -> str:
@@ -103,7 +103,7 @@ class BytesValidator:
         if not (result := bytes_type_validator(data)):
             return failure(result)
 
-        if not (result := validate_length(data, self.minimum_length, self.maximum_length)):
+        if not (result := validate_size(data, self.minimum_size, self.maximum_size)):
             return failure(result)
 
         if not (result := validate_pattern(data, self.pattern)):
@@ -112,17 +112,17 @@ class BytesValidator:
         return success(None)
 
 
-def validate_length(
+def validate_size(
     data: AnyStr,
-    minimum_length: Boundary,
-    maximum_length: Boundary,
+    minimum_size: Boundary,
+    maximum_size: Boundary,
     /,
 ) -> Result[None, TestplatesError]:
-    if not fits_minimum_length(data, minimum_length):
-        return failure(InvalidMinimumSizeError(data, minimum_length))
+    if not fits_minimum_size(data, minimum_size):
+        return failure(InvalidMinimumSizeError(data, minimum_size))
 
-    if not fits_maximum_length(data, maximum_length):
-        return failure(InvalidMaximumSizeError(data, maximum_length))
+    if not fits_maximum_size(data, maximum_size):
+        return failure(InvalidMaximumSizeError(data, maximum_size))
 
     return success(None)
 

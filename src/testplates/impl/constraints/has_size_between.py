@@ -1,4 +1,4 @@
-__all__ = ("HasLengthBetween",)
+__all__ = ("HasSizeBetween",)
 
 from typing import (
     Any,
@@ -9,8 +9,8 @@ from typing import (
 import testplates
 
 from testplates.impl.base import (
-    fits_minimum_length,
-    fits_maximum_length,
+    fits_minimum_size,
+    fits_maximum_size,
     Limit,
     UnlimitedType,
 )
@@ -18,12 +18,12 @@ from testplates.impl.base import (
 Boundary = Union[Limit, UnlimitedType]
 
 
-class HasLengthBetween:
+class HasSizeBetween:
 
     __slots__ = (
         "name",
-        "minimum_length",
-        "maximum_length",
+        "minimum_size",
+        "maximum_size",
     )
 
     def __init__(
@@ -31,17 +31,17 @@ class HasLengthBetween:
         name: str,
         /,
         *,
-        minimum_length: Boundary,
-        maximum_length: Boundary,
+        minimum_size: Boundary,
+        maximum_size: Boundary,
     ) -> None:
         self.name = name
-        self.minimum_length = minimum_length
-        self.maximum_length = maximum_length
+        self.minimum_size = minimum_size
+        self.maximum_size = maximum_size
 
     def __repr__(self) -> str:
         boundaries = [
-            repr(self.minimum_length),
-            repr(self.maximum_length),
+            repr(self.minimum_size),
+            repr(self.maximum_size),
         ]
 
         return f"{testplates.__name__}.{self.name}({', '.join(boundaries)})"
@@ -50,7 +50,7 @@ class HasLengthBetween:
         if not isinstance(other, Sized):
             return False
 
-        minimum_fits = fits_minimum_length(other, self.minimum_length)
-        maximum_fits = fits_maximum_length(other, self.maximum_length)
+        minimum_fits = fits_minimum_size(other, self.minimum_size)
+        maximum_fits = fits_maximum_size(other, self.maximum_size)
 
         return minimum_fits and maximum_fits

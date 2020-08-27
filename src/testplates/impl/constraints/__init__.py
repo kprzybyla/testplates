@@ -1,7 +1,7 @@
 __all__ = (
     "Contains",
-    "HasLength",
-    "HasLengthBetween",
+    "HasSize",
+    "HasSizeBetween",
     "RangesBetween",
     "MatchesPattern",
     "IsOneOf",
@@ -9,8 +9,8 @@ __all__ = (
 )
 
 from .contains import Contains
-from .has_length import HasLength
-from .has_length_between import HasLengthBetween
+from .has_size import HasSize
+from .has_size_between import HasSizeBetween
 from .ranges_between import RangesBetween
 from .matches_pattern import MatchesPattern
 from .is_one_of import IsOneOf

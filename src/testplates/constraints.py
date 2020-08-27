@@ -32,13 +32,13 @@ from testplates.impl.base import (
     get_minimum,
     get_maximum,
     get_value_boundaries,
-    get_length_boundaries,
+    get_size_boundaries,
 )
 
 from testplates.impl.constraints import (
     Contains,
-    HasLength,
-    HasLengthBetween,
+    HasSize,
+    HasSizeBetween,
     IsOneOf,
     IsPermutationOf,
     RangesBetween,
@@ -71,7 +71,7 @@ def contains(first: _T, /, *rest: _T) -> Result[Contains[_T], TestplatesError]:
     return success(Contains(contains.__name__, first, *rest))
 
 
-def has_size(size: int) -> Result[HasLength, TestplatesError]:
+def has_size(size: int) -> Result[HasSize, TestplatesError]:
 
     """
     Returns constraint object that matches any sized
@@ -80,10 +80,10 @@ def has_size(size: int) -> Result[HasLength, TestplatesError]:
     :param size: exact size value
     """
 
-    return success(HasLength(has_size.__name__, size))
+    return success(HasSize(has_size.__name__, size))
 
 
-def has_minimum_size(minimum: int, /) -> Result[HasLengthBetween, TestplatesError]:
+def has_minimum_size(minimum: int, /) -> Result[HasSizeBetween, TestplatesError]:
 
     """
     Returns constraint object that matches any sized
@@ -97,18 +97,18 @@ def has_minimum_size(minimum: int, /) -> Result[HasLengthBetween, TestplatesErro
     if not result:
         return result
 
-    minimum_length = unwrap_success(result)
+    minimum_size_boundary = unwrap_success(result)
 
     return success(
-        HasLengthBetween(
+        HasSizeBetween(
             has_minimum_size.__name__,
-            minimum_length=minimum_length,
-            maximum_length=UNLIMITED,
+            minimum_size=minimum_size_boundary,
+            maximum_size=UNLIMITED,
         )
     )
 
 
-def has_maximum_size(maximum: int, /) -> Result[HasLengthBetween, TestplatesError]:
+def has_maximum_size(maximum: int, /) -> Result[HasSizeBetween, TestplatesError]:
 
     """
     Returns constraint object that matches any sized
@@ -122,13 +122,13 @@ def has_maximum_size(maximum: int, /) -> Result[HasLengthBetween, TestplatesErro
     if not result:
         return result
 
-    maximum_length = unwrap_success(result)
+    maximum_size_boundary = unwrap_success(result)
 
     return success(
-        HasLengthBetween(
+        HasSizeBetween(
             has_maximum_size.__name__,
-            minimum_length=UNLIMITED,
-            maximum_length=maximum_length,
+            minimum_size=UNLIMITED,
+            maximum_size=maximum_size_boundary,
         )
     )
 
@@ -137,7 +137,7 @@ def has_size_between(
     *,
     minimum: Boundary[int],
     maximum: Boundary[int],
-) -> Result[HasLengthBetween, TestplatesError]:
+) -> Result[HasSizeBetween, TestplatesError]:
 
     """
     Returns constraint object that matches any sized object
@@ -150,18 +150,18 @@ def has_size_between(
     if minimum is UNLIMITED and maximum is UNLIMITED:
         return failure(UnlimitedRangeError())
 
-    result = get_length_boundaries(inclusive_minimum=minimum, inclusive_maximum=maximum)
+    result = get_size_boundaries(inclusive_minimum=minimum, inclusive_maximum=maximum)
 
     if not result:
         return result
 
-    minimum_length, maximum_length = unwrap_success(result)
+    minimum_size_boundary, maximum_size_boundary = unwrap_success(result)
 
     return success(
-        HasLengthBetween(
+        HasSizeBetween(
             has_size_between.__name__,
-            minimum_length=minimum_length,
-            maximum_length=maximum_length,
+            minimum_size=minimum_size_boundary,
+            maximum_size=maximum_size_boundary,
         )
     )
 
@@ -364,12 +364,12 @@ def ranges_between(
     if not result:
         return result
 
-    minimum_value, maximum_value = unwrap_success(result)
+    minimum_value_boundary, maximum_value_boundary = unwrap_success(result)
 
     return success(
         RangesBetween(
             ranges_between.__name__,
-            minimum_value=minimum_value,
-            maximum_value=maximum_value,
+            minimum_value=minimum_value_boundary,
+            maximum_value=maximum_value_boundary,
         )
     )

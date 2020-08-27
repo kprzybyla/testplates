@@ -18,8 +18,8 @@ from resultful import (
 import testplates
 
 from testplates.impl.base import (
-    fits_minimum_length,
-    fits_maximum_length,
+    fits_minimum_size,
+    fits_maximum_size,
     Limit,
     UnlimitedType,
     TestplatesError,
@@ -44,8 +44,8 @@ class SequenceValidator:
 
     __slots__ = (
         "item_validator",
-        "minimum_length",
-        "maximum_length",
+        "minimum_size",
+        "maximum_size",
         "unique_items",
     )
 
@@ -54,13 +54,13 @@ class SequenceValidator:
         item_validator: Validator,
         /,
         *,
-        minimum_length: Boundary,
-        maximum_length: Boundary,
+        minimum_size: Boundary,
+        maximum_size: Boundary,
         unique_items: bool,
     ) -> None:
         self.item_validator = item_validator
-        self.minimum_length = minimum_length
-        self.maximum_length = maximum_length
+        self.minimum_size = minimum_size
+        self.maximum_size = maximum_size
         self.unique_items = unique_items
 
     def __repr__(self) -> str:
@@ -76,11 +76,11 @@ class SequenceValidator:
             if not (result := item_validator(item)):
                 return failure(ItemValidationError(data, item, unwrap_failure(result)))
 
-        if not fits_minimum_length(data, self.minimum_length):
-            return failure(InvalidMinimumSizeError(data, self.minimum_length))
+        if not fits_minimum_size(data, self.minimum_size):
+            return failure(InvalidMinimumSizeError(data, self.minimum_size))
 
-        if not fits_maximum_length(data, self.maximum_length):
-            return failure(InvalidMaximumSizeError(data, self.maximum_length))
+        if not fits_maximum_size(data, self.maximum_size):
+            return failure(InvalidMaximumSizeError(data, self.maximum_size))
 
         if self.unique_items and not has_unique_items(data):
             return failure(UniquenessError(data))
