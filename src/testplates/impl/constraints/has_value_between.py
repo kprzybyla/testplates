@@ -1,4 +1,4 @@
-__all__ = ("RangesBetween",)
+__all__ = ("HasValueBetween",)
 
 from typing import (
     Any,
@@ -17,7 +17,7 @@ from testplates.impl.base import (
 Boundary = Union[Limit, UnlimitedType]
 
 
-class RangesBetween:
+class HasValueBetween:
 
     __slots__ = (
         "name",

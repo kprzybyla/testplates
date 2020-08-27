@@ -12,7 +12,7 @@ from hypothesis import (
 )
 
 from testplates import (
-    ranges_between,
+    has_value_between,
     UNLIMITED,
     MissingBoundaryError,
     UnlimitedRangeError,
@@ -87,14 +87,14 @@ def test_repr_with_inclusive_minimum_and_inclusive_maximum(
     data: st.DataObject,
     value: int,
 ) -> None:
-    fmt = "testplates.ranges_between(minimum={minimum}, maximum={maximum})"
+    fmt = "testplates.has_value_between(minimum={minimum}, maximum={maximum})"
 
     inclusive_minimum = data.draw(st_inclusive_minimum(value))
     inclusive_maximum = data.draw(st_inclusive_maximum(value))
 
     assume(inclusive_minimum != inclusive_maximum)
 
-    assert (result := ranges_between(minimum=inclusive_minimum, maximum=inclusive_maximum))
+    assert (result := has_value_between(minimum=inclusive_minimum, maximum=inclusive_maximum))
 
     constraint = unwrap_success(result)
     assert repr(constraint) == fmt.format(minimum=inclusive_minimum, maximum=inclusive_maximum)
@@ -106,7 +106,7 @@ def test_repr_with_inclusive_minimum_and_exclusive_maximum(
     data: st.DataObject,
     value: int,
 ) -> None:
-    fmt = "testplates.ranges_between(minimum={minimum}, exclusive_maximum={maximum})"
+    fmt = "testplates.has_value_between(minimum={minimum}, exclusive_maximum={maximum})"
 
     inclusive_minimum = data.draw(st_inclusive_minimum(value))
     exclusive_maximum = data.draw(st_exclusive_maximum(value))
@@ -114,7 +114,7 @@ def test_repr_with_inclusive_minimum_and_exclusive_maximum(
     assume(inclusive_minimum != exclusive_maximum - EXCLUSIVE_ALIGNMENT)
 
     assert (
-        result := ranges_between(
+        result := has_value_between(
             minimum=inclusive_minimum,
             exclusive_maximum=exclusive_maximum,
         )
@@ -130,7 +130,7 @@ def test_repr_with_exclusive_minimum_and_inclusive_maximum(
     data: st.DataObject,
     value: int,
 ) -> None:
-    fmt = "testplates.ranges_between(exclusive_minimum={minimum}, maximum={maximum})"
+    fmt = "testplates.has_value_between(exclusive_minimum={minimum}, maximum={maximum})"
 
     exclusive_minimum = data.draw(st_exclusive_minimum(value))
     inclusive_maximum = data.draw(st_inclusive_maximum(value))
@@ -138,7 +138,7 @@ def test_repr_with_exclusive_minimum_and_inclusive_maximum(
     assume(exclusive_minimum + EXCLUSIVE_ALIGNMENT != inclusive_maximum)
 
     assert (
-        result := ranges_between(
+        result := has_value_between(
             exclusive_minimum=exclusive_minimum,
             maximum=inclusive_maximum,
         )
@@ -154,7 +154,7 @@ def test_repr_with_exclusive_minimum_and_exclusive_maximum(
     data: st.DataObject,
     value: int,
 ) -> None:
-    fmt = "testplates.ranges_between(exclusive_minimum={minimum}, exclusive_maximum={maximum})"
+    fmt = "testplates.has_value_between(exclusive_minimum={minimum}, exclusive_maximum={maximum})"
 
     exclusive_minimum = data.draw(st_exclusive_minimum(value))
     exclusive_maximum = data.draw(st_exclusive_maximum(value))
@@ -162,7 +162,7 @@ def test_repr_with_exclusive_minimum_and_exclusive_maximum(
     assume(exclusive_minimum + EXCLUSIVE_ALIGNMENT != exclusive_maximum - EXCLUSIVE_ALIGNMENT)
 
     assert (
-        result := ranges_between(
+        result := has_value_between(
             exclusive_minimum=exclusive_minimum,
             exclusive_maximum=exclusive_maximum,
         )
@@ -183,7 +183,7 @@ def test_success_with_inclusive_minimum_and_inclusive_maximum(
 
     assume(inclusive_minimum != inclusive_maximum)
 
-    assert (result := ranges_between(minimum=inclusive_minimum, maximum=inclusive_maximum))
+    assert (result := has_value_between(minimum=inclusive_minimum, maximum=inclusive_maximum))
 
     constraint = unwrap_success(result)
     assert constraint == value
@@ -201,7 +201,7 @@ def test_success_with_inclusive_minimum_and_exclusive_maximum(
     assume(inclusive_minimum != exclusive_maximum - EXCLUSIVE_ALIGNMENT)
 
     assert (
-        result := ranges_between(
+        result := has_value_between(
             minimum=inclusive_minimum,
             exclusive_maximum=exclusive_maximum,
         )
@@ -223,7 +223,7 @@ def test_success_with_exclusive_minimum_and_inclusive_maximum(
     assume(exclusive_minimum + EXCLUSIVE_ALIGNMENT != inclusive_maximum)
 
     assert (
-        result := ranges_between(
+        result := has_value_between(
             exclusive_minimum=exclusive_minimum,
             maximum=inclusive_maximum,
         )
@@ -245,7 +245,7 @@ def test_success_with_exclusive_minimum_and_exclusive_maximum(
     assume(exclusive_minimum + EXCLUSIVE_ALIGNMENT != exclusive_maximum - EXCLUSIVE_ALIGNMENT)
 
     assert (
-        result := ranges_between(
+        result := has_value_between(
             exclusive_minimum=exclusive_minimum,
             exclusive_maximum=exclusive_maximum,
         )
@@ -256,28 +256,30 @@ def test_success_with_exclusive_minimum_and_exclusive_maximum(
 
 
 def test_failure_when_minimum_and_maximum_are_unlimited() -> None:
-    assert not (result := ranges_between(minimum=UNLIMITED, maximum=UNLIMITED))
+    assert not (result := has_value_between(minimum=UNLIMITED, maximum=UNLIMITED))
 
     error = unwrap_failure(result)
     assert isinstance(error, UnlimitedRangeError)
 
 
 def test_failure_when_minimum_and_exclusive_maximum_are_unlimited() -> None:
-    assert not (result := ranges_between(minimum=UNLIMITED, exclusive_maximum=UNLIMITED))
+    assert not (result := has_value_between(minimum=UNLIMITED, exclusive_maximum=UNLIMITED))
 
     error = unwrap_failure(result)
     assert isinstance(error, UnlimitedRangeError)
 
 
 def test_failure_when_exclusive_minimum_and_maximum_are_unlimited() -> None:
-    assert not (result := ranges_between(exclusive_minimum=UNLIMITED, maximum=UNLIMITED))
+    assert not (result := has_value_between(exclusive_minimum=UNLIMITED, maximum=UNLIMITED))
 
     error = unwrap_failure(result)
     assert isinstance(error, UnlimitedRangeError)
 
 
 def test_failure_when_exclusive_minimum_and_exclusive_maximum_are_unlimited() -> None:
-    assert not (result := ranges_between(exclusive_minimum=UNLIMITED, exclusive_maximum=UNLIMITED))
+    assert not (
+        result := has_value_between(exclusive_minimum=UNLIMITED, exclusive_maximum=UNLIMITED)
+    )
 
     error = unwrap_failure(result)
     assert isinstance(error, UnlimitedRangeError)
@@ -295,7 +297,7 @@ def test_failure_when_value_is_above_inclusive_minimum_and_inclusive_maximum(
     assume(inclusive_maximum != value)
     assume(inclusive_minimum != inclusive_maximum)
 
-    assert (result := ranges_between(minimum=inclusive_minimum, maximum=inclusive_maximum))
+    assert (result := has_value_between(minimum=inclusive_minimum, maximum=inclusive_maximum))
 
     constraint = unwrap_success(result)
     assert constraint != value
@@ -313,7 +315,7 @@ def test_failure_when_value_is_below_inclusive_minimum_and_inclusive_maximum(
     assume(inclusive_minimum != value)
     assume(inclusive_minimum != inclusive_maximum)
 
-    assert (result := ranges_between(minimum=inclusive_minimum, maximum=inclusive_maximum))
+    assert (result := has_value_between(minimum=inclusive_minimum, maximum=inclusive_maximum))
 
     constraint = unwrap_success(result)
     assert constraint != value
@@ -331,7 +333,7 @@ def test_failure_when_value_is_above_inclusive_minimum_and_exclusive_maximum(
     assume(inclusive_minimum < exclusive_maximum - EXCLUSIVE_ALIGNMENT)
 
     assert (
-        result := ranges_between(
+        result := has_value_between(
             minimum=inclusive_minimum,
             exclusive_maximum=exclusive_maximum,
         )
@@ -354,7 +356,7 @@ def test_failure_when_value_is_below_inclusive_minimum_and_exclusive_maximum(
     assume(inclusive_minimum < exclusive_maximum - EXCLUSIVE_ALIGNMENT)
 
     assert (
-        result := ranges_between(
+        result := has_value_between(
             minimum=inclusive_minimum,
             exclusive_maximum=exclusive_maximum,
         )
@@ -377,7 +379,7 @@ def test_failure_when_value_is_above_exclusive_minimum_and_inclusive_maximum(
     assume(exclusive_minimum + EXCLUSIVE_ALIGNMENT < inclusive_maximum)
 
     assert (
-        result := ranges_between(
+        result := has_value_between(
             exclusive_minimum=exclusive_minimum,
             maximum=inclusive_maximum,
         )
@@ -399,7 +401,7 @@ def test_failure_when_value_is_below_exclusive_minimum_and_inclusive_maximum(
     assume(exclusive_minimum + EXCLUSIVE_ALIGNMENT < inclusive_maximum)
 
     assert (
-        result := ranges_between(
+        result := has_value_between(
             exclusive_minimum=exclusive_minimum,
             maximum=inclusive_maximum,
         )
@@ -421,7 +423,7 @@ def test_failure_when_value_is_above_exclusive_minimum_and_exclusive_maximum(
     assume(exclusive_minimum + EXCLUSIVE_ALIGNMENT < exclusive_maximum - EXCLUSIVE_ALIGNMENT)
 
     assert (
-        result := ranges_between(
+        result := has_value_between(
             exclusive_minimum=exclusive_minimum,
             exclusive_maximum=exclusive_maximum,
         )
@@ -443,7 +445,7 @@ def test_failure_when_value_is_below_exclusive_minimum_and_exclusive_maximum(
     assume(exclusive_minimum + EXCLUSIVE_ALIGNMENT < exclusive_maximum - EXCLUSIVE_ALIGNMENT)
 
     assert (
-        result := ranges_between(
+        result := has_value_between(
             exclusive_minimum=exclusive_minimum,
             exclusive_maximum=exclusive_maximum,
         )
@@ -464,7 +466,7 @@ def test_failure_when_value_is_not_comparable_with_inclusive_boundaries(
 
     assume(inclusive_minimum != inclusive_maximum)
 
-    assert (result := ranges_between(minimum=inclusive_minimum, maximum=inclusive_maximum))
+    assert (result := has_value_between(minimum=inclusive_minimum, maximum=inclusive_maximum))
 
     constraint = unwrap_success(result)
     assert constraint != NotComparable()
@@ -482,7 +484,7 @@ def test_failure_when_value_is_not_comparable_with_exclusive_boundaries(
     assume(exclusive_minimum + EXCLUSIVE_ALIGNMENT < exclusive_maximum - EXCLUSIVE_ALIGNMENT)
 
     assert (
-        result := ranges_between(
+        result := has_value_between(
             exclusive_minimum=exclusive_minimum,
             exclusive_maximum=exclusive_maximum,
         )
@@ -494,7 +496,7 @@ def test_failure_when_value_is_not_comparable_with_exclusive_boundaries(
 
 # noinspection PyArgumentList
 def test_failure_when_boundaries_are_missing() -> None:
-    assert not (result := ranges_between())
+    assert not (result := has_value_between())
 
     error = unwrap_failure(result)
     assert isinstance(error, MissingBoundaryError)
@@ -507,13 +509,13 @@ def test_failure_when_minimum_boundary_is_missing(data: st.DataObject, value: in
     inclusive_maximum = data.draw(st_inclusive_maximum(value))
     exclusive_maximum = data.draw(st_exclusive_maximum(value))
 
-    assert not (result := ranges_between(maximum=inclusive_maximum))
+    assert not (result := has_value_between(maximum=inclusive_maximum))
 
     error = unwrap_failure(result)
     assert isinstance(error, MissingBoundaryError)
     assert error.name == MINIMUM_EXTREMUM
 
-    assert not (result := ranges_between(exclusive_maximum=exclusive_maximum))
+    assert not (result := has_value_between(exclusive_maximum=exclusive_maximum))
 
     error = unwrap_failure(result)
     assert isinstance(error, MissingBoundaryError)
@@ -527,13 +529,13 @@ def test_failure_when_maximum_boundary_is_missing(data: st.DataObject, value: in
     inclusive_minimum = data.draw(st_inclusive_minimum(value))
     exclusive_minimum = data.draw(st_exclusive_minimum(value))
 
-    assert not (result := ranges_between(minimum=inclusive_minimum))
+    assert not (result := has_value_between(minimum=inclusive_minimum))
 
     error = unwrap_failure(result)
     assert isinstance(error, MissingBoundaryError)
     assert error.name == MAXIMUM_EXTREMUM
 
-    assert not (result := ranges_between(exclusive_minimum=exclusive_minimum))
+    assert not (result := has_value_between(exclusive_minimum=exclusive_minimum))
 
     error = unwrap_failure(result)
     assert isinstance(error, MissingBoundaryError)
@@ -554,7 +556,7 @@ def test_failure_when_mutually_exclusive_boundaries_are_set(
     exclusive_maximum = data.draw(st_exclusive_maximum(value))
 
     assert not (
-        result := ranges_between(
+        result := has_value_between(
             minimum=inclusive_minimum,
             maximum=inclusive_maximum,
             exclusive_minimum=exclusive_minimum,
@@ -581,7 +583,7 @@ def test_failure_when_mutually_exclusive_minimum_boundaries_are_set(
     exclusive_maximum = data.draw(st_exclusive_maximum(value))
 
     assert not (
-        result := ranges_between(
+        result := has_value_between(
             minimum=inclusive_minimum,
             maximum=inclusive_maximum,
             exclusive_minimum=exclusive_minimum,
@@ -593,7 +595,7 @@ def test_failure_when_mutually_exclusive_minimum_boundaries_are_set(
     assert error.name == MINIMUM_EXTREMUM
 
     assert not (
-        result := ranges_between(
+        result := has_value_between(
             minimum=inclusive_minimum,
             exclusive_minimum=exclusive_minimum,
             exclusive_maximum=exclusive_maximum,
@@ -619,7 +621,7 @@ def test_failure_when_mutually_exclusive_maximum_boundaries_are_set(
     exclusive_maximum = data.draw(st_exclusive_maximum(value))
 
     assert not (
-        result := ranges_between(
+        result := has_value_between(
             minimum=inclusive_minimum,
             maximum=inclusive_maximum,
             exclusive_maximum=exclusive_maximum,
@@ -631,7 +633,7 @@ def test_failure_when_mutually_exclusive_maximum_boundaries_are_set(
     assert error.name == MAXIMUM_EXTREMUM
 
     assert not (
-        result := ranges_between(
+        result := has_value_between(
             maximum=inclusive_maximum,
             exclusive_minimum=exclusive_minimum,
             exclusive_maximum=exclusive_maximum,
@@ -654,7 +656,7 @@ def test_failure_when_inclusive_minimum_and_inclusive_maximum_are_overlapping(
     assume(inclusive_minimum != inclusive_maximum)
 
     assert not (
-        result := ranges_between(
+        result := has_value_between(
             minimum=inclusive_minimum,
             maximum=inclusive_maximum,
         )
@@ -677,7 +679,7 @@ def test_failure_when_inclusive_minimum_and_exclusive_maximum_are_overlapping(
     exclusive_maximum = data.draw(st_value(max_value=inclusive_minimum))
 
     assert not (
-        result := ranges_between(
+        result := has_value_between(
             minimum=inclusive_minimum,
             exclusive_maximum=exclusive_maximum,
         )
@@ -700,7 +702,7 @@ def test_failure_when_exclusive_minimum_and_inclusive_maximum_are_overlapping(
     inclusive_maximum = data.draw(st_value(max_value=exclusive_minimum))
 
     assert not (
-        result := ranges_between(
+        result := has_value_between(
             exclusive_minimum=exclusive_minimum,
             maximum=inclusive_maximum,
         )
@@ -723,7 +725,7 @@ def test_failure_when_exclusive_minimum_and_exclusive_maximum_are_overlapping(
     exclusive_maximum = data.draw(st_value(max_value=exclusive_minimum + EXCLUSIVE_ALIGNMENT))
 
     assert not (
-        result := ranges_between(
+        result := has_value_between(
             exclusive_minimum=exclusive_minimum,
             exclusive_maximum=exclusive_maximum,
         )
@@ -746,7 +748,7 @@ def test_failure_when_inclusive_minimum_and_inclusive_maximum_match_single_value
     inclusive_maximum = value
 
     assert not (
-        result := ranges_between(
+        result := has_value_between(
             minimum=inclusive_minimum,
             maximum=inclusive_maximum,
         )
@@ -769,7 +771,7 @@ def test_failure_when_inclusive_minimum_and_exclusive_maximum_match_single_value
     exclusive_maximum = value + EXCLUSIVE_ALIGNMENT
 
     assert not (
-        result := ranges_between(
+        result := has_value_between(
             minimum=inclusive_minimum,
             exclusive_maximum=exclusive_maximum,
         )
@@ -792,7 +794,7 @@ def test_failure_when_exclusive_minimum_and_inclusive_maximum_match_single_value
     inclusive_maximum = value
 
     assert not (
-        result := ranges_between(
+        result := has_value_between(
             exclusive_minimum=exclusive_minimum,
             maximum=inclusive_maximum,
         )
@@ -815,7 +817,7 @@ def test_failure_when_exclusive_minimum_and_exclusive_maximum_match_single_value
     exclusive_maximum = value + EXCLUSIVE_ALIGNMENT
 
     assert not (
-        result := ranges_between(
+        result := has_value_between(
             exclusive_minimum=exclusive_minimum,
             exclusive_maximum=exclusive_maximum,
         )

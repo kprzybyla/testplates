@@ -1,6 +1,6 @@
 __all__ = (
-    "get_minimum",
-    "get_maximum",
+    "get_minimum_value",
+    "get_maximum_value",
     "get_minimum_size",
     "get_maximum_size",
     "get_value_boundaries",
@@ -56,7 +56,7 @@ SIZE_MINIMUM: Final[int] = 0
 SIZE_MAXIMUM: Final[int] = sys.maxsize
 
 
-def get_minimum(
+def get_minimum_value(
     inclusive: Optional[Edge] = None,
     exclusive: Optional[Edge] = None,
 ) -> Result[Boundary, TestplatesError]:
@@ -68,10 +68,10 @@ def get_minimum(
     :param exclusive: exclusive boundary value or None
     """
 
-    return get_boundary(MINIMUM_EXTREMUM, inclusive=inclusive, exclusive=exclusive)
+    return get_value_boundary(MINIMUM_EXTREMUM, inclusive=inclusive, exclusive=exclusive)
 
 
-def get_maximum(
+def get_maximum_value(
     inclusive: Optional[Edge] = None,
     exclusive: Optional[Edge] = None,
 ) -> Result[Boundary, TestplatesError]:
@@ -83,7 +83,7 @@ def get_maximum(
     :param exclusive: exclusive boundary value or None
     """
 
-    return get_boundary(MAXIMUM_EXTREMUM, inclusive=inclusive, exclusive=exclusive)
+    return get_value_boundary(MAXIMUM_EXTREMUM, inclusive=inclusive, exclusive=exclusive)
 
 
 def get_minimum_size(size: Edge, /) -> Result[Boundary, TestplatesError]:
@@ -94,15 +94,10 @@ def get_minimum_size(size: Edge, /) -> Result[Boundary, TestplatesError]:
     :param size: inclusive boundary value or None
     """
 
-    boundary_result = get_boundary(MINIMUM_EXTREMUM, inclusive=size)
+    if size is UNLIMITED:
+        return success(size)
 
-    if not boundary_result:
-        return failure(boundary_result)
-
-    boundary = unwrap_success(boundary_result)
-
-    if boundary is UNLIMITED:
-        return success(boundary)
+    boundary = Limit(MINIMUM_EXTREMUM, size, is_inclusive=True)
 
     if is_outside_size_range(boundary):
         return failure(InvalidSizeError(boundary))
@@ -118,15 +113,10 @@ def get_maximum_size(size: Edge, /) -> Result[Boundary, TestplatesError]:
     :param size: inclusive boundary value or None
     """
 
-    boundary_result = get_boundary(MAXIMUM_EXTREMUM, inclusive=size)
+    if size is UNLIMITED:
+        return success(size)
 
-    if not boundary_result:
-        return failure(boundary_result)
-
-    boundary = unwrap_success(boundary_result)
-
-    if boundary is UNLIMITED:
-        return success(boundary)
+    boundary = Limit(MAXIMUM_EXTREMUM, size, is_inclusive=True)
 
     if is_outside_size_range(boundary):
         return failure(InvalidSizeError(boundary))
@@ -134,7 +124,7 @@ def get_maximum_size(size: Edge, /) -> Result[Boundary, TestplatesError]:
     return success(boundary)
 
 
-def get_boundary(
+def get_value_boundary(
     name: Extremum,
     *,
     inclusive: Optional[Edge] = None,
@@ -180,12 +170,12 @@ def get_value_boundaries(
     :param exclusive_maximum: exclusive maximum boundary value
     """
 
-    minimum_result = get_minimum(inclusive=inclusive_minimum, exclusive=exclusive_minimum)
+    minimum_result = get_minimum_value(inclusive=inclusive_minimum, exclusive=exclusive_minimum)
 
     if not minimum_result:
         return failure(minimum_result)
 
-    maximum_result = get_maximum(inclusive=inclusive_maximum, exclusive=exclusive_maximum)
+    maximum_result = get_maximum_value(inclusive=inclusive_maximum, exclusive=exclusive_maximum)
 
     if not maximum_result:
         return failure(maximum_result)
@@ -193,7 +183,7 @@ def get_value_boundaries(
     minimum = unwrap_success(minimum_result)
     maximum = unwrap_success(maximum_result)
 
-    result = validate_value_boundaries(minimum=minimum, maximum=maximum)
+    result = validate_boundaries(minimum=minimum, maximum=maximum)
 
     if not result:
         return failure(result)
@@ -201,34 +191,9 @@ def get_value_boundaries(
     return success((minimum, maximum))
 
 
-def validate_value_boundaries(
-    *,
-    minimum: Boundary,
-    maximum: Boundary,
-) -> Result[None, TestplatesError]:
-
-    """
-    Checks minimum and maximum value boundaries.
-
-    :param minimum: minimum value boundary
-    :param maximum: maximum value boundary
-    """
-
-    if minimum is UNLIMITED or maximum is UNLIMITED:
-        return success(None)
-
-    if is_overlapping(minimum, maximum):
-        return failure(OverlappingBoundariesError(minimum, maximum))
-
-    if is_single_match(minimum, maximum):
-        return failure(SingleMatchBoundariesError(minimum, maximum))
-
-    return success(None)
-
-
 def get_size_boundaries(
-    inclusive_minimum: Optional[Edge] = None,
-    inclusive_maximum: Optional[Edge] = None,
+    inclusive_minimum: Edge,
+    inclusive_maximum: Edge,
 ) -> Result[Tuple[Boundary, Boundary], TestplatesError]:
 
     """
@@ -238,12 +203,12 @@ def get_size_boundaries(
     :param inclusive_maximum: inclusive maximum boundary value
     """
 
-    minimum_result = get_minimum(inclusive=inclusive_minimum)
+    minimum_result = get_minimum_size(inclusive_minimum)
 
     if not minimum_result:
         return failure(minimum_result)
 
-    maximum_result = get_maximum(inclusive=inclusive_maximum)
+    maximum_result = get_maximum_size(inclusive_maximum)
 
     if not maximum_result:
         return failure(maximum_result)
@@ -251,7 +216,7 @@ def get_size_boundaries(
     minimum = unwrap_success(minimum_result)
     maximum = unwrap_success(maximum_result)
 
-    result = validate_size_boundaries(minimum=minimum, maximum=maximum)
+    result = validate_boundaries(minimum=minimum, maximum=maximum)
 
     if not result:
         return failure(result)
@@ -259,26 +224,20 @@ def get_size_boundaries(
     return success((minimum, maximum))
 
 
-def validate_size_boundaries(
+def validate_boundaries(
     minimum: Boundary,
     maximum: Boundary,
 ) -> Result[None, TestplatesError]:
 
     """
-    Checks minimum and maximum size boundaries.
+    Checks minimum and maximum boundaries.
 
-    :param minimum: minimum size boundary
-    :param maximum: maximum size boundary
+    :param minimum: minimum boundary
+    :param maximum: maximum boundary
     """
 
     if minimum is UNLIMITED or maximum is UNLIMITED:
         return success(None)
-
-    if is_outside_size_range(minimum):
-        return failure(InvalidSizeError(minimum))
-
-    if is_outside_size_range(maximum):
-        return failure(InvalidSizeError(maximum))
 
     if is_overlapping(minimum, maximum):
         return failure(OverlappingBoundariesError(minimum, maximum))

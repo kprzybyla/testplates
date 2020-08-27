@@ -4,10 +4,12 @@ __all__ = (
     "has_minimum_size",
     "has_maximum_size",
     "has_size_between",
+    "has_minimum_value",
+    "has_maximum_value",
+    "has_value_between",
     "is_one_of",
     "is_permutation_of",
     "matches_pattern",
-    "ranges_between",
 )
 
 from typing import (
@@ -29,6 +31,8 @@ from resultful import (
 )
 
 from testplates.impl.base import (
+    get_minimum_value,
+    get_maximum_value,
     get_minimum_size,
     get_maximum_size,
     get_value_boundaries,
@@ -41,9 +45,11 @@ from testplates.impl.constraints import (
     HasMinimumSize,
     HasMaximumSize,
     HasSizeBetween,
+    HasMinimumValue,
+    HasMaximumValue,
+    HasValueBetween,
     IsOneOf,
     IsPermutationOf,
-    RangesBetween,
     MatchesPattern,
 )
 
@@ -156,6 +162,267 @@ def has_size_between(
     )
 
 
+@overload
+def has_minimum_value() -> Failure[TestplatesError]:
+    ...
+
+
+@overload
+def has_minimum_value(
+    *,
+    minimum: int,
+    exclusive_minimum: int,
+) -> Failure[TestplatesError]:
+    ...
+
+
+@overload
+def has_minimum_value(
+    *,
+    minimum: int,
+) -> Result[HasMinimumValue, TestplatesError]:
+    ...
+
+
+@overload
+def has_minimum_value(
+    *,
+    exclusive_minimum: int,
+) -> Result[HasMinimumValue, TestplatesError]:
+    ...
+
+
+def has_minimum_value(
+    *,
+    minimum: Optional[int] = None,
+    exclusive_minimum: Optional[int] = None,
+) -> Result[HasMinimumValue, TestplatesError]:
+    result = get_minimum_value(inclusive=minimum, exclusive=exclusive_minimum)
+
+    if not result:
+        return result
+
+    minimum_value_boundary = unwrap_success(result)
+
+    return success(HasMinimumValue(has_minimum_value.__name__, minimum_value_boundary))
+
+
+@overload
+def has_maximum_value() -> Failure[TestplatesError]:
+    ...
+
+
+@overload
+def has_maximum_value(
+    *,
+    maximum: int,
+    exclusive_maximum: int,
+) -> Failure[TestplatesError]:
+    ...
+
+
+@overload
+def has_maximum_value(
+    *,
+    maximum: int,
+) -> Result[HasMaximumValue, TestplatesError]:
+    ...
+
+
+@overload
+def has_maximum_value(
+    *,
+    exclusive_maximum: int,
+) -> Result[HasMaximumValue, TestplatesError]:
+    ...
+
+
+def has_maximum_value(
+    *,
+    maximum: Optional[int] = None,
+    exclusive_maximum: Optional[int] = None,
+) -> Result[HasMaximumValue, TestplatesError]:
+    result = get_maximum_value(inclusive=maximum, exclusive=exclusive_maximum)
+
+    if not result:
+        return result
+
+    maximum_value_boundary = unwrap_success(result)
+
+    return success(HasMaximumValue(has_maximum_value.__name__, maximum_value_boundary))
+
+
+@overload
+def has_value_between() -> Failure[TestplatesError]:
+    ...
+
+
+@overload
+def has_value_between(
+    *,
+    minimum: Boundary[int],
+) -> Failure[TestplatesError]:
+    ...
+
+
+@overload
+def has_value_between(
+    *,
+    maximum: Boundary[int],
+) -> Failure[TestplatesError]:
+    ...
+
+
+@overload
+def has_value_between(
+    *,
+    exclusive_minimum: Boundary[int],
+) -> Failure[TestplatesError]:
+    ...
+
+
+@overload
+def has_value_between(
+    *,
+    exclusive_maximum: Boundary[int],
+) -> Failure[TestplatesError]:
+    ...
+
+
+@overload
+def has_value_between(
+    *,
+    minimum: Boundary[int],
+    maximum: Boundary[int],
+    exclusive_minimum: Boundary[int],
+) -> Failure[TestplatesError]:
+    ...
+
+
+@overload
+def has_value_between(
+    *,
+    minimum: Boundary[int],
+    maximum: Boundary[int],
+    exclusive_maximum: Boundary[int],
+) -> Failure[TestplatesError]:
+    ...
+
+
+@overload
+def has_value_between(
+    *,
+    minimum: Boundary[int],
+    exclusive_minimum: Boundary[int],
+    exclusive_maximum: Boundary[int],
+) -> Failure[TestplatesError]:
+    ...
+
+
+@overload
+def has_value_between(
+    *,
+    maximum: Boundary[int],
+    exclusive_minimum: Boundary[int],
+    exclusive_maximum: Boundary[int],
+) -> Failure[TestplatesError]:
+    ...
+
+
+@overload
+def has_value_between(
+    *,
+    minimum: Boundary[int],
+    maximum: Boundary[int],
+    exclusive_minimum: Boundary[int],
+    exclusive_maximum: Boundary[int],
+) -> Failure[TestplatesError]:
+    ...
+
+
+@overload
+def has_value_between(
+    *,
+    minimum: Boundary[int],
+    maximum: Boundary[int],
+) -> Result[HasValueBetween, TestplatesError]:
+    ...
+
+
+@overload
+def has_value_between(
+    *,
+    minimum: Boundary[int],
+    exclusive_maximum: Boundary[int],
+) -> Result[HasValueBetween, TestplatesError]:
+    ...
+
+
+@overload
+def has_value_between(
+    *,
+    exclusive_minimum: Boundary[int],
+    maximum: Boundary[int],
+) -> Result[HasValueBetween, TestplatesError]:
+    ...
+
+
+@overload
+def has_value_between(
+    *,
+    exclusive_minimum: Boundary[int],
+    exclusive_maximum: Boundary[int],
+) -> Result[HasValueBetween, TestplatesError]:
+    ...
+
+
+def has_value_between(
+    *,
+    minimum: Optional[Boundary[int]] = None,
+    maximum: Optional[Boundary[int]] = None,
+    exclusive_minimum: Optional[Boundary[int]] = None,
+    exclusive_maximum: Optional[Boundary[int]] = None,
+) -> Result[HasValueBetween, TestplatesError]:
+
+    """
+    Returns constraint object that matches any object with boundaries
+    support that ranges between minimum and maximum boundaries values.
+
+    :param minimum: inclusive minimum boundary value
+    :param maximum: inclusive maximum boundary value
+    :param exclusive_minimum: exclusive minimum boundary value
+    :param exclusive_maximum: exclusive maximum boundary value
+    """
+
+    if (
+        (minimum is UNLIMITED and maximum is UNLIMITED)
+        or (minimum is UNLIMITED and exclusive_maximum is UNLIMITED)
+        or (exclusive_minimum is UNLIMITED and maximum is UNLIMITED)
+        or (exclusive_minimum is UNLIMITED and exclusive_maximum is UNLIMITED)
+    ):
+        return failure(UnlimitedRangeError())
+
+    result = get_value_boundaries(
+        inclusive_minimum=minimum,
+        inclusive_maximum=maximum,
+        exclusive_minimum=exclusive_minimum,
+        exclusive_maximum=exclusive_maximum,
+    )
+
+    if not result:
+        return result
+
+    minimum_value_boundary, maximum_value_boundary = unwrap_success(result)
+
+    return success(
+        HasValueBetween(
+            has_value_between.__name__,
+            minimum_value=minimum_value_boundary,
+            maximum_value=maximum_value_boundary,
+        )
+    )
+
+
 def is_one_of(first: _T, second: _T, /, *rest: _T) -> Result[IsOneOf[_T], TestplatesError]:
 
     """
@@ -192,174 +459,3 @@ def matches_pattern(pattern: AnyStr, /) -> Result[MatchesPattern[AnyStr], Testpl
     """
 
     return success(MatchesPattern(matches_pattern.__name__, pattern))
-
-
-@overload
-def ranges_between() -> Failure[TestplatesError]:
-    ...
-
-
-@overload
-def ranges_between(
-    *,
-    minimum: Boundary[int],
-) -> Failure[TestplatesError]:
-    ...
-
-
-@overload
-def ranges_between(
-    *,
-    maximum: Boundary[int],
-) -> Failure[TestplatesError]:
-    ...
-
-
-@overload
-def ranges_between(
-    *,
-    exclusive_minimum: Boundary[int],
-) -> Failure[TestplatesError]:
-    ...
-
-
-@overload
-def ranges_between(
-    *,
-    exclusive_maximum: Boundary[int],
-) -> Failure[TestplatesError]:
-    ...
-
-
-@overload
-def ranges_between(
-    *,
-    minimum: Boundary[int],
-    maximum: Boundary[int],
-    exclusive_minimum: Boundary[int],
-) -> Failure[TestplatesError]:
-    ...
-
-
-@overload
-def ranges_between(
-    *,
-    minimum: Boundary[int],
-    maximum: Boundary[int],
-    exclusive_maximum: Boundary[int],
-) -> Failure[TestplatesError]:
-    ...
-
-
-@overload
-def ranges_between(
-    *,
-    minimum: Boundary[int],
-    exclusive_minimum: Boundary[int],
-    exclusive_maximum: Boundary[int],
-) -> Failure[TestplatesError]:
-    ...
-
-
-@overload
-def ranges_between(
-    *,
-    maximum: Boundary[int],
-    exclusive_minimum: Boundary[int],
-    exclusive_maximum: Boundary[int],
-) -> Failure[TestplatesError]:
-    ...
-
-
-@overload
-def ranges_between(
-    *,
-    minimum: Boundary[int],
-    maximum: Boundary[int],
-    exclusive_minimum: Boundary[int],
-    exclusive_maximum: Boundary[int],
-) -> Failure[TestplatesError]:
-    ...
-
-
-@overload
-def ranges_between(
-    *,
-    minimum: Boundary[int],
-    maximum: Boundary[int],
-) -> Result[RangesBetween, TestplatesError]:
-    ...
-
-
-@overload
-def ranges_between(
-    *,
-    minimum: Boundary[int],
-    exclusive_maximum: Boundary[int],
-) -> Result[RangesBetween, TestplatesError]:
-    ...
-
-
-@overload
-def ranges_between(
-    *,
-    exclusive_minimum: Boundary[int],
-    maximum: Boundary[int],
-) -> Result[RangesBetween, TestplatesError]:
-    ...
-
-
-@overload
-def ranges_between(
-    *,
-    exclusive_minimum: Boundary[int],
-    exclusive_maximum: Boundary[int],
-) -> Result[RangesBetween, TestplatesError]:
-    ...
-
-
-def ranges_between(
-    *,
-    minimum: Optional[Boundary[int]] = None,
-    maximum: Optional[Boundary[int]] = None,
-    exclusive_minimum: Optional[Boundary[int]] = None,
-    exclusive_maximum: Optional[Boundary[int]] = None,
-) -> Result[RangesBetween, TestplatesError]:
-
-    """
-    Returns constraint object that matches any object with boundaries
-    support that ranges between minimum and maximum boundaries values.
-
-    :param minimum: inclusive minimum boundary value
-    :param maximum: inclusive maximum boundary value
-    :param exclusive_minimum: exclusive minimum boundary value
-    :param exclusive_maximum: exclusive maximum boundary value
-    """
-
-    if (
-        (minimum is UNLIMITED and maximum is UNLIMITED)
-        or (minimum is UNLIMITED and exclusive_maximum is UNLIMITED)
-        or (exclusive_minimum is UNLIMITED and maximum is UNLIMITED)
-        or (exclusive_minimum is UNLIMITED and exclusive_maximum is UNLIMITED)
-    ):
-        return failure(UnlimitedRangeError())
-
-    result = get_value_boundaries(
-        inclusive_minimum=minimum,
-        inclusive_maximum=maximum,
-        exclusive_minimum=exclusive_minimum,
-        exclusive_maximum=exclusive_maximum,
-    )
-
-    if not result:
-        return result
-
-    minimum_value_boundary, maximum_value_boundary = unwrap_success(result)
-
-    return success(
-        RangesBetween(
-            ranges_between.__name__,
-            minimum_value=minimum_value_boundary,
-            maximum_value=maximum_value_boundary,
-        )
-    )

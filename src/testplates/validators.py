@@ -59,6 +59,7 @@ from testplates.impl.validators import (
 from .value import (
     Boundary,
     Validator,
+    UNLIMITED,
 )
 
 from .exceptions import (
@@ -273,8 +274,8 @@ def integer_validator(
 
 def string_validator(
     *,
-    minimum_size: Optional[Boundary[int]] = None,
-    maximum_size: Optional[Boundary[int]] = None,
+    minimum_size: Boundary[int] = UNLIMITED,
+    maximum_size: Boundary[int] = UNLIMITED,
     pattern: Optional[str] = None,
 ) -> Result[Validator, TestplatesError]:
 
@@ -304,8 +305,8 @@ def string_validator(
 
 def bytes_validator(
     *,
-    minimum_size: Optional[Boundary[int]] = None,
-    maximum_size: Optional[Boundary[int]] = None,
+    minimum_size: Boundary[int] = UNLIMITED,
+    maximum_size: Boundary[int] = UNLIMITED,
     pattern: Optional[bytes] = None,
 ) -> Result[Validator, TestplatesError]:
 
@@ -354,12 +355,7 @@ def enum_validator(
         if not result:
             return failure(MemberValidationError(enum_type, member, unwrap_failure(result)))
 
-    enum_type_validator_result = type_validator(enum_type)
-
-    if not enum_type_validator_result:
-        return failure(enum_type_validator_result)
-
-    enum_type_validator = unwrap_success(enum_type_validator_result)
+    enum_type_validator = TypeValidator(enum_type)
 
     return success(
         EnumValidator(
@@ -374,8 +370,8 @@ def sequence_validator(
     item_validator: Validator = passthrough_validator,
     /,
     *,
-    minimum_size: Optional[Boundary[int]] = None,
-    maximum_size: Optional[Boundary[int]] = None,
+    minimum_size: Boundary[int] = UNLIMITED,
+    maximum_size: Boundary[int] = UNLIMITED,
     unique_items: bool = False,
 ) -> Result[Validator, TestplatesError]:
 
