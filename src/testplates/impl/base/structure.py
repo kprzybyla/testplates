@@ -124,7 +124,7 @@ class Field(Generic[_T]):
         if instance is None:
             return self
 
-        return instance._values_[self.name]
+        return instance._testplates_values_[self.name]
 
     @property
     def name(self) -> str:
@@ -261,17 +261,17 @@ class Structure(abc.ABC, metaclass=StructureMeta):
     Structure template base class.
     """
 
-    __slots__ = ("_values_",)
+    __slots__ = ("_testplates_values_",)
 
     # noinspection PyTypeChecker
     _testplates_self_ = TypeVar("_testplates_self_", bound="Structure")
     _testplates_fields_: ClassVar[Mapping[str, Field[Any]]]
 
     def __init__(self) -> None:
-        self._values_: Mapping[str, Value[Any]] = {}
+        self._testplates_values_: Mapping[str, Value[Any]] = {}
 
     def __repr__(self) -> str:
-        return f"{type(self).__name__}({format_like_dict(self._values_)})"
+        return f"{type(self).__name__}({format_like_dict(self._testplates_values_)})"
 
     def __eq__(self, other: Any) -> bool:
         for key, field in self._testplates_fields_.items():
@@ -300,7 +300,7 @@ class Structure(abc.ABC, metaclass=StructureMeta):
             if field.default is not MISSING:
                 values.setdefault(key, field.default)
 
-        self._values_ = values
+        self._testplates_values_ = values
 
         return success(self)
 

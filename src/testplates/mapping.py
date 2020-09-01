@@ -66,13 +66,13 @@ class Mapping(Generic[_VT], Structure, typing.Mapping[str, Value[_VT]]):
     __slots__ = ()
 
     def __getitem__(self, item: str) -> Value[_VT]:
-        return self._values_[item]
+        return self._testplates_values_[item]
 
     def __iter__(self) -> Iterator[str]:
-        return iter(self._values_)
+        return iter(self._testplates_values_)
 
     def __len__(self) -> int:
-        return len(self._values_)
+        return len(self._testplates_values_)
 
     @staticmethod
     def _testplates_get_value_(
