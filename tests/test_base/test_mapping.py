@@ -24,7 +24,7 @@ def test_value_access_in_required_field(value: int) -> None:
 
         key: Required[int] = field(int)
 
-    assert (result := initialize(Template(), key=value))
+    assert (result := initialize(Template, key=value))
 
     template = unwrap_success(result)
     assert template[KEY] == value
@@ -36,8 +36,8 @@ def test_value_access_in_required_field_with_default_value(value: int, default: 
 
         key: Required[int] = field(int, default=default)
 
-    assert (result_value := initialize(Template(), key=value))
-    assert (result_default := initialize(Template()))
+    assert (result_value := initialize(Template, key=value))
+    assert (result_default := initialize(Template))
 
     template_value = unwrap_success(result_value)
     template_default = unwrap_success(result_default)
@@ -51,7 +51,7 @@ def test_value_access_in_optional_field(value: int) -> None:
 
         key: Optional[int] = field(int, optional=True)
 
-    assert (result := initialize(Template(), key=value))
+    assert (result := initialize(Template, key=value))
 
     template = unwrap_success(result)
     assert template[KEY] == value
@@ -63,8 +63,8 @@ def test_value_access_in_optional_field_with_default_value(value: int, default: 
 
         key: Optional[int] = field(int, default=default, optional=True)
 
-    assert (result_value := initialize(Template(), key=value))
-    assert (result_default := initialize(Template()))
+    assert (result_value := initialize(Template, key=value))
+    assert (result_default := initialize(Template))
 
     template_value = unwrap_success(result_value)
     template_default = unwrap_success(result_default)
@@ -78,7 +78,7 @@ def test_len(value: int) -> None:
 
         key: Required[int] = field(int)
 
-    assert (result := initialize(Template(), key=value))
+    assert (result := initialize(Template, key=value))
 
     template = unwrap_success(result)
     assert len(template) == 1
@@ -90,7 +90,7 @@ def test_iter(value: int) -> None:
 
         key: Required[int] = field(int)
 
-    assert (result := initialize(Template(), key=value))
+    assert (result := initialize(Template, key=value))
 
     template = unwrap_success(result)
     assert list(iter(template)) == [KEY]

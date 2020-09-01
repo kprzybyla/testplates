@@ -47,7 +47,7 @@ def st_name(draw: Draw[str]) -> str:
 def test_repr(name: str, key: str, value: int, create_function: CreateFunctionType) -> None:
     field_object = field(int)
     template_type = create_function(name, **{key: field_object})
-    assert (result := initialize(template_type(), **{key: value}))
+    assert (result := initialize(template_type, **{key: value}))
 
     template = unwrap_success(result)
     repr_format = f"{name}({key}={value!r})"
@@ -60,7 +60,7 @@ def test_repr(name: str, key: str, value: int, create_function: CreateFunctionTy
 def test_meta_repr(name: str, key: str, value: int, create_function: CreateFunctionType) -> None:
     field_object = field(int)
     template_type = create_function(name, **{key: field_object})
-    assert (result := initialize(template_type(), **{key: value}))
+    assert (result := initialize(template_type, **{key: value}))
 
     template = unwrap_success(result)
     repr_format = f"testplates.StructureMeta({key}={field_object!r})"
@@ -79,7 +79,7 @@ def test_equality(
 ) -> None:
     field_object = field(int)
     template_type = create_function(name, **{key: field_object})
-    assert (result := initialize(template_type(), **{key: value}))
+    assert (result := initialize(template_type, **{key: value}))
 
     template = unwrap_success(result)
     assert template == storage_type(**{key: value})
@@ -100,7 +100,7 @@ def test_inequality_due_to_unequal_key(
 
     field_object = field(int)
     template_type = create_function(name, **{key: field_object})
-    assert (result := initialize(template_type(), **{key: value}))
+    assert (result := initialize(template_type, **{key: value}))
 
     template = unwrap_success(result)
     assert template != storage_type(**{other_key: value})
@@ -121,7 +121,7 @@ def test_inequality_due_to_unequal_value(
 
     field_object = field(int)
     template_type = create_function(name, **{key: field_object})
-    assert (result := initialize(template_type(), **{key: value}))
+    assert (result := initialize(template_type, **{key: value}))
 
     template = unwrap_success(result)
     assert template != storage_type(**{key: other_value})
@@ -139,7 +139,7 @@ def test_default_value(
 ) -> None:
     field_object = field(int, default=value)
     template_type = create_function(name, **{key: field_object})
-    assert (result := initialize(template_type(), **{key: value}))
+    assert (result := initialize(template_type, **{key: value}))
 
     template = unwrap_success(result)
     assert template == storage_type(**{key: value})
@@ -160,7 +160,7 @@ def test_default_value_override(
 
     field_object = field(int, default=value)
     template_type = create_function(name, **{key: field_object})
-    assert (result := initialize(template_type(), **{key: value}))
+    assert (result := initialize(template_type, **{key: value}))
 
     template = unwrap_success(result)
     assert template == storage_type(**{key: value})
@@ -178,7 +178,7 @@ def test_any_value_matches_anything_in_required_field(
 ) -> None:
     field_object = field(int)
     template_type = create_function(name, **{key: field_object})
-    assert (result := initialize(template_type(), **{key: ANY}))
+    assert (result := initialize(template_type, **{key: ANY}))
 
     template = unwrap_success(result)
     assert template == storage_type(**{key: value})
@@ -196,7 +196,7 @@ def test_any_value_matches_anything_in_optional_field(
 ) -> None:
     field_object = field(int, optional=True)
     template_type = create_function(name, **{key: field_object})
-    assert (result := initialize(template_type(), **{key: ANY}))
+    assert (result := initialize(template_type, **{key: ANY}))
 
     template = unwrap_success(result)
     assert template == storage_type(**{key: value})
@@ -214,7 +214,7 @@ def test_wildcard_value_matches_anything_in_optional_field(
 ) -> None:
     field_object = field(int, optional=True)
     template_type = create_function(name, **{key: field_object})
-    assert (result := initialize(template_type(), **{key: WILDCARD}))
+    assert (result := initialize(template_type, **{key: WILDCARD}))
 
     template = unwrap_success(result)
     assert template == storage_type()
@@ -231,7 +231,7 @@ def test_wildcard_value_error_in_required_field(
 ) -> None:
     field_object = field(int)
     template_type = create_function(name, **{key: field_object})
-    assert not (result := initialize(template_type(), **{key: WILDCARD}))
+    assert not (result := initialize(template_type, **{key: WILDCARD}))
 
     error = unwrap_failure(result)
     assert isinstance(error, ProhibitedValueError)
@@ -250,7 +250,7 @@ def test_absent_value_matches_anything_in_optional_field(
 ) -> None:
     field_object = field(int, optional=True)
     template_type = create_function(name, **{key: field_object})
-    assert (result := initialize(template_type(), **{key: ABSENT}))
+    assert (result := initialize(template_type, **{key: ABSENT}))
 
     template = unwrap_success(result)
     assert template == storage_type()
@@ -268,7 +268,7 @@ def test_absent_value_mismatches_any_value_in_optional_field(
 ) -> None:
     field_object = field(int, optional=True)
     template_type = create_function(name, **{key: field_object})
-    assert (result := initialize(template_type(), **{key: ABSENT}))
+    assert (result := initialize(template_type, **{key: ABSENT}))
 
     template = unwrap_success(result)
     assert template != storage_type(**{key: value})
@@ -284,7 +284,7 @@ def test_absent_value_error_in_required_field(
 ) -> None:
     field_object = field(int)
     template_type = create_function(name, **{key: field_object})
-    assert not (result := initialize(template_type(), **{key: ABSENT}))
+    assert not (result := initialize(template_type, **{key: ABSENT}))
 
     error = unwrap_failure(result)
     assert isinstance(error, ProhibitedValueError)
@@ -306,7 +306,7 @@ def test_unexpected_value_error(
 
     field_object = field(int)
     template_type = create_function(name, **{key: field_object})
-    assert not (result := initialize(template_type(), **{other_key: other_value}))
+    assert not (result := initialize(template_type, **{other_key: other_value}))
 
     error = unwrap_failure(result)
     assert isinstance(error, UnexpectedValueError)
@@ -324,7 +324,7 @@ def test_missing_value_in_required_field_value_error(
 ) -> None:
     field_object = field(int)
     template_type = create_function(name, **{key: field_object})
-    assert not (result := initialize(template_type()))
+    assert not (result := initialize(template_type))
 
     error = unwrap_failure(result)
     assert isinstance(error, MissingValueError)
@@ -341,7 +341,7 @@ def test_missing_value_in_optional_field_value_error(
 ) -> None:
     field_object = field(int, optional=True)
     template_type = create_function(name, **{key: field_object})
-    assert not (result := initialize(template_type()))
+    assert not (result := initialize(template_type))
 
     error = unwrap_failure(result)
     assert isinstance(error, MissingValueError)
@@ -359,7 +359,7 @@ def test_default_value_prevents_value_error_in_required_field_on_missing_value(
 ) -> None:
     field_object = field(int, default=default)
     template_type = create_function(name, **{key: field_object})
-    assert initialize(template_type())
+    assert initialize(template_type)
 
 
 # noinspection PyTypeChecker
@@ -373,7 +373,7 @@ def test_default_value_prevents_value_error_in_optional_field_on_missing_value(
 ) -> None:
     field_object = field(int, default=default, optional=True)
     template_type = create_function(name, **{key: field_object})
-    assert initialize(template_type())
+    assert initialize(template_type)
 
 
 # noinspection PyTypeChecker

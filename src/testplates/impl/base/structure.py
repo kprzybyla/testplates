@@ -297,8 +297,8 @@ class Structure(abc.ABC, metaclass=StructureMeta):
             if not (result := field.validate(values.get(key, MISSING))):
                 return result
 
-            if field.default is not MISSING:
-                values.setdefault(key, field.default)
+            if (default := field.default) is not MISSING:
+                values.setdefault(key, default)
 
         self._testplates_values_ = values
 

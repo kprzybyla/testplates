@@ -46,11 +46,11 @@ Optional = Field[Union[_T, LiteralAny, LiteralWildcard, LiteralAbsent]]
 
 # noinspection PyProtectedMember
 def initialize(
-    structure: _Structure,
+    structure_type: Type[_Structure],
     /,
     **values: Value[Any],
 ) -> Result[_Structure, TestplatesError]:
-    return structure._testplates_init_(**values)
+    return structure_type()._testplates_init_(**values)
 
 
 # noinspection PyProtectedMember

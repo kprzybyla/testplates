@@ -114,7 +114,7 @@ def test_validator_is_not_called_on_special_value_for_required_field(
 
     field_object = field(int, validator)
     template_type = create_function(name, **{key: field_object})
-    assert initialize(template_type(), **{key: ANY})
+    assert initialize(template_type, **{key: ANY})
 
 
 # noinspection PyTypeChecker
@@ -130,9 +130,9 @@ def test_validator_is_not_called_on_special_value_for_optional_field(
 
     field_object = field(int, validator, optional=True)
     template_type = create_function(name, **{key: field_object})
-    assert initialize(template_type(), **{key: ANY})
-    assert initialize(template_type(), **{key: WILDCARD})
-    assert initialize(template_type(), **{key: ABSENT})
+    assert initialize(template_type, **{key: ANY})
+    assert initialize(template_type, **{key: WILDCARD})
+    assert initialize(template_type, **{key: ABSENT})
 
 
 # noinspection PyTypeChecker
@@ -153,7 +153,7 @@ def test_validator_failure(
 
     field_object = field(int, validator)
     template_type = create_function(name, **{key: field_object})
-    assert not (result := initialize(template_type(), **{key: value}))
+    assert not (result := initialize(template_type, **{key: value}))
 
     error = unwrap_failure(result)
     assert isinstance(error, TestplatesError)
