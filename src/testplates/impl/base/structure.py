@@ -316,10 +316,11 @@ class Structure(abc.ABC, metaclass=StructureMeta):
     ) -> Result[_testplates_self_, TestplatesError]:
         typ = type(self)
 
-        new_values = self._testplates_values_.copy()
+        new_values: Dict[str, Value[Any]] = dict()
+        new_values.update(self._testplates_values_)
         new_values.update(values)
 
-        return typ()._testplates_init_(**new_values)
+        return typ(SecretType.SECRET)._testplates_init_(**new_values)
 
     @staticmethod
     @abc.abstractmethod
