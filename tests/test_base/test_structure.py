@@ -13,6 +13,7 @@ from hypothesis import (
 
 from testplates import (
     initialize,
+    modify,
     fields,
     field,
     ANY,
@@ -410,3 +411,29 @@ def test_optional_field_properties_access(
     assert template_fields[key].name == key
     assert template_fields[key].default == default
     assert template_fields[key].is_optional is True
+
+
+# noinspection PyTypeChecker
+@given(name=st_name(), key=st.text(), value=st.integers(), other_value=st.integers())
+@create_function_and_storage_type_parameters
+def test_modify(
+    name: str,
+    key: str,
+    value: int,
+    other_value: int,
+    create_function: CreateFunctionType,
+    storage_type: StorageType,
+) -> None:
+    assume(value != other_value)
+
+    field_object = field(int)
+    template_type = create_function(name, **{key: field_object})
+    assert (result := initialize(template_type, **{key: value}))
+
+    template = unwrap_success(result)
+    assert (modify_result := modify(template, **{key: other_value}))
+
+    modified_template = unwrap_success(modify_result)
+    assert template != modified_template
+    assert template == storage_type(**{key: value})
+    assert modified_template == storage_type(**{key: other_value})
