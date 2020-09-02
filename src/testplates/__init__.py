@@ -13,6 +13,7 @@ __all__ = (
     "LiteralAbsent",
     "LiteralUnlimited",
     "initialize",
+    "modify",
     "fields",
     "field",
     "create_object",
@@ -100,6 +101,7 @@ from testplates.value import (
 
 from testplates.structure import (
     initialize,
+    modify,
     fields,
     field,
 )

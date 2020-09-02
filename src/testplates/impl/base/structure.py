@@ -304,6 +304,18 @@ class Structure(abc.ABC, metaclass=StructureMeta):
 
         return success(self)
 
+    # noinspection PyProtectedMember
+    def _testplates_modify_(
+        self: _testplates_self_,
+        **values: Value[Any],
+    ) -> Result[_testplates_self_, TestplatesError]:
+        typ = type(self)
+
+        new_values = self._testplates_values_.copy()
+        new_values.update(values)
+
+        return typ()._testplates_init_(**new_values)
+
     @staticmethod
     @abc.abstractmethod
     def _testplates_get_value_(

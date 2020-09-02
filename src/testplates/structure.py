@@ -1,5 +1,6 @@
 __all__ = (
     "initialize",
+    "modify",
     "fields",
     "field",
     "Required",
@@ -51,6 +52,15 @@ def initialize(
     **values: Value[Any],
 ) -> Result[_Structure, TestplatesError]:
     return structure_type()._testplates_init_(**values)
+
+
+# noinspection PyProtectedMember
+def modify(
+    structure: _Structure,
+    /,
+    **values: Value[Any],
+) -> Result[_Structure, TestplatesError]:
+    return structure._testplates_modify_(**values)
 
 
 # noinspection PyProtectedMember
