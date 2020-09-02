@@ -36,6 +36,7 @@ from testplates.impl.utils import format_like_dict
 from .value import (
     is_value,
     values_matches,
+    SecretType,
     Value,
     Maybe,
     Validator,
@@ -267,7 +268,11 @@ class Structure(abc.ABC, metaclass=StructureMeta):
     _testplates_self_ = TypeVar("_testplates_self_", bound="Structure")
     _testplates_fields_: ClassVar[Mapping[str, Field[Any]]]
 
-    def __init__(self) -> None:
+    def __init__(
+        self,
+        __use_testplates_initialize_function_to_create_structure_not_init_method__: SecretType,
+        /,
+    ) -> None:
         self._testplates_values_: Mapping[str, Value[Any]] = {}
 
     def __repr__(self) -> str:

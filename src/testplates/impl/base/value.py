@@ -6,6 +6,7 @@ __all__ = (
     "MissingType",
     "SpecialValueType",
     "UnlimitedType",
+    "SecretType",
     "Maybe",
     "Value",
     "Validator",
@@ -134,6 +135,14 @@ class UnlimitedType(enum.Enum):
     """
         Indicator for unlimited value.
     """
+
+    def __repr__(self) -> str:
+        return f"{testplates.__name__}.{self.name}"
+
+
+class SecretType(enum.Enum):
+
+    SECRET = enum.auto()
 
     def __repr__(self) -> str:
         return f"{testplates.__name__}.{self.name}"

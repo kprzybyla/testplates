@@ -23,6 +23,7 @@ from resultful import Result
 from testplates.impl.base import (
     Field,
     Structure,
+    SecretType,
 )
 
 from .value import (
@@ -51,7 +52,7 @@ def initialize(
     /,
     **values: Value[Any],
 ) -> Result[_Structure, TestplatesError]:
-    return structure_type()._testplates_init_(**values)
+    return structure_type(SecretType.SECRET)._testplates_init_(**values)
 
 
 # noinspection PyProtectedMember

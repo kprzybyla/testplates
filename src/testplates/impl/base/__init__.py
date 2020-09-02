@@ -16,6 +16,7 @@ __all__ = (
     "MissingType",
     "SpecialValueType",
     "UnlimitedType",
+    "SecretType",
     "Limit",
     "TestplatesError",
     "MissingValueError",
@@ -39,6 +40,7 @@ from .value import (
     MissingType,
     SpecialValueType,
     UnlimitedType,
+    SecretType,
 )
 
 from .limit import Limit
