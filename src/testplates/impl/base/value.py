@@ -142,10 +142,17 @@ class UnlimitedType(enum.Enum):
 
 class SecretType(enum.Enum):
 
+    """
+    Secret value type class.
+
+    FOR INTERNAL USE ONLY.
+    """
+
     SECRET = enum.auto()
 
-    def __repr__(self) -> str:
-        return f"{testplates.__name__}.{self.name}"
+    """
+        Secret internal value.
+    """
 
 
 _T = TypeVar("_T")
