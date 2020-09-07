@@ -1,14 +1,16 @@
 __all__ = ("IsOneOf",)
 
+import testplates
+
 from typing import (
     Any,
     TypeVar,
     Generic,
 )
 
-import testplates
-
-from testplates.impl.utils import format_like_tuple
+from testplates.impl.utils import (
+    format_like_tuple,
+)
 
 _T = TypeVar("_T")
 

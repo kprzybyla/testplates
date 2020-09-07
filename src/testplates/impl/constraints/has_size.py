@@ -1,11 +1,11 @@
 __all__ = ("HasSize",)
 
+import testplates
+
 from typing import (
     Any,
     Sized,
 )
-
-import testplates
 
 
 class HasSize:

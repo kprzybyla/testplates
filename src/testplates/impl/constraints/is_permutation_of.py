@@ -1,5 +1,7 @@
 __all__ = ("IsPermutationOf",)
 
+import testplates
+
 from typing import (
     Any,
     TypeVar,
@@ -7,8 +9,6 @@ from typing import (
     List,
     Collection,
 )
-
-import testplates
 
 _T = TypeVar("_T")
 

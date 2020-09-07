@@ -1,12 +1,12 @@
 __all__ = ("HasSizeBetween",)
 
+import testplates
+
 from typing import (
     Any,
     Union,
     Sized,
 )
-
-import testplates
 
 from testplates.impl.base import (
     fits_minimum_size,

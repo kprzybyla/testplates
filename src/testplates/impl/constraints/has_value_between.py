@@ -1,11 +1,11 @@
 __all__ = ("HasValueBetween",)
 
+import testplates
+
 from typing import (
     Any,
     Union,
 )
-
-import testplates
 
 from testplates.impl.base import (
     fits_minimum_value,

@@ -1,11 +1,11 @@
 __all__ = ("HasMaximumValue",)
 
+import testplates
+
 from typing import (
     Any,
     Union,
 )
-
-import testplates
 
 from testplates.impl.base import (
     fits_maximum_value,

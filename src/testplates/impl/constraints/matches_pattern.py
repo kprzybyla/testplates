@@ -2,6 +2,7 @@ __all__ = ("MatchesPattern",)
 
 import re
 import abc
+import testplates
 
 from typing import (
     Any,
@@ -10,8 +11,6 @@ from typing import (
     Generic,
     Pattern,
 )
-
-import testplates
 
 
 class MatchesPattern(Generic[AnyStr], abc.ABC):
