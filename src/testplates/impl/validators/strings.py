@@ -3,6 +3,8 @@ __all__ = (
     "BytesValidator",
 )
 
+import testplates
+
 from typing import (
     Any,
     AnyStr,
@@ -18,8 +20,6 @@ from resultful import (
     Result,
 )
 
-import testplates
-
 from testplates.impl.base import (
     fits_minimum_size,
     fits_maximum_size,
@@ -28,7 +28,9 @@ from testplates.impl.base import (
     TestplatesError,
 )
 
-from .type import TypeValidator
+from .type import (
+    TypeValidator,
+)
 
 from .exceptions import (
     InvalidMinimumSizeError,

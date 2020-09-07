@@ -1,15 +1,26 @@
 __all__ = ("EnumValidator",)
 
-from enum import EnumMeta
-from typing import Any
-
-from resultful import Result
-
 import testplates
 
-from testplates.impl.base import TestplatesError
+from enum import (
+    EnumMeta,
+)
 
-from .utils import Validator
+from typing import (
+    Any,
+)
+
+from resultful import (
+    Result,
+)
+
+from testplates.impl.base import (
+    TestplatesError,
+)
+
+from .utils import (
+    Validator,
+)
 
 
 class EnumValidator:

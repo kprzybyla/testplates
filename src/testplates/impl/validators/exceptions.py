@@ -32,7 +32,9 @@ from typing import (
     Pattern,
 )
 
-from testplates.impl.base import TestplatesError
+from testplates.impl.base import (
+    TestplatesError,
+)
 
 _T = TypeVar("_T")
 

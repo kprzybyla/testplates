@@ -1,6 +1,7 @@
 __all__ = ("MappingValidator",)
 
 import typing
+import testplates
 
 from typing import (
     Any,
@@ -14,15 +15,18 @@ from resultful import (
     Result,
 )
 
-import testplates
-
 from testplates.impl.base import (
     StructureMeta,
     TestplatesError,
 )
 
-from .utils import Validator
-from .type import TypeValidator
+from .utils import (
+    Validator,
+)
+
+from .type import (
+    TypeValidator,
+)
 
 from .exceptions import (
     RequiredKeyMissingError,

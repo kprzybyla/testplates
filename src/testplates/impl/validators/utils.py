@@ -11,9 +11,13 @@ from typing import (
     Callable,
 )
 
-from resultful import Result
+from resultful import (
+    Result,
+)
 
-from testplates.impl.base import TestplatesError
+from testplates.impl.base import (
+    TestplatesError,
+)
 
 Validator = Callable[[Any], Result[None, TestplatesError]]
 

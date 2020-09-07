@@ -1,18 +1,27 @@
 __all__ = ("BooleanValidator",)
 
+import testplates
+
 from typing import (
     Any,
     Final,
 )
 
-from resultful import Result
+from resultful import (
+    Result,
+)
 
-import testplates
+from testplates.impl.base import (
+    TestplatesError,
+)
 
-from testplates.impl.base import TestplatesError
+from .utils import (
+    Validator,
+)
 
-from .utils import Validator
-from .type import TypeValidator
+from .type import (
+    TypeValidator,
+)
 
 boolean_type_validator: Final[Validator] = TypeValidator(bool)
 

@@ -1,15 +1,19 @@
 __all__ = ("PassthroughValidator",)
 
-from typing import Any
+import testplates
+
+from typing import (
+    Any,
+)
 
 from resultful import (
     success,
     Result,
 )
 
-import testplates
-
-from testplates.impl.base import TestplatesError
+from testplates.impl.base import (
+    TestplatesError,
+)
 
 
 class PassthroughValidator:

@@ -1,5 +1,7 @@
 __all__ = ("IntegerValidator",)
 
+import testplates
+
 from typing import (
     Any,
     Union,
@@ -12,8 +14,6 @@ from resultful import (
     Result,
 )
 
-import testplates
-
 from testplates.impl.base import (
     fits_minimum_value,
     fits_maximum_value,
@@ -22,7 +22,9 @@ from testplates.impl.base import (
     TestplatesError,
 )
 
-from .type import TypeValidator
+from .type import (
+    TypeValidator,
+)
 
 from .exceptions import (
     InvalidMinimumValueError,
