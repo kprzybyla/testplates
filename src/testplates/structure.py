@@ -1,228 +1,193 @@
 __all__ = (
-    "initialize",
+    "struct",
+    "create",
+    "init",
     "modify",
     "fields",
     "field",
-    "Required",
-    "Optional",
 )
 
 from typing import (
+    cast,
     overload,
     Any,
     Type,
     TypeVar,
-    Union,
     Mapping,
     Callable,
-    Literal,
 )
 
-from resultful import Result
+from resultful import (
+    Result,
+)
 
 from testplates.impl.base import (
     Field,
     Structure,
+    StructureMeta,
+    StructureDict,
     SecretType,
 )
 
 from .value import (
-    Value,
     Maybe,
     Validator,
-    LiteralAny,
-    LiteralWildcard,
-    LiteralAbsent,
     MISSING,
 )
 
-from .validators import passthrough_validator
-from .exceptions import TestplatesError
+from .validators import (
+    passthrough_validator,
+)
 
-_T = TypeVar("_T")
-_Structure = TypeVar("_Structure", bound=Structure)
+from .exceptions import (
+    TestplatesError,
+)
 
-Required = Field[Union[_T, LiteralAny]]
-Optional = Field[Union[_T, LiteralAny, LiteralWildcard, LiteralAbsent]]
+_GenericType = TypeVar("_GenericType")
+_StructureType = TypeVar("_StructureType", bound=Structure)
+
+
+# noinspection PyTypeChecker
+def struct(
+    cls: Type[_GenericType],
+    /,
+) -> Type[Structure]:
+
+    """
+    Decorator API for creating structure.
+
+    :param cls: structure base class
+    """
+
+    name = cls.__name__
+    bases = (cls, Structure)
+    attrs = StructureDict(cls.__dict__)
+
+    return cast(Type[Structure], StructureMeta(name, bases, attrs))
+
+
+# noinspection PyTypeChecker
+# noinspection PyProtectedMember
+# noinspection PyShadowingNames
+def create(
+    name: str,
+    /,
+    **fields: Field[Any],
+) -> Type[Structure]:
+
+    """
+    Functional API for creating structure.
+
+    :param name: structure type name
+    :param fields: structure fields
+    """
+
+    return cast(Type[Structure], Structure._testplates_create_(name, **fields))
 
 
 # noinspection PyProtectedMember
-def initialize(
-    structure_type: Type[_Structure],
+def init(
+    structure_type: Type[_StructureType],
     /,
-    **values: Value[Any],
-) -> Result[_Structure, TestplatesError]:
+    **values: Any,
+) -> Result[_StructureType, TestplatesError]:
+
+    """
+    Initializes structure with given values.
+
+    :param structure_type: structure type
+    :param values: structure initialization values
+    """
+
     return structure_type(SecretType.SECRET)._testplates_init_(**values)
 
 
+# noinspection PyShadowingNames
 # noinspection PyProtectedMember
 def modify(
-    structure: _Structure,
+    structure: _StructureType,
     /,
-    **values: Value[Any],
-) -> Result[_Structure, TestplatesError]:
+    **values: Any,
+) -> Result[_StructureType, TestplatesError]:
+
+    """
+    Modifies structure with given values.
+
+    :param structure: structure instance
+    :param values: structure modification values
+    """
+
     return structure._testplates_modify_(**values)
 
 
 # noinspection PyProtectedMember
-def fields(structure_type: Type[Structure], /) -> Mapping[str, Field[Any]]:
+def fields(
+    structure_type: Type[Structure],
+    /,
+) -> Mapping[str, Field[Any]]:
+
+    """
+    Returns structure fields.
+
+    :param structure_type: structure type
+    """
+
     return dict(structure_type._testplates_fields_)
 
 
 @overload
 def field(
-    typ: Type[_T],
-    validator: Validator = ...,
-    /,
-) -> Required[_T]:
-    ...
-
-
-@overload
-def field(
-    typ: Type[_T],
-    validator: Validator = ...,
-    /,
-    *,
-    default: _T,
-) -> Required[_T]:
-    ...
-
-
-@overload
-def field(
-    typ: Type[_T],
-    validator: Validator = ...,
-    /,
-    *,
-    default_factory: Callable[[], _T],
-) -> Required[_T]:
-    ...
-
-
-@overload
-def field(
-    typ: Type[_T],
-    validator: Validator = ...,
-    /,
-    *,
-    optional: Literal[False],
-) -> Required[_T]:
-    ...
-
-
-@overload
-def field(
-    typ: Type[_T],
-    validator: Validator = ...,
-    /,
-    *,
-    default: _T,
-    optional: Literal[False],
-) -> Required[_T]:
-    ...
-
-
-@overload
-def field(
-    typ: Type[_T],
-    validator: Validator = ...,
-    /,
-    *,
-    default_factory: Callable[[], _T],
-    optional: Literal[False],
-) -> Required[_T]:
-    ...
-
-
-@overload
-def field(
-    typ: Type[_T],
-    validator: Validator = ...,
-    /,
-    *,
-    optional: Literal[True],
-) -> Optional[_T]:
-    ...
-
-
-@overload
-def field(
-    typ: Type[_T],
-    validator: Validator = ...,
-    /,
-    *,
-    default: _T,
-    optional: Literal[True],
-) -> Optional[_T]:
-    ...
-
-
-@overload
-def field(
-    typ: Type[_T],
-    validator: Validator = ...,
-    /,
-    *,
-    default_factory: Callable[[], _T],
-    optional: Literal[True],
-) -> Optional[_T]:
-    ...
-
-
-@overload
-def field(
-    typ: Type[_T],
+    type: Type[_GenericType],
     validator: Validator = ...,
     /,
     *,
     optional: bool = ...,
-) -> Field[Value[_T]]:
+) -> Field[_GenericType]:
     ...
 
 
 @overload
 def field(
-    typ: Type[_T],
+    type: Type[_GenericType],
     validator: Validator = ...,
     /,
     *,
-    default: _T,
+    default: _GenericType,
     optional: bool = ...,
-) -> Field[Value[_T]]:
+) -> Field[_GenericType]:
     ...
 
 
 @overload
 def field(
-    typ: Type[_T],
+    type: Type[_GenericType],
     validator: Validator = ...,
     /,
     *,
-    default_factory: Callable[[], _T],
+    default_factory: Callable[[], _GenericType],
     optional: bool = ...,
-) -> Field[Value[_T]]:
+) -> Field[_GenericType]:
     ...
 
 
 # noinspection PyUnusedLocal
 def field(
-    typ: Type[_T],
+    type: Type[_GenericType],
     validator: Validator = passthrough_validator,
     /,
     *,
-    default: Maybe[_T] = MISSING,
-    default_factory: Maybe[Callable[[], _T]] = MISSING,
+    default: Maybe[_GenericType] = MISSING,
+    default_factory: Maybe[Callable[[], _GenericType]] = MISSING,
     optional: bool = False,
-) -> Union[Required[_T], Optional[_T], Field[Value[_T]]]:
+) -> Field[_GenericType]:
 
     """
-    Creates field for structure template.
+    Creates field for structure.
 
     This is basically a wrapper for :class:`Field`
     with all possible overloads for its arguments.
 
-    :param typ: field type
+    :param type: field type
     :param validator: field validator function or None
     :param default: field default value
     :param default_factory: field default value factory

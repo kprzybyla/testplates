@@ -45,7 +45,7 @@ def main():
             "Topic :: Software Development :: Libraries",
         ],
         python_requires="~= 3.8",
-        install_requires=[RESULTFUL],
+        install_requires=[RESULTFUL, MYPY],
         extras_require={
             "black": [BLACK],
             "lint": [FLAKE8],

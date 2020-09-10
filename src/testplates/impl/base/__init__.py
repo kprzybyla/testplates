@@ -13,6 +13,7 @@ __all__ = (
     "Field",
     "Structure",
     "StructureMeta",
+    "StructureDict",
     "MissingType",
     "SpecialValueType",
     "UnlimitedType",
@@ -34,6 +35,7 @@ from .structure import (
     Field,
     Structure,
     StructureMeta,
+    StructureDict,
 )
 
 from .value import (
@@ -43,8 +45,13 @@ from .value import (
     SecretType,
 )
 
-from .limit import Limit
-from .pattern import get_pattern
+from .limit import (
+    Limit,
+)
+
+from .pattern import (
+    get_pattern,
+)
 
 from .boundaries import (
     get_minimum_value,

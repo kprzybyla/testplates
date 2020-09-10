@@ -24,7 +24,9 @@ from typing import (
     Final,
 )
 
-from resultful import Result
+from resultful import (
+    Result,
+)
 
 from testplates.impl.base import (
     MissingType,
@@ -32,13 +34,15 @@ from testplates.impl.base import (
     UnlimitedType,
 )
 
-from .exceptions import TestplatesError
+from .exceptions import (
+    TestplatesError,
+)
 
-_T = TypeVar("_T")
+_GenericType = TypeVar("_GenericType")
 
-Maybe = Union[_T, MissingType]
-Value = Union[_T, SpecialValueType]
-Boundary = Union[_T, UnlimitedType]
+Maybe = Union[_GenericType, MissingType]
+Value = Union[_GenericType, SpecialValueType]
+Boundary = Union[_GenericType, UnlimitedType]
 Validator = Callable[[Any], Result[None, TestplatesError]]
 
 LiteralMissing = Literal[MissingType.MISSING]

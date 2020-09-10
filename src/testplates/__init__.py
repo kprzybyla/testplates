@@ -1,8 +1,4 @@
 __all__ = (
-    "Required",
-    "Optional",
-    "CreateObjectFunctionType",
-    "CreateMappingFunctionType",
     "Maybe",
     "Value",
     "Boundary",
@@ -12,14 +8,12 @@ __all__ = (
     "LiteralWildcard",
     "LiteralAbsent",
     "LiteralUnlimited",
-    "initialize",
+    "struct",
+    "create",
+    "init",
     "modify",
     "fields",
     "field",
-    "create_object",
-    "Object",
-    "create_mapping",
-    "Mapping",
     "MISSING",
     "ANY",
     "WILDCARD",
@@ -77,14 +71,6 @@ __all__ = (
 
 # Annotations
 
-from testplates.structure import (
-    Required,
-    Optional,
-)
-
-from testplates.object import CreateObjectFunctionType
-from testplates.mapping import CreateMappingFunctionType
-
 from testplates.value import (
     Maybe,
     Value,
@@ -100,20 +86,12 @@ from testplates.value import (
 # Concretes
 
 from testplates.structure import (
-    initialize,
+    struct,
+    create,
+    init,
     modify,
     fields,
     field,
-)
-
-from testplates.object import (
-    create_object,
-    Object,
-)
-
-from testplates.mapping import (
-    create_mapping,
-    Mapping,
 )
 
 from testplates.value import (

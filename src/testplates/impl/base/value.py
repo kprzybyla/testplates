@@ -18,6 +18,7 @@ __all__ = (
 )
 
 import enum
+import testplates
 
 from typing import (
     Any,
@@ -28,11 +29,13 @@ from typing import (
     Final,
 )
 
-from resultful import Result
+from resultful import (
+    Result,
+)
 
-import testplates
-
-from .exceptions import TestplatesError
+from .exceptions import (
+    TestplatesError,
+)
 
 
 # noinspection PyUnresolvedReferences
@@ -49,7 +52,9 @@ def is_value(value: Maybe[Value[Any]]) -> bool:
 
 
 # noinspection PyUnresolvedReferences
-def values_matches(self_value: Maybe[Value[_T]], other_value: Maybe[Value[_T]], /) -> bool:
+def values_matches(
+    self_value: Maybe[Value[_GenericType]], other_value: Maybe[Value[_GenericType]], /
+) -> bool:
 
     """
     Compares self value and other value and
@@ -155,10 +160,10 @@ class SecretType(enum.Enum):
     """
 
 
-_T = TypeVar("_T")
+_GenericType = TypeVar("_GenericType")
 
-Maybe = Union[_T, MissingType]
-Value = Union[_T, SpecialValueType]
+Maybe = Union[_GenericType, MissingType]
+Value = Union[_GenericType, SpecialValueType]
 Validator = Callable[[Any], Result[None, TestplatesError]]
 
 ANY: Final[Literal[SpecialValueType.ANY]] = SpecialValueType.ANY

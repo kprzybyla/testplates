@@ -11,7 +11,9 @@ __all__ = (
     "SingleMatchBoundariesError",
 )
 
-from typing import Any
+from typing import (
+    Any,
+)
 
 
 class TestplatesError(Exception):

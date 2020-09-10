@@ -4,9 +4,11 @@ __all__ = (
     "Field",
     "Structure",
     "StructureMeta",
+    "StructureDict",
 )
 
 import abc
+import testplates
 
 from typing import (
     cast,
@@ -18,6 +20,7 @@ from typing import (
     Union,
     Tuple,
     Dict,
+    Iterator,
     Mapping,
     Callable,
     Optional,
@@ -29,15 +32,14 @@ from resultful import (
     Result,
 )
 
-import testplates
-
-from testplates.impl.utils import format_like_dict
+from testplates.impl.utils import (
+    format_like_dict,
+)
 
 from .value import (
     is_value,
     values_matches,
     SecretType,
-    Value,
     Maybe,
     Validator,
     ANY,
@@ -53,10 +55,10 @@ from .exceptions import (
     ProhibitedValueError,
 )
 
-_T = TypeVar("_T", covariant=True)
+_VT = TypeVar("_VT", covariant=True)
 
 
-class Field(Generic[_T]):
+class Field(Generic[_VT]):
 
     """
     Field descriptor class.
@@ -75,8 +77,8 @@ class Field(Generic[_T]):
         validator: Validator,
         /,
         *,
-        default: Maybe[_T] = MISSING,
-        default_factory: Maybe[Callable[[], _T]] = MISSING,
+        default: Maybe[_VT] = MISSING,
+        default_factory: Maybe[Callable[[], _VT]] = MISSING,
         optional: bool = False,
     ) -> None:
         self._validator = validator
@@ -98,11 +100,11 @@ class Field(Generic[_T]):
         self._name = name
 
     @overload
-    def __get__(self, instance: None, owner: Callable[..., Structure]) -> Field[_T]:
+    def __get__(self, instance: None, owner: Callable[..., Structure]) -> Field[_VT]:
         ...
 
     @overload
-    def __get__(self, instance: Structure, owner: Callable[..., Structure]) -> Value[_T]:
+    def __get__(self, instance: Structure, owner: Callable[..., Structure]) -> _VT:
         ...
 
     # noinspection PyProtectedMember
@@ -110,7 +112,7 @@ class Field(Generic[_T]):
         self,
         instance: Optional[Structure],
         owner: Callable[..., Structure],
-    ) -> Union[Field[_T], Value[_T]]:
+    ) -> Union[Field[_VT], _VT]:
 
         """
         Returns either field itself or field value.
@@ -125,7 +127,7 @@ class Field(Generic[_T]):
         if instance is None:
             return self
 
-        return instance._testplates_values_[self.name]
+        return cast(_VT, instance._testplates_values_[self.name])
 
     @property
     def name(self) -> str:
@@ -147,7 +149,7 @@ class Field(Generic[_T]):
 
     # noinspection PyCallingNonCallable
     @property
-    def default(self) -> Maybe[_T]:
+    def default(self) -> Maybe[_VT]:
 
         """
         Returns field default value.
@@ -173,7 +175,7 @@ class Field(Generic[_T]):
         return self._optional
 
     # noinspection PyUnboundLocalVariable
-    def validate(self, value: Maybe[Value[_T]], /) -> Result[None, TestplatesError]:
+    def validate(self, value: Maybe[_VT], /) -> Result[None, TestplatesError]:
 
         """
         Validates the given value against the field requirements.
@@ -205,10 +207,13 @@ class StructureDict(Dict[str, Any]):
 
     __slots__ = ("fields",)
 
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
-        super().__init__(*args, **kwargs)
+    def __init__(self, mapping: Optional[Dict[str, Any]] = None, **kwargs: Any) -> None:
+        super().__init__()
 
         self.fields: Dict[str, Field[Any]] = {}
+
+        for key, value in (mapping or kwargs).items():
+            self[key] = value
 
     def __setitem__(self, key: str, value: Any) -> None:
         if isinstance(value, Field):
@@ -256,7 +261,7 @@ class StructureMeta(abc.ABCMeta):
         return instance
 
 
-class Structure(abc.ABC, metaclass=StructureMeta):
+class Structure(Mapping[str, Any], metaclass=StructureMeta):
 
     """
     Structure template base class.
@@ -264,6 +269,7 @@ class Structure(abc.ABC, metaclass=StructureMeta):
 
     __slots__ = ("_testplates_values_",)
 
+    # noinspection PyTypeHints
     # noinspection PyTypeChecker
     _testplates_self_ = TypeVar("_testplates_self_", bound="Structure")
     _testplates_fields_: ClassVar[Mapping[str, Field[Any]]]
@@ -273,15 +279,24 @@ class Structure(abc.ABC, metaclass=StructureMeta):
         __use_testplates_initialize_function_to_create_structure_not_init_method__: SecretType,
         /,
     ) -> None:
-        self._testplates_values_: Mapping[str, Value[Any]] = {}
+        self._testplates_values_: Mapping[str, Any] = {}
 
     def __repr__(self) -> str:
         return f"{type(self).__name__}({format_like_dict(self._testplates_values_)})"
 
+    def __getitem__(self, item: str) -> object:
+        return self._testplates_values_[item]
+
+    def __iter__(self) -> Iterator[str]:
+        return iter(self._testplates_values_)
+
+    def __len__(self) -> int:
+        return len(self._testplates_values_)
+
     def __eq__(self, other: Any) -> bool:
         for key, field in self._testplates_fields_.items():
-            self_value: Maybe[Value[Any]] = self._testplates_get_value_(self, key)
-            other_value: Maybe[Value[Any]] = self._testplates_get_value_(other, key)
+            self_value: Maybe[Any] = self._testplates_get_value_(self, key)
+            other_value: Maybe[Any] = self._testplates_get_value_(other, key)
 
             if not values_matches(self_value, other_value):
                 return False
@@ -290,7 +305,7 @@ class Structure(abc.ABC, metaclass=StructureMeta):
 
     def _testplates_init_(
         self: _testplates_self_,
-        **values: Value[Any],
+        **values: Any,
     ) -> Result[_testplates_self_, TestplatesError]:
         keys = self._testplates_fields_.keys()
 
@@ -312,25 +327,24 @@ class Structure(abc.ABC, metaclass=StructureMeta):
     # noinspection PyProtectedMember
     def _testplates_modify_(
         self: _testplates_self_,
-        **values: Value[Any],
+        **values: Any,
     ) -> Result[_testplates_self_, TestplatesError]:
         typ = type(self)
 
-        new_values: Dict[str, Value[Any]] = dict()
+        new_values: Dict[str, Any] = dict()
         new_values.update(self._testplates_values_)
         new_values.update(values)
 
         return typ(SecretType.SECRET)._testplates_init_(**new_values)
 
     @staticmethod
-    @abc.abstractmethod
     def _testplates_get_value_(
-        self: Any,
+        self: _testplates_self_,
         key: str,
         /,
         *,
-        default: Maybe[_T] = MISSING,
-    ) -> Maybe[Value[_T]]:
+        default: Maybe[_VT] = MISSING,
+    ) -> Maybe[_VT]:
 
         """
         Extracts value by given key using a type specific protocol.
@@ -341,3 +355,5 @@ class Structure(abc.ABC, metaclass=StructureMeta):
         :param key: key used to access the value in a structure
         :param default: default value that will be used in case value is missing
         """
+
+        return self.get(key, default)
