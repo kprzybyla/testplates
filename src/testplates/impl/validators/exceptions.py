@@ -36,7 +36,7 @@ from testplates.impl.base import (
     TestplatesError,
 )
 
-_T = TypeVar("_T")
+_GenericType = TypeVar("_GenericType")
 
 
 class InvalidTypeValueError(TestplatesError):
@@ -49,7 +49,10 @@ class InvalidTypeValueError(TestplatesError):
     isinstance() function (because it is not a classinfo).
     """
 
-    def __init__(self, given_type: Any) -> None:
+    def __init__(
+        self,
+        given_type: Any,
+    ) -> None:
         self.given_type = given_type
 
         super().__init__(f"Given value {given_type!r} is not a type nor a classinfo")
@@ -64,7 +67,11 @@ class InvalidTypeError(TestplatesError):
     not present in the specified allowed types tuple.
     """
 
-    def __init__(self, data: Any, allowed_types: Tuple[type, ...]) -> None:
+    def __init__(
+        self,
+        data: Any,
+        allowed_types: Tuple[type, ...],
+    ) -> None:
         self.data = data
         self.allowed_types = allowed_types
 
@@ -82,7 +89,10 @@ class ProhibitedBoolValueError(TestplatesError):
     but the validator does not allow bool type values.
     """
 
-    def __init__(self, data: bool) -> None:
+    def __init__(
+        self,
+        data: bool,
+    ) -> None:
         self.data = data
 
         super().__init__(f"Prohibited type {bool!r} of data {data!r}")
@@ -97,7 +107,11 @@ class InvalidMinimumValueError(TestplatesError):
     minimum value requirement specified by the validator.
     """
 
-    def __init__(self, data: Any, minimum: Any) -> None:
+    def __init__(
+        self,
+        data: Any,
+        minimum: Any,
+    ) -> None:
         self.data = data
         self.minimum = minimum
 
@@ -113,7 +127,11 @@ class InvalidMaximumValueError(TestplatesError):
     maximum value requirement specified by the validator.
     """
 
-    def __init__(self, data: Any, maximum: Any) -> None:
+    def __init__(
+        self,
+        data: Any,
+        maximum: Any,
+    ) -> None:
         self.data = data
         self.maximum = maximum
 
@@ -129,7 +147,11 @@ class InvalidMinimumSizeError(TestplatesError):
     minimum size requirement specified by the validator.
     """
 
-    def __init__(self, data: Sized, minimum: Any) -> None:
+    def __init__(
+        self,
+        data: Sized,
+        minimum: Any,
+    ) -> None:
         self.data = data
         self.minimum = minimum
 
@@ -147,7 +169,11 @@ class InvalidMaximumSizeError(TestplatesError):
     maximum size requirement specified by the validator.
     """
 
-    def __init__(self, data: Sized, maximum: Any) -> None:
+    def __init__(
+        self,
+        data: Sized,
+        maximum: Any,
+    ) -> None:
         self.data = data
         self.maximum = maximum
 
@@ -165,7 +191,11 @@ class InvalidFormatError(TestplatesError):
     the pattern requirement specified by the validator.
     """
 
-    def __init__(self, data: Union[str, bytes], pattern: Pattern[Any]) -> None:
+    def __init__(
+        self,
+        data: Union[str, bytes],
+        pattern: Pattern[Any],
+    ) -> None:
         self.data = data
         self.pattern = pattern
 
@@ -182,7 +212,10 @@ class UniquenessError(TestplatesError):
     that all elements should be unique.
     """
 
-    def __init__(self, data: Sized) -> None:
+    def __init__(
+        self,
+        data: Sized,
+    ) -> None:
         self.data = data
 
         super().__init__(f"Data {data!r} does not contain unique elements")
@@ -197,7 +230,11 @@ class InvalidKeyError(TestplatesError):
     key that was not expected by the validator.
     """
 
-    def __init__(self, key: str, data: Any) -> None:
+    def __init__(
+        self,
+        key: str,
+        data: Any,
+    ) -> None:
         self.key = key
         self.data = data
 
@@ -213,7 +250,10 @@ class InvalidDataFormatError(TestplatesError):
     but it contains more or less than two elements.
     """
 
-    def __init__(self, data: Any) -> None:
+    def __init__(
+        self,
+        data: Any,
+    ) -> None:
         self.data = data
 
         super().__init__(f"Invalid data format found in data {data!r}")
@@ -229,7 +269,12 @@ class RequiredKeyMissingError(TestplatesError):
     a mandatory key specified by the validator.
     """
 
-    def __init__(self, data: Any, key: str, field: Any) -> None:
+    def __init__(
+        self,
+        data: Any,
+        key: str,
+        field: Any,
+    ) -> None:
         self.data = data
         self.key = key
         self.field = field
@@ -246,7 +291,12 @@ class UnknownFieldError(TestplatesError):
     unknown key that was not specified by structure type.
     """
 
-    def __init__(self, data: Any, structure_type: Any, key: str) -> None:
+    def __init__(
+        self,
+        data: Any,
+        structure_type: Any,
+        key: str,
+    ) -> None:
         self.data = data
         self.structure_type = structure_type
         self.key = key
@@ -264,7 +314,12 @@ class MemberValidationError(TestplatesError):
     the enum, member and error information.
     """
 
-    def __init__(self, enum_type: EnumMeta, member: Enum, error: TestplatesError) -> None:
+    def __init__(
+        self,
+        enum_type: EnumMeta,
+        member: Enum,
+        error: TestplatesError,
+    ) -> None:
         self.enum_type = enum_type
         self.member = member
         self.error = error
@@ -282,7 +337,12 @@ class ItemValidationError(TestplatesError):
     the sequence, item and error information.
     """
 
-    def __init__(self, data: Any, item: Any, error: TestplatesError) -> None:
+    def __init__(
+        self,
+        data: Any,
+        item: Any,
+        error: TestplatesError,
+    ) -> None:
         self.data = data
         self.item = item
         self.error = error
@@ -300,7 +360,12 @@ class FieldValidationError(TestplatesError):
     the mapping, field and error information.
     """
 
-    def __init__(self, data: Any, field: Any, error: TestplatesError) -> None:
+    def __init__(
+        self,
+        data: Any,
+        field: Any,
+        error: TestplatesError,
+    ) -> None:
         self.data = data
         self.field = field
         self.error = error
@@ -318,7 +383,12 @@ class ChoiceValidationError(TestplatesError):
     the union, choice and error information.
     """
 
-    def __init__(self, data: Any, validator: Any, error: TestplatesError) -> None:
+    def __init__(
+        self,
+        data: Any,
+        validator: Any,
+        error: TestplatesError,
+    ) -> None:
         self.data = data
         self.validator = validator
         self.error = error

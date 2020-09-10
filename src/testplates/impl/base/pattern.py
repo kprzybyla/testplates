@@ -9,7 +9,9 @@ from typing import (
 )
 
 
-def get_pattern(pattern: Optional[AnyStr]) -> Optional[Pattern[AnyStr]]:
+def get_pattern(
+    pattern: Optional[AnyStr],
+) -> Optional[Pattern[AnyStr]]:
 
     """
     Returns compiled pattern if string pattern is not None, otherwise None.

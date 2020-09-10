@@ -24,7 +24,12 @@ class HasMinimumSize:
         "minimum_size",
     )
 
-    def __init__(self, name: str, minimum_size: Boundary, /) -> None:
+    def __init__(
+        self,
+        name: str,
+        minimum_size: Boundary,
+        /,
+    ) -> None:
         self.name = name
         self.minimum_size = minimum_size
 

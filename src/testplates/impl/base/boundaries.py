@@ -86,7 +86,10 @@ def get_maximum_value(
     return get_value_boundary(MAXIMUM_EXTREMUM, inclusive=inclusive, exclusive=exclusive)
 
 
-def get_minimum_size(size: Edge, /) -> Result[Boundary, TestplatesError]:
+def get_minimum_size(
+    size: Edge,
+    /,
+) -> Result[Boundary, TestplatesError]:
 
     """
     Gets minimum size boundary.
@@ -105,7 +108,10 @@ def get_minimum_size(size: Edge, /) -> Result[Boundary, TestplatesError]:
     return success(boundary)
 
 
-def get_maximum_size(size: Edge, /) -> Result[Boundary, TestplatesError]:
+def get_maximum_size(
+    size: Edge,
+    /,
+) -> Result[Boundary, TestplatesError]:
 
     """
     Gets maximum size boundary.
@@ -248,7 +254,9 @@ def validate_boundaries(
     return success(None)
 
 
-def is_outside_size_range(boundary: Limit) -> bool:
+def is_outside_size_range(
+    boundary: Limit,
+) -> bool:
 
     """
     Returns True if boundary is outside of size range, otherwise False.
@@ -259,7 +267,10 @@ def is_outside_size_range(boundary: Limit) -> bool:
     return boundary.value < SIZE_MINIMUM or boundary.value > SIZE_MAXIMUM
 
 
-def is_overlapping(minimum: Limit, maximum: Limit) -> bool:
+def is_overlapping(
+    minimum: Limit,
+    maximum: Limit,
+) -> bool:
 
     """
     Returns True if boundaries are overlapping each other, otherwise False.
@@ -271,7 +282,10 @@ def is_overlapping(minimum: Limit, maximum: Limit) -> bool:
     return minimum.value + minimum.alignment > maximum.value - maximum.alignment
 
 
-def is_single_match(minimum: Limit, maximum: Limit) -> bool:
+def is_single_match(
+    minimum: Limit,
+    maximum: Limit,
+) -> bool:
 
     """
     Returns True if boundaries will match only single value, otherwise False.
@@ -283,7 +297,10 @@ def is_single_match(minimum: Limit, maximum: Limit) -> bool:
     return minimum.value + minimum.alignment == maximum.value - maximum.alignment
 
 
-def fits_minimum_value(value: int, minimum: Boundary) -> bool:
+def fits_minimum_value(
+    value: int,
+    minimum: Boundary,
+) -> bool:
 
     """
     Checks whether value fits the minimum boundary.
@@ -301,7 +318,10 @@ def fits_minimum_value(value: int, minimum: Boundary) -> bool:
         return value.__gt__(minimum.value) is True
 
 
-def fits_maximum_value(value: int, maximum: Boundary) -> bool:
+def fits_maximum_value(
+    value: int,
+    maximum: Boundary,
+) -> bool:
 
     """
     Checks whether value fits the maximum boundary.
@@ -319,7 +339,10 @@ def fits_maximum_value(value: int, maximum: Boundary) -> bool:
         return value.__lt__(maximum.value) is True
 
 
-def fits_minimum_size(value: Sized, minimum: Boundary) -> bool:
+def fits_minimum_size(
+    value: Sized,
+    minimum: Boundary,
+) -> bool:
 
     """
     Checks whether value size fits the minimum boundary.
@@ -331,7 +354,10 @@ def fits_minimum_size(value: Sized, minimum: Boundary) -> bool:
     return fits_minimum_value(len(value), minimum)
 
 
-def fits_maximum_size(value: Sized, maximum: Boundary) -> bool:
+def fits_maximum_size(
+    value: Sized,
+    maximum: Boundary,
+) -> bool:
 
     """
     Checks whether value size fits the maximum boundary.

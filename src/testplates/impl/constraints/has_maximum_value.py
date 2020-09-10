@@ -23,7 +23,12 @@ class HasMaximumValue:
         "maximum_value",
     )
 
-    def __init__(self, name: str, maximum_value: Boundary, /) -> None:
+    def __init__(
+        self,
+        name: str,
+        maximum_value: Boundary,
+        /,
+    ) -> None:
         self.name = name
         self.maximum_value = maximum_value
 

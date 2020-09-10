@@ -29,7 +29,14 @@ class Limit:
         "is_inclusive",
     )
 
-    def __init__(self, name: Extremum, value: int, *, is_inclusive: bool) -> None:
+    def __init__(
+        self,
+        name: Extremum,
+        value: int,
+        /,
+        *,
+        is_inclusive: bool,
+    ) -> None:
         self.name = name
         self.value = value
         self.is_inclusive = is_inclusive

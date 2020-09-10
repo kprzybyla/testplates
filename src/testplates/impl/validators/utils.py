@@ -22,7 +22,10 @@ from testplates.impl.base import (
 Validator = Callable[[Any], Result[None, TestplatesError]]
 
 
-def is_classinfo(classinfo: type, /) -> bool:
+def is_classinfo(
+    classinfo: type,
+    /,
+) -> bool:
     try:
         isinstance(object, classinfo)
     except TypeError:
@@ -31,7 +34,9 @@ def is_classinfo(classinfo: type, /) -> bool:
         return True
 
 
-def has_unique_items(items: Iterable[Hashable]) -> bool:
+def has_unique_items(
+    items: Iterable[Hashable],
+) -> bool:
     visited = set()
 
     for item in items:

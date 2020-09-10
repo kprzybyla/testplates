@@ -55,10 +55,10 @@ from .exceptions import (
     ProhibitedValueError,
 )
 
-_VT = TypeVar("_VT", covariant=True)
+_CovariantType = TypeVar("_CovariantType", covariant=True)
 
 
-class Field(Generic[_VT]):
+class Field(Generic[_CovariantType]):
 
     """
     Field descriptor class.
@@ -77,8 +77,8 @@ class Field(Generic[_VT]):
         validator: Validator,
         /,
         *,
-        default: Maybe[_VT] = MISSING,
-        default_factory: Maybe[Callable[[], _VT]] = MISSING,
+        default: Maybe[_CovariantType] = MISSING,
+        default_factory: Maybe[Callable[[], _CovariantType]] = MISSING,
         optional: bool = False,
     ) -> None:
         self._validator = validator
@@ -96,15 +96,27 @@ class Field(Generic[_VT]):
 
         return f"{testplates.__name__}.{type(self).__name__}({', '.join(parameters)})"
 
-    def __set_name__(self, owner: Callable[..., Structure], name: str) -> None:
+    def __set_name__(
+        self,
+        owner: Callable[..., Structure],
+        name: str,
+    ) -> None:
         self._name = name
 
     @overload
-    def __get__(self, instance: None, owner: Callable[..., Structure]) -> Field[_VT]:
+    def __get__(
+        self,
+        instance: None,
+        owner: Callable[..., Structure],
+    ) -> Field[_CovariantType]:
         ...
 
     @overload
-    def __get__(self, instance: Structure, owner: Callable[..., Structure]) -> _VT:
+    def __get__(
+        self,
+        instance: Structure,
+        owner: Callable[..., Structure],
+    ) -> _CovariantType:
         ...
 
     # noinspection PyProtectedMember
@@ -112,7 +124,7 @@ class Field(Generic[_VT]):
         self,
         instance: Optional[Structure],
         owner: Callable[..., Structure],
-    ) -> Union[Field[_VT], _VT]:
+    ) -> Union[Field[_CovariantType], _CovariantType]:
 
         """
         Returns either field itself or field value.
@@ -127,7 +139,7 @@ class Field(Generic[_VT]):
         if instance is None:
             return self
 
-        return cast(_VT, instance._testplates_values_[self.name])
+        return cast(_CovariantType, instance._testplates_values_[self.name])
 
     @property
     def name(self) -> str:
@@ -149,7 +161,7 @@ class Field(Generic[_VT]):
 
     # noinspection PyCallingNonCallable
     @property
-    def default(self) -> Maybe[_VT]:
+    def default(self) -> Maybe[_CovariantType]:
 
         """
         Returns field default value.
@@ -175,7 +187,11 @@ class Field(Generic[_VT]):
         return self._optional
 
     # noinspection PyUnboundLocalVariable
-    def validate(self, value: Maybe[_VT], /) -> Result[None, TestplatesError]:
+    def validate(
+        self,
+        value: Maybe[_CovariantType],
+        /,
+    ) -> Result[None, TestplatesError]:
 
         """
         Validates the given value against the field requirements.
@@ -207,7 +223,11 @@ class StructureDict(Dict[str, Any]):
 
     __slots__ = ("fields",)
 
-    def __init__(self, mapping: Optional[Dict[str, Any]] = None, **kwargs: Any) -> None:
+    def __init__(
+        self,
+        mapping: Optional[Dict[str, Any]] = None,
+        **kwargs: Any,
+    ) -> None:
         super().__init__()
 
         self.fields: Dict[str, Field[Any]] = {}
@@ -215,7 +235,11 @@ class StructureDict(Dict[str, Any]):
         for key, value in (mapping or kwargs).items():
             self[key] = value
 
-    def __setitem__(self, key: str, value: Any) -> None:
+    def __setitem__(
+        self,
+        key: str,
+        value: Any,
+    ) -> None:
         if isinstance(value, Field):
             self.fields[key] = value
 
@@ -232,7 +256,12 @@ class StructureMeta(abc.ABCMeta):
 
     _testplates_fields_: Mapping[str, Field[Any]]
 
-    def __init__(cls, name: str, bases: Tuple[type, ...], attrs: StructureDict) -> None:
+    def __init__(
+        cls,
+        name: str,
+        bases: Tuple[type, ...],
+        attrs: StructureDict,
+    ) -> None:
         super().__init__(name, bases, attrs)
 
         cls._testplates_fields_ = attrs.fields
@@ -243,10 +272,19 @@ class StructureMeta(abc.ABCMeta):
         return f"{testplates.__name__}.{type(self).__name__}({parameters})"
 
     @classmethod
-    def __prepare__(mcs, __name: str, __bases: Tuple[type, ...], **kwargs: Any) -> StructureDict:
+    def __prepare__(
+        mcs,
+        __name: str,
+        __bases: Tuple[type, ...],
+        **kwargs: Any,
+    ) -> StructureDict:
         return StructureDict()
 
-    def _testplates_create_(cls, name: str, **fields: Field[Any]) -> StructureMeta:
+    def _testplates_create_(
+        cls,
+        name: str,
+        **fields: Field[Any],
+    ) -> StructureMeta:
         bases = (cls,)
         metaclass = cls.__class__
 
@@ -343,8 +381,8 @@ class Structure(Mapping[str, Any], metaclass=StructureMeta):
         key: str,
         /,
         *,
-        default: Maybe[_VT] = MISSING,
-    ) -> Maybe[_VT]:
+        default: Maybe[_CovariantType] = MISSING,
+    ) -> Maybe[_CovariantType]:
 
         """
         Extracts value by given key using a type specific protocol.

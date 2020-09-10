@@ -21,7 +21,12 @@ class MatchesPattern(Generic[AnyStr], abc.ABC):
         "pattern_type",
     )
 
-    def __init__(self, name: str, value: AnyStr, /) -> None:
+    def __init__(
+        self,
+        name: str,
+        value: AnyStr,
+        /,
+    ) -> None:
         self.name = name
         self.pattern: Pattern[AnyStr] = re.compile(value)
         self.pattern_type: Type[AnyStr] = type(value)

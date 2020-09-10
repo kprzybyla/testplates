@@ -10,7 +10,9 @@ from typing import (
 )
 
 
-def format_like_tuple(values: Iterable[Any]) -> str:
+def format_like_tuple(
+    values: Iterable[Any],
+) -> str:
 
     """
     Formats iterable into tuple-like format
@@ -22,7 +24,9 @@ def format_like_tuple(values: Iterable[Any]) -> str:
     return ", ".join((repr(value) for value in values))
 
 
-def format_like_dict(mapping: Mapping[Any, Any]) -> str:
+def format_like_dict(
+    mapping: Mapping[Any, Any],
+) -> str:
 
     """
     Formats mapping into dict-like format

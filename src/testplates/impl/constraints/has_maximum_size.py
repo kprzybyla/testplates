@@ -24,7 +24,12 @@ class HasMaximumSize:
         "maximum_size",
     )
 
-    def __init__(self, name: str, maximum_size: Boundary, /) -> None:
+    def __init__(
+        self,
+        name: str,
+        maximum_size: Boundary,
+        /,
+    ) -> None:
         self.name = name
         self.maximum_size = maximum_size
 

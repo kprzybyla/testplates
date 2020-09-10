@@ -40,7 +40,11 @@ class UnionValidator:
 
     __slots__ = ("choices",)
 
-    def __init__(self, choices: Mapping[str, Validator], /) -> None:
+    def __init__(
+        self,
+        choices: Mapping[str, Validator],
+        /,
+    ) -> None:
         self.choices = choices
 
     def __repr__(self) -> str:

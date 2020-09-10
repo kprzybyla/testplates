@@ -3,7 +3,7 @@ from mypy.plugin import Plugin, ClassDefContext
 
 ClassDefContextHook = Optional[Callable[[ClassDefContext], None]]
 
-TESTPLATES_STRUCTURE_DECORATOR: Final[str] = "testplates.structure.structure"
+TESTPLATES_STRUCTURE_DECORATOR: Final[str] = "testplates.structure.struct"
 
 
 class TestplatesPlugin(Plugin):

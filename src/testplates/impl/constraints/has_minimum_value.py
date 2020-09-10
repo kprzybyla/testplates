@@ -23,7 +23,12 @@ class HasMinimumValue:
         "minimum_value",
     )
 
-    def __init__(self, name: str, minimum_value: Boundary, /) -> None:
+    def __init__(
+        self,
+        name: str,
+        minimum_value: Boundary,
+        /,
+    ) -> None:
         self.name = name
         self.minimum_value = minimum_value
 

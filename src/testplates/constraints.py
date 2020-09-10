@@ -63,10 +63,14 @@ from .exceptions import (
     UnlimitedRangeError,
 )
 
-_T = TypeVar("_T")
+_GenericType = TypeVar("_GenericType")
 
 
-def contains(first: _T, /, *rest: _T) -> Result[Contains[_T], TestplatesError]:
+def contains(
+    first: _GenericType,
+    /,
+    *rest: _GenericType,
+) -> Result[Contains[_GenericType], TestplatesError]:
 
     """
     Returns constraint object that matches any container object
@@ -79,25 +83,30 @@ def contains(first: _T, /, *rest: _T) -> Result[Contains[_T], TestplatesError]:
     return success(Contains(contains.__name__, first, *rest))
 
 
-def has_size(size: int) -> Result[HasSize, TestplatesError]:
+def has_size(
+    size: int,
+) -> Result[HasSize, TestplatesError]:
 
     """
     Returns constraint object that matches any sized
     object that has size equal to the exact value.
 
-    :param size: exact size value
+    :param size: exact size
     """
 
     return success(HasSize(has_size.__name__, size))
 
 
-def has_minimum_size(minimum: int, /) -> Result[HasMinimumSize, TestplatesError]:
+def has_minimum_size(
+    minimum: int,
+    /,
+) -> Result[HasMinimumSize, TestplatesError]:
 
     """
     Returns constraint object that matches any sized
     object that has size above minimum boundary value.
 
-    :param minimum: minimum size value
+    :param minimum: minimum size
     """
 
     result = get_minimum_size(minimum)
@@ -110,13 +119,16 @@ def has_minimum_size(minimum: int, /) -> Result[HasMinimumSize, TestplatesError]
     return success(HasMinimumSize(has_minimum_size.__name__, minimum_size_boundary))
 
 
-def has_maximum_size(maximum: int, /) -> Result[HasMaximumSize, TestplatesError]:
+def has_maximum_size(
+    maximum: int,
+    /,
+) -> Result[HasMaximumSize, TestplatesError]:
 
     """
     Returns constraint object that matches any sized
     object that has size below maximum boundary value.
 
-    :param maximum: maximum size value
+    :param maximum: maximum size
     """
 
     result = get_maximum_size(maximum)
@@ -197,6 +209,15 @@ def has_minimum_value(
     minimum: Optional[int] = None,
     exclusive_minimum: Optional[int] = None,
 ) -> Result[HasMinimumValue, TestplatesError]:
+
+    """
+    Returns constraint object that matches any object
+    with boundaries support above minimum boundary value.
+
+    :param minimum: minimum value
+    :param exclusive_minimum: exclusive minimum value
+    """
+
     result = get_minimum_value(inclusive=minimum, exclusive=exclusive_minimum)
 
     if not result:
@@ -242,6 +263,15 @@ def has_maximum_value(
     maximum: Optional[int] = None,
     exclusive_maximum: Optional[int] = None,
 ) -> Result[HasMaximumValue, TestplatesError]:
+
+    """
+    Returns constraint object that matches any object
+    with boundaries support below maximum boundary value.
+
+    :param maximum: maximum value
+    :param exclusive_maximum: exclusive maximum value
+    """
+
     result = get_maximum_value(inclusive=maximum, exclusive=exclusive_maximum)
 
     if not result:
@@ -423,7 +453,12 @@ def has_value_between(
     )
 
 
-def is_one_of(first: _T, second: _T, /, *rest: _T) -> Result[IsOneOf[_T], TestplatesError]:
+def is_one_of(
+    first: _GenericType,
+    second: _GenericType,
+    /,
+    *rest: _GenericType,
+) -> Result[IsOneOf[_GenericType], TestplatesError]:
 
     """
     Returns constraint object that matches any object
@@ -437,7 +472,10 @@ def is_one_of(first: _T, second: _T, /, *rest: _T) -> Result[IsOneOf[_T], Testpl
     return success(IsOneOf(is_one_of.__name__, first, second, *rest))
 
 
-def is_permutation_of(values: List[_T], /) -> Result[IsPermutationOf[_T], TestplatesError]:
+def is_permutation_of(
+    values: List[_GenericType],
+    /,
+) -> Result[IsPermutationOf[_GenericType], TestplatesError]:
 
     """
     Returns constraint object that matches any collection object
@@ -449,7 +487,10 @@ def is_permutation_of(values: List[_T], /) -> Result[IsPermutationOf[_T], Testpl
     return success(IsPermutationOf(is_permutation_of.__name__, values))
 
 
-def matches_pattern(pattern: AnyStr, /) -> Result[MatchesPattern[AnyStr], TestplatesError]:
+def matches_pattern(
+    pattern: AnyStr,
+    /,
+) -> Result[MatchesPattern[AnyStr], TestplatesError]:
 
     """
     Returns constraint object that matches any string

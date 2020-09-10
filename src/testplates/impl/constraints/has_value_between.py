@@ -25,7 +25,14 @@ class HasValueBetween:
         "maximum_value",
     )
 
-    def __init__(self, name: str, /, *, minimum_value: Boundary, maximum_value: Boundary) -> None:
+    def __init__(
+        self,
+        name: str,
+        /,
+        *,
+        minimum_value: Boundary,
+        maximum_value: Boundary,
+    ) -> None:
         self.name = name
         self.minimum_value = minimum_value
         self.maximum_value = maximum_value

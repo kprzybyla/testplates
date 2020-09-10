@@ -10,17 +10,22 @@ from typing import (
     Collection,
 )
 
-_T = TypeVar("_T")
+_GenericType = TypeVar("_GenericType")
 
 
-class IsPermutationOf(Generic[_T]):
+class IsPermutationOf(Generic[_GenericType]):
 
     __slots__ = (
         "name",
         "values",
     )
 
-    def __init__(self, name: str, values: List[_T], /) -> None:
+    def __init__(
+        self,
+        name: str,
+        values: List[_GenericType],
+        /,
+    ) -> None:
         self.name = name
         self.values = values
 

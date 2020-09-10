@@ -22,7 +22,10 @@ class TestplatesError(Exception):
     Base testplates error.
     """
 
-    def __init__(self, message: str):
+    def __init__(
+        self,
+        message: str,
+    ):
         super().__init__(message)
 
     @property
@@ -44,7 +47,10 @@ class MissingValueError(TestplatesError):
     value for given field with actual value.
     """
 
-    def __init__(self, field: Any) -> None:
+    def __init__(
+        self,
+        field: Any,
+    ) -> None:
         self.field = field
 
         super().__init__(f"Missing value for required field {field!r}")
@@ -59,7 +65,11 @@ class UnexpectedValueError(TestplatesError):
     not defined inside the template definition.
     """
 
-    def __init__(self, key: str, value: Any) -> None:
+    def __init__(
+        self,
+        key: str,
+        value: Any,
+    ) -> None:
         self.key = key
         self.value = value
 
@@ -75,7 +85,11 @@ class ProhibitedValueError(TestplatesError):
     is invalid for given field due to its nature.
     """
 
-    def __init__(self, field: Any, value: Any) -> None:
+    def __init__(
+        self,
+        field: Any,
+        value: Any,
+    ) -> None:
         self.field = field
         self.value = value
 
@@ -91,7 +105,10 @@ class MissingBoundaryError(TestplatesError):
     for given template with minimum and maximum constraints.
     """
 
-    def __init__(self, name: str) -> None:
+    def __init__(
+        self,
+        name: str,
+    ) -> None:
         self.name = name
 
         super().__init__(f"Missing value for mandatory boundary {self.name!r}")
@@ -106,7 +123,10 @@ class InvalidSizeError(TestplatesError):
     that does not meet size boundary requirements.
     """
 
-    def __init__(self, boundary: Any) -> None:
+    def __init__(
+        self,
+        boundary: Any,
+    ) -> None:
         self.boundary = boundary
 
         super().__init__(f"Invalid value for size boundary {boundary!r}")
@@ -135,7 +155,10 @@ class MutuallyExclusiveBoundariesError(TestplatesError):
     boundaries at the same time with value.
     """
 
-    def __init__(self, name: str) -> None:
+    def __init__(
+        self,
+        name: str,
+    ) -> None:
         self.name = name
 
         super().__init__(f"Mutually exclusive {name!r} boundaries set at the same time")
@@ -150,7 +173,11 @@ class OverlappingBoundariesError(TestplatesError):
     boundaries with values the overlap over each other.
     """
 
-    def __init__(self, minimum: Any, maximum: Any) -> None:
+    def __init__(
+        self,
+        minimum: Any,
+        maximum: Any,
+    ) -> None:
         self.minimum = minimum
         self.maximum = maximum
 
@@ -166,7 +193,11 @@ class SingleMatchBoundariesError(TestplatesError):
     creates range which matches only single value.
     """
 
-    def __init__(self, minimum: Any, maximum: Any) -> None:
+    def __init__(
+        self,
+        minimum: Any,
+        maximum: Any,
+    ) -> None:
         self.minimum = minimum
         self.maximum = maximum
 

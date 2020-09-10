@@ -71,7 +71,9 @@ from .exceptions import (
 passthrough_validator: Final[PassthroughValidator] = PassthroughValidator()
 
 
-def type_validator(*allowed_types: type) -> Result[Validator, TestplatesError]:
+def type_validator(
+    *allowed_types: type,
+) -> Result[Validator, TestplatesError]:
 
     """
     ...
@@ -401,7 +403,10 @@ def sequence_validator(
     )
 
 
-def mapping_validator(structure_type: StructureMeta, /) -> Result[Validator, TestplatesError]:
+def mapping_validator(
+    structure_type: StructureMeta,
+    /,
+) -> Result[Validator, TestplatesError]:
 
     """
     ...
@@ -412,7 +417,10 @@ def mapping_validator(structure_type: StructureMeta, /) -> Result[Validator, Tes
     return success(MappingValidator(structure_type))
 
 
-def union_validator(choices: Mapping[str, Validator], /) -> Result[Validator, TestplatesError]:
+def union_validator(
+    choices: Mapping[str, Validator],
+    /,
+) -> Result[Validator, TestplatesError]:
 
     """
     ...

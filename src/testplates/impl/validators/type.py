@@ -29,7 +29,10 @@ class TypeValidator:
 
     __slots__ = ("allowed_types",)
 
-    def __init__(self, *allowed_types: type) -> None:
+    def __init__(
+        self,
+        *allowed_types: type,
+    ) -> None:
         self.allowed_types = allowed_types
 
     def __repr__(self) -> str:

@@ -41,7 +41,11 @@ class MappingValidator:
 
     __slots__ = ("structure_type",)
 
-    def __init__(self, structure_type: StructureMeta, /) -> None:
+    def __init__(
+        self,
+        structure_type: StructureMeta,
+        /,
+    ) -> None:
         self.structure_type = structure_type
 
     def __repr__(self) -> str:

@@ -39,7 +39,9 @@ from .exceptions import (
 
 
 # noinspection PyUnresolvedReferences
-def is_value(value: Maybe[Value[Any]]) -> bool:
+def is_value(
+    value: Maybe[Value[Any]],
+) -> bool:
 
     """
     Returns True if value is not missing
@@ -53,7 +55,9 @@ def is_value(value: Maybe[Value[Any]]) -> bool:
 
 # noinspection PyUnresolvedReferences
 def values_matches(
-    self_value: Maybe[Value[_GenericType]], other_value: Maybe[Value[_GenericType]], /
+    self_value: Maybe[Value[_GenericType]],
+    other_value: Maybe[Value[_GenericType]],
+    /,
 ) -> bool:
 
     """

@@ -13,17 +13,22 @@ from testplates.impl.utils import (
     format_like_tuple,
 )
 
-_T = TypeVar("_T")
+_GenericType = TypeVar("_GenericType")
 
 
-class Contains(Generic[_T]):
+class Contains(Generic[_GenericType]):
 
     __slots__ = (
         "name",
         "values",
     )
 
-    def __init__(self, name: str, *values: _T) -> None:
+    def __init__(
+        self,
+        name: str,
+        /,
+        *values: _GenericType,
+    ) -> None:
         self.name = name
         self.values = values
 

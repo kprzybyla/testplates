@@ -72,7 +72,11 @@ class IntegerValidator:
         return success(None)
 
 
-def validate_bool_type(data: int, allow_bool: bool, /) -> Result[None, TestplatesError]:
+def validate_bool_type(
+    data: int,
+    allow_bool: bool,
+    /,
+) -> Result[None, TestplatesError]:
     if not allow_bool and isinstance(data, bool):
         return failure(ProhibitedBoolValueError(data))
 
