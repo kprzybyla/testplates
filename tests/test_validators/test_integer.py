@@ -18,10 +18,8 @@ from hypothesis import (
 
 from testplates import (
     integer_validator,
-    UNLIMITED,
     InvalidTypeError,
     ProhibitedBoolValueError,
-    MissingBoundaryError,
     InvalidMinimumValueError,
     InvalidMaximumValueError,
     MutuallyExclusiveBoundariesError,
@@ -76,7 +74,7 @@ def st_exclusive_maximum(draw: Draw[int], value: int) -> int:
 
 
 def test_repr() -> None:
-    assert (validator_result := integer_validator(minimum=UNLIMITED, maximum=UNLIMITED))
+    assert (validator_result := integer_validator())
 
     fmt = "testplates.integer_validator()"
     validator = unwrap_success(validator_result)
@@ -85,13 +83,7 @@ def test_repr() -> None:
 
 @given(data=st.booleans())
 def test_success_when_allow_bool_is_true(data: bool) -> None:
-    assert (
-        validator_result := integer_validator(
-            minimum=UNLIMITED,
-            maximum=UNLIMITED,
-            allow_bool=True,
-        )
-    )
+    assert (validator_result := integer_validator(allow_bool=True))
 
     validator = unwrap_success(validator_result)
     assert (validation_result := validator(data))
@@ -102,7 +94,7 @@ def test_success_when_allow_bool_is_true(data: bool) -> None:
 
 @given(data=st_anything_except(int))
 def test_failure_when_data_type_validation_fails(data: Any) -> None:
-    assert (validator_result := integer_validator(minimum=UNLIMITED, maximum=UNLIMITED))
+    assert (validator_result := integer_validator())
 
     validator = unwrap_success(validator_result)
     assert not (validation_result := validator(data))
@@ -115,7 +107,7 @@ def test_failure_when_data_type_validation_fails(data: Any) -> None:
 
 @given(data=st.booleans())
 def test_failure_when_allow_bool_is_false(data: bool) -> None:
-    assert (validator_result := integer_validator(minimum=UNLIMITED, maximum=UNLIMITED))
+    assert (validator_result := integer_validator())
 
     validator = unwrap_success(validator_result)
     assert not (validation_result := validator(data))
@@ -131,7 +123,7 @@ def test_failure_when_value_does_not_fit_minimum_value(st_data: st.DataObject, d
 
     assume(data < minimum)
 
-    assert (validator_result := integer_validator(minimum=minimum, maximum=UNLIMITED))
+    assert (validator_result := integer_validator(minimum=minimum))
 
     validator = unwrap_success(validator_result)
     assert not (validation_result := validator(data))
@@ -148,7 +140,7 @@ def test_failure_when_value_does_not_fit_maximum_value(st_data: st.DataObject, d
 
     assume(data > maximum)
 
-    assert (validator_result := integer_validator(minimum=UNLIMITED, maximum=maximum))
+    assert (validator_result := integer_validator(maximum=maximum))
 
     validator = unwrap_success(validator_result)
     assert not (validation_result := validator(data))
@@ -162,7 +154,7 @@ def test_failure_when_value_does_not_fit_maximum_value(st_data: st.DataObject, d
 # noinspection PyTypeChecker
 @given(data=st_value())
 def test_success_with_unlimited_minimum_and_unlimited_maximum(data: int) -> None:
-    assert (validator_result := integer_validator(minimum=UNLIMITED, maximum=UNLIMITED))
+    assert (validator_result := integer_validator())
 
     validator = unwrap_success(validator_result)
     assert (validation_result := validator(data))
@@ -489,54 +481,6 @@ def test_failure_when_value_is_below_exclusive_minimum_and_exclusive_maximum(
     assert isinstance(error, InvalidMinimumValueError)
     assert error.data == data
     assert error.minimum.value == exclusive_minimum
-
-
-# noinspection PyArgumentList
-def test_failure_when_boundaries_are_missing() -> None:
-    assert not (validator_result := integer_validator())
-
-    error = unwrap_failure(validator_result)
-    assert isinstance(error, MissingBoundaryError)
-
-
-# noinspection PyTypeChecker
-# noinspection PyArgumentList
-@given(st_data=st.data(), data=st_value())
-def test_failure_when_minimum_boundary_is_missing(st_data: st.DataObject, data: int) -> None:
-    inclusive_maximum = st_data.draw(st_inclusive_maximum(data))
-    exclusive_maximum = st_data.draw(st_exclusive_maximum(data))
-
-    assert not (validator_result := integer_validator(maximum=inclusive_maximum))
-
-    error = unwrap_failure(validator_result)
-    assert isinstance(error, MissingBoundaryError)
-    assert error.name == MINIMUM_EXTREMUM
-
-    assert not (validator_result := integer_validator(exclusive_maximum=exclusive_maximum))
-
-    error = unwrap_failure(validator_result)
-    assert isinstance(error, MissingBoundaryError)
-    assert error.name == MINIMUM_EXTREMUM
-
-
-# noinspection PyTypeChecker
-# noinspection PyArgumentList
-@given(st_data=st.data(), data=st_value())
-def test_failure_when_maximum_boundary_is_missing(st_data: st.DataObject, data: int) -> None:
-    inclusive_minimum = st_data.draw(st_inclusive_minimum(data))
-    exclusive_minimum = st_data.draw(st_exclusive_minimum(data))
-
-    assert not (validator_result := integer_validator(minimum=inclusive_minimum))
-
-    error = unwrap_failure(validator_result)
-    assert isinstance(error, MissingBoundaryError)
-    assert error.name == MAXIMUM_EXTREMUM
-
-    assert not (validator_result := integer_validator(exclusive_minimum=exclusive_minimum))
-
-    error = unwrap_failure(validator_result)
-    assert isinstance(error, MissingBoundaryError)
-    assert error.name == MAXIMUM_EXTREMUM
 
 
 # noinspection PyTypeChecker

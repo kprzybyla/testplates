@@ -59,6 +59,7 @@ SIZE_MAXIMUM: Final[int] = sys.maxsize
 def get_minimum_value(
     inclusive: Optional[Edge] = None,
     exclusive: Optional[Edge] = None,
+    ignore_unlimited: bool = False,
 ) -> Result[Boundary, TestplatesError]:
 
     """
@@ -66,14 +67,21 @@ def get_minimum_value(
 
     :param inclusive: inclusive boundary value or None
     :param exclusive: exclusive boundary value or None
+    :param ignore_unlimited: indicates whether to ignore unlimited values or not
     """
 
-    return get_value_boundary(MINIMUM_EXTREMUM, inclusive=inclusive, exclusive=exclusive)
+    return get_value_boundary(
+        MINIMUM_EXTREMUM,
+        inclusive=inclusive,
+        exclusive=exclusive,
+        ignore_unlimited=ignore_unlimited,
+    )
 
 
 def get_maximum_value(
     inclusive: Optional[Edge] = None,
     exclusive: Optional[Edge] = None,
+    ignore_unlimited: bool = False,
 ) -> Result[Boundary, TestplatesError]:
 
     """
@@ -81,9 +89,15 @@ def get_maximum_value(
 
     :param inclusive: inclusive boundary value or None
     :param exclusive: exclusive boundary value or None
+    :param ignore_unlimited: indicates whether to ignore unlimited values or not
     """
 
-    return get_value_boundary(MAXIMUM_EXTREMUM, inclusive=inclusive, exclusive=exclusive)
+    return get_value_boundary(
+        MAXIMUM_EXTREMUM,
+        inclusive=inclusive,
+        exclusive=exclusive,
+        ignore_unlimited=ignore_unlimited,
+    )
 
 
 def get_minimum_size(
@@ -135,6 +149,7 @@ def get_value_boundary(
     *,
     inclusive: Optional[Edge] = None,
     exclusive: Optional[Edge] = None,
+    ignore_unlimited: bool = False,
 ) -> Result[Boundary, TestplatesError]:
 
     """
@@ -143,13 +158,17 @@ def get_value_boundary(
     :param name: extremum name
     :param inclusive: inclusive boundary value or None
     :param exclusive: exclusive boundary value or None
+    :param ignore_unlimited: indicates whether to ignore unlimited values or not
     """
 
     if inclusive is None and exclusive is None:
         return failure(MissingBoundaryError(name))
 
     if inclusive is not None and exclusive is not None:
-        return failure(MutuallyExclusiveBoundariesError(name))
+        at_least_one_is_unlimited = inclusive is UNLIMITED or exclusive is UNLIMITED
+
+        if not ignore_unlimited or (ignore_unlimited and not at_least_one_is_unlimited):
+            return failure(MutuallyExclusiveBoundariesError(name))
 
     if inclusive is not None and inclusive is not UNLIMITED:
         return success(Limit(name, inclusive, is_inclusive=True))
@@ -165,6 +184,7 @@ def get_value_boundaries(
     inclusive_maximum: Optional[Edge] = None,
     exclusive_minimum: Optional[Edge] = None,
     exclusive_maximum: Optional[Edge] = None,
+    ignore_unlimited: bool = False,
 ) -> Result[Tuple[Boundary, Boundary], TestplatesError]:
 
     """
@@ -174,14 +194,23 @@ def get_value_boundaries(
     :param inclusive_maximum: inclusive maximum boundary value
     :param exclusive_minimum: exclusive minimum boundary value
     :param exclusive_maximum: exclusive maximum boundary value
+    :param ignore_unlimited: indicates whether to ignore unlimited values or not
     """
 
-    minimum_result = get_minimum_value(inclusive=inclusive_minimum, exclusive=exclusive_minimum)
+    minimum_result = get_minimum_value(
+        inclusive=inclusive_minimum,
+        exclusive=exclusive_minimum,
+        ignore_unlimited=ignore_unlimited,
+    )
 
     if not minimum_result:
         return failure(minimum_result)
 
-    maximum_result = get_maximum_value(inclusive=inclusive_maximum, exclusive=exclusive_maximum)
+    maximum_result = get_maximum_value(
+        inclusive=inclusive_maximum,
+        exclusive=exclusive_maximum,
+        ignore_unlimited=ignore_unlimited,
+    )
 
     if not maximum_result:
         return failure(maximum_result)
