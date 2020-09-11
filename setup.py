@@ -13,8 +13,8 @@ MYPY: Final[str] = "mypy @ git+https://github.com/kprzybyla/mypy.git@testplates"
 PYTEST: Final[str] = "pytest ~= 6.0.1"
 PYTEST_COV: Final[str] = "pytest-cov ~= 2.8.0"
 HYPOTHESIS: Final[str] = (
-    "hypothesis @ git+https://github.com/kprzybyla/hypothesis.git"
-    "@mypy-no-implicit-optional#&subdirectory=hypothesis-python"
+    "hypothesis @ git+https://github.com/HypothesisWorks/hypothesis.git"
+    "@master#&subdirectory=hypothesis-python"
 )
 
 SPHINX: Final[str] = "sphinx ~= 3.0.0"
