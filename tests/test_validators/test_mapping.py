@@ -36,7 +36,6 @@ from tests.strategies import (
 STRUCTURE_NAME: str = "Structure"
 
 
-# noinspection PyTypeChecker
 def test_repr() -> None:
     structure_type = create(STRUCTURE_NAME)
     assert (validator_result := mapping_validator(structure_type))
@@ -46,7 +45,6 @@ def test_repr() -> None:
     assert repr(validator) == fmt.format(structure_type=structure_type)
 
 
-# noinspection PyTypeChecker
 @given(key=st.text(), value=st.integers())
 def test_success(key: str, value: int) -> None:
     def validator(this_value: Any, /) -> Result[None, TestplatesError]:
@@ -64,7 +62,6 @@ def test_success(key: str, value: int) -> None:
     assert outcome is None
 
 
-# noinspection PyTypeChecker
 @given(key=st.text())
 def test_success_with_optional_field(key: str) -> None:
     field_object = field(int, passthrough_validator, optional=True)
@@ -78,7 +75,6 @@ def test_success_with_optional_field(key: str) -> None:
     assert outcome is None
 
 
-# noinspection PyTypeChecker
 @given(data=st_anything_except(Mapping))
 def test_failure_when_data_type_validation_fails(data: Any) -> None:
     structure_type = create(STRUCTURE_NAME)
@@ -93,7 +89,6 @@ def test_failure_when_data_type_validation_fails(data: Any) -> None:
     assert error.allowed_types == (Mapping,)
 
 
-# noinspection PyTypeChecker
 @given(key=st.text())
 def test_failure_when_data_required_key_is_missing(key: str) -> None:
     field_object = field(int, passthrough_validator)
@@ -109,7 +104,6 @@ def test_failure_when_data_required_key_is_missing(key: str) -> None:
     assert error.field == field_object
 
 
-# noinspection PyTypeChecker
 @given(key=st.text(), value=st_anything_comparable())
 def test_failure_when_data_has_unknown_field(key: str, value: int) -> None:
     structure_type = create(STRUCTURE_NAME)
@@ -124,7 +118,6 @@ def test_failure_when_data_has_unknown_field(key: str, value: int) -> None:
     assert error.structure_type == structure_type
 
 
-# noinspection PyTypeChecker
 @given(key=st.text(), value=st.integers(), message=st.text())
 def test_failure_when_data_field_validation_fails(key: str, value: int, message: str) -> None:
     field_error = TestplatesError(message)

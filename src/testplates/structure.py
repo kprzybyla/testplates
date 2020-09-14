@@ -67,8 +67,8 @@ def struct(
 
 
 # noinspection PyTypeChecker
-# noinspection PyProtectedMember
 # noinspection PyShadowingNames
+# noinspection PyProtectedMember
 def create(
     name: str,
     /,
@@ -102,7 +102,6 @@ def init(
     return structure_type(SecretType.SECRET)._testplates_init_(**values)
 
 
-# noinspection PyShadowingNames
 # noinspection PyProtectedMember
 def modify(
     structure: _StructureType,

@@ -494,7 +494,6 @@ def test_failure_when_value_is_not_comparable_with_exclusive_boundaries(
     assert constraint != NotComparable()
 
 
-# noinspection PyArgumentList
 def test_failure_when_boundaries_are_missing() -> None:
     assert not (result := has_value_between())
 
@@ -503,7 +502,6 @@ def test_failure_when_boundaries_are_missing() -> None:
 
 
 # noinspection PyTypeChecker
-# noinspection PyArgumentList
 @given(data=st.data(), value=st_value())
 def test_failure_when_minimum_boundary_is_missing(data: st.DataObject, value: int) -> None:
     inclusive_maximum = data.draw(st_inclusive_maximum(value))
@@ -523,7 +521,6 @@ def test_failure_when_minimum_boundary_is_missing(data: st.DataObject, value: in
 
 
 # noinspection PyTypeChecker
-# noinspection PyArgumentList
 @given(data=st.data(), value=st_value())
 def test_failure_when_maximum_boundary_is_missing(data: st.DataObject, value: int) -> None:
     inclusive_minimum = data.draw(st_inclusive_minimum(value))
@@ -543,7 +540,6 @@ def test_failure_when_maximum_boundary_is_missing(data: st.DataObject, value: in
 
 
 # noinspection PyTypeChecker
-# noinspection PyArgumentList
 @given(data=st.data(), value=st_value())
 def test_failure_when_mutually_exclusive_boundaries_are_set(
     data: st.DataObject,
@@ -570,7 +566,6 @@ def test_failure_when_mutually_exclusive_boundaries_are_set(
 
 
 # noinspection PyTypeChecker
-# noinspection PyArgumentList
 @given(data=st.data(), value=st_value())
 def test_failure_when_mutually_exclusive_minimum_boundaries_are_set(
     data: st.DataObject,
@@ -608,7 +603,6 @@ def test_failure_when_mutually_exclusive_minimum_boundaries_are_set(
 
 
 # noinspection PyTypeChecker
-# noinspection PyArgumentList
 @given(data=st.data(), value=st_value())
 def test_failure_when_mutually_exclusive_maximum_boundaries_are_set(
     data: st.DataObject,

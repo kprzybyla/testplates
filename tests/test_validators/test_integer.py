@@ -484,7 +484,6 @@ def test_failure_when_value_is_below_exclusive_minimum_and_exclusive_maximum(
 
 
 # noinspection PyTypeChecker
-# noinspection PyArgumentList
 @given(st_data=st.data(), data=st_value())
 def test_failure_when_mutually_exclusive_boundaries_are_set(
     st_data: st.DataObject,
@@ -511,7 +510,6 @@ def test_failure_when_mutually_exclusive_boundaries_are_set(
 
 
 # noinspection PyTypeChecker
-# noinspection PyArgumentList
 @given(st_data=st.data(), data=st_value())
 def test_failure_when_mutually_exclusive_minimum_boundaries_are_set(
     st_data: st.DataObject,
@@ -549,7 +547,6 @@ def test_failure_when_mutually_exclusive_minimum_boundaries_are_set(
 
 
 # noinspection PyTypeChecker
-# noinspection PyArgumentList
 @given(st_data=st.data(), data=st_value())
 def test_failure_when_mutually_exclusive_maximum_boundaries_are_set(
     st_data: st.DataObject,

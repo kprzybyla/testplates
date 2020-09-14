@@ -307,7 +307,6 @@ class Structure(Mapping[str, Any], metaclass=StructureMeta):
 
     __slots__ = ("_testplates_values_",)
 
-    # noinspection PyTypeHints
     # noinspection PyTypeChecker
     _testplates_self_ = TypeVar("_testplates_self_", bound="Structure")
     _testplates_fields_: ClassVar[Mapping[str, Field[Any]]]

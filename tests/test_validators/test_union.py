@@ -128,7 +128,6 @@ def test_failure_when_data_field_validation_fails(
 ) -> None:
     choice_error = TestplatesError(message)
 
-    # noinspection PyTypeChecker
     def validator(this_value: Any, /) -> Result[None, TestplatesError]:
         assert this_value == value
         return failure(choice_error)

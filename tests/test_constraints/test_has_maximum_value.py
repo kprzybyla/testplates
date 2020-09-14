@@ -181,7 +181,6 @@ def test_failure_when_value_is_not_comparable_with_exclusive_boundary(
     assert constraint != NotComparable()
 
 
-# noinspection PyArgumentList
 def test_failure_when_boundaries_are_missing() -> None:
     assert not (result := has_maximum_value())
 
@@ -190,7 +189,6 @@ def test_failure_when_boundaries_are_missing() -> None:
 
 
 # noinspection PyTypeChecker
-# noinspection PyArgumentList
 @given(data=st.data(), value=st_value())
 def test_failure_when_mutually_exclusive_boundaries_are_set(
     data: st.DataObject,
