@@ -24,15 +24,13 @@ from typing import (
     Final,
 )
 
-# TODO(kprzybyla): Make this accessible in resultful
-from resultful.impl.result import Failure
-
 from resultful import (
     success,
     failure,
     unwrap_success,
     unwrap_failure,
     Result,
+    AlwaysFailure,
 )
 
 from testplates.impl.base import (
@@ -153,7 +151,7 @@ def integer_validator(
     maximum: int,
     exclusive_minimum: int,
     allow_bool: bool = ...,
-) -> Failure[TestplatesError]:
+) -> AlwaysFailure[TestplatesError]:
     ...
 
 
@@ -164,7 +162,7 @@ def integer_validator(
     maximum: int,
     exclusive_maximum: int,
     allow_bool: bool = ...,
-) -> Failure[TestplatesError]:
+) -> AlwaysFailure[TestplatesError]:
     ...
 
 
@@ -175,7 +173,7 @@ def integer_validator(
     exclusive_minimum: int,
     exclusive_maximum: int,
     allow_bool: bool = ...,
-) -> Failure[TestplatesError]:
+) -> AlwaysFailure[TestplatesError]:
     ...
 
 
@@ -186,7 +184,7 @@ def integer_validator(
     exclusive_minimum: int,
     exclusive_maximum: int,
     allow_bool: bool = ...,
-) -> Failure[TestplatesError]:
+) -> AlwaysFailure[TestplatesError]:
     ...
 
 
@@ -198,7 +196,7 @@ def integer_validator(
     exclusive_minimum: int,
     exclusive_maximum: int,
     allow_bool: bool = ...,
-) -> Failure[TestplatesError]:
+) -> AlwaysFailure[TestplatesError]:
     ...
 
 

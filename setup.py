@@ -4,7 +4,7 @@ import codecs
 from typing import Final
 from setuptools import setup, find_packages
 
-RESULTFUL: Final[str] = "resultful == 1.0.0a0"
+RESULTFUL: Final[str] = "resultful == 1.0.0a2"
 
 BLACK: Final[str] = "black == 20.8b1"
 FLAKE8: Final[str] = "flake8 ~= 3.8.0"

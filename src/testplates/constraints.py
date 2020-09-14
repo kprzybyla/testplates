@@ -20,14 +20,12 @@ from typing import (
     Optional,
 )
 
-# TODO(kprzybyla): Make this accessible in resultful
-from resultful.impl.result import Failure
-
 from resultful import (
     success,
     failure,
     unwrap_success,
     Result,
+    AlwaysFailure,
 )
 
 from testplates.impl.base import (
@@ -175,7 +173,7 @@ def has_size_between(
 
 
 @overload
-def has_minimum_value() -> Failure[TestplatesError]:
+def has_minimum_value() -> AlwaysFailure[TestplatesError]:
     ...
 
 
@@ -184,7 +182,7 @@ def has_minimum_value(
     *,
     minimum: int,
     exclusive_minimum: int,
-) -> Failure[TestplatesError]:
+) -> AlwaysFailure[TestplatesError]:
     ...
 
 
@@ -229,7 +227,7 @@ def has_minimum_value(
 
 
 @overload
-def has_maximum_value() -> Failure[TestplatesError]:
+def has_maximum_value() -> AlwaysFailure[TestplatesError]:
     ...
 
 
@@ -238,7 +236,7 @@ def has_maximum_value(
     *,
     maximum: int,
     exclusive_maximum: int,
-) -> Failure[TestplatesError]:
+) -> AlwaysFailure[TestplatesError]:
     ...
 
 
@@ -283,7 +281,7 @@ def has_maximum_value(
 
 
 @overload
-def has_value_between() -> Failure[TestplatesError]:
+def has_value_between() -> AlwaysFailure[TestplatesError]:
     ...
 
 
@@ -291,7 +289,7 @@ def has_value_between() -> Failure[TestplatesError]:
 def has_value_between(
     *,
     minimum: Boundary[int],
-) -> Failure[TestplatesError]:
+) -> AlwaysFailure[TestplatesError]:
     ...
 
 
@@ -299,7 +297,7 @@ def has_value_between(
 def has_value_between(
     *,
     maximum: Boundary[int],
-) -> Failure[TestplatesError]:
+) -> AlwaysFailure[TestplatesError]:
     ...
 
 
@@ -307,7 +305,7 @@ def has_value_between(
 def has_value_between(
     *,
     exclusive_minimum: Boundary[int],
-) -> Failure[TestplatesError]:
+) -> AlwaysFailure[TestplatesError]:
     ...
 
 
@@ -315,47 +313,7 @@ def has_value_between(
 def has_value_between(
     *,
     exclusive_maximum: Boundary[int],
-) -> Failure[TestplatesError]:
-    ...
-
-
-@overload
-def has_value_between(
-    *,
-    minimum: Boundary[int],
-    maximum: Boundary[int],
-    exclusive_minimum: Boundary[int],
-) -> Failure[TestplatesError]:
-    ...
-
-
-@overload
-def has_value_between(
-    *,
-    minimum: Boundary[int],
-    maximum: Boundary[int],
-    exclusive_maximum: Boundary[int],
-) -> Failure[TestplatesError]:
-    ...
-
-
-@overload
-def has_value_between(
-    *,
-    minimum: Boundary[int],
-    exclusive_minimum: Boundary[int],
-    exclusive_maximum: Boundary[int],
-) -> Failure[TestplatesError]:
-    ...
-
-
-@overload
-def has_value_between(
-    *,
-    maximum: Boundary[int],
-    exclusive_minimum: Boundary[int],
-    exclusive_maximum: Boundary[int],
-) -> Failure[TestplatesError]:
+) -> AlwaysFailure[TestplatesError]:
     ...
 
 
@@ -365,8 +323,48 @@ def has_value_between(
     minimum: Boundary[int],
     maximum: Boundary[int],
     exclusive_minimum: Boundary[int],
+) -> AlwaysFailure[TestplatesError]:
+    ...
+
+
+@overload
+def has_value_between(
+    *,
+    minimum: Boundary[int],
+    maximum: Boundary[int],
     exclusive_maximum: Boundary[int],
-) -> Failure[TestplatesError]:
+) -> AlwaysFailure[TestplatesError]:
+    ...
+
+
+@overload
+def has_value_between(
+    *,
+    minimum: Boundary[int],
+    exclusive_minimum: Boundary[int],
+    exclusive_maximum: Boundary[int],
+) -> AlwaysFailure[TestplatesError]:
+    ...
+
+
+@overload
+def has_value_between(
+    *,
+    maximum: Boundary[int],
+    exclusive_minimum: Boundary[int],
+    exclusive_maximum: Boundary[int],
+) -> AlwaysFailure[TestplatesError]:
+    ...
+
+
+@overload
+def has_value_between(
+    *,
+    minimum: Boundary[int],
+    maximum: Boundary[int],
+    exclusive_minimum: Boundary[int],
+    exclusive_maximum: Boundary[int],
+) -> AlwaysFailure[TestplatesError]:
     ...
 
 
