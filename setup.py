@@ -8,7 +8,7 @@ RESULTFUL: Final[str] = "resultful == 1.0.0a2"
 
 BLACK: Final[str] = "black == 20.8b1"
 FLAKE8: Final[str] = "flake8 ~= 3.8.0"
-MYPY: Final[str] = "mypy @ git+https://github.com/kprzybyla/mypy.git@testplates"
+MYPY: Final[str] = "mypy ~= 0.782"
 
 PYTEST: Final[str] = "pytest ~= 6.0.1"
 PYTEST_COV: Final[str] = "pytest-cov ~= 2.8.0"
