@@ -1,5 +1,10 @@
-from typing import Final
-from decimal import Decimal
+from typing import (
+    Final,
+)
+
+from decimal import (
+    Decimal,
+)
 
 from hypothesis import (
     settings,

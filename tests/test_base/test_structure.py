@@ -1,4 +1,11 @@
-from string import printable
+from typing import (
+    Any,
+    Dict,
+)
+
+from string import (
+    printable,
+)
 
 from resultful import (
     unwrap_success,
@@ -27,7 +34,9 @@ from testplates import (
 
 from tests.strategies import Draw
 
-from .assets import Storage
+
+class Storage(Dict[str, Any]):
+    pass
 
 
 @st.composite
