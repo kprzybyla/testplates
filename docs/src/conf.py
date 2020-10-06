@@ -5,8 +5,6 @@ language = "en"
 master_doc = "index"
 source_suffix = ".rst"
 html_theme = "sphinx_rtd_theme"
-templates_path = [".templates"]
-html_static_path = [".static"]
 autodoc_member_order = "bysource"
 
 extensions = [

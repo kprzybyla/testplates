@@ -1,13 +1,12 @@
 include LICENSE
 include README.rst
 include setup.py
+include setup.cfg
 
 exclude .gitignore
-
 exclude tox.ini
-exclude setup.cfg
-exclude MANIFEST.in
 exclude pyproject.toml
+exclude MANIFEST.in
 
 exclude src/stubs/**/*
 exclude tests/**/*
