@@ -12,6 +12,7 @@ from testplates import (
     init,
     field,
     passthrough_validator,
+    FieldType,
     MISSING,
 )
 
@@ -24,11 +25,12 @@ def test_value_access_in_required_field(value: int) -> None:
     @struct
     class Template:
 
-        key = field(int)
+        key: FieldType[int] = field()
 
+    validator = unwrap_success(passthrough_validator())
     assert Template.key.name == KEY
     assert Template.key.default == MISSING
-    assert Template.key.validator is passthrough_validator
+    assert Template.key.validator is validator
     assert Template.key.is_optional is False
 
     assert (result := init(Template, key=value))
@@ -44,11 +46,12 @@ def test_value_access_in_required_field_with_default_value(value: int, default: 
     @struct
     class Template:
 
-        key = field(int, default=default)
+        key = field(default=default)
 
+    validator = unwrap_success(passthrough_validator())
     assert Template.key.name == KEY
     assert Template.key.default == default
-    assert Template.key.validator is passthrough_validator
+    assert Template.key.validator is validator
     assert Template.key.is_optional is False
 
     assert (result_value := init(Template, key=value))
@@ -68,11 +71,12 @@ def test_value_access_in_optional_field(value: int) -> None:
     @struct
     class Template:
 
-        key = field(int, optional=True)
+        key: FieldType[int] = field(optional=True)
 
+    validator = unwrap_success(passthrough_validator())
     assert Template.key.name == KEY
     assert Template.key.default == MISSING
-    assert Template.key.validator is passthrough_validator
+    assert Template.key.validator is validator
     assert Template.key.is_optional is True
 
     assert (result := init(Template, key=value))
@@ -88,11 +92,12 @@ def test_value_access_in_optional_field_with_default_value(value: int, default: 
     @struct
     class Template:
 
-        key = field(int, default=default, optional=True)
+        key = field(default=default, optional=True)
 
+    validator = unwrap_success(passthrough_validator())
     assert Template.key.name == KEY
     assert Template.key.default == default
-    assert Template.key.validator is passthrough_validator
+    assert Template.key.validator is validator
     assert Template.key.is_optional is True
 
     assert (result_value := init(Template, key=value))
@@ -112,7 +117,7 @@ def test_len(value: int) -> None:
     @struct
     class Template:
 
-        key = field(int)
+        key: FieldType[int] = field()
 
     assert (result := init(Template, key=value))
 
@@ -126,7 +131,7 @@ def test_iter(value: int) -> None:
     @struct
     class Template:
 
-        key = field(int)
+        key: FieldType[int] = field()
 
     assert (result := init(Template, key=value))
 

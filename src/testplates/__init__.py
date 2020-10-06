@@ -8,6 +8,9 @@ __all__ = (
     "LiteralWildcard",
     "LiteralAbsent",
     "LiteralUnlimited",
+    "FieldType",
+    "StructureType",
+    "StructureTypeVar",
     "struct",
     "create",
     "init",
@@ -23,6 +26,7 @@ __all__ = (
     "MissingValueError",
     "UnexpectedValueError",
     "ProhibitedValueError",
+    "InvalidStructureError",
     "MissingBoundaryError",
     "InvalidSizeError",
     "UnlimitedRangeError",
@@ -83,6 +87,12 @@ from testplates.value import (
     LiteralUnlimited,
 )
 
+from testplates.structure import (
+    FieldType,
+    StructureType,
+    StructureTypeVar,
+)
+
 # Concretes
 
 from testplates.structure import (
@@ -107,6 +117,7 @@ from testplates.exceptions import (
     MissingValueError,
     UnexpectedValueError,
     ProhibitedValueError,
+    InvalidStructureError,
     MissingBoundaryError,
     InvalidSizeError,
     UnlimitedRangeError,

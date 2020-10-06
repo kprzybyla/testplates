@@ -6,6 +6,7 @@ from typing import (
 )
 
 from resultful import (
+    success,
     failure,
     unwrap_failure,
     Result,
@@ -20,6 +21,7 @@ from testplates import (
     create,
     init,
     field,
+    FieldType,
     ANY,
     WILDCARD,
     ABSENT,
@@ -43,7 +45,7 @@ def test_repr_for_required_field_without_default_value(
     name: str,
     key: str,
 ) -> None:
-    field_object = field(int)
+    field_object: FieldType[int] = field()
     create(name, **{key: field_object})
 
     repr_format = f"testplates.Field({key!r}, optional=False)"
@@ -57,7 +59,7 @@ def test_repr_for_required_field_with_default_value(
     key: str,
     value: int,
 ) -> None:
-    field_object = field(int, default=value)
+    field_object = field(default=value)
     create(name, **{key: field_object})
 
     repr_format = f"testplates.Field({key!r}, default={value!r}, optional=False)"
@@ -70,7 +72,7 @@ def test_repr_for_optional_field_without_default_value(
     name: str,
     key: str,
 ) -> None:
-    field_object = field(int, optional=True)
+    field_object: FieldType[int] = field(optional=True)
     create(name, **{key: field_object})
 
     repr_format = f"testplates.Field({key!r}, optional=True)"
@@ -84,7 +86,7 @@ def test_repr_for_optional_field_with_default_value(
     key: str,
     value: int,
 ) -> None:
-    field_object = field(int, default=value, optional=True)
+    field_object = field(default=value, optional=True)
     create(name, **{key: field_object})
 
     repr_format = f"testplates.Field({key!r}, default={value!r}, optional=True)"
@@ -100,7 +102,7 @@ def test_validator_is_not_called_on_special_value_for_required_field(
     def validator(*args: int, **kwargs: int) -> NoReturn:
         assert False, (args, kwargs)
 
-    field_object = field(int, validator)
+    field_object: FieldType[int] = field(success(validator))
     template_type = create(name, **{key: field_object})
     assert init(template_type, **{key: ANY})
 
@@ -114,7 +116,7 @@ def test_validator_is_not_called_on_special_value_for_optional_field(
     def validator(*args: int, **kwargs: int) -> NoReturn:
         assert False, (args, kwargs)
 
-    field_object = field(int, validator, optional=True)
+    field_object: FieldType[int] = field(success(validator), optional=True)
     template_type = create(name, **{key: field_object})
     assert init(template_type, **{key: ANY})
     assert init(template_type, **{key: WILDCARD})
@@ -135,7 +137,7 @@ def test_validator_failure(
         assert this_value is value
         return failure(validator_error)
 
-    field_object = field(int, validator)
+    field_object: FieldType[int] = field(success(validator))
     template_type = create(name, **{key: field_object})
     assert not (result := init(template_type, **{key: value}))
 
@@ -146,11 +148,11 @@ def test_validator_failure(
 
 # noinspection PyTypeChecker
 def test_default_for_mutable_objects() -> None:
-    field_object = field(List[int], default=list())
+    field_object: FieldType[List[int]] = field(default=list())
     assert field_object.default is field_object.default
 
 
 # noinspection PyTypeChecker
 def test_default_factory_for_mutable_objects() -> None:
-    field_object = field(List[int], default_factory=list)
+    field_object = field(default_factory=list)
     assert field_object.default is not field_object.default

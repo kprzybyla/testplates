@@ -3,6 +3,7 @@ __all__ = (
     "MissingValueError",
     "UnexpectedValueError",
     "ProhibitedValueError",
+    "InvalidStructureError",
     "MissingBoundaryError",
     "InvalidSizeError",
     "UnlimitedRangeError",
@@ -13,6 +14,7 @@ __all__ = (
 
 from typing import (
     Any,
+    List,
 )
 
 
@@ -24,9 +26,9 @@ class TestplatesError(Exception):
 
     def __init__(
         self,
-        message: str,
+        *message: str,
     ):
-        super().__init__(message)
+        super().__init__(" ".join(message))
 
     @property
     def message(self) -> str:
@@ -53,7 +55,9 @@ class MissingValueError(TestplatesError):
     ) -> None:
         self.field = field
 
-        super().__init__(f"Missing value for required field {field!r}")
+        super().__init__(
+            f"Missing value for required field {field!r}",
+        )
 
 
 class UnexpectedValueError(TestplatesError):
@@ -73,7 +77,9 @@ class UnexpectedValueError(TestplatesError):
         self.key = key
         self.value = value
 
-        super().__init__(f"Unexpected key {key!r} with value {value!r}")
+        super().__init__(
+            f"Unexpected key {key!r} with value {value!r}",
+        )
 
 
 class ProhibitedValueError(TestplatesError):
@@ -93,7 +99,28 @@ class ProhibitedValueError(TestplatesError):
         self.field = field
         self.value = value
 
-        super().__init__(f"Prohibited value {value!r} for field {field!r}")
+        super().__init__(
+            f"Prohibited value {value!r} for field {field!r}",
+        )
+
+
+class InvalidStructureError(TestplatesError):
+
+    """
+    Error indicating invalid structure construction.
+
+    Raised when user creates invalid structure,
+    for example by passing validator which was
+    not initialized properly to the field of
+    this structure.
+    """
+
+    def __init__(self, errors: List[Any]) -> None:
+        self.errors = errors
+
+        super().__init__(
+            f"Invalid structure construction due to following errors: {errors!r}",
+        )
 
 
 class MissingBoundaryError(TestplatesError):
@@ -111,7 +138,9 @@ class MissingBoundaryError(TestplatesError):
     ) -> None:
         self.name = name
 
-        super().__init__(f"Missing value for mandatory boundary {self.name!r}")
+        super().__init__(
+            f"Missing value for mandatory boundary {self.name!r}",
+        )
 
 
 class InvalidSizeError(TestplatesError):
@@ -129,7 +158,9 @@ class InvalidSizeError(TestplatesError):
     ) -> None:
         self.boundary = boundary
 
-        super().__init__(f"Invalid value for size boundary {boundary!r}")
+        super().__init__(
+            f"Invalid value for size boundary {boundary!r}",
+        )
 
 
 class UnlimitedRangeError(TestplatesError):
@@ -143,7 +174,9 @@ class UnlimitedRangeError(TestplatesError):
     """
 
     def __init__(self) -> None:
-        super().__init__("Unlimited range is not permitted in this context")
+        super().__init__(
+            "Unlimited range is not permitted in this context",
+        )
 
 
 class MutuallyExclusiveBoundariesError(TestplatesError):
@@ -161,7 +194,9 @@ class MutuallyExclusiveBoundariesError(TestplatesError):
     ) -> None:
         self.name = name
 
-        super().__init__(f"Mutually exclusive {name!r} boundaries set at the same time")
+        super().__init__(
+            f"Mutually exclusive {name!r} boundaries set at the same time",
+        )
 
 
 class OverlappingBoundariesError(TestplatesError):
@@ -181,7 +216,9 @@ class OverlappingBoundariesError(TestplatesError):
         self.minimum = minimum
         self.maximum = maximum
 
-        super().__init__(f"Overlapping minimum {minimum!r} and maximum {maximum!r} boundaries")
+        super().__init__(
+            f"Overlapping minimum {minimum!r} and maximum {maximum!r} boundaries",
+        )
 
 
 class SingleMatchBoundariesError(TestplatesError):
@@ -201,4 +238,6 @@ class SingleMatchBoundariesError(TestplatesError):
         self.minimum = minimum
         self.maximum = maximum
 
-        super().__init__(f"Single match minimum {minimum!r} and maximum {maximum!r} boundaries")
+        super().__init__(
+            f"Single match minimum {minimum!r} and maximum {maximum!r} boundaries",
+        )

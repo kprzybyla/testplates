@@ -10,6 +10,7 @@ from typing import (
 )
 
 from resultful import (
+    success,
     failure,
     unwrap_success,
     unwrap_failure,
@@ -166,6 +167,14 @@ def test_success_with_unique_value(data: Sequence[_T]) -> None:
 
     outcome = unwrap_success(validation_result)
     assert outcome is None
+
+
+def test_failure_when_item_validator_fails() -> None:
+    validator_error = TestplatesError()
+    assert not (validator_result := sequence_validator(failure(validator_error)))
+
+    error = unwrap_failure(validator_result)
+    assert error is validator_error
 
 
 @given(data=st_anything_except(Sequence))
@@ -359,7 +368,7 @@ def test_failure_when_data_item_validation_fails(value: Any, message: str) -> No
         assert this_value == value
         return failure(item_error)
 
-    assert (validator_result := sequence_validator(validator))
+    assert (validator_result := sequence_validator(success(validator)))
 
     validator = unwrap_success(validator_result)
     assert not (validation_result := validator([value]))

@@ -55,7 +55,9 @@ class InvalidTypeValueError(TestplatesError):
     ) -> None:
         self.given_type = given_type
 
-        super().__init__(f"Given value {given_type!r} is not a type nor a classinfo")
+        super().__init__(
+            f"Given value {given_type!r} is not a type nor a classinfo",
+        )
 
 
 class InvalidTypeError(TestplatesError):
@@ -76,7 +78,7 @@ class InvalidTypeError(TestplatesError):
         self.allowed_types = allowed_types
 
         super().__init__(
-            f"Invalid type {type(data)!r} of data {data!r} (allowed types: {allowed_types!r})"
+            f"Invalid type {type(data)!r} of data {data!r} (allowed types: {allowed_types!r})",
         )
 
 
@@ -95,7 +97,9 @@ class ProhibitedBoolValueError(TestplatesError):
     ) -> None:
         self.data = data
 
-        super().__init__(f"Prohibited type {bool!r} of data {data!r}")
+        super().__init__(
+            f"Prohibited type {bool!r} of data {data!r}",
+        )
 
 
 class InvalidMinimumValueError(TestplatesError):
@@ -115,7 +119,9 @@ class InvalidMinimumValueError(TestplatesError):
         self.data = data
         self.minimum = minimum
 
-        super().__init__(f"Invalid value {data!r} (minimum allowed value: {minimum!r})")
+        super().__init__(
+            f"Invalid value {data!r} (minimum allowed value: {minimum!r})",
+        )
 
 
 class InvalidMaximumValueError(TestplatesError):
@@ -135,7 +141,9 @@ class InvalidMaximumValueError(TestplatesError):
         self.data = data
         self.maximum = maximum
 
-        super().__init__(f"Invalid value {data!r} (maximum allowed value: {maximum!r})")
+        super().__init__(
+            f"Invalid value {data!r} (maximum allowed value: {maximum!r})",
+        )
 
 
 class InvalidMinimumSizeError(TestplatesError):
@@ -156,7 +164,7 @@ class InvalidMinimumSizeError(TestplatesError):
         self.minimum = minimum
 
         super().__init__(
-            f"Invalid size {len(data)!r} of data {data!r} (minimum allowed size: {minimum!r})"
+            f"Invalid size {len(data)!r} of data {data!r} (minimum allowed size: {minimum!r})",
         )
 
 
@@ -178,7 +186,7 @@ class InvalidMaximumSizeError(TestplatesError):
         self.maximum = maximum
 
         super().__init__(
-            f"Invalid size {len(data)!r} of data {data!r} (maximum allowed size: {maximum!r})"
+            f"Invalid size {len(data)!r} of data {data!r} (maximum allowed size: {maximum!r})",
         )
 
 
@@ -199,7 +207,9 @@ class InvalidFormatError(TestplatesError):
         self.data = data
         self.pattern = pattern
 
-        super().__init__(f"Invalid format of data {data!r} (allowed format: {pattern!r})")
+        super().__init__(
+            f"Invalid format of data {data!r} (allowed format: {pattern!r})",
+        )
 
 
 class UniquenessError(TestplatesError):
@@ -218,7 +228,9 @@ class UniquenessError(TestplatesError):
     ) -> None:
         self.data = data
 
-        super().__init__(f"Data {data!r} does not contain unique elements")
+        super().__init__(
+            f"Data {data!r} does not contain unique elements",
+        )
 
 
 class InvalidKeyError(TestplatesError):
@@ -238,7 +250,9 @@ class InvalidKeyError(TestplatesError):
         self.key = key
         self.data = data
 
-        super().__init__(f"Invalid key {key!r} found in data {data!r}")
+        super().__init__(
+            f"Invalid key {key!r} found in data {data!r}",
+        )
 
 
 class InvalidDataFormatError(TestplatesError):
@@ -256,7 +270,9 @@ class InvalidDataFormatError(TestplatesError):
     ) -> None:
         self.data = data
 
-        super().__init__(f"Invalid data format found in data {data!r}")
+        super().__init__(
+            f"Invalid data format found in data {data!r}",
+        )
 
 
 class RequiredKeyMissingError(TestplatesError):
@@ -279,7 +295,9 @@ class RequiredKeyMissingError(TestplatesError):
         self.key = key
         self.field = field
 
-        super().__init__(f"Mandatory key {key!r} ({field!r}) missing in data {data!r}")
+        super().__init__(
+            f"Mandatory key {key!r} ({field!r}) missing in data {data!r}",
+        )
 
 
 class UnknownFieldError(TestplatesError):
@@ -301,7 +319,9 @@ class UnknownFieldError(TestplatesError):
         self.structure_type = structure_type
         self.key = key
 
-        super().__init__(f"Unknown key {key!r} for structure type {structure_type!r} in {data!r}")
+        super().__init__(
+            f"Unknown key {key!r} for structure type {structure_type!r} in {data!r}",
+        )
 
 
 class MemberValidationError(TestplatesError):
@@ -324,7 +344,9 @@ class MemberValidationError(TestplatesError):
         self.member = member
         self.error = error
 
-        super().__init__(f"Member {member!r} validation failure in {enum_type!r}: {error!r}")
+        super().__init__(
+            f"Member {member!r} validation failure in {enum_type!r}: {error!r}",
+        )
 
 
 class ItemValidationError(TestplatesError):
@@ -347,7 +369,9 @@ class ItemValidationError(TestplatesError):
         self.item = item
         self.error = error
 
-        super().__init__(f"Item {item!r} validation failure in {data!r}: {error!r}")
+        super().__init__(
+            f"Item {item!r} validation failure in {data!r}: {error!r}",
+        )
 
 
 class FieldValidationError(TestplatesError):
@@ -370,7 +394,9 @@ class FieldValidationError(TestplatesError):
         self.field = field
         self.error = error
 
-        super().__init__(f"Field {field!r} validation failure in {data!r}: {error!r}")
+        super().__init__(
+            f"Field {field!r} validation failure in {data!r}: {error!r}",
+        )
 
 
 class ChoiceValidationError(TestplatesError):
@@ -393,4 +419,6 @@ class ChoiceValidationError(TestplatesError):
         self.validator = validator
         self.error = error
 
-        super().__init__(f"Choice {validator!r} validation failure in {data!r}: {error!r}")
+        super().__init__(
+            f"Choice {validator!r} validation failure in {data!r}: {error!r}",
+        )

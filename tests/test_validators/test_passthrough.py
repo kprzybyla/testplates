@@ -10,12 +10,16 @@ from tests.strategies import st_anything_comparable
 
 def test_repr() -> None:
     fmt = "testplates.passthrough_validator()"
-    assert repr(passthrough_validator) == fmt
+    validator = unwrap_success(passthrough_validator())
+    assert repr(validator) == fmt
 
 
 @given(data=st_anything_comparable())
 def test_success(data: Any) -> None:
-    assert (validation_result := passthrough_validator(data))
+    assert (validator_result := passthrough_validator())
+
+    validator = unwrap_success(validator_result)
+    assert (validation_result := validator(data))
 
     outcome = unwrap_success(validation_result)
     assert outcome is None

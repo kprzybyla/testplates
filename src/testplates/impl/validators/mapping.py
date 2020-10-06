@@ -68,7 +68,9 @@ class MappingValidator:
             if field_object is None:
                 return failure(UnknownFieldError(data, structure, key))
 
-            if not (result := field_object.validator(value)):
+            validator = field_object.validator
+
+            if validator is not None and not (result := validator(value)):
                 return failure(FieldValidationError(data, field_object, unwrap_failure(result)))
 
         return success(None)

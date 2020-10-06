@@ -5,6 +5,9 @@ __all__ = (
     "modify",
     "fields",
     "field",
+    "FieldType",
+    "StructureType",
+    "StructureTypeVar",
 )
 
 from typing import (
@@ -13,6 +16,7 @@ from typing import (
     Any,
     Type,
     TypeVar,
+    Union,
     Mapping,
     Callable,
 )
@@ -44,7 +48,10 @@ from .exceptions import (
 )
 
 _GenericType = TypeVar("_GenericType")
-_StructureType = TypeVar("_StructureType", bound=Structure)
+
+FieldType = Union[Field]
+StructureType = Union[Structure]
+StructureTypeVar = TypeVar("StructureTypeVar", bound=Structure)
 
 
 # noinspection PyTypeChecker
@@ -54,16 +61,17 @@ def struct(
 ) -> Type[Structure]:
 
     """
-    Decorator API for creating structure.
+    Decorator for creating structure.
 
-    :param cls: structure base class
+    :param cls: any class to be wrapped into structure
     """
 
     name = cls.__name__
     bases = (cls, Structure)
     attrs = StructureDict(cls.__dict__)
+    structure_type = StructureMeta(name, bases, attrs)
 
-    return cast(Type[Structure], StructureMeta(name, bases, attrs))
+    return cast(Type[Structure], structure_type)
 
 
 # noinspection PyTypeChecker
@@ -82,15 +90,17 @@ def create(
     :param fields: structure fields
     """
 
-    return cast(Type[Structure], Structure._testplates_create_(name, **fields))
+    structure_type = Structure._testplates_create_(name, **fields)
+
+    return cast(Type[Structure], structure_type)
 
 
 # noinspection PyProtectedMember
 def init(
-    structure_type: Type[_StructureType],
+    structure_type: Type[StructureTypeVar],
     /,
     **values: Any,
-) -> Result[_StructureType, TestplatesError]:
+) -> Result[StructureTypeVar, TestplatesError]:
 
     """
     Initializes structure with given values.
@@ -99,15 +109,17 @@ def init(
     :param values: structure initialization values
     """
 
-    return structure_type(SecretType.SECRET)._testplates_init_(**values)
+    structure = structure_type(SecretType.SECRET)
+
+    return structure._testplates_init_(**values)
 
 
 # noinspection PyProtectedMember
 def modify(
-    structure: _StructureType,
+    structure: StructureTypeVar,
     /,
     **values: Any,
-) -> Result[_StructureType, TestplatesError]:
+) -> Result[StructureTypeVar, TestplatesError]:
 
     """
     Modifies structure with given values.
@@ -121,23 +133,22 @@ def modify(
 
 # noinspection PyProtectedMember
 def fields(
-    structure_type: Type[Structure],
+    structure_or_structure_type: Union[Structure, Type[Structure]],
     /,
 ) -> Mapping[str, Field[Any]]:
 
     """
     Returns structure fields.
 
-    :param structure_type: structure type
+    :param structure_or_structure_type: structure type
     """
 
-    return dict(structure_type._testplates_fields_)
+    return dict(structure_or_structure_type._testplates_fields_)
 
 
 @overload
 def field(
-    type: Type[_GenericType],
-    validator: Validator = ...,
+    validator: Result[Validator, TestplatesError] = ...,
     /,
     *,
     optional: bool = ...,
@@ -147,8 +158,7 @@ def field(
 
 @overload
 def field(
-    type: Type[_GenericType],
-    validator: Validator = ...,
+    validator: Result[Validator, TestplatesError] = ...,
     /,
     *,
     default: _GenericType,
@@ -159,8 +169,7 @@ def field(
 
 @overload
 def field(
-    type: Type[_GenericType],
-    validator: Validator = ...,
+    validator: Result[Validator, TestplatesError] = ...,
     /,
     *,
     default_factory: Callable[[], _GenericType],
@@ -169,10 +178,8 @@ def field(
     ...
 
 
-# noinspection PyUnusedLocal
 def field(
-    type: Type[_GenericType],
-    validator: Validator = passthrough_validator,
+    validator: Result[Validator, TestplatesError] = passthrough_validator(),
     /,
     *,
     default: Maybe[_GenericType] = MISSING,
@@ -186,11 +193,15 @@ def field(
     This is basically a wrapper for :class:`Field`
     with all possible overloads for its arguments.
 
-    :param type: field type
     :param validator: field validator function or None
     :param default: field default value
     :param default_factory: field default value factory
     :param optional: indication whether field is optional or not
     """
 
-    return Field(validator, default=default, default_factory=default_factory, optional=optional)
+    return Field(
+        validator,
+        default=default,
+        default_factory=default_factory,
+        optional=optional,
+    )

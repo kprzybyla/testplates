@@ -19,16 +19,20 @@ from typing import (
     ClassVar,
     Union,
     Tuple,
+    List,
     Dict,
     Iterator,
     Mapping,
     Callable,
     Optional,
+    Final,
 )
 
 from resultful import (
     success,
     failure,
+    unwrap_success,
+    unwrap_failure,
     Result,
 )
 
@@ -53,9 +57,14 @@ from .exceptions import (
     MissingValueError,
     UnexpectedValueError,
     ProhibitedValueError,
+    InvalidStructureError,
 )
 
+# noinspection PyTypeChecker
+_Structure = TypeVar("_Structure", bound="Structure")
 _CovariantType = TypeVar("_CovariantType", covariant=True)
+
+TESTPLATES_ERRORS_ATTR_NAME: Final[str] = "_testplates_errors_"
 
 
 class Field(Generic[_CovariantType]):
@@ -66,6 +75,7 @@ class Field(Generic[_CovariantType]):
 
     __slots__ = (
         "_validator",
+        "_errors",
         "_default",
         "_default_factory",
         "_optional",
@@ -74,17 +84,23 @@ class Field(Generic[_CovariantType]):
 
     def __init__(
         self,
-        validator: Validator,
+        validator: Result[Validator, TestplatesError],
         /,
         *,
         default: Maybe[_CovariantType] = MISSING,
         default_factory: Maybe[Callable[[], _CovariantType]] = MISSING,
         optional: bool = False,
     ) -> None:
-        self._validator = validator
+        self._validator: Optional[Validator] = None
+        self._errors: List[TestplatesError] = []
         self._default = default
         self._default_factory = default_factory
         self._optional = optional
+
+        if validator:
+            self._validator = unwrap_success(validator)
+        else:
+            self._errors.append(unwrap_failure(validator))
 
     def __repr__(self) -> str:
         parameters = [f"{self._name!r}"]
@@ -151,13 +167,22 @@ class Field(Generic[_CovariantType]):
         return self._name
 
     @property
-    def validator(self) -> Validator:
+    def validator(self) -> Optional[Validator]:
 
         """
         Returns field validator function.
         """
 
         return self._validator
+
+    @property
+    def errors(self) -> List[TestplatesError]:
+
+        """
+        Returns field errors list.
+        """
+
+        return self._errors
 
     # noinspection PyCallingNonCallable
     @property
@@ -200,11 +225,12 @@ class Field(Generic[_CovariantType]):
         """
 
         default = self.default
+        validator = self.validator
 
         if value is ANY:
             return success(None)
 
-        elif value is MISSING and default is MISSING:
+        elif value is MISSING and default is MISSING and not self.is_optional:
             return failure(MissingValueError(self))
 
         elif (value is ABSENT or default is ABSENT) and not self.is_optional:
@@ -213,7 +239,7 @@ class Field(Generic[_CovariantType]):
         elif (value is WILDCARD or default is WILDCARD) and not self.is_optional:
             return failure(ProhibitedValueError(self, value))
 
-        elif is_value(value) and not (result := self.validator(value)):
+        elif is_value(value) and validator is not None and not (result := validator(value)):
             return result
 
         return success(None)
@@ -254,6 +280,7 @@ class StructureMeta(abc.ABCMeta):
 
     __slots__ = ()
 
+    _testplates_errors_: List[TestplatesError]
     _testplates_fields_: Mapping[str, Field[Any]]
 
     def __init__(
@@ -264,7 +291,12 @@ class StructureMeta(abc.ABCMeta):
     ) -> None:
         super().__init__(name, bases, attrs)
 
+        cls._testplates_errors_ = attrs.get(TESTPLATES_ERRORS_ATTR_NAME, [])
         cls._testplates_fields_ = attrs.fields
+
+        for field in attrs.fields.values():
+            if field.errors:
+                cls._testplates_errors_.extend(field.errors)
 
     def __repr__(self) -> str:
         parameters = format_like_dict(self._testplates_fields_)
@@ -309,6 +341,8 @@ class Structure(Mapping[str, Any], metaclass=StructureMeta):
 
     # noinspection PyTypeChecker
     _testplates_self_ = TypeVar("_testplates_self_", bound="Structure")
+
+    _testplates_errors_: ClassVar[List[TestplatesError]]
     _testplates_fields_: ClassVar[Mapping[str, Field[Any]]]
 
     def __init__(
@@ -317,6 +351,9 @@ class Structure(Mapping[str, Any], metaclass=StructureMeta):
         /,
     ) -> None:
         self._testplates_values_: Mapping[str, Any] = {}
+
+    def __init_subclass__(cls, **kwargs: Any) -> None:
+        pass
 
     def __repr__(self) -> str:
         return f"{type(self).__name__}({format_like_dict(self._testplates_values_)})"
@@ -344,6 +381,9 @@ class Structure(Mapping[str, Any], metaclass=StructureMeta):
         self: _testplates_self_,
         **values: Any,
     ) -> Result[_testplates_self_, TestplatesError]:
+        if errors := self._testplates_errors_:
+            return failure(InvalidStructureError(errors))
+
         keys = self._testplates_fields_.keys()
 
         for key, value in values.items():

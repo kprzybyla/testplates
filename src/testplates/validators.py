@@ -18,6 +18,7 @@ from enum import (
 
 from typing import (
     overload,
+    Dict,
     Iterable,
     Mapping,
     Optional,
@@ -30,6 +31,7 @@ from resultful import (
     unwrap_success,
     unwrap_failure,
     Result,
+    AlwaysSuccess,
     AlwaysFailure,
 )
 
@@ -66,7 +68,16 @@ from .exceptions import (
     MemberValidationError,
 )
 
-passthrough_validator: Final[PassthroughValidator] = PassthroughValidator()
+passthrough_validator_singleton: Final[Validator] = PassthroughValidator()
+
+
+def passthrough_validator() -> AlwaysSuccess[Validator]:
+
+    """
+    ...
+    """
+
+    return success(passthrough_validator_singleton)
 
 
 def type_validator(
@@ -86,7 +97,7 @@ def type_validator(
     return success(TypeValidator(*allowed_types))
 
 
-def boolean_validator() -> Result[Validator, TestplatesError]:
+def boolean_validator() -> AlwaysSuccess[Validator]:
 
     """
     ...
@@ -96,7 +107,7 @@ def boolean_validator() -> Result[Validator, TestplatesError]:
 
 
 @overload
-def integer_validator() -> Result[Validator, TestplatesError]:
+def integer_validator() -> AlwaysSuccess[Validator]:
     ...
 
 
@@ -104,7 +115,7 @@ def integer_validator() -> Result[Validator, TestplatesError]:
 def integer_validator(
     *,
     allow_bool: bool = ...,
-) -> Result[Validator, TestplatesError]:
+) -> AlwaysSuccess[Validator]:
     ...
 
 
@@ -345,7 +356,7 @@ def bytes_validator(
 
 def enum_validator(
     enum_type: EnumMeta,
-    enum_member_validator: Validator = passthrough_validator,
+    enum_member_validator: Result[Validator, TestplatesError] = passthrough_validator(),
     /,
 ) -> Result[Validator, TestplatesError]:
 
@@ -356,10 +367,15 @@ def enum_validator(
     :param enum_member_validator: ...
     """
 
+    if not enum_member_validator:
+        return enum_member_validator
+
+    member_validator = unwrap_success(enum_member_validator)
+
     members: Iterable[Enum] = enum_type.__members__.values()
 
     for member in members:
-        result = enum_member_validator(member.value)
+        result = member_validator(member.value)
 
         if not result:
             return failure(MemberValidationError(enum_type, member, unwrap_failure(result)))
@@ -370,13 +386,14 @@ def enum_validator(
         EnumValidator(
             enum_type,
             enum_type_validator=enum_type_validator,
-            enum_member_validator=enum_member_validator,
+            enum_member_validator=member_validator,
         )
     )
 
 
+# noinspection PyTypeChecker
 def sequence_validator(
-    item_validator: Validator = passthrough_validator,
+    item_validator: Result[Validator, TestplatesError] = passthrough_validator(),
     /,
     *,
     minimum_size: Boundary[int] = UNLIMITED,
@@ -393,6 +410,9 @@ def sequence_validator(
     :param unique_items: ...
     """
 
+    if not item_validator:
+        return item_validator
+
     result = get_size_boundaries(inclusive_minimum=minimum_size, inclusive_maximum=maximum_size)
 
     if not result:
@@ -402,7 +422,7 @@ def sequence_validator(
 
     return success(
         SequenceValidator(
-            item_validator,
+            unwrap_success(item_validator),
             minimum_size=minimum_size_boundary,
             maximum_size=maximum_size_boundary,
             unique_items=unique_items,
@@ -425,7 +445,7 @@ def mapping_validator(
 
 
 def union_validator(
-    choices: Mapping[str, Validator],
+    choices: Mapping[str, Result[Validator, TestplatesError]],
     /,
 ) -> Result[Validator, TestplatesError]:
 
@@ -435,4 +455,12 @@ def union_validator(
     :param choices: ...
     """
 
-    return success(UnionValidator(choices))
+    union_choices: Dict[str, Validator] = {}
+
+    for key, choice in choices.items():
+        if not choice:
+            return choice
+        else:
+            union_choices[key] = unwrap_success(choice)
+
+    return success(UnionValidator(union_choices))
