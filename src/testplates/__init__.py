@@ -15,7 +15,9 @@ __all__ = (
     "create",
     "init",
     "modify",
+    "value_of",
     "fields",
+    "items",
     "field",
     "MISSING",
     "ANY",
@@ -100,7 +102,9 @@ from testplates.structure import (
     create,
     init,
     modify,
+    value_of,
     fields,
+    items,
     field,
 )
 

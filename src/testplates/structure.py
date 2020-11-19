@@ -3,7 +3,9 @@ __all__ = (
     "create",
     "init",
     "modify",
+    "value_of",
     "fields",
+    "items",
     "field",
     "FieldType",
     "StructureType",
@@ -16,7 +18,9 @@ from typing import (
     Any,
     Type,
     TypeVar,
+    Tuple,
     Union,
+    Iterator,
     Mapping,
     Callable,
 )
@@ -132,6 +136,20 @@ def modify(
 
 
 # noinspection PyProtectedMember
+def value_of(
+    structure: Structure,
+) -> Mapping[str, Any]:
+
+    """
+    Returns structure values.
+
+    :param structure: structure instance
+    """
+
+    return dict(structure._testplates_values_)
+
+
+# noinspection PyProtectedMember
 def fields(
     structure_or_structure_type: Union[Structure, Type[Structure]],
     /,
@@ -144,6 +162,25 @@ def fields(
     """
 
     return dict(structure_or_structure_type._testplates_fields_)
+
+
+# noinspection PyShadowingNames
+# noinspection PyProtectedMember
+def items(
+    structure_or_structure_type: Union[Structure, Type[Structure]],
+) -> Iterator[Tuple[str, Maybe[_GenericType], Field[_GenericType]]]:
+
+    """
+    Returns structure items (name, value, field).
+
+    :param structure_or_structure_type: structure type
+    """
+
+    values = structure_or_structure_type._testplates_values_
+    fields = structure_or_structure_type._testplates_fields_
+
+    for name, field in fields.items():
+        yield name, values.get(name, MISSING), field
 
 
 @overload

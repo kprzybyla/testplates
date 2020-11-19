@@ -1,6 +1,8 @@
 from typing import (
     Any,
+    Tuple,
     Dict,
+    Iterator,
 )
 
 from string import (
@@ -23,8 +25,11 @@ from testplates import (
     create,
     init,
     modify,
+    value_of,
     fields,
+    items,
     field,
+    Maybe,
     FieldType,
     ANY,
     WILDCARD,
@@ -386,6 +391,38 @@ def test_modify(
     assert template != modified_template
     assert template == Storage(**{key: value})
     assert modified_template == Storage(**{key: other_value})
+
+
+# noinspection PyTypeChecker
+@given(name=st_name(), key=st.text(), value=st.integers())
+def test_value_of(
+    name: str,
+    key: str,
+    value: int,
+) -> None:
+    field_object: FieldType[int] = field()
+    template_type = create(name, **{key: field_object})
+    assert (result := init(template_type, **{key: value}))
+
+    template = unwrap_success(result)
+    template_value = value_of(template)
+    assert template_value == {key: value}
+
+
+# noinspection PyTypeChecker
+@given(name=st_name(), key=st.text(), value=st.integers())
+def test_items(
+    name: str,
+    key: str,
+    value: int,
+) -> None:
+    field_object: FieldType[int] = field()
+    template_type = create(name, **{key: field_object})
+    assert (result := init(template_type, **{key: value}))
+
+    template = unwrap_success(result)
+    template_value: Iterator[Tuple[str, Maybe[int], FieldType[int]]] = items(template)
+    assert list(template_value) == [(key, value, field_object)]
 
 
 # noinspection PyTypeChecker
