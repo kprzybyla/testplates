@@ -8,9 +8,8 @@ __all__ = (
     "LiteralWildcard",
     "LiteralAbsent",
     "LiteralUnlimited",
-    "FieldType",
-    "StructureType",
-    "StructureTypeVar",
+    "Field",
+    "Structure",
     "struct",
     "create",
     "init",
@@ -90,9 +89,8 @@ from testplates.value import (
 )
 
 from testplates.structure import (
-    FieldType,
-    StructureType,
-    StructureTypeVar,
+    Field,
+    Structure,
 )
 
 # Concretes

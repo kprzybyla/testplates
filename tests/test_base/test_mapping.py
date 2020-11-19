@@ -12,7 +12,7 @@ from testplates import (
     init,
     field,
     passthrough_validator,
-    FieldType,
+    Field,
     MISSING,
 )
 
@@ -25,7 +25,7 @@ def test_value_access_in_required_field(value: int) -> None:
     @struct
     class Template:
 
-        key: FieldType[int] = field()
+        key: Field[int] = field()
 
     validator = unwrap_success(passthrough_validator())
     assert Template.key.name == KEY
@@ -71,7 +71,7 @@ def test_value_access_in_optional_field(value: int) -> None:
     @struct
     class Template:
 
-        key: FieldType[int] = field(optional=True)
+        key: Field[int] = field(optional=True)
 
     validator = unwrap_success(passthrough_validator())
     assert Template.key.name == KEY
@@ -117,7 +117,7 @@ def test_len(value: int) -> None:
     @struct
     class Template:
 
-        key: FieldType[int] = field()
+        key: Field[int] = field()
 
     assert (result := init(Template, key=value))
 
@@ -131,7 +131,7 @@ def test_iter(value: int) -> None:
     @struct
     class Template:
 
-        key: FieldType[int] = field()
+        key: Field[int] = field()
 
     assert (result := init(Template, key=value))
 

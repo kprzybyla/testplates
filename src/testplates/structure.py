@@ -7,9 +7,8 @@ __all__ = (
     "fields",
     "items",
     "field",
-    "FieldType",
-    "StructureType",
-    "StructureTypeVar",
+    "Field",
+    "Structure",
 )
 
 from typing import (
@@ -30,8 +29,8 @@ from resultful import (
 )
 
 from testplates.impl.base import (
-    Field,
-    Structure,
+    Field as FieldImpl,
+    Structure as StructureImpl,
     StructureMeta,
     StructureDict,
     SecretType,
@@ -52,10 +51,10 @@ from .exceptions import (
 )
 
 _GenericType = TypeVar("_GenericType")
+_StructureType = TypeVar("_StructureType", bound=StructureImpl)
 
-FieldType = Union[Field]
-StructureType = Union[Structure]
-StructureTypeVar = TypeVar("StructureTypeVar", bound=Structure)
+Field = Union[FieldImpl]
+Structure = Union[StructureImpl]
 
 
 # noinspection PyTypeChecker
@@ -71,7 +70,7 @@ def struct(
     """
 
     name = cls.__name__
-    bases = (cls, Structure)
+    bases = (cls, StructureImpl)
     attrs = StructureDict(cls.__dict__)
     structure_type = StructureMeta(name, bases, attrs)
 
@@ -94,17 +93,17 @@ def create(
     :param fields: structure fields
     """
 
-    structure_type = Structure._testplates_create_(name, **fields)
+    structure_type = StructureImpl._testplates_create_(name, **fields)
 
     return cast(Type[Structure], structure_type)
 
 
 # noinspection PyProtectedMember
 def init(
-    structure_type: Type[StructureTypeVar],
+    structure_type: Type[_StructureType],
     /,
     **values: Any,
-) -> Result[StructureTypeVar, TestplatesError]:
+) -> Result[_StructureType, TestplatesError]:
 
     """
     Initializes structure with given values.
@@ -120,10 +119,10 @@ def init(
 
 # noinspection PyProtectedMember
 def modify(
-    structure: StructureTypeVar,
+    structure: _StructureType,
     /,
     **values: Any,
-) -> Result[StructureTypeVar, TestplatesError]:
+) -> Result[_StructureType, TestplatesError]:
 
     """
     Modifies structure with given values.
@@ -215,6 +214,7 @@ def field(
     ...
 
 
+# noinspection PyArgumentList
 def field(
     validator: Result[Validator, TestplatesError] = passthrough_validator(),
     /,

@@ -21,7 +21,7 @@ from testplates import (
     create,
     mapping_validator,
     passthrough_validator,
-    FieldType,
+    Field,
     TestplatesError,
     InvalidTypeError,
     RequiredKeyMissingError,
@@ -52,7 +52,7 @@ def test_success(key: str, value: int) -> None:
         assert this_value == value
         return success(None)
 
-    field_object: FieldType[int] = field(success(validator), optional=True)
+    field_object: Field[int] = field(success(validator), optional=True)
     structure_type = create(STRUCTURE_NAME, **{key: field_object})
     assert (validator_result := mapping_validator(structure_type))
 
@@ -65,7 +65,7 @@ def test_success(key: str, value: int) -> None:
 
 @given(key=st.text())
 def test_success_with_optional_field(key: str) -> None:
-    field_object: FieldType[int] = field(passthrough_validator(), optional=True)
+    field_object: Field[int] = field(passthrough_validator(), optional=True)
     structure_type = create(STRUCTURE_NAME, **{key: field_object})
     assert (validator_result := mapping_validator(structure_type))
 
@@ -92,7 +92,7 @@ def test_failure_when_data_type_validation_fails(data: Any) -> None:
 
 @given(key=st.text())
 def test_failure_when_data_required_key_is_missing(key: str) -> None:
-    field_object: FieldType[int] = field(passthrough_validator())
+    field_object: Field[int] = field(passthrough_validator())
     structure_type = create(STRUCTURE_NAME, **{key: field_object})
     assert (validator_result := mapping_validator(structure_type))
 
@@ -127,7 +127,7 @@ def test_failure_when_data_field_validation_fails(key: str, value: int, message:
         assert this_value == value
         return failure(field_error)
 
-    field_object: FieldType[int] = field(success(validator), optional=True)
+    field_object: Field[int] = field(success(validator), optional=True)
     structure_type = create(STRUCTURE_NAME, **{key: field_object})
     assert (validator_result := mapping_validator(structure_type))
 

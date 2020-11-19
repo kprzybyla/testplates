@@ -60,8 +60,6 @@ from .exceptions import (
     InvalidStructureError,
 )
 
-# noinspection PyTypeChecker
-_Structure = TypeVar("_Structure", bound="Structure")
 _CovariantType = TypeVar("_CovariantType", covariant=True)
 
 TESTPLATES_ERRORS_ATTR_NAME: Final[str] = "_testplates_errors_"
