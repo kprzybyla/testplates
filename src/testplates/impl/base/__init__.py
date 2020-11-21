@@ -14,6 +14,9 @@ __all__ = (
     "Structure",
     "StructureMeta",
     "StructureDict",
+    "CodecProtocol",
+    "EncodeFunctionProtocol",
+    "DecodeFunctionProtocol",
     "MissingType",
     "SpecialValueType",
     "UnlimitedType",
@@ -37,6 +40,9 @@ from .structure import (
     Structure,
     StructureMeta,
     StructureDict,
+    CodecProtocol,
+    EncodeFunctionProtocol,
+    DecodeFunctionProtocol,
 )
 
 from .value import (

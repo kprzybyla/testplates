@@ -6,6 +6,7 @@ __all__ = (
     "value_of",
     "fields",
     "items",
+    "add_codec",
     "field",
     "Field",
     "Structure",
@@ -22,6 +23,7 @@ from typing import (
     Iterator,
     Mapping,
     Callable,
+    Final,
 )
 
 from resultful import (
@@ -34,6 +36,7 @@ from testplates.impl.base import (
     StructureMeta,
     StructureDict,
     SecretType,
+    CodecProtocol,
 )
 
 from .value import (
@@ -55,6 +58,8 @@ _StructureType = TypeVar("_StructureType", bound=StructureImpl)
 
 Field = Union[FieldImpl]
 Structure = Union[StructureImpl]
+
+TESTPLATES_CODECS_ATTR_NAME: Final[str] = "_testplates_codecs_"
 
 
 # noinspection PyTypeChecker
@@ -182,6 +187,23 @@ def items(
         yield name, values.get(name, MISSING), field
 
 
+def add_codec(
+    cls: Type[Structure],
+    *,
+    codec: Type[CodecProtocol],
+) -> None:
+
+    """
+    Attaches codec to the given cls.
+
+    :param cls: any class type
+    :param codec: codec to be attached to class type
+    """
+
+    codecs = getattr(cls, TESTPLATES_CODECS_ATTR_NAME, [])
+    codecs.append(codec)
+
+
 @overload
 def field(
     validator: Result[Validator, TestplatesError] = ...,
@@ -214,7 +236,6 @@ def field(
     ...
 
 
-# noinspection PyArgumentList
 def field(
     validator: Result[Validator, TestplatesError] = passthrough_validator(),
     /,

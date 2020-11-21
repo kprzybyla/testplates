@@ -17,6 +17,7 @@ __all__ = (
     "value_of",
     "fields",
     "items",
+    "add_codec",
     "field",
     "MISSING",
     "ANY",
@@ -72,6 +73,15 @@ __all__ = (
     "InvalidKeyError",
     "InvalidDataFormatError",
     "ChoiceValidationError",
+    "encode",
+    "decode",
+    "get_codec",
+    "create_codec",
+    "set_default_codec",
+    "NoCodecAvailableError",
+    "InaccessibleCodecError",
+    "AmbiguousCodecChoiceError",
+    "DefaultCodecAlreadySetError",
 )
 
 # Annotations
@@ -103,6 +113,7 @@ from testplates.structure import (
     value_of,
     fields,
     items,
+    add_codec,
     field,
 )
 
@@ -173,4 +184,16 @@ from testplates.exceptions import (
     InvalidKeyError,
     InvalidDataFormatError,
     ChoiceValidationError,
+)
+
+from testplates.codecs import (
+    encode,
+    decode,
+    get_codec,
+    create_codec,
+    set_default_codec,
+    NoCodecAvailableError,
+    InaccessibleCodecError,
+    AmbiguousCodecChoiceError,
+    DefaultCodecAlreadySetError,
 )

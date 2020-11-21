@@ -5,6 +5,9 @@ __all__ = (
     "Structure",
     "StructureMeta",
     "StructureDict",
+    "CodecProtocol",
+    "EncodeFunctionProtocol",
+    "DecodeFunctionProtocol",
 )
 
 import abc
@@ -14,6 +17,7 @@ from typing import (
     cast,
     overload,
     Any,
+    Type,
     TypeVar,
     Generic,
     ClassVar,
@@ -25,6 +29,7 @@ from typing import (
     Mapping,
     Callable,
     Optional,
+    Protocol,
     Final,
 )
 
@@ -60,9 +65,69 @@ from .exceptions import (
     InvalidStructureError,
 )
 
+# noinspection PyTypeChecker
+_Structure = TypeVar("_Structure", bound="Structure")
 _CovariantType = TypeVar("_CovariantType", covariant=True)
 
+TESTPLATES_CODECS_ATTR_NAME: Final[str] = "_testplates_codecs_"
+TESTPLATES_DEFAULT_CODEC_ATTR_NAME: Final[str] = "_testplates_default_codec_"
 TESTPLATES_ERRORS_ATTR_NAME: Final[str] = "_testplates_errors_"
+
+
+class CodecProtocol(Protocol):
+    @classmethod
+    def encode(
+        cls,
+        structure: Structure,
+    ) -> Result[bytes, TestplatesError]:
+
+        """
+        Encodes structure into bytes.
+
+        :param structure: structure to be encoded
+        """
+
+    @classmethod
+    def decode(
+        cls,
+        structure_type: Type[_Structure],
+        data: bytes,
+    ) -> Result[_Structure, TestplatesError]:
+
+        """
+        Decodes bytes into structure.
+
+        :param structure_type: structure type to be decoded to
+        :param data: bytes to be decoded
+        """
+
+
+class EncodeFunctionProtocol(Protocol):
+    def __call__(
+        self,
+        structure: Structure,
+    ) -> Result[bytes, TestplatesError]:
+
+        """
+        Encodes structure into bytes.
+
+        :param structure: structure to be encoded
+        """
+
+
+class DecodeFunctionProtocol(Protocol):
+    def __call__(
+        self,
+        structure_type: Type[_Structure],
+        data: bytes,
+    ) -> Result[_Structure, TestplatesError]:
+
+        """
+        Decodes bytes into structure.
+
+        :param structure_type: structure type to be decoded to
+        :param data: bytes to be decoded
+        """
 
 
 class Field(Generic[_CovariantType]):
@@ -278,6 +343,8 @@ class StructureMeta(abc.ABCMeta):
 
     __slots__ = ()
 
+    _testplates_codecs_: List[Type[CodecProtocol]]
+    _testplates_default_codec_: Type[CodecProtocol]
     _testplates_errors_: List[TestplatesError]
     _testplates_fields_: Mapping[str, Field[Any]]
 
@@ -289,6 +356,8 @@ class StructureMeta(abc.ABCMeta):
     ) -> None:
         super().__init__(name, bases, attrs)
 
+        cls._testplates_codecs_ = attrs.get(TESTPLATES_CODECS_ATTR_NAME, [])
+        cls._testplates_default_codec_ = attrs.get(TESTPLATES_DEFAULT_CODEC_ATTR_NAME, None)
         cls._testplates_errors_ = attrs.get(TESTPLATES_ERRORS_ATTR_NAME, [])
         cls._testplates_fields_ = attrs.fields
 
@@ -340,6 +409,8 @@ class Structure(Mapping[str, Any], metaclass=StructureMeta):
     # noinspection PyTypeChecker
     _testplates_self_ = TypeVar("_testplates_self_", bound="Structure")
 
+    _testplates_codecs_: ClassVar[List[Type[CodecProtocol]]]
+    _testplates_default_codec_: ClassVar[Type[CodecProtocol]]
     _testplates_errors_: ClassVar[List[TestplatesError]]
     _testplates_fields_: ClassVar[Mapping[str, Field[Any]]]
 
