@@ -22,12 +22,17 @@ from typing import (
     Union,
     Iterator,
     Mapping,
+    Dict,
     Callable,
     Final,
 )
 
 from resultful import (
     Result,
+    success,
+    failure,
+    unwrap_success,
+    unwrap_failure,
 )
 
 from testplates.impl.base import (
@@ -37,6 +42,10 @@ from testplates.impl.base import (
     StructureDict,
     SecretType,
     CodecProtocol,
+)
+
+from testplates.impl.validators import (
+    PassthroughValidator,
 )
 
 from .value import (
@@ -51,6 +60,8 @@ from .validators import (
 
 from .exceptions import (
     TestplatesError,
+    UnexpectedValueError,
+    InvalidStructureError,
 )
 
 _GenericType = TypeVar("_GenericType")
@@ -60,6 +71,8 @@ Field = Union[FieldImpl]
 Structure = Union[StructureImpl]
 
 TESTPLATES_CODECS_ATTR_NAME: Final[str] = "_testplates_codecs_"
+
+passthrough_validator_singleton: Final[Validator] = PassthroughValidator()
 
 
 # noinspection PyTypeChecker
@@ -98,11 +111,23 @@ def create(
     :param fields: structure fields
     """
 
-    structure_type = StructureImpl._testplates_create_(name, **fields)
+    cls = cast(StructureMeta, StructureImpl)
 
-    return cast(Type[Structure], structure_type)
+    bases = (cls,)
+    metaclass = cls.__class__
+
+    attrs = metaclass.__prepare__(name, bases)
+
+    for key, field in (fields or {}).items():
+        attrs.__setitem__(key, field)
+
+    instance = cast(StructureMeta, metaclass.__new__(metaclass, name, bases, attrs))
+    metaclass.__init__(instance, name, bases, attrs)
+
+    return cast(Type[Structure], instance)
 
 
+# noinspection PyShadowingNames
 # noinspection PyProtectedMember
 def init(
     structure_type: Type[_StructureType],
@@ -119,7 +144,25 @@ def init(
 
     structure = structure_type(SecretType.SECRET)
 
-    return structure._testplates_init_(**values)
+    if errors := structure._testplates_errors_:
+        return failure(InvalidStructureError(errors))
+
+    keys = structure._testplates_fields_.keys()
+
+    for key, value in values.items():
+        if key not in keys:
+            return failure(UnexpectedValueError(key, value))
+
+    for key, field in structure._testplates_fields_.items():
+        if not (result := field.validate(values.get(key, MISSING))):
+            return result
+
+        if (default := field.default) is not MISSING:
+            values.setdefault(key, default)
+
+    structure._testplates_values_ = values
+
+    return success(structure)
 
 
 # noinspection PyProtectedMember
@@ -136,7 +179,10 @@ def modify(
     :param values: structure modification values
     """
 
-    return structure._testplates_modify_(**values)
+    new_values: Dict[str, Any] = dict(structure._testplates_values_)
+    new_values.update(values)
+
+    return init(type(structure), **new_values)
 
 
 # noinspection PyProtectedMember
@@ -236,6 +282,7 @@ def field(
     ...
 
 
+# noinspection PyTypeChecker
 def field(
     validator: Result[Validator, TestplatesError] = passthrough_validator(),
     /,
@@ -257,8 +304,17 @@ def field(
     :param optional: indication whether field is optional or not
     """
 
+    if not validator:
+        return Field(
+            passthrough_validator_singleton,
+            default=default,
+            default_factory=default_factory,
+            optional=optional,
+            errors=[unwrap_failure(validator)],
+        )
+
     return Field(
-        validator,
+        unwrap_success(validator),
         default=default,
         default_factory=default_factory,
         optional=optional,
