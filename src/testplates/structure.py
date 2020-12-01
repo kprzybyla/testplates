@@ -7,7 +7,7 @@ __all__ = (
     "value_of",
     "fields",
     "items",
-    "add_codec",
+    "attach_codec",
     "field",
     "Field",
     "Structure",
@@ -25,6 +25,7 @@ from typing import (
     Mapping,
     Dict,
     Callable,
+    Optional,
     Final,
 )
 
@@ -37,11 +38,11 @@ from resultful import (
 )
 
 from testplates.impl.base import (
+    Codec as CodecImpl,
     Field as FieldImpl,
     Structure as StructureImpl,
     StructureMeta,
     StructureDict,
-    CodecProtocol,
 )
 
 from testplates.impl.validators import (
@@ -66,10 +67,12 @@ from .exceptions import (
 _GenericType = TypeVar("_GenericType")
 _StructureType = TypeVar("_StructureType", bound=StructureImpl)
 
+Codec = Union[CodecImpl]
 Field = Union[FieldImpl]
 Structure = Union[StructureImpl]
 
 TESTPLATES_CODECS_ATTR_NAME: Final[str] = "_testplates_codecs_"
+TESTPLATES_METADATA_STORAGE_ATTR_NAME: Final[str] = "_testplates_metadata_storage_"
 
 passthrough_validator_singleton: Final[Validator] = PassthroughValidator()
 
@@ -257,10 +260,11 @@ def items(
     return success(iterator())
 
 
-def add_codec(
+def attach_codec(
     cls: Type[Structure],
     *,
-    codec: Type[CodecProtocol],
+    codec: Codec[Any],
+    metadata: Optional[_GenericType] = None,
 ) -> None:
 
     """
@@ -268,7 +272,12 @@ def add_codec(
 
     :param cls: any class type
     :param codec: codec to be attached to class type
+    :param metadata: metadata attached to class type
     """
+
+    if metadata is not None:
+        metadata_storage = getattr(codec, TESTPLATES_METADATA_STORAGE_ATTR_NAME, {})
+        metadata_storage[cls] = metadata
 
     codecs = getattr(cls, TESTPLATES_CODECS_ATTR_NAME, [])
     codecs.append(codec)
@@ -280,7 +289,7 @@ def field(
     /,
     *,
     optional: bool = ...,
-) -> Field[_GenericType]:
+) -> Field[Any]:
     ...
 
 

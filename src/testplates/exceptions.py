@@ -10,6 +10,10 @@ __all__ = (
     "MutuallyExclusiveBoundariesError",
     "OverlappingBoundariesError",
     "SingleMatchBoundariesError",
+    "NoCodecAvailableError",
+    "InaccessibleCodecError",
+    "AmbiguousCodecChoiceError",
+    "DefaultCodecAlreadySetError",
     "InvalidTypeValueError",
     "InvalidTypeError",
     "ProhibitedBoolValueError",
@@ -41,6 +45,10 @@ from testplates.impl.base import (
     MutuallyExclusiveBoundariesError,
     OverlappingBoundariesError,
     SingleMatchBoundariesError,
+    NoCodecAvailableError,
+    InaccessibleCodecError,
+    AmbiguousCodecChoiceError,
+    DefaultCodecAlreadySetError,
 )
 
 from testplates.impl.validators import (

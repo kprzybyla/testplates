@@ -10,13 +10,13 @@ __all__ = (
     "fits_maximum_value",
     "fits_minimum_size",
     "fits_maximum_size",
+    "Codec",
+    "EncodeFunction",
+    "DecodeFunction",
     "Field",
     "Structure",
     "StructureMeta",
     "StructureDict",
-    "CodecProtocol",
-    "EncodeFunctionProtocol",
-    "DecodeFunctionProtocol",
     "MissingType",
     "SpecialValueType",
     "UnlimitedType",
@@ -32,16 +32,20 @@ __all__ = (
     "MutuallyExclusiveBoundariesError",
     "OverlappingBoundariesError",
     "SingleMatchBoundariesError",
+    "NoCodecAvailableError",
+    "InaccessibleCodecError",
+    "AmbiguousCodecChoiceError",
+    "DefaultCodecAlreadySetError",
 )
 
 from .structure import (
+    Codec,
+    EncodeFunction,
+    DecodeFunction,
     Field,
     Structure,
     StructureMeta,
     StructureDict,
-    CodecProtocol,
-    EncodeFunctionProtocol,
-    DecodeFunctionProtocol,
 )
 
 from .value import (
@@ -83,4 +87,8 @@ from .exceptions import (
     MutuallyExclusiveBoundariesError,
     OverlappingBoundariesError,
     SingleMatchBoundariesError,
+    NoCodecAvailableError,
+    InaccessibleCodecError,
+    AmbiguousCodecChoiceError,
+    DefaultCodecAlreadySetError,
 )

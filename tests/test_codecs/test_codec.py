@@ -1,6 +1,6 @@
 from testplates import (
     struct,
-    add_codec,
+    attach_codec,
     get_codec,
     create_codec,
     set_default_codec,
@@ -27,7 +27,7 @@ def test_add_codec() -> None:
     class Person:
         pass
 
-    add_codec(Person, codec=codec)
+    attach_codec(Person, codec=codec)
 
     assert (result := get_codec(Person))
     assert unwrap_success(result) is codec
@@ -42,8 +42,8 @@ def test_default_codec() -> None:
     class Person:
         pass
 
-    add_codec(Person, codec=main)
-    add_codec(Person, codec=default)
+    attach_codec(Person, codec=main)
+    attach_codec(Person, codec=default)
 
     assert set_default_codec(Person, codec=default)
     assert (result := get_codec(Person))
@@ -62,8 +62,8 @@ def test_default_codec_with_fallback() -> None:
     class Person:
         pass
 
-    add_codec(Person, codec=main)
-    add_codec(Person, codec=default)
+    attach_codec(Person, codec=main)
+    attach_codec(Person, codec=default)
 
     assert set_default_codec(Person, codec=default)
     assert (result := get_codec(Person, using=other, fallback=True))
@@ -81,8 +81,8 @@ def test_default_codec_override() -> None:
     class Person:
         pass
 
-    add_codec(Person, codec=primary)
-    add_codec(Person, codec=secondary)
+    attach_codec(Person, codec=primary)
+    attach_codec(Person, codec=secondary)
 
     assert set_default_codec(Person, codec=primary)
     assert set_default_codec(Person, codec=secondary, override=True)
@@ -101,8 +101,8 @@ def test_default_codec_failure_default_codec_already_set_error() -> None:
     class Person:
         pass
 
-    add_codec(Person, codec=primary)
-    add_codec(Person, codec=secondary)
+    attach_codec(Person, codec=primary)
+    attach_codec(Person, codec=secondary)
 
     assert set_default_codec(Person, codec=primary)
     assert not (result := set_default_codec(Person, codec=secondary))
@@ -138,7 +138,7 @@ def test_default_codec_failure_inaccessible_codec_error() -> None:
     class Person:
         pass
 
-    add_codec(Person, codec=primary)
+    attach_codec(Person, codec=primary)
 
     assert not (result := set_default_codec(Person, codec=secondary))
 
@@ -159,8 +159,8 @@ def test_default_codec_without_fallback_failure_inaccessible_codec_error() -> No
     class Person:
         pass
 
-    add_codec(Person, codec=main)
-    add_codec(Person, codec=default)
+    attach_codec(Person, codec=main)
+    attach_codec(Person, codec=default)
 
     assert set_default_codec(Person, codec=default)
     assert not (result := get_codec(Person, using=other))

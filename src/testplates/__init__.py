@@ -18,7 +18,7 @@ __all__ = (
     "value_of",
     "fields",
     "items",
-    "add_codec",
+    "attach_codec",
     "field",
     "MISSING",
     "ANY",
@@ -36,6 +36,10 @@ __all__ = (
     "MutuallyExclusiveBoundariesError",
     "OverlappingBoundariesError",
     "SingleMatchBoundariesError",
+    "NoCodecAvailableError",
+    "InaccessibleCodecError",
+    "AmbiguousCodecChoiceError",
+    "DefaultCodecAlreadySetError",
     "contains",
     "has_size",
     "has_minimum_size",
@@ -79,10 +83,6 @@ __all__ = (
     "get_codec",
     "create_codec",
     "set_default_codec",
-    "NoCodecAvailableError",
-    "InaccessibleCodecError",
-    "AmbiguousCodecChoiceError",
-    "DefaultCodecAlreadySetError",
 )
 
 # Annotations
@@ -115,8 +115,16 @@ from testplates.structure import (
     value_of,
     fields,
     items,
-    add_codec,
+    attach_codec,
     field,
+)
+
+from testplates.codecs import (
+    encode,
+    decode,
+    get_codec,
+    create_codec,
+    set_default_codec,
 )
 
 from testplates.value import (
@@ -139,6 +147,10 @@ from testplates.exceptions import (
     MutuallyExclusiveBoundariesError,
     OverlappingBoundariesError,
     SingleMatchBoundariesError,
+    NoCodecAvailableError,
+    InaccessibleCodecError,
+    AmbiguousCodecChoiceError,
+    DefaultCodecAlreadySetError,
 )
 
 from testplates.constraints import (
@@ -186,16 +198,4 @@ from testplates.exceptions import (
     InvalidKeyError,
     InvalidDataFormatError,
     ChoiceValidationError,
-)
-
-from testplates.codecs import (
-    encode,
-    decode,
-    get_codec,
-    create_codec,
-    set_default_codec,
-    NoCodecAvailableError,
-    InaccessibleCodecError,
-    AmbiguousCodecChoiceError,
-    DefaultCodecAlreadySetError,
 )

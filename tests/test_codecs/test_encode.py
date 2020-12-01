@@ -1,11 +1,13 @@
 from testplates import (
     struct,
     init,
-    add_codec,
+    field,
+    attach_codec,
     Structure,
     encode,
     create_codec,
     TestplatesError,
+    InvalidStructureError,
     NoCodecAvailableError,
     InaccessibleCodecError,
     AmbiguousCodecChoiceError,
@@ -32,10 +34,14 @@ from .utils import (
 # noinspection PyTypeChecker
 @given(data=st.binary())
 def test_encode(data: bytes) -> None:
+    metadata_object = object()
+
     # noinspection PyUnusedLocal
     def encode_function(
+        metadata: object,
         structure: Structure,
     ) -> Result[bytes, TestplatesError]:
+        assert metadata is metadata_object
         return success(data)
 
     codec = create_codec(encode_function, unreachable)
@@ -44,7 +50,33 @@ def test_encode(data: bytes) -> None:
     class Person:
         pass
 
-    add_codec(Person, codec=codec)
+    attach_codec(Person, codec=codec, metadata=metadata_object)
+
+    assert (person_result := init(Person))
+
+    person = unwrap_success(person_result)
+    assert (encode_result := encode(person))
+    assert unwrap_success(encode_result) == data
+
+
+# noinspection PyTypeChecker
+@given(data=st.binary())
+def test_encode_without_metadata(data: bytes) -> None:
+    # noinspection PyUnusedLocal
+    def encode_function(
+        metadata: None,
+        structure: Structure,
+    ) -> Result[bytes, TestplatesError]:
+        assert metadata is None
+        return success(data)
+
+    codec = create_codec(encode_function, unreachable)
+
+    @struct
+    class Person:
+        pass
+
+    attach_codec(Person, codec=codec)
 
     assert (person_result := init(Person))
 
@@ -58,6 +90,7 @@ def test_encode(data: bytes) -> None:
 def test_encode_with_using(data: bytes) -> None:
     # noinspection PyUnusedLocal
     def encode_function(
+        metadata: None,
         structure: Structure,
     ) -> Result[bytes, TestplatesError]:
         return success(data)
@@ -69,8 +102,8 @@ def test_encode_with_using(data: bytes) -> None:
     class Person:
         pass
 
-    add_codec(Person, codec=primary)
-    add_codec(Person, codec=secondary)
+    attach_codec(Person, codec=primary)
+    attach_codec(Person, codec=secondary)
 
     assert (person_result := init(Person))
 
@@ -85,6 +118,7 @@ def test_encode_failure() -> None:
 
     # noinspection PyUnusedLocal
     def encode_function(
+        metadata: None,
         structure: Structure,
     ) -> Result[bytes, TestplatesError]:
         return failure(error)
@@ -95,13 +129,33 @@ def test_encode_failure() -> None:
     class Person:
         pass
 
-    add_codec(Person, codec=codec)
+    attach_codec(Person, codec=codec)
 
     assert (person_result := init(Person))
 
     person = unwrap_success(person_result)
     assert not (encode_result := encode(person))
     assert unwrap_failure(encode_result) is error
+
+
+# noinspection PyTypeChecker
+@given(name=st.text())
+def test_encode_failure_invalid_structure(name: str) -> None:
+    field_error = TestplatesError()
+    codec = create_codec(unreachable, unreachable)
+
+    @struct
+    class Person:
+        name = field(failure(field_error))
+
+    attach_codec(Person, codec=codec)
+
+    person = Person(name=name)
+    assert not (encode_result := encode(person))
+
+    error = unwrap_failure(encode_result)
+    assert isinstance(error, InvalidStructureError)
+    assert error.errors == [field_error]
 
 
 # noinspection PyTypeChecker
@@ -129,7 +183,7 @@ def test_encode_failure_inaccessible_codec_error() -> None:
     class Person:
         pass
 
-    add_codec(Person, codec=first)
+    attach_codec(Person, codec=first)
 
     assert (person_result := init(Person))
 
@@ -152,8 +206,8 @@ def test_encode_failure_ambiguous_codec_choice_error() -> None:
     class Person:
         pass
 
-    add_codec(Person, codec=primary)
-    add_codec(Person, codec=secondary)
+    attach_codec(Person, codec=primary)
+    attach_codec(Person, codec=secondary)
 
     assert (person_result := init(Person))
 

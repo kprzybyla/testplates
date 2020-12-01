@@ -11,6 +11,7 @@ __all__ = (
 )
 
 from typing import (
+    Any,
     Type,
     TypeVar,
     Optional,
@@ -25,27 +26,32 @@ from resultful import (
 
 from testplates.impl.base import (
     Structure,
-    EncodeFunctionProtocol,
-    DecodeFunctionProtocol,
-    CodecProtocol,
     TestplatesError,
 )
 
-from testplates.impl.codecs import (
+from testplates.impl.base import (
+    Codec,
+    EncodeFunction,
+    DecodeFunction,
     NoCodecAvailableError,
     InaccessibleCodecError,
     AmbiguousCodecChoiceError,
     DefaultCodecAlreadySetError,
 )
 
+from .structure import (
+    verify,
+)
+
 _Structure = TypeVar("_Structure", bound=Structure)
+_GenericType = TypeVar("_GenericType")
 
 
 def encode(
     structure: Structure,
     /,
     *,
-    using: Optional[Type[CodecProtocol]] = None,
+    using: Optional[Codec[Any]] = None,
     fallback: bool = False,
 ) -> Result[bytes, TestplatesError]:
 
@@ -78,12 +84,23 @@ def encode(
     :param fallback: allows fallback to the default codec from `using` codec
     """
 
-    if not (codec_result := get_codec(type(structure), using=using, fallback=fallback)):
+    if not (verification_result := verify(structure)):
+        return verification_result
+
+    # TODO(kprzybyla): Implement template verification here
+    # for value in structure._testplates_values_.values():
+    #     if value is MISSING or value is ANY or value is WILDCARD:
+    #         return failure(...)
+
+    structure_type = type(structure)
+
+    if not (codec_result := get_codec(structure_type, using=using, fallback=fallback)):
         return codec_result
 
     codec = unwrap_success(codec_result)
+    metadata = codec.metadata.get(structure_type)
 
-    if not (encode_result := codec.encode(structure)):
+    if not (encode_result := codec.encode_function(metadata, structure)):
         return encode_result
 
     return encode_result
@@ -93,7 +110,7 @@ def decode(
     structure_type: Type[_Structure],
     data: bytes,
     *,
-    using: Optional[Type[CodecProtocol]] = None,
+    using: Optional[Codec[Any]] = None,
     fallback: bool = False,
 ) -> Result[_Structure, TestplatesError]:
 
@@ -125,12 +142,16 @@ def decode(
     :param fallback: allows fallback to the default codec from `using` codec
     """
 
+    if not (verification_result := verify(structure_type)):
+        return verification_result
+
     if not (codec_result := get_codec(structure_type, using=using, fallback=fallback)):
         return codec_result
 
     codec = unwrap_success(codec_result)
+    metadata = codec.metadata.get(structure_type)
 
-    if not (decode_result := codec.decode(structure_type, data)):
+    if not (decode_result := codec.decode_function(metadata, structure_type, data)):
         return decode_result
 
     return decode_result
@@ -141,9 +162,9 @@ def get_codec(
     structure_type: Type[_Structure],
     /,
     *,
-    using: Optional[Type[CodecProtocol]] = None,
+    using: Optional[Codec[Any]] = None,
     fallback: bool = False,
-) -> Result[Type[CodecProtocol], TestplatesError]:
+) -> Result[Codec[Any], TestplatesError]:
 
     """
     Retrieves codec from structure type.
@@ -196,9 +217,9 @@ def get_codec(
 
 
 def create_codec(
-    encode_function: EncodeFunctionProtocol,
-    decode_function: DecodeFunctionProtocol,
-) -> Type[CodecProtocol]:
+    encode_function: EncodeFunction[_GenericType],
+    decode_function: DecodeFunction[_GenericType],
+) -> Codec[_GenericType]:
 
     """
     Creates codec with encode and decode functions.
@@ -207,26 +228,7 @@ def create_codec(
     :param decode_function: codec decode function
     """
 
-    class CodecType(CodecProtocol):
-
-        __slots__ = ()
-
-        @classmethod
-        def encode(
-            cls,
-            structure: Structure,
-        ) -> Result[bytes, TestplatesError]:
-            return encode_function(structure)
-
-        @classmethod
-        def decode(
-            cls,
-            structure_type: Type[_Structure],
-            data: bytes,
-        ) -> Result[_Structure, TestplatesError]:
-            return decode_function(structure_type, data)
-
-    return CodecType
+    return Codec(encode_function, decode_function)
 
 
 # noinspection PyProtectedMember
@@ -234,7 +236,7 @@ def set_default_codec(
     structure_type: Type[_Structure],
     /,
     *,
-    codec: Type[CodecProtocol],
+    codec: Codec[Any],
     override: bool = False,
 ) -> Result[None, TestplatesError]:
 

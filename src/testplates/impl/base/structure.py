@@ -1,13 +1,13 @@
 from __future__ import annotations
 
 __all__ = (
+    "Codec",
+    "EncodeFunction",
+    "DecodeFunction",
     "Field",
     "Structure",
     "StructureMeta",
     "StructureDict",
-    "CodecProtocol",
-    "EncodeFunctionProtocol",
-    "DecodeFunctionProtocol",
 )
 
 import abc
@@ -27,6 +27,7 @@ from typing import (
     Dict,
     Iterator,
     Mapping,
+    MutableMapping,
     Callable,
     Optional,
     Protocol,
@@ -64,17 +65,22 @@ from .exceptions import (
 
 # noinspection PyTypeChecker
 _Structure = TypeVar("_Structure", bound="Structure")
+_GenericType = TypeVar("_GenericType")
 _CovariantType = TypeVar("_CovariantType", covariant=True)
+_ContravariantType = TypeVar("_ContravariantType", contravariant=True)
 
 TESTPLATES_ERRORS_ATTR_NAME: Final[str] = "_testplates_errors_"
 TESTPLATES_CODECS_ATTR_NAME: Final[str] = "_testplates_codecs_"
 TESTPLATES_DEFAULT_CODEC_ATTR_NAME: Final[str] = "_testplates_default_codec_"
 
+Metadata = Mapping[Type["Structure"], _CovariantType]
+MetadataStorage = MutableMapping[Type["Structure"], _CovariantType]
 
-class CodecProtocol(Protocol):
-    @classmethod
-    def encode(
-        cls,
+
+class EncodeFunction(Protocol[_ContravariantType]):
+    def __call__(
+        self,
+        metadata: _ContravariantType,
         structure: Structure,
     ) -> Result[bytes, TestplatesError]:
 
@@ -84,9 +90,11 @@ class CodecProtocol(Protocol):
         :param structure: structure to be encoded
         """
 
-    @classmethod
-    def decode(
-        cls,
+
+class DecodeFunction(Protocol[_ContravariantType]):
+    def __call__(
+        self,
+        metadata: _ContravariantType,
         structure_type: Type[_Structure],
         data: bytes,
     ) -> Result[_Structure, TestplatesError]:
@@ -99,32 +107,35 @@ class CodecProtocol(Protocol):
         """
 
 
-class EncodeFunctionProtocol(Protocol):
-    def __call__(
+class Codec(Generic[_GenericType]):
+
+    __slots__ = (
+        "_encode_function",
+        "_decode_function",
+        "_testplates_metadata_storage_",
+    )
+
+    def __init__(
         self,
-        structure: Structure,
-    ) -> Result[bytes, TestplatesError]:
+        encode_function: EncodeFunction[_GenericType],
+        decode_function: DecodeFunction[_GenericType],
+    ):
+        self._encode_function = encode_function
+        self._decode_function = decode_function
 
-        """
-        Encodes structure into bytes.
+        self._testplates_metadata_storage_: MetadataStorage[_GenericType] = {}
 
-        :param structure: structure to be encoded
-        """
+    @property
+    def metadata(self) -> Metadata[_GenericType]:
+        return self._testplates_metadata_storage_
 
+    @property
+    def encode_function(self) -> EncodeFunction[_GenericType]:
+        return self._encode_function
 
-class DecodeFunctionProtocol(Protocol):
-    def __call__(
-        self,
-        structure_type: Type[_Structure],
-        data: bytes,
-    ) -> Result[_Structure, TestplatesError]:
-
-        """
-        Decodes bytes into structure.
-
-        :param structure_type: structure type to be decoded to
-        :param data: bytes to be decoded
-        """
+    @property
+    def decode_function(self) -> DecodeFunction[_GenericType]:
+        return self._decode_function
 
 
 class Field(Generic[_CovariantType]):
@@ -340,8 +351,8 @@ class StructureMeta(abc.ABCMeta):
 
     _testplates_errors_: List[TestplatesError]
     _testplates_fields_: Mapping[str, Field[Any]]
-    _testplates_codecs_: List[Type[CodecProtocol]]
-    _testplates_default_codec_: Type[CodecProtocol]
+    _testplates_codecs_: List[Codec[Any]]
+    _testplates_default_codec_: Codec[Any]
 
     def __init__(
         cls,
@@ -384,8 +395,8 @@ class Structure(Mapping[str, Any], metaclass=StructureMeta):
 
     _testplates_errors_: ClassVar[List[TestplatesError]]
     _testplates_fields_: ClassVar[Mapping[str, Field[Any]]]
-    _testplates_codecs_: ClassVar[List[Type[CodecProtocol]]]
-    _testplates_default_codec_: ClassVar[Type[CodecProtocol]]
+    _testplates_codecs_: ClassVar[List[Codec[Any]]]
+    _testplates_default_codec_: ClassVar[Codec[Any]]
 
     def __init__(
         self,
