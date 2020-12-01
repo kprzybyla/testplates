@@ -49,10 +49,10 @@ from .value import (
     values_matches,
     Maybe,
     Validator,
+    MISSING,
     ANY,
     WILDCARD,
     ABSENT,
-    MISSING,
 )
 
 from .exceptions import (

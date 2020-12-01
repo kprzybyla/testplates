@@ -9,10 +9,10 @@ __all__ = (
     "Maybe",
     "Value",
     "Validator",
+    "MISSING",
     "ANY",
     "WILDCARD",
     "ABSENT",
-    "MISSING",
     "UNLIMITED",
 )
 
@@ -154,8 +154,8 @@ Maybe = Union[_GenericType, MissingType]
 Value = Union[_GenericType, SpecialValueType]
 Validator = Callable[[Any], Result[None, TestplatesError]]
 
+MISSING: Final[Literal[MissingType.MISSING]] = MissingType.MISSING
 ANY: Final[Literal[SpecialValueType.ANY]] = SpecialValueType.ANY
 WILDCARD: Final[Literal[SpecialValueType.WILDCARD]] = SpecialValueType.WILDCARD
 ABSENT: Final[Literal[SpecialValueType.ABSENT]] = SpecialValueType.ABSENT
-MISSING: Final[Literal[MissingType.MISSING]] = MissingType.MISSING
 UNLIMITED: Final[Literal[UnlimitedType.UNLIMITED]] = UnlimitedType.UNLIMITED
