@@ -288,7 +288,7 @@ class Field(Generic[_CovariantType]):
         if value is ANY:
             return success(None)
 
-        elif value is MISSING and default is MISSING and not is_optional:
+        elif value is MISSING and default is MISSING:
             return failure(MissingValueError(self))
 
         elif (value is ABSENT or default is ABSENT) and not is_optional:

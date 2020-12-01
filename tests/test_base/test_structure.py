@@ -317,13 +317,20 @@ def test_missing_value_in_required_field_value_error(
 
 # noinspection PyTypeChecker
 @given(name=st_name(), key=st.text())
-def test_optional_field_prevents_value_error_on_missing_value(
+def test_missing_value_in_optional_field_value_error(
     name: str,
     key: str,
 ) -> None:
     field_object: Field[int] = field(optional=True)
     template_type = create(name, **{key: field_object})
-    assert init(template_type)
+    assert not (result := init(template_type))
+
+    error = unwrap_failure(result)
+    assert isinstance(error, InvalidStructureError)
+
+    (inner_error,) = error.errors
+    assert isinstance(inner_error, MissingValueError)
+    assert inner_error.field == field_object
 
 
 # noinspection PyTypeChecker
