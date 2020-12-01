@@ -2,6 +2,7 @@ __all__ = (
     "struct",
     "create",
     "init",
+    "verify",
     "modify",
     "value_of",
     "fields",
@@ -40,7 +41,6 @@ from testplates.impl.base import (
     Structure as StructureImpl,
     StructureMeta,
     StructureDict,
-    SecretType,
     CodecProtocol,
 )
 
@@ -60,7 +60,6 @@ from .validators import (
 
 from .exceptions import (
     TestplatesError,
-    UnexpectedValueError,
     InvalidStructureError,
 )
 
@@ -142,27 +141,29 @@ def init(
     :param values: structure initialization values
     """
 
-    structure = structure_type(SecretType.SECRET)
+    structure = structure_type(**values)
 
     if errors := structure._testplates_errors_:
         return failure(InvalidStructureError(errors))
 
-    keys = structure._testplates_fields_.keys()
-
-    for key, value in values.items():
-        if key not in keys:
-            return failure(UnexpectedValueError(key, value))
-
-    for key, field in structure._testplates_fields_.items():
-        if not (result := field.validate(values.get(key, MISSING))):
-            return result
-
-        if (default := field.default) is not MISSING:
-            values.setdefault(key, default)
-
-    structure._testplates_values_ = values
-
     return success(structure)
+
+
+# noinspection PyProtectedMember
+def verify(
+    structure_or_structure_type: Union[Structure, Type[Structure]],
+) -> Result[None, TestplatesError]:
+
+    """
+    Verifies structure.
+
+    :param structure_or_structure_type: structure type
+    """
+
+    if errors := structure_or_structure_type._testplates_errors_:
+        return failure(InvalidStructureError(errors))
+
+    return success(None)
 
 
 # noinspection PyProtectedMember
@@ -179,7 +180,12 @@ def modify(
     :param values: structure modification values
     """
 
-    new_values: Dict[str, Any] = dict(structure._testplates_values_)
+    if errors := structure._testplates_errors_:
+        return failure(InvalidStructureError(errors))
+
+    original_values = structure._testplates_values_
+
+    new_values: Dict[str, Any] = dict(original_values)
     new_values.update(values)
 
     return init(type(structure), **new_values)
@@ -188,7 +194,7 @@ def modify(
 # noinspection PyProtectedMember
 def value_of(
     structure: Structure,
-) -> Mapping[str, Any]:
+) -> Result[Mapping[str, Any], TestplatesError]:
 
     """
     Returns structure values.
@@ -196,14 +202,20 @@ def value_of(
     :param structure: structure instance
     """
 
-    return dict(structure._testplates_values_)
+    if errors := structure._testplates_errors_:
+        return failure(InvalidStructureError(errors))
+
+    values = structure._testplates_values_
+
+    return success(dict(values))
 
 
+# noinspection PyShadowingNames
 # noinspection PyProtectedMember
 def fields(
     structure_or_structure_type: Union[Structure, Type[Structure]],
     /,
-) -> Mapping[str, Field[Any]]:
+) -> Result[Mapping[str, Field[Any]], TestplatesError]:
 
     """
     Returns structure fields.
@@ -211,14 +223,19 @@ def fields(
     :param structure_or_structure_type: structure type
     """
 
-    return dict(structure_or_structure_type._testplates_fields_)
+    if errors := structure_or_structure_type._testplates_errors_:
+        return failure(InvalidStructureError(errors))
+
+    fields = structure_or_structure_type._testplates_fields_
+
+    return success(dict(fields))
 
 
 # noinspection PyShadowingNames
 # noinspection PyProtectedMember
 def items(
     structure_or_structure_type: Union[Structure, Type[Structure]],
-) -> Iterator[Tuple[str, Maybe[_GenericType], Field[_GenericType]]]:
+) -> Result[Iterator[Tuple[str, Maybe[Any], Field[Any]]], TestplatesError]:
 
     """
     Returns structure items (name, value, field).
@@ -226,11 +243,18 @@ def items(
     :param structure_or_structure_type: structure type
     """
 
+    if errors := structure_or_structure_type._testplates_errors_:
+        return failure(InvalidStructureError(errors))
+
     values = structure_or_structure_type._testplates_values_
     fields = structure_or_structure_type._testplates_fields_
 
-    for name, field in fields.items():
-        yield name, values.get(name, MISSING), field
+    # noinspection PyShadowingNames
+    def iterator() -> Iterator[Tuple[str, Maybe[_GenericType], Field[_GenericType]]]:
+        for name, field in fields.items():
+            yield name, values.get(name, MISSING), field
+
+    return success(iterator())
 
 
 def add_codec(

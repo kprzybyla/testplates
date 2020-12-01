@@ -1,8 +1,6 @@
 from typing import (
     Any,
-    Tuple,
     Dict,
-    Iterator,
 )
 
 from string import (
@@ -24,12 +22,12 @@ from hypothesis import (
 from testplates import (
     create,
     init,
+    verify,
     modify,
     value_of,
     fields,
     items,
     field,
-    Maybe,
     Field,
     ANY,
     WILDCARD,
@@ -218,9 +216,12 @@ def test_wildcard_value_error_in_required_field(
     assert not (result := init(template_type, **{key: WILDCARD}))
 
     error = unwrap_failure(result)
-    assert isinstance(error, ProhibitedValueError)
-    assert error.field == field_object
-    assert error.value == WILDCARD
+    assert isinstance(error, InvalidStructureError)
+
+    (inner_error,) = error.errors
+    assert isinstance(inner_error, ProhibitedValueError)
+    assert inner_error.field == field_object
+    assert inner_error.value == WILDCARD
 
 
 # noinspection PyTypeChecker
@@ -263,9 +264,12 @@ def test_absent_value_error_in_required_field(
     assert not (result := init(template_type, **{key: ABSENT}))
 
     error = unwrap_failure(result)
-    assert isinstance(error, ProhibitedValueError)
-    assert error.field == field_object
-    assert error.value == ABSENT
+    assert isinstance(error, InvalidStructureError)
+
+    (inner_error,) = error.errors
+    assert isinstance(inner_error, ProhibitedValueError)
+    assert inner_error.field == field_object
+    assert inner_error.value == ABSENT
 
 
 # noinspection PyTypeChecker
@@ -283,9 +287,14 @@ def test_unexpected_value_error(
     assert not (result := init(template_type, **{other_key: other_value}))
 
     error = unwrap_failure(result)
-    assert isinstance(error, UnexpectedValueError)
-    assert error.key == other_key
-    assert error.value == other_value
+    assert isinstance(error, InvalidStructureError)
+
+    (unexpected_value, missing_value) = error.errors
+    assert isinstance(unexpected_value, UnexpectedValueError)
+    assert unexpected_value.key == other_key
+    assert unexpected_value.value == other_value
+    assert isinstance(missing_value, MissingValueError)
+    assert missing_value.field == field_object
 
 
 # noinspection PyTypeChecker
@@ -299,8 +308,11 @@ def test_missing_value_in_required_field_value_error(
     assert not (result := init(template_type))
 
     error = unwrap_failure(result)
-    assert isinstance(error, MissingValueError)
-    assert error.field == field_object
+    assert isinstance(error, InvalidStructureError)
+
+    (inner_error,) = error.errors
+    assert isinstance(inner_error, MissingValueError)
+    assert inner_error.field == field_object
 
 
 # noinspection PyTypeChecker
@@ -347,8 +359,9 @@ def test_required_field_properties_access(
 ) -> None:
     field_object = field(default=default)
     template_type = create(name, **{key: field_object})
-    template_fields = fields(template_type)
+    assert (template_fields_result := fields(template_type))
 
+    template_fields = unwrap_success(template_fields_result)
     assert template_fields[key].name == key
     assert template_fields[key].default == default
     assert template_fields[key].is_optional is False
@@ -363,11 +376,73 @@ def test_optional_field_properties_access(
 ) -> None:
     field_object = field(default=default, optional=True)
     template_type = create(name, **{key: field_object})
-    template_fields = fields(template_type)
+    assert (template_fields_result := fields(template_type))
 
+    template_fields = unwrap_success(template_fields_result)
     assert template_fields[key].name == key
     assert template_fields[key].default == default
     assert template_fields[key].is_optional is True
+
+
+# noinspection PyTypeChecker
+@given(name=st_name(), key=st.text(), value=st.integers())
+def test_init_failure(
+    name: str,
+    key: str,
+    value: int,
+) -> None:
+    field_error = TestplatesError()
+    field_object: Field[int] = field(failure(field_error))
+    template_type = create(name, **{key: field_object})
+    assert not (result := init(template_type, **{key: value}))
+
+    error = unwrap_failure(result)
+    assert isinstance(error, InvalidStructureError)
+    assert error.errors == [field_error]
+
+
+# noinspection PyTypeChecker
+@given(name=st_name(), key=st.text())
+def test_verify(
+    name: str,
+    key: str,
+) -> None:
+    field_object: Field[int] = field()
+    template_type = create(name, **{key: field_object})
+    assert (result := verify(template_type))
+    assert unwrap_success(result) is None
+
+
+# noinspection PyTypeChecker
+@given(name=st_name(), key=st.text())
+def test_verify_failure(
+    name: str,
+    key: str,
+) -> None:
+    field_error = TestplatesError()
+    field_object: Field[int] = field(failure(field_error))
+    template_type = create(name, **{key: field_object})
+    assert not (result := verify(template_type))
+
+    error = unwrap_failure(result)
+    assert isinstance(error, InvalidStructureError)
+    assert error.errors == [field_error]
+
+
+# noinspection PyTypeChecker
+@given(name=st_name(), key=st.text())
+def test_fields_failure(
+    name: str,
+    key: str,
+) -> None:
+    field_error = TestplatesError()
+    field_object: Field[int] = field(failure(field_error))
+    template_type = create(name, **{key: field_object})
+    assert not (result := fields(template_type))
+
+    error = unwrap_failure(result)
+    assert isinstance(error, InvalidStructureError)
+    assert error.errors == [field_error]
 
 
 # noinspection PyTypeChecker
@@ -394,6 +469,27 @@ def test_modify(
 
 
 # noinspection PyTypeChecker
+@given(name=st_name(), key=st.text(), value=st.integers(), other_value=st.integers())
+def test_modify_failure(
+    name: str,
+    key: str,
+    value: int,
+    other_value: int,
+) -> None:
+    assume(value != other_value)
+
+    field_error = TestplatesError()
+    field_object: Field[int] = field(failure(field_error))
+    template_type = create(name, **{key: field_object})
+    template = template_type(**{key: value})
+    assert not (result := modify(template, **{key: other_value}))
+
+    error = unwrap_failure(result)
+    assert isinstance(error, InvalidStructureError)
+    assert error.errors == [field_error]
+
+
+# noinspection PyTypeChecker
 @given(name=st_name(), key=st.text(), value=st.integers())
 def test_value_of(
     name: str,
@@ -405,8 +501,28 @@ def test_value_of(
     assert (result := init(template_type, **{key: value}))
 
     template = unwrap_success(result)
-    template_value = value_of(template)
+    assert (template_value_result := value_of(template))
+
+    template_value = unwrap_success(template_value_result)
     assert template_value == {key: value}
+
+
+# noinspection PyTypeChecker
+@given(name=st_name(), key=st.text(), value=st.integers())
+def test_value_of_failure(
+    name: str,
+    key: str,
+    value: int,
+) -> None:
+    field_error = TestplatesError()
+    field_object: Field[int] = field(failure(field_error))
+    template_type = create(name, **{key: field_object})
+    template = template_type(**{key: value})
+    assert not (result := value_of(template))
+
+    error = unwrap_failure(result)
+    assert isinstance(error, InvalidStructureError)
+    assert error.errors == [field_error]
 
 
 # noinspection PyTypeChecker
@@ -421,13 +537,15 @@ def test_items(
     assert (result := init(template_type, **{key: value}))
 
     template = unwrap_success(result)
-    template_value: Iterator[Tuple[str, Maybe[int], Field[int]]] = items(template)
-    assert list(template_value) == [(key, value, field_object)]
+    assert (template_items_result := items(template))
+
+    template_items = unwrap_success(template_items_result)
+    assert list(template_items) == [(key, value, field_object)]
 
 
 # noinspection PyTypeChecker
 @given(name=st_name(), key=st.text(), value=st.integers())
-def test_error_forwarding(
+def test_items_failure(
     name: str,
     key: str,
     value: int,
@@ -435,7 +553,8 @@ def test_error_forwarding(
     field_error = TestplatesError()
     field_object: Field[int] = field(failure(field_error))
     template_type = create(name, **{key: field_object})
-    assert not (result := init(template_type, **{key: value}))
+    template = template_type(**{key: value})
+    assert not (result := items(template))
 
     error = unwrap_failure(result)
     assert isinstance(error, InvalidStructureError)

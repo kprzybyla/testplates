@@ -6,7 +6,6 @@ __all__ = (
     "MissingType",
     "SpecialValueType",
     "UnlimitedType",
-    "SecretType",
     "Maybe",
     "Value",
     "Validator",
@@ -147,21 +146,6 @@ class UnlimitedType(enum.Enum):
 
     def __repr__(self) -> str:
         return f"{testplates.__name__}.{self.name}"
-
-
-class SecretType(enum.Enum):
-
-    """
-    Secret value type class.
-
-    FOR INTERNAL USE ONLY.
-    """
-
-    SECRET = enum.auto()
-
-    """
-        Secret internal value.
-    """
 
 
 _GenericType = TypeVar("_GenericType")

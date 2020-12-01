@@ -26,6 +26,7 @@ from testplates import (
     WILDCARD,
     ABSENT,
     TestplatesError,
+    InvalidStructureError,
 )
 
 from tests.strategies import (
@@ -142,8 +143,11 @@ def test_validator_failure(
     assert not (result := init(template_type, **{key: value}))
 
     error = unwrap_failure(result)
-    assert isinstance(error, TestplatesError)
-    assert error.message == message
+    assert isinstance(error, InvalidStructureError)
+
+    (inner_error,) = error.errors
+    assert isinstance(inner_error, TestplatesError)
+    assert inner_error.message == message
 
 
 # noinspection PyTypeChecker

@@ -36,6 +36,7 @@ from typing import (
 from resultful import (
     success,
     failure,
+    unwrap_failure,
     Result,
 )
 
@@ -46,7 +47,6 @@ from testplates.impl.utils import (
 from .value import (
     is_value,
     values_matches,
-    SecretType,
     Maybe,
     Validator,
     ANY,
@@ -58,6 +58,7 @@ from .value import (
 from .exceptions import (
     TestplatesError,
     MissingValueError,
+    UnexpectedValueError,
     ProhibitedValueError,
 )
 
@@ -388,10 +389,24 @@ class Structure(Mapping[str, Any], metaclass=StructureMeta):
 
     def __init__(
         self,
-        __use_testplates_initialize_function_to_create_structure_not_init_method__: SecretType,
         /,
+        **values: Any,
     ) -> None:
-        self._testplates_values_: Mapping[str, Any] = {}
+        fields = self._testplates_fields_
+        errors = self._testplates_errors_
+
+        for key, value in values.items():
+            if key not in fields.keys():
+                errors.append(UnexpectedValueError(key, value))
+
+        for key, field in fields.items():
+            if not (result := field.validate(values.get(key, MISSING))):
+                errors.append(unwrap_failure(result))
+
+            if (default := field.default) is not MISSING:
+                values.setdefault(key, default)
+
+        self._testplates_values_: Mapping[str, Any] = values
 
     def __init_subclass__(cls, **kwargs: Any) -> None:
         pass
