@@ -27,13 +27,13 @@ from resultful import (
 )
 
 from testplates.impl.base import (
-    Structure,
-)
-
-from testplates.impl.base import (
+    extract_codecs,
+    extract_default_codec,
+    insert_default_codec,
     Codec as CodecImpl,
     EncodeFunction,
     DecodeFunction,
+    Structure,
 )
 
 from .structure import (
@@ -95,7 +95,7 @@ def encode(
         return verification_result
 
     # TODO(kprzybyla): Implement template verification here
-    # for value in structure._testplates_values_.values():
+    # for value in extract_values(structure).values():
     #     if value is MISSING or value is ANY or value is WILDCARD:
     #         return failure(...)
 
@@ -164,7 +164,6 @@ def decode(
     return decode_result
 
 
-# noinspection PyProtectedMember
 def get_codec(
     structure_type: Type[_Structure],
     /,
@@ -195,8 +194,8 @@ def get_codec(
     :param fallback: allows fallback to the default codec from `using` codec
     """
 
-    codecs = structure_type._testplates_codecs_
-    default_codec = structure_type._testplates_default_codec_
+    codecs = extract_codecs(structure_type)
+    default_codec = extract_default_codec(structure_type)
 
     if not codecs:
         return failure(NoCodecAvailableError(structure_type))
@@ -238,7 +237,6 @@ def create_codec(
     return Codec(encode_function, decode_function)
 
 
-# noinspection PyProtectedMember
 def set_default_codec(
     structure_type: Type[_Structure],
     /,
@@ -265,8 +263,8 @@ def set_default_codec(
     :param override: allows override of the already existing default codec
     """
 
-    codecs = structure_type._testplates_codecs_
-    default_codec = structure_type._testplates_default_codec_
+    codecs = extract_codecs(structure_type)
+    default_codec = extract_default_codec(structure_type)
 
     if default_codec is not None and not override:
         return failure(DefaultCodecAlreadySetError(structure_type, default_codec, codec))
@@ -277,6 +275,6 @@ def set_default_codec(
     if codec not in codecs:
         return failure(InaccessibleCodecError(structure_type, codecs, codec))
 
-    structure_type._testplates_default_codec_ = codec
+    insert_default_codec(structure_type, codec)
 
     return success(None)

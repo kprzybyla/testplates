@@ -18,6 +18,7 @@ from enum import (
 
 from typing import (
     overload,
+    Type,
     Dict,
     Iterable,
     Mapping,
@@ -39,7 +40,7 @@ from testplates.impl.base import (
     get_pattern,
     get_value_boundaries,
     get_size_boundaries,
-    StructureMeta,
+    Structure,
 )
 
 from testplates.impl.validators import (
@@ -391,7 +392,6 @@ def enum_validator(
     )
 
 
-# noinspection PyTypeChecker
 def sequence_validator(
     item_validator: Result[Validator, TestplatesError] = passthrough_validator(),
     /,
@@ -431,7 +431,7 @@ def sequence_validator(
 
 
 def mapping_validator(
-    structure_type: StructureMeta,
+    structure_type: Type[Structure],
     /,
 ) -> Result[Validator, TestplatesError]:
 

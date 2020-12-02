@@ -1,6 +1,13 @@
 from __future__ import annotations
 
 __all__ = (
+    "extract_errors",
+    "extract_fields",
+    "extract_values",
+    "extract_codecs",
+    "extract_codec_metadata",
+    "extract_default_codec",
+    "insert_default_codec",
     "Codec",
     "EncodeFunction",
     "DecodeFunction",
@@ -69,12 +76,70 @@ _GenericType = TypeVar("_GenericType")
 _CovariantType = TypeVar("_CovariantType", covariant=True)
 _ContravariantType = TypeVar("_ContravariantType", contravariant=True)
 
-TESTPLATES_ERRORS_ATTR_NAME: Final[str] = "_testplates_errors_"
-TESTPLATES_CODECS_ATTR_NAME: Final[str] = "_testplates_codecs_"
-TESTPLATES_DEFAULT_CODEC_ATTR_NAME: Final[str] = "_testplates_default_codec_"
+TESTPLATES_ERRORS_ATTR: Final[str] = "_testplates_errors_"
+TESTPLATES_FIELDS_ATTR: Final[str] = "_testplates_fields_"
+TESTPLATES_VALUES_ATTR: Final[str] = "_testplates_values_"
+TESTPLATES_CODECS_ATTR: Final[str] = "_testplates_codecs_"
+TESTPLATES_CODEC_METADATA_ATTR: Final[str] = "_testplates_codec_metadata_"
+TESTPLATES_DEFAULT_CODEC_ATTR: Final[str] = "_testplates_default_codec_"
 
 Metadata = Mapping[Type["Structure"], _CovariantType]
 MetadataStorage = MutableMapping[Type["Structure"], _CovariantType]
+
+
+def extract_errors(
+    structure_or_structure_type: Union[Structure, Type[Structure]],
+) -> List[TestplatesError]:
+    errors = getattr(structure_or_structure_type, TESTPLATES_ERRORS_ATTR, [])
+
+    return cast(List[TestplatesError], errors)
+
+
+def extract_fields(
+    structure_or_structure_type: Union[Structure, Type[Structure]],
+) -> Mapping[str, Field[Any]]:
+    fields = getattr(structure_or_structure_type, TESTPLATES_FIELDS_ATTR, {})
+
+    return cast(Mapping[str, Field[Any]], fields)
+
+
+def extract_values(
+    structure: Structure,
+) -> Mapping[str, Any]:
+    fields = getattr(structure, TESTPLATES_VALUES_ATTR, {})
+
+    return cast(Mapping[str, Any], fields)
+
+
+def extract_codecs(
+    structure_or_structure_type: Union[Structure, Type[Structure]],
+) -> List[Codec[Any]]:
+    codecs = getattr(structure_or_structure_type, TESTPLATES_CODECS_ATTR, [])
+
+    return cast(List[Codec[Any]], codecs)
+
+
+def extract_codec_metadata(
+    codec: Codec[_GenericType],
+) -> MetadataStorage[_GenericType]:
+    codec_metadata = getattr(codec, TESTPLATES_CODEC_METADATA_ATTR, {})
+
+    return cast(MetadataStorage[_GenericType], codec_metadata)
+
+
+def extract_default_codec(
+    structure_or_structure_type: Union[Structure, Type[Structure]],
+) -> Optional[Codec[Any]]:
+    default_codec = getattr(structure_or_structure_type, TESTPLATES_DEFAULT_CODEC_ATTR, None)
+
+    return cast(Optional[Codec[Any]], default_codec)
+
+
+def insert_default_codec(
+    structure_or_structure_type: Union[Structure, Type[Structure]],
+    default_codec: Codec[Any],
+) -> None:
+    setattr(structure_or_structure_type, TESTPLATES_DEFAULT_CODEC_ATTR, default_codec)
 
 
 class EncodeFunction(Protocol[_ContravariantType]):
@@ -112,7 +177,7 @@ class Codec(Generic[_GenericType]):
     __slots__ = (
         "_encode_function",
         "_decode_function",
-        "_testplates_metadata_storage_",
+        "_testplates_codec_metadata_",
     )
 
     def __init__(
@@ -123,11 +188,11 @@ class Codec(Generic[_GenericType]):
         self._encode_function = encode_function
         self._decode_function = decode_function
 
-        self._testplates_metadata_storage_: MetadataStorage[_GenericType] = {}
+        self._testplates_codec_metadata_: MetadataStorage[_GenericType] = {}
 
     @property
     def metadata(self) -> Metadata[_GenericType]:
-        return self._testplates_metadata_storage_
+        return self._testplates_codec_metadata_
 
     @property
     def encode_function(self) -> EncodeFunction[_GenericType]:
@@ -203,7 +268,6 @@ class Field(Generic[_CovariantType]):
     ) -> _CovariantType:
         ...
 
-    # noinspection PyProtectedMember
     def __get__(
         self,
         instance: Optional[Structure],
@@ -223,7 +287,9 @@ class Field(Generic[_CovariantType]):
         if instance is None:
             return self
 
-        return cast(_CovariantType, instance._testplates_values_[self.name])
+        values = extract_values(instance)
+
+        return cast(_CovariantType, values[self.name])
 
     @property
     def name(self) -> str:
@@ -352,7 +418,7 @@ class StructureMeta(abc.ABCMeta):
     _testplates_errors_: List[TestplatesError]
     _testplates_fields_: Mapping[str, Field[Any]]
     _testplates_codecs_: List[Codec[Any]]
-    _testplates_default_codec_: Codec[Any]
+    _testplates_default_codec_: Optional[Codec[Any]]
 
     def __init__(
         cls,
@@ -362,10 +428,10 @@ class StructureMeta(abc.ABCMeta):
     ) -> None:
         super().__init__(name, bases, attrs)
 
-        cls._testplates_errors_ = attrs.get(TESTPLATES_ERRORS_ATTR_NAME, [])
+        cls._testplates_errors_ = attrs.get(TESTPLATES_ERRORS_ATTR, [])
         cls._testplates_fields_ = attrs.fields
-        cls._testplates_codecs_ = attrs.get(TESTPLATES_CODECS_ATTR_NAME, [])
-        cls._testplates_default_codec_ = attrs.get(TESTPLATES_DEFAULT_CODEC_ATTR_NAME, None)
+        cls._testplates_codecs_ = attrs.get(TESTPLATES_CODECS_ATTR, [])
+        cls._testplates_default_codec_ = attrs.get(TESTPLATES_DEFAULT_CODEC_ATTR, None)
 
         for field in attrs.fields.values():
             cls._testplates_errors_.extend(field.errors)
@@ -396,7 +462,7 @@ class Structure(Mapping[str, Any], metaclass=StructureMeta):
     _testplates_errors_: ClassVar[List[TestplatesError]]
     _testplates_fields_: ClassVar[Mapping[str, Field[Any]]]
     _testplates_codecs_: ClassVar[List[Codec[Any]]]
-    _testplates_default_codec_: ClassVar[Codec[Any]]
+    _testplates_default_codec_: ClassVar[Optional[Codec[Any]]]
 
     def __init__(
         self,

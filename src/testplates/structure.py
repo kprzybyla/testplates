@@ -38,6 +38,11 @@ from resultful import (
 )
 
 from testplates.impl.base import (
+    extract_errors,
+    extract_fields,
+    extract_values,
+    extract_codecs,
+    extract_codec_metadata,
     Codec as CodecImpl,
     Field as FieldImpl,
     Structure as StructureImpl,
@@ -71,13 +76,9 @@ Codec = Union[CodecImpl]
 Field = Union[FieldImpl]
 Structure = Union[StructureImpl]
 
-TESTPLATES_CODECS_ATTR_NAME: Final[str] = "_testplates_codecs_"
-TESTPLATES_METADATA_STORAGE_ATTR_NAME: Final[str] = "_testplates_metadata_storage_"
-
 passthrough_validator_singleton: Final[Validator] = PassthroughValidator()
 
 
-# noinspection PyTypeChecker
 def struct(
     cls: Type[_GenericType],
     /,
@@ -97,20 +98,17 @@ def struct(
     return cast(Type[Structure], structure_type)
 
 
-# noinspection PyTypeChecker
-# noinspection PyShadowingNames
-# noinspection PyProtectedMember
 def create(
     name: str,
     /,
-    **fields: Field[Any],
+    **fields_objects: Field[Any],
 ) -> Type[Structure]:
 
     """
     Functional API for creating structure.
 
     :param name: structure type name
-    :param fields: structure fields
+    :param fields_objects: structure fields
     """
 
     cls = cast(StructureMeta, StructureImpl)
@@ -120,8 +118,8 @@ def create(
 
     attrs = metaclass.__prepare__(name, bases)
 
-    for key, field in (fields or {}).items():
-        attrs.__setitem__(key, field)
+    for key, field_object in (fields_objects or {}).items():
+        attrs.__setitem__(key, field_object)
 
     instance = cast(StructureMeta, metaclass.__new__(metaclass, name, bases, attrs))
     metaclass.__init__(instance, name, bases, attrs)
@@ -129,8 +127,6 @@ def create(
     return cast(Type[Structure], instance)
 
 
-# noinspection PyShadowingNames
-# noinspection PyProtectedMember
 def init(
     structure_type: Type[_StructureType],
     /,
@@ -146,13 +142,12 @@ def init(
 
     structure = structure_type(**values)
 
-    if errors := structure._testplates_errors_:
+    if errors := extract_errors(structure):
         return failure(InvalidStructureError(errors))
 
     return success(structure)
 
 
-# noinspection PyProtectedMember
 def verify(
     structure_or_structure_type: Union[Structure, Type[Structure]],
 ) -> Result[None, TestplatesError]:
@@ -163,13 +158,12 @@ def verify(
     :param structure_or_structure_type: structure type
     """
 
-    if errors := structure_or_structure_type._testplates_errors_:
+    if errors := extract_errors(structure_or_structure_type):
         return failure(InvalidStructureError(errors))
 
     return success(None)
 
 
-# noinspection PyProtectedMember
 def modify(
     structure: _StructureType,
     /,
@@ -183,10 +177,10 @@ def modify(
     :param values: structure modification values
     """
 
-    if errors := structure._testplates_errors_:
+    if errors := extract_errors(structure):
         return failure(InvalidStructureError(errors))
 
-    original_values = structure._testplates_values_
+    original_values = extract_values(structure)
 
     new_values: Dict[str, Any] = dict(original_values)
     new_values.update(values)
@@ -194,7 +188,6 @@ def modify(
     return init(type(structure), **new_values)
 
 
-# noinspection PyProtectedMember
 def value_of(
     structure: Structure,
 ) -> Result[Mapping[str, Any], TestplatesError]:
@@ -205,16 +198,14 @@ def value_of(
     :param structure: structure instance
     """
 
-    if errors := structure._testplates_errors_:
+    if errors := extract_errors(structure):
         return failure(InvalidStructureError(errors))
 
-    values = structure._testplates_values_
+    values = extract_values(structure)
 
     return success(dict(values))
 
 
-# noinspection PyShadowingNames
-# noinspection PyProtectedMember
 def fields(
     structure_or_structure_type: Union[Structure, Type[Structure]],
     /,
@@ -226,42 +217,39 @@ def fields(
     :param structure_or_structure_type: structure type
     """
 
-    if errors := structure_or_structure_type._testplates_errors_:
+    if errors := extract_errors(structure_or_structure_type):
         return failure(InvalidStructureError(errors))
 
-    fields = structure_or_structure_type._testplates_fields_
+    fields_objects = extract_fields(structure_or_structure_type)
 
-    return success(dict(fields))
+    return success(dict(fields_objects))
 
 
-# noinspection PyShadowingNames
-# noinspection PyProtectedMember
 def items(
-    structure_or_structure_type: Union[Structure, Type[Structure]],
+    structure: Structure,
 ) -> Result[Iterator[Tuple[str, Maybe[Any], Field[Any]]], TestplatesError]:
 
     """
     Returns structure items (name, value, field).
 
-    :param structure_or_structure_type: structure type
+    :param structure: structure
     """
 
-    if errors := structure_or_structure_type._testplates_errors_:
+    if errors := extract_errors(structure):
         return failure(InvalidStructureError(errors))
 
-    values = structure_or_structure_type._testplates_values_
-    fields = structure_or_structure_type._testplates_fields_
+    values = extract_values(structure)
+    fields_objects = extract_fields(structure)
 
-    # noinspection PyShadowingNames
     def iterator() -> Iterator[Tuple[str, Maybe[_GenericType], Field[_GenericType]]]:
-        for name, field in fields.items():
-            yield name, values.get(name, MISSING), field
+        for name, field_object in fields_objects.items():
+            yield name, values.get(name, MISSING), field_object
 
     return success(iterator())
 
 
 def attach_codec(
-    cls: Type[Structure],
+    structure_type: Type[Structure],
     *,
     codec: Codec[Any],
     metadata: Optional[_GenericType] = None,
@@ -270,16 +258,16 @@ def attach_codec(
     """
     Attaches codec to the given cls.
 
-    :param cls: any class type
+    :param structure_type: structure type
     :param codec: codec to be attached to class type
     :param metadata: metadata attached to class type
     """
 
     if metadata is not None:
-        metadata_storage = getattr(codec, TESTPLATES_METADATA_STORAGE_ATTR_NAME, {})
-        metadata_storage[cls] = metadata
+        codec_metadata = extract_codec_metadata(codec)
+        codec_metadata[structure_type] = metadata
 
-    codecs = getattr(cls, TESTPLATES_CODECS_ATTR_NAME, [])
+    codecs = extract_codecs(structure_type)
     codecs.append(codec)
 
 

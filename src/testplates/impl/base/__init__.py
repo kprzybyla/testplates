@@ -10,6 +10,13 @@ __all__ = (
     "fits_maximum_value",
     "fits_minimum_size",
     "fits_maximum_size",
+    "extract_errors",
+    "extract_fields",
+    "extract_values",
+    "extract_codecs",
+    "extract_codec_metadata",
+    "extract_default_codec",
+    "insert_default_codec",
     "Codec",
     "EncodeFunction",
     "DecodeFunction",
@@ -24,6 +31,13 @@ __all__ = (
 )
 
 from .structure import (
+    extract_errors,
+    extract_fields,
+    extract_values,
+    extract_codecs,
+    extract_codec_metadata,
+    extract_default_codec,
+    insert_default_codec,
     Codec,
     EncodeFunction,
     DecodeFunction,

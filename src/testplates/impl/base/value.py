@@ -37,7 +37,6 @@ from testplates.impl.exceptions import (
 )
 
 
-# noinspection PyUnresolvedReferences
 def is_value(
     value: Maybe[Value[Any]],
 ) -> bool:
@@ -52,7 +51,6 @@ def is_value(
     return value not in [MISSING, ANY, ABSENT, WILDCARD]
 
 
-# noinspection PyUnresolvedReferences
 def values_matches(
     self_value: Maybe[Value[_GenericType]],
     other_value: Maybe[Value[_GenericType]],
