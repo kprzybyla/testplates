@@ -8,13 +8,13 @@ __all__ = (
     "extract_codec_metadata",
     "extract_default_codec",
     "insert_default_codec",
-    "Codec",
-    "EncodeFunction",
-    "DecodeFunction",
     "Field",
     "Structure",
     "StructureMeta",
     "StructureDict",
+    "Codec",
+    "EncodeFunction",
+    "DecodeFunction",
 )
 
 import abc

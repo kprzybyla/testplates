@@ -30,10 +30,10 @@ from testplates.impl.base import (
     extract_codecs,
     extract_default_codec,
     insert_default_codec,
+    Structure,
     Codec as CodecImpl,
     EncodeFunction,
     DecodeFunction,
-    Structure,
 )
 
 from .structure import (

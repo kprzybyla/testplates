@@ -43,11 +43,11 @@ from testplates.impl.base import (
     extract_values,
     extract_codecs,
     extract_codec_metadata,
-    Codec as CodecImpl,
     Field as FieldImpl,
     Structure as StructureImpl,
     StructureMeta,
     StructureDict,
+    Codec as CodecImpl,
 )
 
 from testplates.impl.validators import (
