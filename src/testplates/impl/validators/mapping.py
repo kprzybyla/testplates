@@ -17,7 +17,13 @@ from resultful import (
 
 from testplates.impl.base import (
     StructureMeta,
+)
+
+from testplates.impl.exceptions import (
     TestplatesError,
+    RequiredKeyMissingError,
+    UnknownFieldError,
+    FieldValidationError,
 )
 
 from .utils import (
@@ -26,12 +32,6 @@ from .utils import (
 
 from .type import (
     TypeValidator,
-)
-
-from .exceptions import (
-    RequiredKeyMissingError,
-    UnknownFieldError,
-    FieldValidationError,
 )
 
 mapping_type_validator: Final[Validator] = TypeValidator(typing.Mapping)

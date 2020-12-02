@@ -56,7 +56,7 @@ from .value import (
     ABSENT,
 )
 
-from .exceptions import (
+from testplates.impl.exceptions import (
     TestplatesError,
     MissingValueError,
     UnexpectedValueError,

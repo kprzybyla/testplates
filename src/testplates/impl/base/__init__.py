@@ -21,21 +21,6 @@ __all__ = (
     "SpecialValueType",
     "UnlimitedType",
     "Limit",
-    "TestplatesError",
-    "MissingValueError",
-    "UnexpectedValueError",
-    "ProhibitedValueError",
-    "InvalidStructureError",
-    "MissingBoundaryError",
-    "InvalidSizeError",
-    "UnlimitedRangeError",
-    "MutuallyExclusiveBoundariesError",
-    "OverlappingBoundariesError",
-    "SingleMatchBoundariesError",
-    "NoCodecAvailableError",
-    "InaccessibleCodecError",
-    "AmbiguousCodecChoiceError",
-    "DefaultCodecAlreadySetError",
 )
 
 from .structure import (
@@ -73,22 +58,4 @@ from .boundaries import (
     fits_maximum_value,
     fits_minimum_size,
     fits_maximum_size,
-)
-
-from .exceptions import (
-    TestplatesError,
-    MissingValueError,
-    UnexpectedValueError,
-    ProhibitedValueError,
-    InvalidStructureError,
-    MissingBoundaryError,
-    InvalidSizeError,
-    UnlimitedRangeError,
-    MutuallyExclusiveBoundariesError,
-    OverlappingBoundariesError,
-    SingleMatchBoundariesError,
-    NoCodecAvailableError,
-    InaccessibleCodecError,
-    AmbiguousCodecChoiceError,
-    DefaultCodecAlreadySetError,
 )

@@ -33,7 +33,7 @@ __all__ = (
     "ChoiceValidationError",
 )
 
-from testplates.impl.base import (
+from testplates.impl.exceptions import (
     TestplatesError,
     MissingValueError,
     UnexpectedValueError,
@@ -49,9 +49,6 @@ from testplates.impl.base import (
     InaccessibleCodecError,
     AmbiguousCodecChoiceError,
     DefaultCodecAlreadySetError,
-)
-
-from testplates.impl.validators import (
     InvalidTypeValueError,
     InvalidTypeError,
     ProhibitedBoolValueError,

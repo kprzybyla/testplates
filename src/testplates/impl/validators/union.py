@@ -15,8 +15,11 @@ from resultful import (
     Result,
 )
 
-from testplates.impl.base import (
+from testplates.impl.exceptions import (
     TestplatesError,
+    InvalidKeyError,
+    InvalidDataFormatError,
+    ChoiceValidationError,
 )
 
 from .utils import (
@@ -25,12 +28,6 @@ from .utils import (
 
 from .type import (
     TypeValidator,
-)
-
-from .exceptions import (
-    InvalidKeyError,
-    InvalidDataFormatError,
-    ChoiceValidationError,
 )
 
 union_type_validator: Final[Validator] = TypeValidator(tuple)

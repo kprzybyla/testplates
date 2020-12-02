@@ -10,6 +10,11 @@ __all__ = (
     "LiteralUnlimited",
     "Field",
     "Structure",
+    "MISSING",
+    "ANY",
+    "WILDCARD",
+    "ABSENT",
+    "UNLIMITED",
     "struct",
     "create",
     "init",
@@ -20,26 +25,6 @@ __all__ = (
     "items",
     "attach_codec",
     "field",
-    "MISSING",
-    "ANY",
-    "WILDCARD",
-    "ABSENT",
-    "UNLIMITED",
-    "TestplatesError",
-    "MissingValueError",
-    "UnexpectedValueError",
-    "ProhibitedValueError",
-    "InvalidStructureError",
-    "MissingBoundaryError",
-    "InvalidSizeError",
-    "UnlimitedRangeError",
-    "MutuallyExclusiveBoundariesError",
-    "OverlappingBoundariesError",
-    "SingleMatchBoundariesError",
-    "NoCodecAvailableError",
-    "InaccessibleCodecError",
-    "AmbiguousCodecChoiceError",
-    "DefaultCodecAlreadySetError",
     "contains",
     "has_size",
     "has_minimum_size",
@@ -61,6 +46,26 @@ __all__ = (
     "sequence_validator",
     "mapping_validator",
     "union_validator",
+    "encode",
+    "decode",
+    "get_codec",
+    "create_codec",
+    "set_default_codec",
+    "TestplatesError",
+    "MissingValueError",
+    "UnexpectedValueError",
+    "ProhibitedValueError",
+    "InvalidStructureError",
+    "MissingBoundaryError",
+    "InvalidSizeError",
+    "UnlimitedRangeError",
+    "MutuallyExclusiveBoundariesError",
+    "OverlappingBoundariesError",
+    "SingleMatchBoundariesError",
+    "NoCodecAvailableError",
+    "InaccessibleCodecError",
+    "AmbiguousCodecChoiceError",
+    "DefaultCodecAlreadySetError",
     "InvalidTypeValueError",
     "InvalidTypeError",
     "ProhibitedBoolValueError",
@@ -78,11 +83,6 @@ __all__ = (
     "InvalidKeyError",
     "InvalidDataFormatError",
     "ChoiceValidationError",
-    "encode",
-    "decode",
-    "get_codec",
-    "create_codec",
-    "set_default_codec",
 )
 
 # Annotations
@@ -106,6 +106,14 @@ from testplates.structure import (
 
 # Concretes
 
+from testplates.value import (
+    MISSING,
+    ANY,
+    WILDCARD,
+    ABSENT,
+    UNLIMITED,
+)
+
 from testplates.structure import (
     struct,
     create,
@@ -125,32 +133,6 @@ from testplates.codecs import (
     get_codec,
     create_codec,
     set_default_codec,
-)
-
-from testplates.value import (
-    MISSING,
-    ANY,
-    WILDCARD,
-    ABSENT,
-    UNLIMITED,
-)
-
-from testplates.exceptions import (
-    TestplatesError,
-    MissingValueError,
-    UnexpectedValueError,
-    ProhibitedValueError,
-    InvalidStructureError,
-    MissingBoundaryError,
-    InvalidSizeError,
-    UnlimitedRangeError,
-    MutuallyExclusiveBoundariesError,
-    OverlappingBoundariesError,
-    SingleMatchBoundariesError,
-    NoCodecAvailableError,
-    InaccessibleCodecError,
-    AmbiguousCodecChoiceError,
-    DefaultCodecAlreadySetError,
 )
 
 from testplates.constraints import (
@@ -181,6 +163,21 @@ from testplates.validators import (
 )
 
 from testplates.exceptions import (
+    TestplatesError,
+    MissingValueError,
+    UnexpectedValueError,
+    ProhibitedValueError,
+    InvalidStructureError,
+    MissingBoundaryError,
+    InvalidSizeError,
+    UnlimitedRangeError,
+    MutuallyExclusiveBoundariesError,
+    OverlappingBoundariesError,
+    SingleMatchBoundariesError,
+    NoCodecAvailableError,
+    InaccessibleCodecError,
+    AmbiguousCodecChoiceError,
+    DefaultCodecAlreadySetError,
     InvalidTypeValueError,
     InvalidTypeError,
     ProhibitedBoolValueError,

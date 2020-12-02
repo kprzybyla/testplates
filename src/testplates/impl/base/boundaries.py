@@ -40,7 +40,7 @@ from .limit import (
     MAXIMUM_EXTREMUM,
 )
 
-from .exceptions import (
+from testplates.impl.exceptions import (
     TestplatesError,
     MissingBoundaryError,
     InvalidSizeError,

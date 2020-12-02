@@ -26,21 +26,24 @@ from resultful import (
 
 from testplates.impl.base import (
     Structure,
-    TestplatesError,
 )
 
 from testplates.impl.base import (
     Codec,
     EncodeFunction,
     DecodeFunction,
-    NoCodecAvailableError,
-    InaccessibleCodecError,
-    AmbiguousCodecChoiceError,
-    DefaultCodecAlreadySetError,
 )
 
 from .structure import (
     verify,
+)
+
+from .exceptions import (
+    TestplatesError,
+    NoCodecAvailableError,
+    InaccessibleCodecError,
+    AmbiguousCodecChoiceError,
+    DefaultCodecAlreadySetError,
 )
 
 _Structure = TypeVar("_Structure", bound=Structure)

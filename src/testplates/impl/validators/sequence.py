@@ -21,7 +21,14 @@ from testplates.impl.base import (
     fits_maximum_size,
     Limit,
     UnlimitedType,
+)
+
+from testplates.impl.exceptions import (
     TestplatesError,
+    ItemValidationError,
+    InvalidMinimumSizeError,
+    InvalidMaximumSizeError,
+    UniquenessError,
 )
 
 from .utils import (
@@ -31,13 +38,6 @@ from .utils import (
 
 from .type import (
     TypeValidator,
-)
-
-from .exceptions import (
-    ItemValidationError,
-    InvalidMinimumSizeError,
-    InvalidMaximumSizeError,
-    UniquenessError,
 )
 
 Boundary = Union[UnlimitedType, Limit]

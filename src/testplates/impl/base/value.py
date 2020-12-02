@@ -32,7 +32,7 @@ from resultful import (
     Result,
 )
 
-from .exceptions import (
+from testplates.impl.exceptions import (
     TestplatesError,
 )
 

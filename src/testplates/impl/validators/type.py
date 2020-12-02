@@ -12,16 +12,10 @@ from resultful import (
     Result,
 )
 
-from testplates.impl.base import (
-    TestplatesError,
-)
+from testplates.impl.exceptions import TestplatesError, InvalidTypeError
 
 from testplates.impl.utils import (
     format_like_tuple,
-)
-
-from .exceptions import (
-    InvalidTypeError,
 )
 
 
