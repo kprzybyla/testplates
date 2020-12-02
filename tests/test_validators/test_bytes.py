@@ -2,7 +2,7 @@ import re
 import sys
 
 from typing import (
-    TypeVar,
+    Any,
     List,
     Literal,
     Final,
@@ -36,8 +36,6 @@ from tests.strategies import (
     st_anything_except,
     Draw,
 )
-
-_T = TypeVar("_T")
 
 MINIMUM_EXTREMUM: Final[Literal["minimum"]] = "minimum"
 MAXIMUM_EXTREMUM: Final[Literal["maximum"]] = "maximum"
@@ -187,7 +185,7 @@ def test_success_with_pattern(st_data: st.DataObject, pattern: bytes) -> None:
 
 
 @given(data=st_anything_except(bytes))
-def test_failure_when_data_validation_fails(data: _T) -> None:
+def test_failure_when_data_validation_fails(data: Any) -> None:
     assert (validator_result := bytes_validator())
 
     validator = unwrap_success(validator_result)

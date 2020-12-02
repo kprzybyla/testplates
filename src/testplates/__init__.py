@@ -10,6 +10,7 @@ __all__ = (
     "LiteralUnlimited",
     "Field",
     "Structure",
+    "Codec",
     "MISSING",
     "ANY",
     "WILDCARD",
@@ -102,6 +103,10 @@ from testplates.value import (
 from testplates.structure import (
     Field,
     Structure,
+)
+
+from testplates.codecs import (
+    Codec,
 )
 
 # Concretes

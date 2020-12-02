@@ -21,7 +21,6 @@ from testplates import (
     create,
     init,
     field,
-    Field,
     ANY,
     WILDCARD,
     ABSENT,
@@ -46,7 +45,7 @@ def test_repr_for_required_field_without_default_value(
     name: str,
     key: str,
 ) -> None:
-    field_object: Field[int] = field()
+    field_object = field()
     create(name, **{key: field_object})
 
     repr_format = f"testplates.Field({key!r}, optional=False)"
@@ -73,7 +72,7 @@ def test_repr_for_optional_field_without_default_value(
     name: str,
     key: str,
 ) -> None:
-    field_object: Field[int] = field(optional=True)
+    field_object = field(optional=True)
     create(name, **{key: field_object})
 
     repr_format = f"testplates.Field({key!r}, optional=True)"
@@ -103,7 +102,7 @@ def test_validator_is_not_called_on_special_value_for_required_field(
     def validator(*args: int, **kwargs: int) -> NoReturn:
         assert False, (args, kwargs)
 
-    field_object: Field[int] = field(success(validator))
+    field_object = field(success(validator))
     template_type = create(name, **{key: field_object})
     assert init(template_type, **{key: ANY})
 
@@ -117,7 +116,7 @@ def test_validator_is_not_called_on_special_value_for_optional_field(
     def validator(*args: int, **kwargs: int) -> NoReturn:
         assert False, (args, kwargs)
 
-    field_object: Field[int] = field(success(validator), optional=True)
+    field_object = field(success(validator), optional=True)
     template_type = create(name, **{key: field_object})
     assert init(template_type, **{key: ANY})
     assert init(template_type, **{key: WILDCARD})
@@ -138,7 +137,7 @@ def test_validator_failure(
         assert this_value is value
         return failure(validator_error)
 
-    field_object: Field[int] = field(success(validator))
+    field_object = field(success(validator))
     template_type = create(name, **{key: field_object})
     assert not (result := init(template_type, **{key: value}))
 
@@ -152,7 +151,8 @@ def test_validator_failure(
 
 # noinspection PyTypeChecker
 def test_default_for_mutable_objects() -> None:
-    field_object: Field[List[int]] = field(default=list())
+    value: List[int] = list()
+    field_object = field(default=value)
     assert field_object.default is field_object.default
 
 

@@ -1,14 +1,13 @@
 import re
 import sys
+import pytest
 
 from typing import (
-    TypeVar,
+    Any,
     List,
     Literal,
     Final,
 )
-
-import pytest
 
 from resultful import (
     unwrap_success,
@@ -36,8 +35,6 @@ from tests.strategies import (
     st_anything_except,
     Draw,
 )
-
-_T = TypeVar("_T")
 
 MINIMUM_EXTREMUM: Final[Literal["minimum"]] = "minimum"
 MAXIMUM_EXTREMUM: Final[Literal["maximum"]] = "maximum"
@@ -192,7 +189,7 @@ def test_success_with_pattern(st_data: st.DataObject, pattern: str) -> None:
 
 
 @given(data=st_anything_except(str))
-def test_failure_when_data_validation_fails(data: _T) -> None:
+def test_failure_when_data_validation_fails(data: Any) -> None:
     assert (validator_result := string_validator())
 
     validator = unwrap_success(validator_result)

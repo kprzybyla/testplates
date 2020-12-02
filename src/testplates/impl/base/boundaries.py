@@ -28,6 +28,15 @@ from resultful import (
     Result,
 )
 
+from testplates.impl.exceptions import (
+    TestplatesError,
+    MissingBoundaryError,
+    InvalidSizeError,
+    MutuallyExclusiveBoundariesError,
+    OverlappingBoundariesError,
+    SingleMatchBoundariesError,
+)
+
 from .value import (
     UnlimitedType,
     UNLIMITED,
@@ -38,15 +47,6 @@ from .limit import (
     Extremum,
     MINIMUM_EXTREMUM,
     MAXIMUM_EXTREMUM,
-)
-
-from testplates.impl.exceptions import (
-    TestplatesError,
-    MissingBoundaryError,
-    InvalidSizeError,
-    MutuallyExclusiveBoundariesError,
-    OverlappingBoundariesError,
-    SingleMatchBoundariesError,
 )
 
 Edge = Union[int, UnlimitedType]

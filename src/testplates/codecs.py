@@ -4,6 +4,7 @@ __all__ = (
     "get_codec",
     "create_codec",
     "set_default_codec",
+    "Codec",
     "NoCodecAvailableError",
     "InaccessibleCodecError",
     "AmbiguousCodecChoiceError",
@@ -14,6 +15,7 @@ from typing import (
     Any,
     Type,
     TypeVar,
+    Union,
     Optional,
 )
 
@@ -29,7 +31,7 @@ from testplates.impl.base import (
 )
 
 from testplates.impl.base import (
-    Codec,
+    Codec as CodecImpl,
     EncodeFunction,
     DecodeFunction,
 )
@@ -48,6 +50,8 @@ from .exceptions import (
 
 _Structure = TypeVar("_Structure", bound=Structure)
 _GenericType = TypeVar("_GenericType")
+
+Codec = Union[CodecImpl]
 
 
 def encode(

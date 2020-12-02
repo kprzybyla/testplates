@@ -1,6 +1,7 @@
 import random
 
 from typing import (
+    Any,
     TypeVar,
     Sized,
     Iterable,
@@ -118,7 +119,7 @@ def st_values(draw: Draw[List[_T]], min_size: int = 0) -> List[_T]:
 
 # noinspection PyTypeChecker
 @given(values=st_values())
-def test_repr(values: List[_T]) -> None:
+def test_repr(values: List[Any]) -> None:
     fmt = "testplates.is_permutation_of({values})"
 
     assert (result := is_permutation_of(values))
@@ -129,7 +130,7 @@ def test_repr(values: List[_T]) -> None:
 
 # noinspection PyTypeChecker
 @given(values=st_values())
-def test_returns_true(values: List[_T]) -> None:
+def test_returns_true(values: List[Any]) -> None:
     permutation = shuffle(values)
 
     assert (result := is_permutation_of(permutation))
@@ -140,7 +141,7 @@ def test_returns_true(values: List[_T]) -> None:
 
 # noinspection PyTypeChecker
 @given(values=st_values(min_size=1), other=st_value())
-def test_returns_false(values: List[_T], other: _T) -> None:
+def test_returns_false(values: List[Any], other: Any) -> None:
     assume(other not in values)
 
     index = random_index(values)
@@ -156,7 +157,7 @@ def test_returns_false(values: List[_T], other: _T) -> None:
 
 # noinspection PyTypeChecker
 @given(values=st_values())
-def test_returns_false_when_permutation_has_more_values(values: List[_T]) -> None:
+def test_returns_false_when_permutation_has_more_values(values: List[Any]) -> None:
     permutation = values.copy()
     permutation.extend(samples(values))
 
@@ -170,7 +171,7 @@ def test_returns_false_when_permutation_has_more_values(values: List[_T]) -> Non
 
 # noinspection PyTypeChecker
 @given(values=st_values())
-def test_returns_false_when_permutation_has_fewer_values(values: List[_T]) -> None:
+def test_returns_false_when_permutation_has_fewer_values(values: List[Any]) -> None:
     permutation = samples(values)
 
     assume(len(permutation) < len(values))
@@ -183,7 +184,7 @@ def test_returns_false_when_permutation_has_fewer_values(values: List[_T]) -> No
 
 # noinspection PyTypeChecker
 @given(values=st_values())
-def test_returns_false_when_value_is_not_sized(values: List[_T]) -> None:
+def test_returns_false_when_value_is_not_sized(values: List[Any]) -> None:
     assert (result := is_permutation_of(values))
 
     constraint = unwrap_success(result)
@@ -192,7 +193,7 @@ def test_returns_false_when_value_is_not_sized(values: List[_T]) -> None:
 
 # noinspection PyTypeChecker
 @given(values=st_values())
-def test_returns_false_when_value_is_not_iterable(values: List[_T]) -> None:
+def test_returns_false_when_value_is_not_iterable(values: List[Any]) -> None:
     assert (result := is_permutation_of(values))
 
     constraint = unwrap_success(result)
@@ -201,7 +202,7 @@ def test_returns_false_when_value_is_not_iterable(values: List[_T]) -> None:
 
 # noinspection PyTypeChecker
 @given(values=st_values())
-def test_returns_false_when_value_is_not_container(values: List[_T]) -> None:
+def test_returns_false_when_value_is_not_container(values: List[Any]) -> None:
     assert (result := is_permutation_of(values))
 
     constraint = unwrap_success(result)

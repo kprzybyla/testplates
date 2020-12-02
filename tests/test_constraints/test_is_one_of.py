@@ -1,6 +1,7 @@
 import random
 
 from typing import (
+    Any,
     TypeVar,
     List,
     Final,
@@ -47,7 +48,7 @@ def st_values_without(draw: Draw[List[_T]], value: _T) -> List[_T]:
 # noinspection PyTypeChecker
 # noinspection PyArgumentList
 @given(values=st_values())
-def test_repr(values: List[_T]) -> None:
+def test_repr(values: List[Any]) -> None:
     fmt = "testplates.is_one_of({values})"
 
     assert (result := is_one_of(*values))
@@ -59,7 +60,7 @@ def test_repr(values: List[_T]) -> None:
 # noinspection PyTypeChecker
 # noinspection PyArgumentList
 @given(values=st_values())
-def test_returns_true(values: List[_T]) -> None:
+def test_returns_true(values: List[Any]) -> None:
     value = random.choice(values)
 
     assert (result := is_one_of(*values))
@@ -71,7 +72,7 @@ def test_returns_true(values: List[_T]) -> None:
 # noinspection PyTypeChecker
 # noinspection PyArgumentList
 @given(data=st.data(), value=st_value())
-def test_returns_false(data: st.DataObject, value: _T) -> None:
+def test_returns_false(data: st.DataObject, value: Any) -> None:
     values = data.draw(st_values_without(value))
 
     assert (result := is_one_of(*values))

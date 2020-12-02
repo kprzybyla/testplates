@@ -45,6 +45,13 @@ from testplates.impl.utils import (
     format_like_dict,
 )
 
+from testplates.impl.exceptions import (
+    TestplatesError,
+    MissingValueError,
+    UnexpectedValueError,
+    ProhibitedValueError,
+)
+
 from .value import (
     is_value,
     values_matches,
@@ -54,13 +61,6 @@ from .value import (
     ANY,
     WILDCARD,
     ABSENT,
-)
-
-from testplates.impl.exceptions import (
-    TestplatesError,
-    MissingValueError,
-    UnexpectedValueError,
-    ProhibitedValueError,
 )
 
 # noinspection PyTypeChecker

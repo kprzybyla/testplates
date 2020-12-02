@@ -28,7 +28,6 @@ from testplates import (
     fields,
     items,
     field,
-    Field,
     ANY,
     WILDCARD,
     ABSENT,
@@ -54,7 +53,7 @@ def st_name(draw: Draw[str]) -> str:
 # noinspection PyTypeChecker
 @given(name=st_name(), key=st.text(), value=st.integers())
 def test_repr(name: str, key: str, value: int) -> None:
-    field_object: Field[int] = field()
+    field_object = field()
     template_type = create(name, **{key: field_object})
     assert (result := init(template_type, **{key: value}))
 
@@ -66,7 +65,7 @@ def test_repr(name: str, key: str, value: int) -> None:
 # noinspection PyTypeChecker
 @given(name=st_name(), key=st.text(), value=st.integers())
 def test_meta_repr(name: str, key: str, value: int) -> None:
-    field_object: Field[int] = field()
+    field_object = field()
     template_type = create(name, **{key: field_object})
     assert (result := init(template_type, **{key: value}))
 
@@ -82,7 +81,7 @@ def test_equality(
     key: str,
     value: int,
 ) -> None:
-    field_object: Field[int] = field()
+    field_object = field()
     template_type = create(name, **{key: field_object})
     assert (result := init(template_type, **{key: value}))
 
@@ -100,7 +99,7 @@ def test_inequality_due_to_unequal_key(
 ) -> None:
     assume(key != other_key)
 
-    field_object: Field[int] = field()
+    field_object = field()
     template_type = create(name, **{key: field_object})
     assert (result := init(template_type, **{key: value}))
 
@@ -118,7 +117,7 @@ def test_inequality_due_to_unequal_value(
 ) -> None:
     assume(value != other_value)
 
-    field_object: Field[int] = field()
+    field_object = field()
     template_type = create(name, **{key: field_object})
     assert (result := init(template_type, **{key: value}))
 
@@ -166,7 +165,7 @@ def test_any_value_matches_anything_in_required_field(
     key: str,
     value: int,
 ) -> None:
-    field_object: Field[int] = field()
+    field_object = field()
     template_type = create(name, **{key: field_object})
     assert (result := init(template_type, **{key: ANY}))
 
@@ -181,7 +180,7 @@ def test_any_value_matches_anything_in_optional_field(
     key: str,
     value: int,
 ) -> None:
-    field_object: Field[int] = field(optional=True)
+    field_object = field(optional=True)
     template_type = create(name, **{key: field_object})
     assert (result := init(template_type, **{key: ANY}))
 
@@ -196,7 +195,7 @@ def test_wildcard_value_matches_anything_in_optional_field(
     key: str,
     value: int,
 ) -> None:
-    field_object: Field[int] = field(optional=True)
+    field_object = field(optional=True)
     template_type = create(name, **{key: field_object})
     assert (result := init(template_type, **{key: WILDCARD}))
 
@@ -211,7 +210,7 @@ def test_wildcard_value_error_in_required_field(
     name: str,
     key: str,
 ) -> None:
-    field_object: Field[int] = field()
+    field_object = field()
     template_type = create(name, **{key: field_object})
     assert not (result := init(template_type, **{key: WILDCARD}))
 
@@ -230,7 +229,7 @@ def test_absent_value_matches_anything_in_optional_field(
     name: str,
     key: str,
 ) -> None:
-    field_object: Field[int] = field(optional=True)
+    field_object = field(optional=True)
     template_type = create(name, **{key: field_object})
     assert (result := init(template_type, **{key: ABSENT}))
 
@@ -245,7 +244,7 @@ def test_absent_value_mismatches_any_value_in_optional_field(
     key: str,
     value: int,
 ) -> None:
-    field_object: Field[int] = field(optional=True)
+    field_object = field(optional=True)
     template_type = create(name, **{key: field_object})
     assert (result := init(template_type, **{key: ABSENT}))
 
@@ -259,7 +258,7 @@ def test_absent_value_error_in_required_field(
     name: str,
     key: str,
 ) -> None:
-    field_object: Field[int] = field()
+    field_object = field()
     template_type = create(name, **{key: field_object})
     assert not (result := init(template_type, **{key: ABSENT}))
 
@@ -282,7 +281,7 @@ def test_unexpected_value_error(
 ) -> None:
     assume(key != other_key)
 
-    field_object: Field[int] = field()
+    field_object = field()
     template_type = create(name, **{key: field_object})
     assert not (result := init(template_type, **{other_key: other_value}))
 
@@ -303,7 +302,7 @@ def test_missing_value_in_required_field_value_error(
     name: str,
     key: str,
 ) -> None:
-    field_object: Field[int] = field()
+    field_object = field()
     template_type = create(name, **{key: field_object})
     assert not (result := init(template_type))
 
@@ -321,7 +320,7 @@ def test_missing_value_in_optional_field_value_error(
     name: str,
     key: str,
 ) -> None:
-    field_object: Field[int] = field(optional=True)
+    field_object = field(optional=True)
     template_type = create(name, **{key: field_object})
     assert not (result := init(template_type))
 
@@ -399,7 +398,7 @@ def test_init_failure(
     value: int,
 ) -> None:
     field_error = TestplatesError()
-    field_object: Field[int] = field(failure(field_error))
+    field_object = field(failure(field_error))
     template_type = create(name, **{key: field_object})
     assert not (result := init(template_type, **{key: value}))
 
@@ -414,7 +413,7 @@ def test_verify(
     name: str,
     key: str,
 ) -> None:
-    field_object: Field[int] = field()
+    field_object = field()
     template_type = create(name, **{key: field_object})
     assert (result := verify(template_type))
     assert unwrap_success(result) is None
@@ -427,7 +426,7 @@ def test_verify_failure(
     key: str,
 ) -> None:
     field_error = TestplatesError()
-    field_object: Field[int] = field(failure(field_error))
+    field_object = field(failure(field_error))
     template_type = create(name, **{key: field_object})
     assert not (result := verify(template_type))
 
@@ -443,7 +442,7 @@ def test_fields_failure(
     key: str,
 ) -> None:
     field_error = TestplatesError()
-    field_object: Field[int] = field(failure(field_error))
+    field_object = field(failure(field_error))
     template_type = create(name, **{key: field_object})
     assert not (result := fields(template_type))
 
@@ -462,7 +461,7 @@ def test_modify(
 ) -> None:
     assume(value != other_value)
 
-    field_object: Field[int] = field()
+    field_object = field()
     template_type = create(name, **{key: field_object})
     assert (result := init(template_type, **{key: value}))
 
@@ -486,7 +485,7 @@ def test_modify_failure(
     assume(value != other_value)
 
     field_error = TestplatesError()
-    field_object: Field[int] = field(failure(field_error))
+    field_object = field(failure(field_error))
     template_type = create(name, **{key: field_object})
     template = template_type(**{key: value})
     assert not (result := modify(template, **{key: other_value}))
@@ -503,7 +502,7 @@ def test_value_of(
     key: str,
     value: int,
 ) -> None:
-    field_object: Field[int] = field()
+    field_object = field()
     template_type = create(name, **{key: field_object})
     assert (result := init(template_type, **{key: value}))
 
@@ -522,7 +521,7 @@ def test_value_of_failure(
     value: int,
 ) -> None:
     field_error = TestplatesError()
-    field_object: Field[int] = field(failure(field_error))
+    field_object = field(failure(field_error))
     template_type = create(name, **{key: field_object})
     template = template_type(**{key: value})
     assert not (result := value_of(template))
@@ -539,7 +538,7 @@ def test_items(
     key: str,
     value: int,
 ) -> None:
-    field_object: Field[int] = field()
+    field_object = field()
     template_type = create(name, **{key: field_object})
     assert (result := init(template_type, **{key: value}))
 
@@ -558,7 +557,7 @@ def test_items_failure(
     value: int,
 ) -> None:
     field_error = TestplatesError()
-    field_object: Field[int] = field(failure(field_error))
+    field_object = field(failure(field_error))
     template_type = create(name, **{key: field_object})
     template = template_type(**{key: value})
     assert not (result := items(template))
