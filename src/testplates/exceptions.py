@@ -10,6 +10,10 @@ __all__ = (
     "MutuallyExclusiveBoundariesError",
     "OverlappingBoundariesError",
     "SingleMatchBoundariesError",
+    "NoCodecAvailableError",
+    "InaccessibleCodecError",
+    "AmbiguousCodecChoiceError",
+    "DefaultCodecAlreadySetError",
     "InvalidTypeValueError",
     "InvalidTypeError",
     "ProhibitedBoolValueError",
@@ -29,7 +33,7 @@ __all__ = (
     "ChoiceValidationError",
 )
 
-from testplates.impl.base import (
+from testplates.impl.exceptions import (
     TestplatesError,
     MissingValueError,
     UnexpectedValueError,
@@ -41,9 +45,10 @@ from testplates.impl.base import (
     MutuallyExclusiveBoundariesError,
     OverlappingBoundariesError,
     SingleMatchBoundariesError,
-)
-
-from testplates.impl.validators import (
+    NoCodecAvailableError,
+    InaccessibleCodecError,
+    AmbiguousCodecChoiceError,
+    DefaultCodecAlreadySetError,
     InvalidTypeValueError,
     InvalidTypeError,
     ProhibitedBoolValueError,

@@ -1,4 +1,6 @@
-from typing import TypeVar
+from typing import (
+    Any,
+)
 
 from resultful import (
     unwrap_success,
@@ -16,8 +18,6 @@ from testplates import (
 )
 
 from tests.strategies import st_anything_except
-
-_T = TypeVar("_T")
 
 
 def test_repr() -> None:
@@ -40,7 +40,7 @@ def test_success(data: bool) -> None:
 
 
 @given(data=st_anything_except(bool))
-def test_failure_when_data_validation_fails(data: _T) -> None:
+def test_failure_when_data_validation_fails(data: Any) -> None:
     assert (validator_result := boolean_validator())
 
     validator = unwrap_success(validator_result)

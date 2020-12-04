@@ -19,17 +19,17 @@ from testplates.impl.base import (
     fits_maximum_value,
     Limit,
     UnlimitedType,
+)
+
+from testplates.impl.exceptions import (
     TestplatesError,
+    InvalidMinimumValueError,
+    InvalidMaximumValueError,
+    ProhibitedBoolValueError,
 )
 
 from .type import (
     TypeValidator,
-)
-
-from .exceptions import (
-    InvalidMinimumValueError,
-    InvalidMaximumValueError,
-    ProhibitedBoolValueError,
 )
 
 Boundary = Union[Limit, UnlimitedType]

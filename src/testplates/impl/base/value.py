@@ -6,14 +6,13 @@ __all__ = (
     "MissingType",
     "SpecialValueType",
     "UnlimitedType",
-    "SecretType",
     "Maybe",
     "Value",
     "Validator",
+    "MISSING",
     "ANY",
     "WILDCARD",
     "ABSENT",
-    "MISSING",
     "UNLIMITED",
 )
 
@@ -33,12 +32,11 @@ from resultful import (
     Result,
 )
 
-from .exceptions import (
+from testplates.impl.exceptions import (
     TestplatesError,
 )
 
 
-# noinspection PyUnresolvedReferences
 def is_value(
     value: Maybe[Value[Any]],
 ) -> bool:
@@ -53,7 +51,6 @@ def is_value(
     return value not in [MISSING, ANY, ABSENT, WILDCARD]
 
 
-# noinspection PyUnresolvedReferences
 def values_matches(
     self_value: Maybe[Value[_GenericType]],
     other_value: Maybe[Value[_GenericType]],
@@ -149,29 +146,14 @@ class UnlimitedType(enum.Enum):
         return f"{testplates.__name__}.{self.name}"
 
 
-class SecretType(enum.Enum):
-
-    """
-    Secret value type class.
-
-    FOR INTERNAL USE ONLY.
-    """
-
-    SECRET = enum.auto()
-
-    """
-        Secret internal value.
-    """
-
-
 _GenericType = TypeVar("_GenericType")
 
 Maybe = Union[_GenericType, MissingType]
 Value = Union[_GenericType, SpecialValueType]
 Validator = Callable[[Any], Result[None, TestplatesError]]
 
+MISSING: Final[Literal[MissingType.MISSING]] = MissingType.MISSING
 ANY: Final[Literal[SpecialValueType.ANY]] = SpecialValueType.ANY
 WILDCARD: Final[Literal[SpecialValueType.WILDCARD]] = SpecialValueType.WILDCARD
 ABSENT: Final[Literal[SpecialValueType.ABSENT]] = SpecialValueType.ABSENT
-MISSING: Final[Literal[MissingType.MISSING]] = MissingType.MISSING
 UNLIMITED: Final[Literal[UnlimitedType.UNLIMITED]] = UnlimitedType.UNLIMITED

@@ -5,6 +5,7 @@ import testplates
 
 from typing import (
     Any,
+    Type,
     Final,
 )
 
@@ -16,8 +17,15 @@ from resultful import (
 )
 
 from testplates.impl.base import (
-    StructureMeta,
+    extract_fields,
+    Structure,
+)
+
+from testplates.impl.exceptions import (
     TestplatesError,
+    RequiredKeyMissingError,
+    UnknownFieldError,
+    FieldValidationError,
 )
 
 from .utils import (
@@ -26,12 +34,6 @@ from .utils import (
 
 from .type import (
     TypeValidator,
-)
-
-from .exceptions import (
-    RequiredKeyMissingError,
-    UnknownFieldError,
-    FieldValidationError,
 )
 
 mapping_type_validator: Final[Validator] = TypeValidator(typing.Mapping)
@@ -43,7 +45,7 @@ class MappingValidator:
 
     def __init__(
         self,
-        structure_type: StructureMeta,
+        structure_type: Type[Structure],
         /,
     ) -> None:
         self.structure_type = structure_type
@@ -51,19 +53,19 @@ class MappingValidator:
     def __repr__(self) -> str:
         return f"{testplates.__name__}.mapping_validator({self.structure_type})"
 
-    # noinspection PyProtectedMember
     def __call__(self, data: Any, /) -> Result[None, TestplatesError]:
         if not (result := mapping_type_validator(data)):
             return failure(result)
 
         structure = self.structure_type
+        fields = extract_fields(structure)
 
-        for field in structure._testplates_fields_.values():
+        for field in fields.values():
             if not field.is_optional and field.name not in data.keys():
                 return failure(RequiredKeyMissingError(data, field.name, field))
 
         for key, value in data.items():
-            field_object = structure._testplates_fields_.get(key, None)
+            field_object = fields.get(key, None)
 
             if field_object is None:
                 return failure(UnknownFieldError(data, structure, key))

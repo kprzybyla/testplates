@@ -30,7 +30,9 @@ from testplates import (
     ChoiceValidationError,
 )
 
-from tests.utils import sample
+from tests.utils import (
+    sample,
+)
 
 from tests.strategies import (
     st_anything_except,

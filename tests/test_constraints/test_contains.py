@@ -1,4 +1,5 @@
 from typing import (
+    Any,
     TypeVar,
     List,
     Container,
@@ -63,7 +64,7 @@ def st_values_without(draw: Draw[List[_T]], value: _T) -> List[_T]:
 # noinspection PyTypeChecker
 # noinspection PyArgumentList
 @given(values=st_values())
-def test_repr(values: List[_T]) -> None:
+def test_repr(values: List[Any]) -> None:
     fmt = "testplates.contains({values})"
 
     assert (result := contains(*values))
@@ -75,7 +76,7 @@ def test_repr(values: List[_T]) -> None:
 # noinspection PyTypeChecker
 # noinspection PyArgumentList
 @given(values=st_values())
-def test_returns_true(values: List[_T]) -> None:
+def test_returns_true(values: List[Any]) -> None:
     assert (result := contains(*values))
 
     constraint = unwrap_success(result)
@@ -84,7 +85,7 @@ def test_returns_true(values: List[_T]) -> None:
 
 # noinspection PyTypeChecker
 @given(data=st.data(), value=st_value())
-def test_returns_false(data: st.DataObject, value: _T) -> None:
+def test_returns_false(data: st.DataObject, value: Any) -> None:
     values = data.draw(st_values_without(value))
 
     assert (result := contains(value, *samples(values)))
@@ -96,7 +97,7 @@ def test_returns_false(data: st.DataObject, value: _T) -> None:
 # noinspection PyTypeChecker
 # noinspection PyArgumentList
 @given(values=st_values())
-def test_returns_false_when_value_is_not_container(values: List[_T]) -> None:
+def test_returns_false_when_value_is_not_container(values: List[Any]) -> None:
     assert (result := contains(*values))
 
     constraint = unwrap_success(result)

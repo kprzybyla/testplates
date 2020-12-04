@@ -11,7 +11,7 @@ from resultful import (
     Result,
 )
 
-from testplates.impl.base import (
+from testplates.impl.exceptions import (
     TestplatesError,
 )
 

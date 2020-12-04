@@ -1,10 +1,20 @@
 from __future__ import annotations
 
 __all__ = (
+    "extract_errors",
+    "extract_fields",
+    "extract_values",
+    "extract_codecs",
+    "extract_codec_metadata",
+    "extract_default_codec",
+    "insert_default_codec",
     "Field",
     "Structure",
     "StructureMeta",
     "StructureDict",
+    "Codec",
+    "EncodeFunction",
+    "DecodeFunction",
 )
 
 import abc
@@ -14,6 +24,7 @@ from typing import (
     cast,
     overload,
     Any,
+    Type,
     TypeVar,
     Generic,
     ClassVar,
@@ -23,15 +34,16 @@ from typing import (
     Dict,
     Iterator,
     Mapping,
+    MutableMapping,
     Callable,
     Optional,
+    Protocol,
     Final,
 )
 
 from resultful import (
     success,
     failure,
-    unwrap_success,
     unwrap_failure,
     Result,
 )
@@ -40,29 +52,155 @@ from testplates.impl.utils import (
     format_like_dict,
 )
 
-from .value import (
-    is_value,
-    values_matches,
-    SecretType,
-    Maybe,
-    Validator,
-    ANY,
-    WILDCARD,
-    ABSENT,
-    MISSING,
-)
-
-from .exceptions import (
+from testplates.impl.exceptions import (
     TestplatesError,
     MissingValueError,
     UnexpectedValueError,
     ProhibitedValueError,
-    InvalidStructureError,
 )
 
-_CovariantType = TypeVar("_CovariantType", covariant=True)
+from .value import (
+    is_value,
+    values_matches,
+    Maybe,
+    Validator,
+    MISSING,
+    ANY,
+    WILDCARD,
+    ABSENT,
+)
 
-TESTPLATES_ERRORS_ATTR_NAME: Final[str] = "_testplates_errors_"
+# noinspection PyTypeChecker
+_Structure = TypeVar("_Structure", bound="Structure")
+_GenericType = TypeVar("_GenericType")
+_CovariantType = TypeVar("_CovariantType", covariant=True)
+_ContravariantType = TypeVar("_ContravariantType", contravariant=True)
+
+TESTPLATES_ERRORS_ATTR: Final[str] = "_testplates_errors_"
+TESTPLATES_FIELDS_ATTR: Final[str] = "_testplates_fields_"
+TESTPLATES_VALUES_ATTR: Final[str] = "_testplates_values_"
+TESTPLATES_CODECS_ATTR: Final[str] = "_testplates_codecs_"
+TESTPLATES_CODEC_METADATA_ATTR: Final[str] = "_testplates_codec_metadata_"
+TESTPLATES_DEFAULT_CODEC_ATTR: Final[str] = "_testplates_default_codec_"
+
+Metadata = Mapping[Type["Structure"], _CovariantType]
+MetadataStorage = MutableMapping[Type["Structure"], _CovariantType]
+
+
+def extract_errors(
+    structure_or_structure_type: Union[Structure, Type[Structure]],
+) -> List[TestplatesError]:
+    errors = getattr(structure_or_structure_type, TESTPLATES_ERRORS_ATTR, [])
+
+    return cast(List[TestplatesError], errors)
+
+
+def extract_fields(
+    structure_or_structure_type: Union[Structure, Type[Structure]],
+) -> Mapping[str, Field[Any]]:
+    fields = getattr(structure_or_structure_type, TESTPLATES_FIELDS_ATTR, {})
+
+    return cast(Mapping[str, Field[Any]], fields)
+
+
+def extract_values(
+    structure: Structure,
+) -> Mapping[str, Any]:
+    fields = getattr(structure, TESTPLATES_VALUES_ATTR, {})
+
+    return cast(Mapping[str, Any], fields)
+
+
+def extract_codecs(
+    structure_or_structure_type: Union[Structure, Type[Structure]],
+) -> List[Codec[Any]]:
+    codecs = getattr(structure_or_structure_type, TESTPLATES_CODECS_ATTR, [])
+
+    return cast(List[Codec[Any]], codecs)
+
+
+def extract_codec_metadata(
+    codec: Codec[_GenericType],
+) -> MetadataStorage[_GenericType]:
+    codec_metadata = getattr(codec, TESTPLATES_CODEC_METADATA_ATTR, {})
+
+    return cast(MetadataStorage[_GenericType], codec_metadata)
+
+
+def extract_default_codec(
+    structure_or_structure_type: Union[Structure, Type[Structure]],
+) -> Optional[Codec[Any]]:
+    default_codec = getattr(structure_or_structure_type, TESTPLATES_DEFAULT_CODEC_ATTR, None)
+
+    return cast(Optional[Codec[Any]], default_codec)
+
+
+def insert_default_codec(
+    structure_or_structure_type: Union[Structure, Type[Structure]],
+    default_codec: Codec[Any],
+) -> None:
+    setattr(structure_or_structure_type, TESTPLATES_DEFAULT_CODEC_ATTR, default_codec)
+
+
+class EncodeFunction(Protocol[_ContravariantType]):
+    def __call__(
+        self,
+        metadata: _ContravariantType,
+        structure: Structure,
+    ) -> Result[bytes, TestplatesError]:
+
+        """
+        Encodes structure into bytes.
+
+        :param structure: structure to be encoded
+        """
+
+
+class DecodeFunction(Protocol[_ContravariantType]):
+    def __call__(
+        self,
+        metadata: _ContravariantType,
+        structure_type: Type[_Structure],
+        data: bytes,
+    ) -> Result[_Structure, TestplatesError]:
+
+        """
+        Decodes bytes into structure.
+
+        :param structure_type: structure type to be decoded to
+        :param data: bytes to be decoded
+        """
+
+
+class Codec(Generic[_GenericType]):
+
+    __slots__ = (
+        "_encode_function",
+        "_decode_function",
+        "_testplates_codec_metadata_",
+    )
+
+    def __init__(
+        self,
+        encode_function: EncodeFunction[_GenericType],
+        decode_function: DecodeFunction[_GenericType],
+    ):
+        self._encode_function = encode_function
+        self._decode_function = decode_function
+
+        self._testplates_codec_metadata_: MetadataStorage[_GenericType] = {}
+
+    @property
+    def metadata(self) -> Metadata[_GenericType]:
+        return self._testplates_codec_metadata_
+
+    @property
+    def encode_function(self) -> EncodeFunction[_GenericType]:
+        return self._encode_function
+
+    @property
+    def decode_function(self) -> DecodeFunction[_GenericType]:
+        return self._decode_function
 
 
 class Field(Generic[_CovariantType]):
@@ -82,23 +220,20 @@ class Field(Generic[_CovariantType]):
 
     def __init__(
         self,
-        validator: Result[Validator, TestplatesError],
+        validator: Validator,
         /,
         *,
         default: Maybe[_CovariantType] = MISSING,
         default_factory: Maybe[Callable[[], _CovariantType]] = MISSING,
         optional: bool = False,
+        errors: Optional[List[TestplatesError]] = None,
     ) -> None:
-        self._validator: Optional[Validator] = None
+        self._validator = validator
         self._errors: List[TestplatesError] = []
         self._default = default
         self._default_factory = default_factory
         self._optional = optional
-
-        if validator:
-            self._validator = unwrap_success(validator)
-        else:
-            self._errors.append(unwrap_failure(validator))
+        self._errors = errors or []
 
     def __repr__(self) -> str:
         parameters = [f"{self._name!r}"]
@@ -133,7 +268,6 @@ class Field(Generic[_CovariantType]):
     ) -> _CovariantType:
         ...
 
-    # noinspection PyProtectedMember
     def __get__(
         self,
         instance: Optional[Structure],
@@ -153,7 +287,9 @@ class Field(Generic[_CovariantType]):
         if instance is None:
             return self
 
-        return cast(_CovariantType, instance._testplates_values_[self.name])
+        values = extract_values(instance)
+
+        return cast(_CovariantType, values[self.name])
 
     @property
     def name(self) -> str:
@@ -222,19 +358,20 @@ class Field(Generic[_CovariantType]):
         :param value: value to be validated
         """
 
-        default = self.default
         validator = self.validator
+        default = self.default
+        is_optional = self.is_optional
 
         if value is ANY:
             return success(None)
 
-        elif value is MISSING and default is MISSING and not self.is_optional:
+        elif value is MISSING and default is MISSING:
             return failure(MissingValueError(self))
 
-        elif (value is ABSENT or default is ABSENT) and not self.is_optional:
+        elif (value is ABSENT or default is ABSENT) and not is_optional:
             return failure(ProhibitedValueError(self, value))
 
-        elif (value is WILDCARD or default is WILDCARD) and not self.is_optional:
+        elif (value is WILDCARD or default is WILDCARD) and not is_optional:
             return failure(ProhibitedValueError(self, value))
 
         elif is_value(value) and validator is not None and not (result := validator(value)):
@@ -280,6 +417,8 @@ class StructureMeta(abc.ABCMeta):
 
     _testplates_errors_: List[TestplatesError]
     _testplates_fields_: Mapping[str, Field[Any]]
+    _testplates_codecs_: List[Codec[Any]]
+    _testplates_default_codec_: Optional[Codec[Any]]
 
     def __init__(
         cls,
@@ -289,12 +428,13 @@ class StructureMeta(abc.ABCMeta):
     ) -> None:
         super().__init__(name, bases, attrs)
 
-        cls._testplates_errors_ = attrs.get(TESTPLATES_ERRORS_ATTR_NAME, [])
+        cls._testplates_errors_ = attrs.get(TESTPLATES_ERRORS_ATTR, [])
         cls._testplates_fields_ = attrs.fields
+        cls._testplates_codecs_ = attrs.get(TESTPLATES_CODECS_ATTR, [])
+        cls._testplates_default_codec_ = attrs.get(TESTPLATES_DEFAULT_CODEC_ATTR, None)
 
         for field in attrs.fields.values():
-            if field.errors:
-                cls._testplates_errors_.extend(field.errors)
+            cls._testplates_errors_.extend(field.errors)
 
     def __repr__(self) -> str:
         parameters = format_like_dict(self._testplates_fields_)
@@ -310,24 +450,6 @@ class StructureMeta(abc.ABCMeta):
     ) -> StructureDict:
         return StructureDict()
 
-    def _testplates_create_(
-        cls,
-        name: str,
-        **fields: Field[Any],
-    ) -> StructureMeta:
-        bases = (cls,)
-        metaclass = cls.__class__
-
-        attrs = metaclass.__prepare__(name, bases)
-
-        for key, field in (fields or {}).items():
-            attrs.__setitem__(key, field)
-
-        instance = cast(StructureMeta, metaclass.__new__(metaclass, name, bases, attrs))
-        metaclass.__init__(instance, name, bases, attrs)
-
-        return instance
-
 
 class Structure(Mapping[str, Any], metaclass=StructureMeta):
 
@@ -337,18 +459,31 @@ class Structure(Mapping[str, Any], metaclass=StructureMeta):
 
     __slots__ = ("_testplates_values_",)
 
-    # noinspection PyTypeChecker
-    _testplates_self_ = TypeVar("_testplates_self_", bound="Structure")
-
     _testplates_errors_: ClassVar[List[TestplatesError]]
     _testplates_fields_: ClassVar[Mapping[str, Field[Any]]]
+    _testplates_codecs_: ClassVar[List[Codec[Any]]]
+    _testplates_default_codec_: ClassVar[Optional[Codec[Any]]]
 
     def __init__(
         self,
-        __use_testplates_initialize_function_to_create_structure_not_init_method__: SecretType,
         /,
+        **values: Any,
     ) -> None:
-        self._testplates_values_: Mapping[str, Any] = {}
+        fields = self._testplates_fields_
+        errors = self._testplates_errors_
+
+        for key, value in values.items():
+            if key not in fields.keys():
+                errors.append(UnexpectedValueError(key, value))
+
+        for key, field in fields.items():
+            if not (result := field.validate(values.get(key, MISSING))):
+                errors.append(unwrap_failure(result))
+
+            if (default := field.default) is not MISSING:
+                values.setdefault(key, default)
+
+        self._testplates_values_: Mapping[str, Any] = values
 
     def __init_subclass__(cls, **kwargs: Any) -> None:
         pass
@@ -367,68 +502,10 @@ class Structure(Mapping[str, Any], metaclass=StructureMeta):
 
     def __eq__(self, other: Any) -> bool:
         for key, field in self._testplates_fields_.items():
-            self_value: Maybe[Any] = self._testplates_get_value_(self, key)
-            other_value: Maybe[Any] = self._testplates_get_value_(other, key)
+            self_value: Maybe[Any] = self.get(key, MISSING)
+            other_value: Maybe[Any] = other.get(key, MISSING)
 
             if not values_matches(self_value, other_value):
                 return False
 
         return True
-
-    def _testplates_init_(
-        self: _testplates_self_,
-        **values: Any,
-    ) -> Result[_testplates_self_, TestplatesError]:
-        if errors := self._testplates_errors_:
-            return failure(InvalidStructureError(errors))
-
-        keys = self._testplates_fields_.keys()
-
-        for key, value in values.items():
-            if key not in keys:
-                return failure(UnexpectedValueError(key, value))
-
-        for key, field in self._testplates_fields_.items():
-            if not (result := field.validate(values.get(key, MISSING))):
-                return result
-
-            if (default := field.default) is not MISSING:
-                values.setdefault(key, default)
-
-        self._testplates_values_ = values
-
-        return success(self)
-
-    # noinspection PyProtectedMember
-    def _testplates_modify_(
-        self: _testplates_self_,
-        **values: Any,
-    ) -> Result[_testplates_self_, TestplatesError]:
-        typ = type(self)
-
-        new_values: Dict[str, Any] = dict()
-        new_values.update(self._testplates_values_)
-        new_values.update(values)
-
-        return typ(SecretType.SECRET)._testplates_init_(**new_values)
-
-    @staticmethod
-    def _testplates_get_value_(
-        self: _testplates_self_,
-        key: str,
-        /,
-        *,
-        default: Maybe[_CovariantType] = MISSING,
-    ) -> Maybe[_CovariantType]:
-
-        """
-        Extracts value by given key using a type specific protocol.
-
-        If value is missing, returns default value.
-
-        :param self: object with a type specific protocol
-        :param key: key used to access the value in a structure
-        :param default: default value that will be used in case value is missing
-        """
-
-        return self.get(key, default)

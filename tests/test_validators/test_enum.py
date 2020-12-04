@@ -5,7 +5,7 @@ from enum import (
 
 from typing import (
     cast,
-    TypeVar,
+    Any,
     Dict,
     Final,
 )
@@ -35,15 +35,13 @@ from testplates import (
 from tests.utils import sample
 from tests.strategies import Draw
 
-_T = TypeVar("_T")
-
 uint8: Final[Result[Validator, TestplatesError]] = integer_validator(minimum=0, maximum=255)
 
 # TODO: Add blacklist_characters for member name to avoid names like _test_ since
 #       They are considered to be internal for Python enum class
 
 
-def create_enum_type(members: Dict[str, _T]) -> EnumMeta:
+def create_enum_type(members: Dict[str, Any]) -> EnumMeta:
     return cast(EnumMeta, Enum("Custom", members))
 
 
@@ -59,7 +57,7 @@ def st_negative_integer(draw: Draw[int]) -> int:
 
 # noinspection PyTypeChecker
 @given(members=st.dictionaries(st.text(min_size=1), st_uint8(), min_size=1))
-def test_repr(members: Dict[str, _T]) -> None:
+def test_repr(members: Dict[str, Any]) -> None:
     enum_type = create_enum_type(members)
     assert (validator_result := enum_validator(enum_type))
 
@@ -71,7 +69,7 @@ def test_repr(members: Dict[str, _T]) -> None:
 
 # noinspection PyTypeChecker
 @given(members=st.dictionaries(st.text(min_size=1), st_uint8(), min_size=1))
-def test_repr_with_member_validator(members: Dict[str, _T]) -> None:
+def test_repr_with_member_validator(members: Dict[str, Any]) -> None:
     enum_type = create_enum_type(members)
     assert (validator_result := enum_validator(enum_type, uint8))
 
@@ -83,7 +81,7 @@ def test_repr_with_member_validator(members: Dict[str, _T]) -> None:
 
 # noinspection PyTypeChecker
 @given(members=st.dictionaries(st.text(min_size=1), st_uint8(), min_size=1))
-def test_success(members: Dict[str, _T]) -> None:
+def test_success(members: Dict[str, Any]) -> None:
     enum_type = create_enum_type(members)
     member: Enum = sample(enum_type)
     assert (validator_result := enum_validator(enum_type, uint8))
@@ -97,7 +95,7 @@ def test_success(members: Dict[str, _T]) -> None:
 
 # noinspection PyTypeChecker
 @given(members=st.dictionaries(st.text(min_size=1), st_negative_integer(), min_size=1))
-def test_failure_when_member_validator_fails(members: Dict[str, _T]) -> None:
+def test_failure_when_member_validator_fails(members: Dict[str, Any]) -> None:
     validator_error = TestplatesError()
     enum_type = create_enum_type(members)
     assert not (validator_result := enum_validator(enum_type, failure(validator_error)))
@@ -108,7 +106,7 @@ def test_failure_when_member_validator_fails(members: Dict[str, _T]) -> None:
 
 # noinspection PyTypeChecker
 @given(members=st.dictionaries(st.text(min_size=1), st_negative_integer(), min_size=1))
-def test_failure_when_member_validation_fails(members: Dict[str, _T]) -> None:
+def test_failure_when_member_validation_fails(members: Dict[str, Any]) -> None:
     enum_type = create_enum_type(members)
     assert not (validator_result := enum_validator(enum_type, uint8))
 
@@ -121,7 +119,7 @@ def test_failure_when_member_validation_fails(members: Dict[str, _T]) -> None:
 
 # noinspection PyTypeChecker
 @given(members=st.dictionaries(st.text(min_size=1), st_uint8(), min_size=1))
-def test_failure_when_data_validation_fails(members: Dict[str, _T]) -> None:
+def test_failure_when_data_validation_fails(members: Dict[str, Any]) -> None:
     enum_type = create_enum_type(members)
     member: Enum = sample(enum_type)
     assert (validator_result := enum_validator(enum_type))

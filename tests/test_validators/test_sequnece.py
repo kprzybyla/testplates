@@ -2,9 +2,9 @@ import sys
 
 from typing import (
     Any,
-    TypeVar,
     List,
     Sequence,
+    Hashable,
     Literal,
     Final,
 )
@@ -43,8 +43,6 @@ from tests.strategies import (
     st_anything_comparable,
     Draw,
 )
-
-_T = TypeVar("_T")
 
 MINIMUM_EXTREMUM: Final[Literal["minimum"]] = "minimum"
 MAXIMUM_EXTREMUM: Final[Literal["maximum"]] = "maximum"
@@ -97,7 +95,7 @@ def test_repr() -> None:
 
 
 @given(data=st.lists(st_anything_comparable()))
-def test_success(data: Sequence[_T]) -> None:
+def test_success(data: Sequence[Any]) -> None:
     assert (validator_result := sequence_validator())
 
     validator = unwrap_success(validator_result)
@@ -159,7 +157,7 @@ def test_success_with_minimum_size_and_maximum_size(st_data: st.DataObject, data
 
 
 @given(data=st.lists(st_hashable(), min_size=1, unique=True))
-def test_success_with_unique_value(data: Sequence[_T]) -> None:
+def test_success_with_unique_value(data: Sequence[Any]) -> None:
     assert (validator_result := sequence_validator(unique_items=True))
 
     validator = unwrap_success(validator_result)
@@ -178,7 +176,7 @@ def test_failure_when_item_validator_fails() -> None:
 
 
 @given(data=st_anything_except(Sequence))
-def test_failure_when_data_validation_fails(data: _T) -> None:
+def test_failure_when_data_validation_fails(data: Any) -> None:
     assert (validator_result := sequence_validator())
 
     validator = unwrap_success(validator_result)
@@ -347,7 +345,7 @@ def test_failure_when_size_boundaries_match_single_value(size: int) -> None:
 
 
 @given(data=st.lists(st_hashable(), min_size=1, unique=True))
-def test_failure_when_value_is_not_unique(data: List[_T]) -> None:
+def test_failure_when_value_is_not_unique(data: List[Hashable]) -> None:
     data.append(sample(data))
 
     assert (validator_result := sequence_validator(unique_items=True))
